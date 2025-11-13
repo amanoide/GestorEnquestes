@@ -467,28 +467,24 @@ public class CtrlDominiDriver {
         }
     }
 
-    private static void testmodificarResposta() throws EnquestaNoExisteixException,PreguntaNoExisteixException, RespostaNoExisteixException, PermisDenegatException {
-        Usuari usuari = cd.getUsuariActual();
+    private static void testmodificarResposta() throws Exception {
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
         System.out.println("Introdueix ID pregunta a modificar: ");
         String idPregunta = in.nextLine();
         System.out.println("Introdueix nova resposta: ");
         String novaResposta = in.nextLine();
-        //(Usuari usuari, String idEnquesta, String idPregunta, String novaResposta
-        cd.modificarResposta(usuari,idEnquesta, idPregunta, novaResposta);
-        System.out.println("Resposta modificada.");
+        
+        cd.modificarResposta(idEnquesta, idPregunta, novaResposta);
+        System.out.println("Resposta modificada correctament.");
     }
-    /*
-     * HAY UN ERROR EN ALGUN LADO PQ LA RESPUESTA NO SE ELIMINA
-     */
-    private static void testeliminarResposta() throws EnquestaNoExisteixException, PreguntaNoExisteixException, RespostaNoExisteixException, PermisDenegatException {
+    
+    private static void testeliminarResposta() throws Exception {
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
-        System.out.println("Introdueix ID pregunta a eliminar: ");
-        String idPregunta = in.nextLine();
-        cd.esborrarResposta(cd.getUsuariActual(), idEnquesta, idPregunta);
-        System.out.println("Resposta eliminada.");
+        
+        cd.esborrarResposta(idEnquesta);
+        System.out.println("Totes les respostes de l'enquesta han estat eliminades correctament.");
     }
 
 

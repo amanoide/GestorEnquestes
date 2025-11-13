@@ -9,10 +9,22 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
+<<<<<<< HEAD:src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
+import edu.upc.prop.clusterxx.domini.classes.EnquestaJaContestadaException;
+import edu.upc.prop.clusterxx.domini.classes.EnquestaJaExisteixException;
+import edu.upc.prop.clusterxx.domini.classes.EnquestaNoExisteixException;
+import edu.upc.prop.clusterxx.domini.classes.ErrorImportacioException;
+=======
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Perfil;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
+<<<<<<< HEAD:src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
+import edu.upc.prop.clusterxx.domini.classes.RespostaInvalidaException;
+import edu.upc.prop.clusterxx.domini.classes.RespostaNoExisteixException;
+=======
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
 import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
@@ -96,7 +108,7 @@ public class CtrlDomini {
     //(jairo)
     public void esborrarEnquesta(String id) throws EnquestaNoExisteixException, PermisDenegatException, UsuariNoAutenticatException {
         // Verificar que hi ha un usuari autenticat
-        Usuari usuariActual = getUsuariActual();
+        Usuari usuariActual = ctrlUsuari.getUsuariActual();
         if (usuariActual == null) {
             throw new UsuariNoAutenticatException("Cal estar autenticat per esborrar una enquesta.");
         }
@@ -151,7 +163,7 @@ public class CtrlDomini {
         if (idCreador == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(getUsuariActual().getUsername())) {
+        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot modificar-la.");
         }
         ctrlEnquesta.modificarTitolEnquesta(idEnquesta, nouTitol);
@@ -168,7 +180,7 @@ public class CtrlDomini {
         if (idCreador == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(getUsuariActual().getUsername())) {
+        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot modificar-la.");
         }
         ctrlEnquesta.modificarDescripcioEnquesta(idEnquesta, novaDescripcio);
@@ -185,7 +197,7 @@ public class CtrlDomini {
         if (idCreador == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(getUsuariActual().getUsername())) {
+        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot afegir preguntes.");
         }
         ctrlEnquesta.afegirPregunta(idEnquesta, p);
@@ -202,7 +214,7 @@ public class CtrlDomini {
         if (idCreador == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(getUsuariActual().getUsername())) {
+        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot eliminar preguntes.");
         }
         ctrlEnquesta.eliminarPregunta(idEnquesta, idPregunta);
@@ -220,7 +232,7 @@ public class CtrlDomini {
         if (idCreador == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(getUsuariActual().getUsername())) {
+        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot modificar preguntes.");
         }
         ctrlEnquesta.modificarPregunta(idEnquesta, idPregunta, nova);
@@ -247,7 +259,7 @@ public class CtrlDomini {
         if (idCreador == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(getUsuariActual().getUsername())) {
+        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot modificar preguntes.");
         }
         // Verificar que la pregunta existe
@@ -272,7 +284,7 @@ public class CtrlDomini {
         if (idCreador == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(getUsuariActual().getUsername())) {
+        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot modificar preguntes.");
         }
         // Verificar que la pregunta existe
@@ -355,7 +367,7 @@ public class CtrlDomini {
             }
             
             // Crear la enquesta
-            Usuari usuariActual = getUsuariActual();
+            Usuari usuariActual = ctrlUsuari.getUsuariActual();
             if (usuariActual == null) {
                 throw new ErrorImportacioException("Cal estar autenticat per importar enquestes");
             }
@@ -458,7 +470,11 @@ public class CtrlDomini {
             throws UsuariNoAutenticatException, EnquestaNoExisteixException, EnquestaJaContestadaException, PreguntaNoExisteixException, RespostaInvalidaException {
         
         // Verificar que hi ha un usuari autenticat
+<<<<<<< HEAD:src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
+        Usuari usuari = ctrlUsuari.getUsuariActual();
+=======
         Usuari usuari = getUsuariActual();
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
         if (usuari == null) {
             throw new UsuariNoAutenticatException("Cal estar autenticat per contestar una enquesta.");
         }
@@ -520,83 +536,120 @@ public class CtrlDomini {
     }
     
     /**
-     * Modifica una resposta d'un usuari a una pregunta concreta.
-     * @param usuari L'usuari que modifica la resposta.
+     * Modifica una resposta de l'usuari autenticat a una pregunta concreta.
+     * Valida el format de la nova resposta segons el tipus de pregunta abans de modificar-la.
      * @param idEnquesta L'ID de l'enquesta.
      * @param idPregunta L'ID de la pregunta.
      * @param novaResposta La nova resposta.
      * @throws EnquestaNoExisteixException Si l'enquesta no existeix.
      * @throws PreguntaNoExisteixException Si la pregunta no existeix.
      * @throws RespostaNoExisteixException Si l'usuari no ha respost aquesta pregunta.
-     * @throws PermisDenegatException Si l'usuari no és el propietari de la resposta.
+     * @throws RespostaInvalidaException Si la nova resposta no és vàlida pel tipus de pregunta.
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
+     * @throws ParametreInvalidException Si la nova resposta és null.
      */
     //(jairo)
-    public void modificarResposta(Usuari usuari, String idEnquesta, String idPregunta, String novaResposta) 
-            throws EnquestaNoExisteixException, PreguntaNoExisteixException, RespostaNoExisteixException, PermisDenegatException {
+    public void modificarResposta(String idEnquesta, String idPregunta, String novaResposta) 
+            throws EnquestaNoExisteixException, PreguntaNoExisteixException, RespostaNoExisteixException, 
+                   RespostaInvalidaException, UsuariNoAutenticatException, ParametreInvalidException {
         
-        // Verificar que l'enquesta existeix
+        // Validació 1: Verificar que hi ha un usuari autenticat
+        Usuari usuariActual = ctrlUsuari.getUsuariActual();
+        if (usuariActual == null) {
+            throw new UsuariNoAutenticatException("Cal estar autenticat per modificar respostes.");
+        }
+        
+        // Validació 2: Verificar que la nova resposta no és nul·la
+        if (novaResposta == null) {
+            throw new ParametreInvalidException("La nova resposta no pot ser null.");
+        }
+        
+        // Validació 3: Verificar que l'enquesta existeix
         Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
         if (enquesta == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
         
-        // Verificar que la pregunta existeix en l'enquesta
+        // Validació 4: Verificar que la pregunta existeix en l'enquesta
         Pregunta pregunta = ctrlEnquesta.getPregunta(idEnquesta, idPregunta);
         if (pregunta == null) {
             throw new PreguntaNoExisteixException(idPregunta);
         }
         
-        // Intentar modificar la resposta
-        int resultat = ctrlResposta.modificarResposta(usuari, pregunta, novaResposta);
-        
-        if (resultat == 1) {
+        // Validació 5: Verificar que existeix la resposta de l'usuari autenticat a aquesta pregunta
+        // Nota: getResposta() busca per username, per tant si existeix, sempre serà del mateix usuari
+        Resposta respostaExistent = pregunta.getResposta(usuariActual.getUsername());
+        if (respostaExistent == null) {
             throw new RespostaNoExisteixException(
-                "L'usuari " + usuari.getUsername() + " no ha respost la pregunta " + idPregunta + " de l'enquesta " + idEnquesta
-            );
-        } else if (resultat == 2) {
-            throw new PermisDenegatException(
-                "Només el propietari de la resposta pot modificar-la."
+                "L'usuari " + usuariActual.getUsername() + " no ha respost la pregunta " + idPregunta + " de l'enquesta " + idEnquesta
             );
         }
+        
+        // Validació 6: Validar el format de la nova resposta segons el tipus de pregunta
+        if (!pregunta.validarResposta(novaResposta)) {
+            throw new RespostaInvalidaException(
+                "La nova resposta no és vàlida per la pregunta " + idPregunta + 
+                " (tipus: " + pregunta.getTipus() + "): '" + novaResposta + "'"
+            );
+        }
+        
+        // Si totes les validacions passen, modificar la resposta directament
+        respostaExistent.modificarResposta(novaResposta);
+        
+        // Nota: La persistència s'actualitza automàticament perquè l'objecte Resposta
+        // es modifica directament i està guardat al HashMap de CtrlPersistencia
     }
 
     /**
-     * Esborra la resposta d'un usuari a una pregunta.
-     * @param usuari L'usuari que esborra la resposta.
+     * Esborra totes les respostes de l'usuari autenticat a una enquesta.
+     * Elimina totes les respostes associades a cada pregunta de l'enquesta i elimina
+     * l'usuari de la llista de participants.
      * @param idEnquesta L'ID de l'enquesta.
-     * @param idPregunta L'ID de la pregunta.
      * @throws EnquestaNoExisteixException Si l'enquesta no existeix.
-     * @throws RespostaNoExisteixException Si l'usuari no ha respost aquesta pregunta.
-     * @throws PermisDenegatException Si l'usuari no és el propietari de la resposta.
+     * @throws RespostaNoExisteixException Si l'usuari no ha contestat aquesta enquesta.
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
      */
     //(jairo)
-    public void esborrarResposta(Usuari usuari, String idEnquesta, String idPregunta) 
-            throws EnquestaNoExisteixException, RespostaNoExisteixException, PermisDenegatException, PreguntaNoExisteixException {
+    public void esborrarResposta(String idEnquesta) 
+            throws EnquestaNoExisteixException, RespostaNoExisteixException, UsuariNoAutenticatException {
         
-        // Verificar que l'enquesta existeix
+        // Validació 1: Verificar que hi ha un usuari autenticat
+        Usuari usuariActual = ctrlUsuari.getUsuariActual();
+        if (usuariActual == null) {
+            throw new UsuariNoAutenticatException("Cal estar autenticat per esborrar respostes.");
+        }
+        
+        // Validació 2: Verificar que l'enquesta existeix
         Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
         if (enquesta == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
         
-        // Verificar que la pregunta existeix en l'enquesta
-        Pregunta pregunta = ctrlEnquesta.getPregunta(idEnquesta, idPregunta);
-        if (pregunta == null) {
-            throw new PreguntaNoExisteixException(idPregunta);
-        }
-        
-        // Intentar esborrar la resposta
-        int resultat = ctrlResposta.esborrarResposta(usuari, pregunta);
-        
-        if (resultat == 1) {
+        // Validació 3: Verificar que l'usuari ha contestat aquesta enquesta
+        if (!enquesta.haRespostUsuari(usuariActual.getUsername())) {
             throw new RespostaNoExisteixException(
-                "L'usuari " + usuari.getUsername() + " no ha respost la pregunta " + idPregunta + " de l'enquesta " + idEnquesta
-            );
-        } else if (resultat == 2) {
-            throw new PermisDenegatException(
-                "Només el propietari de la resposta pot esborrar-la."
+                "L'usuari " + usuariActual.getUsername() + " no ha contestat l'enquesta " + idEnquesta
             );
         }
+        
+        // Obtenir totes les preguntes de l'enquesta
+        ArrayList<Pregunta> preguntes = enquesta.getPreguntes();
+        
+        // Esborrar totes les respostes de l'usuari a cada pregunta de l'enquesta
+        for (Pregunta pregunta : preguntes) {
+            Resposta resposta = pregunta.getResposta(usuariActual.getUsername());
+            
+            if (resposta != null) {
+                // 1. Eliminar de CtrlPersistencia (això també elimina de l'usuari automàticament)
+                ctrlPersistencia.eliminarResposta(resposta.getId());
+                
+                // 2. Eliminar de la pregunta (no ho fa automàticament CtrlPersistencia)
+                pregunta.eliminarResposta(usuariActual.getUsername());
+            }
+        }
+        
+        // Eliminar l'usuari de la llista de participants de l'enquesta
+        enquesta.eliminarParticipacio(usuariActual.getUsername());
     }
 
     /**
@@ -802,10 +855,6 @@ public class CtrlDomini {
         ctrlUsuari.login(usuari);
     }
     
-    public Usuari getUsuariActual() {
-        return ctrlUsuari.getUsuariActual();
-    }
-
     public boolean checkPassword(String password) {
         return ctrlUsuari.checkPassword(password);
     }
@@ -817,6 +866,8 @@ public class CtrlDomini {
     public Perfil getPerfil(String id) {
         return ctrlPerfil.getPerfil(id);
     }
+<<<<<<< HEAD:src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
+=======
 
     // --- Persistència ---
 
@@ -866,4 +917,5 @@ public class CtrlDomini {
         ctrlResposta.setTotesRespostes(respostesCarregades);
         System.out.println("Respostes carregades.");
     }
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
 }

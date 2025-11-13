@@ -3,7 +3,11 @@ package edu.upc.prop.clusterxx.domini.controladors;
 import java.util.HashMap;
 
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
+<<<<<<< HEAD:src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlUsuari.java
+import edu.upc.prop.clusterxx.domini.classes.UsuariJaExisteixException;
+=======
 import static edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariJaExisteixException;
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlUsuari.java
 
 /**
  * Controlador d'usuaris que delega totes les operacions de dades a CtrlPersistencia.

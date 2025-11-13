@@ -17,6 +17,7 @@ package edu.upc.prop.clusterxx.controladors;
 
 // Importacions dels controladors
 import edu.upc.prop.clusterxx.domini.controladors.CtrlResposta;
+import edu.upc.prop.clusterxx.domini.controladors.CtrlPersistencia;
 
 // Importacions dels stubs de domini
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
@@ -42,6 +43,9 @@ public class CtrlRespostaDriver {
 
     private static Scanner in;
     private static CtrlResposta cr;
+    private static CtrlPersistencia persistencia;
+    private static int contadorRespostes = 1; // Contador para generar IDs únicos
+    
     /**
      * Mètode principal que executa el driver.
      */
@@ -71,6 +75,7 @@ public class CtrlRespostaDriver {
     private static void init() {
         in = new Scanner(System.in);
         cr = new CtrlResposta();
+        persistencia = CtrlPersistencia.getInstance();
     }
 
     /**
@@ -144,66 +149,71 @@ public class CtrlRespostaDriver {
     // --- Mètodes de Test ---
 
     /**
-     * Prova registrar un conjunt de respostes.
-     * Crea objectes 'mock' d'Enquesta i Usuari.
-     * 
-     * 
-     * PARA ESTA FUNCIONALIDAD NO SE DEBERIA NECESITAR EL OBJETO ENCUESTA SI NO EL ID DE LA ENCUESTA
-     * ASI QUE IGUAL HAY QUE MODIFICARLO EN EL CONTROLADOR
-     * 
-     * USA MOCKS PARA CREAR EL USUARIO Y LA ENCUESTA FICTÍCIOS
-     * 
-     * DEBERIA HABER UNA EXCEPCION SI LA ENCUESTA NO EXISTE
+     * Prova registrar una resposta individual d'un usuari a una pregunta d'una enquesta.
      */
     private static void testRegistrarRespostes() {
         System.out.print("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
-        System.out.print("Introdueix nom d'usuari (participant): ");
+        System.out.print("Introdueix ID pregunta: ");
+        String idPregunta = in.nextLine();
+        System.out.print("Introdueix nom d'usuari: ");
         String username = in.nextLine();
-        System.out.print("Introdueix nom d'usuari (creador de l'enquesta 'mock'): ");
-        String creadorName = in.nextLine();
+        System.out.print("Introdueix text resposta: ");
+        String textResposta = in.nextLine();
 
-        // 1. Crear Usuari mock (el que contesta)
-        Usuari usuariMock = new Usuari(username, "pass_mock");
-        
-        // 2. Crear Enquesta mock (la que es contesta)
-        Usuari creadorMock = new Usuari(creadorName, "pass_mock");
-        Enquesta enquestaMock = new Enquesta(idEnquesta, "Enquesta Mock", "Desc Mock", creadorMock);
-
-        // 3. Demanar les respostes
-        HashMap<String, String> respostesUsuari = new HashMap<>();
-        System.out.println("Introdueix les respostes (escriu 'fi' com a ID de pregunta per acabar):");
-        while (true) {
-            System.out.print("  ID Pregunta: ");
-            String idPregunta = in.nextLine();
-            if (idPregunta.equalsIgnoreCase("fi")) {
-                break;
+        try {
+            // Obtenir l'enquesta
+            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
+            if (enquesta == null) {
+                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
+                return;
             }
-            
-            System.out.print("  Text Resposta: ");
-            String textResposta = in.nextLine();
-            
-            respostesUsuari.put(idPregunta, textResposta);
-            
-            // Afegim una pregunta 'mock' a l'enquesta 'mock'
-            // Això és necessari perquè cr.registrarRespostes crida a enquesta.getPregunta()
-            enquestaMock.afegirPregunta(new Pregunta(idPregunta, "Pregunta Mock Text"));
-        }
 
+<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
+            // Obtenir la pregunta
+            Pregunta pregunta = enquesta.getPregunta(idPregunta);
+            if (pregunta == null) {
+                System.out.println("ERROR: La pregunta amb ID '" + idPregunta + "' no existeix a aquesta enquesta.");
+                return;
+            }
+
+            // Obtenir o crear l'usuari
+            Usuari usuari = persistencia.getUsuari(username);
+            if (usuari == null) {
+                System.out.println("L'usuari no existeix. Creant usuari nou...");
+                usuari = new Usuari(username, "password123");
+                persistencia.afegirUsuari(username, usuari);
+            }
+
+            // Validar la resposta
+            if (!pregunta.validarResposta(textResposta)) {
+                System.out.println("ERROR: La resposta no és vàlida per aquesta pregunta.");
+                return;
+            }
+
+            // Generar ID únic per la resposta
+            String idResposta = "r" + contadorRespostes++;
+
+            // Registrar la resposta
+            cr.registrarResposta(idResposta, idPregunta, textResposta, usuari, pregunta);
+            System.out.println("Resposta registrada amb èxit! ID: " + idResposta);
+        } catch (Exception e) {
+            System.out.println("ERROR inesperat: " + e.getMessage());
+            e.printStackTrace();
+        }
+=======
         // 4. Cridar al controlador
         // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
         // cr.registrarRespostes(enquestaMock, usuariMock, respostesUsuari);
         System.out.println("[FUNCIONALITAT DESACTIVADA] Respostes registrades per l'usuari '" + username + "' a l'enquesta '" + idEnquesta + "'.");
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
     }
 
     /**
-     * Prova modificar una resposta i gestiona els codis de retorn.
-     * 
-     * DEBERIA HABER UNA EXCEPCION SI LA ENCUESTA NO EXISTE
-     * DEBERIA HABER UNA EXCEPCION SI LA PREGUNTA NO EXISTE
+     * Prova modificar una resposta existent d'un usuari a una pregunta.
      */
     private static void testModificarResposta() {
-        System.out.print("Introdueix nom d'usuari (el propietari de la resposta): ");
+        System.out.print("Introdueix nom d'usuari: ");
         String username = in.nextLine();
         System.out.print("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
@@ -212,73 +222,112 @@ public class CtrlRespostaDriver {
         System.out.print("Introdueix el NOU text de la resposta: ");
         String novaResposta = in.nextLine();
 
-        // Creem un usuari 'mock' per passar-lo al mètode
-        Usuari usuariMock = new Usuari(username, "pass_mock");
+        try {
+            // Obtenir l'enquesta
+            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
+            if (enquesta == null) {
+                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
+                return;
+            }
 
+<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
+            // Obtenir la pregunta
+            Pregunta pregunta = enquesta.getPregunta(idPregunta);
+            if (pregunta == null) {
+                System.out.println("ERROR: La pregunta amb ID '" + idPregunta + "' no existeix a aquesta enquesta.");
+                return;
+            }
+=======
         //AQUÍ SERIA EL USUARI ACTUAL SUPONGO EN VEZ DEL MOCK
         // COMENTAT: La signatura del mètode ha canviat després del merge
         // int resultat = cr.modificarResposta(usuariMock, idEnquesta, idPregunta, novaResposta);
         int resultat = -1; // Funcionalitat desactivada
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
 
-        switch (resultat) {
-            case 0:
-                System.out.println("Resposta modificada correctament.");
-                break;
-            case 1:
-                System.out.println("ERROR: No s'ha trobat la resposta (potser l'ID enquesta, usuari o pregunta són incorrectes).");
-                break;
-            case 2:
-                System.out.println("ERROR: Permís denegat. L'usuari '" + username + "' no és el propietari original d'aquesta resposta.");
-                break;
+            // Obtenir l'usuari
+            Usuari usuari = persistencia.getUsuari(username);
+            if (usuari == null) {
+                System.out.println("ERROR: L'usuari '" + username + "' no existeix.");
+                return;
+            }
+
+            // Validar la nova resposta
+            if (!pregunta.validarResposta(novaResposta)) {
+                System.out.println("ERROR: La nova resposta no és vàlida per aquesta pregunta.");
+                return;
+            }
+
+            // Modificar la resposta
+            cr.modificarResposta(usuari, pregunta, novaResposta);
+            System.out.println("Resposta modificada amb èxit!");
+        } catch (Exception e) {
+            System.out.println("ERROR inesperat: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     /**
-     * Prova esborrar una resposta i gestiona els codis de retorn.
-     * 
-     * DEBERIA HABER UNA EXCEPCION SI LA ENCUESTA NO EXISTE
-     * DEBERIA HABER UNA EXCEPCION SI LA PREGUNTA NO EXISTE
-     * 
-     * ALGO PASA QUE SE SIGUEN MOSTRANDO RESPUESTAS QUE YA SE HAN BORRADO
-     * CREO QUE TIENE QUE VER CON QUE LO GUARDAS EN PERSISTENCIA Y SOLO BORRAS EL HASHMAP LOCAL NO EL DE PERSISTENCIA
+     * Prova esborrar una resposta d'un usuari a una pregunta.
      */
     private static void testEsborrarResposta() {
-        System.out.print("Introdueix nom d'usuari (el propietari de la resposta): ");
+        System.out.print("Introdueix nom d'usuari: ");
         String username = in.nextLine();
         System.out.print("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
         System.out.print("Introdueix ID pregunta: ");
         String idPregunta = in.nextLine();
 
-        // Creem un usuari 'mock' per passar-lo al mètode
-        Usuari usuariMock = new Usuari(username, "pass_mock");
+        try {
+            // Obtenir l'enquesta
+            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
+            if (enquesta == null) {
+                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
+                return;
+            }
 
+<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
+            // Obtenir la pregunta
+            Pregunta pregunta = enquesta.getPregunta(idPregunta);
+            if (pregunta == null) {
+                System.out.println("ERROR: La pregunta amb ID '" + idPregunta + "' no existeix a aquesta enquesta.");
+                return;
+            }
+=======
         // COMENTAT: La signatura del mètode ha canviat després del merge
         // int resultat = cr.esborrarResposta(usuariMock, idEnquesta, idPregunta);
         int resultat = -1; // Funcionalitat desactivada
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
 
-        switch (resultat) {
-            case 0:
-                System.out.println("Resposta esborrada correctament.");
-                break;
-            case 1:
-                System.out.println("ERROR: No s'ha trobat la resposta (potser l'ID enquesta, usuari o pregunta són incorrectes).");
-                break;
-            case 2:
-                System.out.println("ERROR: Permís denegat. L'usuari '" + username + "' no és el propietari original d'aquesta resposta.");
-                break;
+            // Obtenir l'usuari
+            Usuari usuari = persistencia.getUsuari(username);
+            if (usuari == null) {
+                System.out.println("ERROR: L'usuari '" + username + "' no existeix.");
+                return;
+            }
+
+            // Esborrar la resposta
+            cr.esborrarResposta(usuari, pregunta);
+            System.out.println("Resposta esborrada amb èxit!");
+        } catch (Exception e) {
+            System.out.println("ERROR inesperat: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     /**
      * Prova la consulta de totes les respostes d'una enquesta.
-     * Esta funcion no deberia ser usada solo si el user es el creador de la enquesta??
-     * DEBERIA HABER UNA EXCEPCION SI LA ENCUESTA NO EXISTE
      */
     private static void testGetRespostesEnquesta() {
         System.out.print("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
 
+<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
+        try {
+            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
+            if (enquesta == null) {
+                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
+                return;
+=======
         // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
         // HashMap<String, ArrayList<Resposta>> respostesPerUsuari = cr.getRespostesEnquesta(idEnquesta);
         HashMap<String, ArrayList<Resposta>> respostesPerUsuari = new HashMap<>(); // Funcionalitat desactivada
@@ -293,53 +342,131 @@ public class CtrlRespostaDriver {
             System.out.println("  > Usuari: " + entry.getKey());
             for (Resposta r : entry.getValue()) {
                 System.out.println("    - Pregunta: id: " + r.getIdPregunta() + ", Resposta: " + r.getTextResposta());
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
             }
+
+            ArrayList<Pregunta> preguntes = enquesta.getPreguntes();
+            if (preguntes.isEmpty()) {
+                System.out.println("L'enquesta '" + idEnquesta + "' no té preguntes.");
+                return;
+            }
+
+            boolean hiHaRespostes = false;
+            System.out.println("\nRespostes de l'enquesta '" + idEnquesta + "':");
+            
+            for (Pregunta pregunta : preguntes) {
+                Map<String, edu.upc.prop.clusterxx.domini.classes.Resposta> respostesPregunta = pregunta.getRespostes();
+                
+                if (!respostesPregunta.isEmpty()) {
+                    hiHaRespostes = true;
+                    System.out.println("\n  Pregunta: " + pregunta.getText());
+                    for (Map.Entry<String, edu.upc.prop.clusterxx.domini.classes.Resposta> respostaEntry : respostesPregunta.entrySet()) {
+                        edu.upc.prop.clusterxx.domini.classes.Resposta resposta = respostaEntry.getValue();
+                        System.out.println("    - Usuari: " + resposta.getUsernameUsuari() + 
+                                         " | Resposta: " + resposta.getTextResposta());
+                    }
+                }
+            }
+            
+            if (!hiHaRespostes) {
+                System.out.println("No s'han trobat respostes per aquesta enquesta.");
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR inesperat: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     /**
      * Prova la consulta de les respostes d'un usuari específic.
-     * DEBERIA HABER UNA EXCEPCION SI LA ENCUESTA NO EXISTE
-     * DEBERIA HABER UNA EXCEPCION SI EL USUARIO NO EXISTE
      */
     private static void testGetRespostesUsuari() {
-        System.out.print("Introdueix ID enquesta: ");
-        String idEnquesta = in.nextLine();
         System.out.print("Introdueix nom d'usuari: ");
         String username = in.nextLine();
 
+<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
+        try {
+            Usuari usuari = persistencia.getUsuari(username);
+            if (usuari == null) {
+                System.out.println("ERROR: L'usuari '" + username + "' no existeix.");
+                return;
+            }
+=======
         // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
         // ArrayList<Resposta> respostes = cr.getRespostesUsuari(idEnquesta, username);
         ArrayList<Resposta> respostes = new ArrayList<>(); // Funcionalitat desactivada
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
 
-        if (respostes.isEmpty()) {
-            System.out.println("No s'han trobat respostes per a l'usuari '" + username + "' en aquesta enquesta.");
-            return;
-        }
+            HashMap<String, edu.upc.prop.clusterxx.domini.classes.Resposta> respostesUsuari = usuari.getRespostesUsuari();
+            if (respostesUsuari.isEmpty()) {
+                System.out.println("L'usuari '" + username + "' no té respostes registrades.");
+                return;
+            }
 
-        System.out.println("Respostes de '" + username + "' a l'enquesta '" + idEnquesta + "':");
-        for (Resposta r : respostes) {
-            System.out.println("  - Pregunta: " + r.getIdPregunta() + ", Resposta: " + r.getTextResposta());
+            System.out.println("\nRespostes de l'usuari '" + username + "':");
+            for (Map.Entry<String, edu.upc.prop.clusterxx.domini.classes.Resposta> entry : respostesUsuari.entrySet()) {
+                edu.upc.prop.clusterxx.domini.classes.Resposta resposta = entry.getValue();
+                System.out.println("  - Resposta ID: " + resposta.getId() + 
+                                 " | Pregunta ID: " + resposta.getIdPregunta() + 
+                                 " | Text: " + resposta.getTextResposta());
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR inesperat: " + e.getMessage());
+            e.printStackTrace();
         }
     }
  
     /**
-     * Prova la consulta del número de participants.
-     * DEBERIA HABER UNA EXCEPCION SI LA ENCUESTA NO EXISTE
+     * Prova la consulta del número de participants d'una enquesta.
      */
     private static void testGetNumParticipants() {
         System.out.print("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
+<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
+
+        try {
+            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
+            if (enquesta == null) {
+                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
+                return;
+            }
+
+            int numParticipants = enquesta.getNumParticipants();
+            System.out.println("L'enquesta '" + idEnquesta + "' té " + numParticipants + " participants.");
+        } catch (Exception e) {
+            System.out.println("ERROR inesperat: " + e.getMessage());
+            e.printStackTrace();
+        }
+=======
         // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
         // int num = cr.getNumParticipants(idEnquesta);
         int num = 0; // Funcionalitat desactivada
         System.out.println("L'enquesta '" + idEnquesta + "' té " + num + " participants.");
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
     }
 
     /**
      * Prova la consulta del número total d'enquestes amb respostes.
      */
     private static void testGetNumEnquestesAmbRespostes() {
+<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
+        try {
+            ArrayList<Enquesta> enquestes = persistencia.getAllEnquestes();
+            int numEnquestesAmbRespostes = 0;
+
+            for (Enquesta enquesta : enquestes) {
+                if (enquesta.getNumParticipants() > 0) {
+                    numEnquestesAmbRespostes++;
+                }
+            }
+
+            System.out.println("Hi ha un total de " + numEnquestesAmbRespostes + " enquestes amb respostes.");
+        } catch (Exception e) {
+            System.out.println("ERROR inesperat: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+=======
         // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
         // int num = cr.getNumEnquestesAmbRespostes();
         int num = 0; // Funcionalitat desactivada
@@ -348,4 +475,5 @@ public class CtrlRespostaDriver {
     
 
 
+>>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
 }
