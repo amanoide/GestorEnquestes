@@ -272,7 +272,7 @@ public class CtrlDominiDriver {
         System.out.println("Enquesta '" + id + "' creada.");
     }
 
-    private static void testConsultarEnquestes() {
+    private static void testConsultarEnquestes() throws UsuariNoAutenticatException {
         ArrayList<Enquesta> enquestes = cd.consultarEnquestes();
         if (enquestes.isEmpty()) {
             System.out.println("No hi ha enquestes.");
@@ -291,7 +291,7 @@ public class CtrlDominiDriver {
         System.out.println("Enquesta '" + id + "' esborrada.");
     }
 
-    private static void testModificarTitolEnquesta() throws EnquestaNoExisteixException, PermisDenegatException {
+    private static void testModificarTitolEnquesta() throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, PermisDenegatException {
         System.out.println("Introdueix ID enquesta: ");
         String id = in.nextLine();
         System.out.println("Introdueix nou títol: ");
@@ -301,11 +301,9 @@ public class CtrlDominiDriver {
     }
 
     // --- Mètodes de Test per a Preguntes ---
-    /*
-     * NO ES COMPROVA SI LA PREGUNTA JA EXISTEIX A L'ENQUESTA?
-     */
 
-    private static void testAfegirPregunta() throws EnquestaNoExisteixException, PermisDenegatException {
+    private static void testAfegirPregunta() 
+            throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, PermisDenegatException {
         System.out.println("Introdueix ID enquesta on afegir la pregunta: ");
         String idEnquesta = in.nextLine();
         
@@ -383,7 +381,7 @@ public class CtrlDominiDriver {
     /*
      * POR MUCHO QUE NO SE VALIDE UNA RESPUESTA SE MUESTRA IGUALMENTE
      */
-    private static void testContestarEnquesta() throws EnquestaNoExisteixException, PreguntaNoExisteixException {
+    private static void testContestarEnquesta() throws EnquestaNoExisteixException, PreguntaNoExisteixException, UsuariNoAutenticatException {
         Usuari actual = cd.getUsuariActual();
         if (actual == null) {
             System.out.println("ERROR: Cal estar autenticat per contestar.");
@@ -437,7 +435,7 @@ public class CtrlDominiDriver {
         try {
             cd.contestarEnquesta(idEnquesta, respostes, idsPreguntaPerResposta);
             System.out.println("Enquesta contestada. Gràcies!");
-        } catch (UsuariNoAutenticatException | EnquestaNoExisteixException | EnquestaJaContestadaException | PreguntaNoExisteixException | RespostaInvalidaException e) {
+        } catch (UsuariNoAutenticatException | EnquestaNoExisteixException | Exceptions.EnquestaJaContestadaException | PreguntaNoExisteixException | RespostaInvalidaException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
     }
@@ -446,7 +444,8 @@ public class CtrlDominiDriver {
          * SI ELIMINAMOS UNA PREGUNTA I DESPRÉS VOLEM MOSTRAR LES RESPOSTES LA RESPOSTA NO S'ELIMINA
          * SI ELIMINAMOS UNA RESPUESTA LA SIGUE MOSTRANT
          */
-    private static void testConsultarRespostesEnquesta() {
+    private static void testConsultarRespostesEnquesta() 
+            throws ParametreInvalidException, EnquestaNoExisteixException, UsuariNoAutenticatException {
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
         
