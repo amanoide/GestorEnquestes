@@ -6,28 +6,18 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import org.json.JSONObject;
-import org.json.JSONArray;
 
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
-<<<<<<< HEAD:src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
-import edu.upc.prop.clusterxx.domini.classes.EnquestaJaContestadaException;
-import edu.upc.prop.clusterxx.domini.classes.EnquestaJaExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.EnquestaNoExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.ErrorImportacioException;
-=======
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Perfil;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
-<<<<<<< HEAD:src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
-import edu.upc.prop.clusterxx.domini.classes.RespostaInvalidaException;
-import edu.upc.prop.clusterxx.domini.classes.RespostaNoExisteixException;
-=======
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
+
 import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
+
+import org.json.JSONArray;
 
 
 public class CtrlDomini {
@@ -236,15 +226,6 @@ public class CtrlDomini {
             throw new PermisDenegatException("Només el creador de l'enquesta pot modificar preguntes.");
         }
         ctrlEnquesta.modificarPregunta(idEnquesta, idPregunta, nova);
-    }
-
-    /**
-     * Registra la participació d'un usuari en una enquesta.
-     * @param idEnquesta L'ID de l'enquesta.
-     * @param username El nom d'usuari del participant.
-     */
-    public void registrarParticipacio(String idEnquesta, String username) {
-        ctrlEnquesta.registrarParticipacio(idEnquesta, username);
     }
 
     /**
@@ -470,11 +451,7 @@ public class CtrlDomini {
             throws UsuariNoAutenticatException, EnquestaNoExisteixException, EnquestaJaContestadaException, PreguntaNoExisteixException, RespostaInvalidaException {
         
         // Verificar que hi ha un usuari autenticat
-<<<<<<< HEAD:src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
         Usuari usuari = ctrlUsuari.getUsuariActual();
-=======
-        Usuari usuari = getUsuariActual();
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
         if (usuari == null) {
             throw new UsuariNoAutenticatException("Cal estar autenticat per contestar una enquesta.");
         }
@@ -866,56 +843,5 @@ public class CtrlDomini {
     public Perfil getPerfil(String id) {
         return ctrlPerfil.getPerfil(id);
     }
-<<<<<<< HEAD:src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
-=======
-
-    // --- Persistència ---
-
-    /**
-     * Obté el controlador de persistència (per a funcionalitats avançades).
-     * @return La instància de CtrlPersistencia
-     */
-    //(jairo)
-    public CtrlPersistencia getCtrlPersistencia() {
-        return ctrlPersistencia;
-    }
-
-    /**
-     * Guarda només les enquestes.
-     */
-    //(jairo)
-    public void guardarEnquestes() {
-        ctrlPersistencia.saveEnquestes(ctrlEnquesta.getTotesEnquestes());
-        System.out.println("Enquestes guardades.");
-    }
-
-    /**
-     * Guarda només les respostes.
-     */
-    //(jairo)
-    public void guardarRespostes() {
-        ctrlPersistencia.saveRespostes(ctrlResposta.getTotesRespostes());
-        System.out.println("Respostes guardades.");
-    }
-
-    /**
-     * Carrega només les enquestes.
-     */
-    //(jairo)
-    public void carregarEnquestes() {
-        ArrayList<Enquesta> enquestesCarregades = ctrlPersistencia.loadEnquestes();
-        ctrlEnquesta.setTotesEnquestes(enquestesCarregades);
-        System.out.println("Enquestes carregades: " + enquestesCarregades.size());
-    }
-
-    /**
-     * Carrega només les respostes.
-     */
-    //(jairo)
-    public void carregarRespostes() {
-        HashMap<String, Resposta> respostesCarregades = ctrlPersistencia.getAllRespostes();
-        ctrlResposta.setTotesRespostes(respostesCarregades);
-        System.out.println("Respostes carregades.");
-    }
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors/CtrlDomini.java
 }
+
