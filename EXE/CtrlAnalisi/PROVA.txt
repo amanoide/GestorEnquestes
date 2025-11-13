@@ -1,0 +1,76 @@
+DOCUMENTACIÓ DE PROVA - CtrlAnalisiDriver
+==========================================
+
+OBJECTE DE LA PROVA
+-------------------
+Prova del controlador d'anàlisi estadístic d'enquestes.
+
+Casos d'ús provats:
+- Anàlisi de resultats d'enquestes
+- Càlcul d'estadístiques bàsiques
+- Generació de mètriques
+- Visualització de resums
+
+Classes provades:
+- CtrlAnalisi: lògica d'anàlisi
+- KMeans: algoritme de clustering (si implementat)
+- Kluster: gestió de clusters
+
+ELEMENTS INTEGRATS
+------------------
+Classes reutilitzades:
+- Enquesta: dades a analitzar
+- Resposta: dades individuals
+- Usuari: agrupació per usuaris
+
+FITXERS DE DADES NECESSARIS
+----------------------------
+Requereix enquestes amb respostes prèvies:
+- Mínim 3-5 usuaris que hagin respost
+- Preguntes numèriques per clustering
+
+VALORS ESTUDIATS (Caixa Negra)
+-------------------------------
+1. Estadístiques bàsiques:
+   - Mitjana de respostes numèriques
+   - Moda en respostes qualitatives
+   - Recompte de participants
+
+2. Clustering (si implementat):
+   - K-means amb k=2,3,4
+   - Distància euclidiana
+   - Convergència de l'algoritme
+
+3. Casos límit:
+   - Enquesta sense respostes
+   - Una sola resposta
+   - Respostes idèntiques
+
+EFECTES ESTUDIATS
+-----------------
+- Visualització de resultats
+- Gràfics ASCII o textuals
+- Resum estadístic
+
+OPERATIVA
+---------
+Execució:
+```
+cd FONTS
+gradlew.bat runCtrlAnalisiDriver
+```
+
+Prerequisits:
+1. Tenir enquestes creades
+2. Tenir respostes registrades
+3. Seleccionar enquesta a analitzar
+
+Opcions:
+1. Estadístiques bàsiques
+2. Clustering (si disponible)
+3. Exportar resultats
+0. Sortir
+
+Notes:
+- Funcionalitat avançada
+- Requereix dades suficients per anàlisi

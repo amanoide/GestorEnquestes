@@ -1,0 +1,78 @@
+DOCUMENTACIÓ DE PROVA - CtrlRespostaDriver
+===========================================
+
+OBJECTE DE LA PROVA
+-------------------
+Prova del controlador de respostes d'usuaris.
+
+Casos d'ús provats:
+- Registrar respostes a preguntes
+- Modificar respostes existents
+- Consultar respostes d'un usuari
+- Consultar respostes d'una enquesta
+- Validar respostes segons tipus de pregunta
+
+Classes provades:
+- CtrlResposta: lògica de gestió de respostes
+- Resposta: classe de domini
+
+ELEMENTS INTEGRATS
+------------------
+Classes reutilitzades:
+- Usuari: autor de la resposta
+- Pregunta: pregunta a la qual es respon
+- Enquesta: context de la resposta
+
+FITXERS DE DADES NECESSARIS
+----------------------------
+Opcionals:
+- respostes.json: respostes guardades
+
+VALORS ESTUDIATS (Caixa Negra)
+-------------------------------
+1. Respostes a pregunta de text:
+   - Text normal: "Barcelona"
+   - Text llarg: paràgraf complet
+   - Buit: ""
+   - Null
+
+2. Respostes a pregunta numèrica:
+   - Dins rang: 25 (si rang 0-120)
+   - Fora rang: 150 (error esperat)
+   - Límits: 0, 120
+   - No numèric: "abc" (error esperat)
+
+3. Respostes a pregunta qualitativa:
+   - Opció vàlida: "A", "B"
+   - Opció no existent: "Z" (error esperat)
+
+4. Múltiples respostes:
+   - Mateix usuari, diferents preguntes
+   - Diferents usuaris, mateixa pregunta
+   - Modificació de resposta existent
+
+EFECTES ESTUDIATS
+-----------------
+- Formulari de resposta dinàmic
+- Validació en temps real
+- Visualització de respostes guardades
+- Estadístiques bàsiques
+
+OPERATIVA
+---------
+Execució:
+```
+cd FONTS
+gradlew.bat runCtrlRespostaDriver
+```
+
+Opcions del menú:
+1. Respondre pregunta
+2. Modificar resposta
+3. Consultar respostes pròpies
+4. Consultar respostes d'enquesta
+0. Sortir
+
+Notes:
+- Validació automàtica segons tipus de pregunta
+- No es pot respondre dues vegades la mateixa pregunta

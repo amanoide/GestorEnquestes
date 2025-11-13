@@ -1,0 +1,12 @@
+Practica de prop...
+
+
+fitxers i directoris del projecte:
+
+membres.txt
+
+
+index.txt
+
+docs(algorismes(Estructura triada i justificació,comentar alternativas, complejidad de la estructura), descripcio de casos d'us(actor,comportament,errors possibles i cursos alternatius))
+....

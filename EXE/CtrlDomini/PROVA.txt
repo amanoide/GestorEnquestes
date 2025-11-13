@@ -1,0 +1,56 @@
+DOCUMENTACIÓ DE PROVA - CtrlDominiDriver
+=========================================
+
+OBJECTE DE LA PROVA
+-------------------
+Prova del controlador de domini (façana) que actua com a punt d'entrada únic al sistema.
+
+Casos d'ús provats:
+- Delegació correcta a controladors especialitzats
+- Coordinació entre múltiples controladors
+- Gestió centralitzada de l'estat del sistema
+
+Classes provades:
+- CtrlDomini: controlador façana principal
+
+ELEMENTS INTEGRATS
+------------------
+Controladors especialitzats integrats:
+- CtrlUsuari: operacions d'usuaris
+- CtrlEnquesta: operacions d'enquestes
+- CtrlPregunta: operacions de preguntes
+- CtrlResposta: operacions de respostes
+- CtrlPersistencia: persistència de dades
+
+Classes de domini reutilitzades:
+- Usuari, Enquesta, Pregunta, Resposta, Opcio
+
+FITXERS DE DADES NECESSARIS
+----------------------------
+No requereix fitxers previs.
+
+VALORS ESTUDIATS (Caixa Blanca)
+--------------------------------
+Proves de delegació:
+- Verificar que cada mètode delega al controlador correcte
+- Comprovar que els paràmetres es passen correctament
+- Validar retorns dels controladors especialitzats
+
+EFECTES ESTUDIATS
+-----------------
+- Patró façana: accés unificat al sistema
+- Coordinació entre controladors
+- Gestió d'errors centralitzada
+
+OPERATIVA
+---------
+Execució:
+```
+cd FONTS
+gradlew.bat runCtrlDominiDriver
+```
+
+Proves típiques:
+1. Crear usuari via CtrlDomini
+2. Crear enquesta via CtrlDomini
+3. Verificar delegació correcta
