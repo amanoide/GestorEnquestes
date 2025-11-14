@@ -14,6 +14,7 @@ public class Usuari {
     private String password;
     private List<Enquesta> enquestesCreades;
     private HashMap<String, Resposta> respostesUsuari; // idResposta -> Resposta
+    private HashMap<String, Perfil> perfils; // idEnquesta -> Perfil (un perfil per enquesta analitzada)
 
     // Constructor
     public Usuari(String username, String password) {
@@ -21,6 +22,7 @@ public class Usuari {
         this.password = password;
         this.enquestesCreades = new ArrayList<>();
         this.respostesUsuari = new HashMap<>();
+        this.perfils = new HashMap<>();
     }
 
     // Mètodes públics de negoci
@@ -50,6 +52,27 @@ public class Usuari {
 
     public HashMap<String, Resposta> getRespostesUsuari() {
         return new HashMap<>(respostesUsuari);
+    }
+    
+    // Mètodes per a gestió de perfils
+    public void assignarPerfil(String idEnquesta, Perfil perfil) {
+        this.perfils.put(idEnquesta, perfil);
+    }
+    
+    public Perfil getPerfil(String idEnquesta) {
+        return this.perfils.get(idEnquesta);
+    }
+    
+    public HashMap<String, Perfil> getPerfils() {
+        return new HashMap<>(perfils);
+    }
+    
+    public boolean tePerfil(String idEnquesta) {
+        return this.perfils.containsKey(idEnquesta);
+    }
+    
+    public void eliminarPerfil(String idEnquesta) {
+        this.perfils.remove(idEnquesta);
     }
 
     // Getters

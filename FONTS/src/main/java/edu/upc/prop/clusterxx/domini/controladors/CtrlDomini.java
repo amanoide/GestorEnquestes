@@ -2,6 +2,7 @@ package edu.upc.prop.clusterxx.domini.controladors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,6 +16,9 @@ import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
+import edu.upc.prop.clusterxx.domini.classes.Kluster;
+import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator;
+import edu.upc.prop.clusterxx.domini.classes.ClusterEvaluator;
 import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
 
 
@@ -24,6 +28,7 @@ public class CtrlDomini {
     private CtrlResposta ctrlResposta;
     private CtrlUsuari ctrlUsuari;
     private CtrlPerfil ctrlPerfil;
+    private CtrlAnalisi ctrlAnalisi; // (jairo) NOU - Clustering
     private CtrlPersistencia ctrlPersistencia; // (jairo) NOU
 
     public CtrlDomini() {
@@ -32,6 +37,7 @@ public class CtrlDomini {
         this.ctrlResposta = new CtrlResposta();
         this.ctrlUsuari = new CtrlUsuari(null); // Ajustado para usar CtrlUsuari
         this.ctrlPerfil = new CtrlPerfil();
+        this.ctrlAnalisi = new CtrlAnalisi(); // (jairo) NOU - Clustering
         this.ctrlPersistencia = CtrlPersistencia.getInstance(); // (jairo) NOU - Singleton
     }
 
@@ -437,6 +443,145 @@ public class CtrlDomini {
             case "text":
             default:
                 return new Pregunta(id, text);
+        }
+    }
+
+    /**
+     * Importa respostes d'usuaris des d'un fitxer JSON.
+     * Format esperat:
+     * {
+     *   "enquesta_id": "ID_ENQUESTA",
+     *   "respostes": [
+     *     {
+     *       "username": "usuari1",
+     *       "respostes": [
+     *         {"pregunta_id": "P1", "resposta": "Text resposta"},
+     *         {"pregunta_id": "P2", "resposta": "25"}
+     *       ]
+     *     }
+     *   ]
+     * }
+     */
+    public void importarRespostes(String path) throws ErrorImportacioException {
+        try {
+            // Leer el archivo
+            StringBuilder content = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    content.append(line);
+                }
+            }
+
+            // Parsear JSON
+            JSONObject json = new JSONObject(content.toString());
+            
+            String idEnquesta = json.getString("enquesta_id");
+            
+            // Verificar que l'enquesta existeix
+            Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+            if (enquesta == null) {
+                throw new ErrorImportacioException("No existeix cap enquesta amb l'ID " + idEnquesta);
+            }
+            
+            // Primer, validar que TOTES les preguntes del JSON existeixen a l'enquesta
+            if (json.has("respostes")) {
+                JSONArray respostesArray = json.getJSONArray("respostes");
+                
+                for (int i = 0; i < respostesArray.length(); i++) {
+                    JSONObject respostaUsuariJson = respostesArray.getJSONObject(i);
+                    
+                    if (respostaUsuariJson.has("respostes")) {
+                        JSONArray respostesUsuari = respostaUsuariJson.getJSONArray("respostes");
+                        
+                        for (int j = 0; j < respostesUsuari.length(); j++) {
+                            JSONObject respostaJson = respostesUsuari.getJSONObject(j);
+                            String idPregunta = respostaJson.getString("pregunta_id");
+                            
+                            // Verificar que la pregunta existeix en l'enquesta
+                            boolean preguntaExisteix = false;
+                            for (Pregunta p : enquesta.getPreguntes()) {
+                                if (p.getId().equals(idPregunta)) {
+                                    preguntaExisteix = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!preguntaExisteix) {
+                                throw new ErrorImportacioException(
+                                    "La pregunta amb ID '" + idPregunta + "' no existeix a l'enquesta '" + 
+                                    idEnquesta + "'. Totes les preguntes del JSON han de coincidir amb l'enquesta.");
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Si arribem aquí, totes les preguntes són vàlides. Procedir amb la importació
+            if (json.has("respostes")) {
+                JSONArray respostesArray = json.getJSONArray("respostes");
+                int respostesImportades = 0;
+                
+                for (int i = 0; i < respostesArray.length(); i++) {
+                    JSONObject respostaUsuariJson = respostesArray.getJSONObject(i);
+                    
+                    String username = respostaUsuariJson.getString("username");
+                    
+                    // Verificar que l'usuari existeix
+                    Usuari usuari = ctrlPersistencia.getUsuari(username);
+                    if (usuari == null) {
+                        System.out.println("⚠ Avís: L'usuari '" + username + "' no existeix, se saltarà.");
+                        continue;
+                    }
+                    
+                    // Importar les respostes d'aquest usuari
+                    if (respostaUsuariJson.has("respostes")) {
+                        JSONArray respostesUsuari = respostaUsuariJson.getJSONArray("respostes");
+                        boolean usuariTeRespostes = false;
+                        
+                        for (int j = 0; j < respostesUsuari.length(); j++) {
+                            JSONObject respostaJson = respostesUsuari.getJSONObject(j);
+                            
+                            String idPregunta = respostaJson.getString("pregunta_id");
+                            String textResposta = respostaJson.getString("resposta");
+                            
+                            // No cal verificar de nou, ja s'ha validat abans
+                            
+                            // Registrar la resposta
+                            try {
+                                registrarResposta(idEnquesta, usuari, idPregunta, textResposta);
+                                usuariTeRespostes = true;
+                            } catch (Exception e) {
+                                System.out.println("⚠ Avís: Error registrant resposta de '" + username + 
+                                                 "' per pregunta '" + idPregunta + "': " + e.getMessage());
+                            }
+                        }
+                        
+                        // Registrar participació si l'usuari ha respost almenys una pregunta
+                        if (usuariTeRespostes) {
+                            try {
+                                registrarParticipacio(idEnquesta, username);
+                                respostesImportades++;
+                            } catch (Exception e) {
+                                // Ignorar si ja estava registrat
+                            }
+                        }
+                    }
+                }
+                
+                if (respostesImportades == 0) {
+                    throw new ErrorImportacioException("No s'ha pogut importar cap resposta vàlida");
+                }
+                
+                System.out.println("✓ S'han importat respostes de " + respostesImportades + " participants");
+            } else {
+                throw new ErrorImportacioException("El fitxer JSON no conté l'array 'respostes'");
+            }
+            
+        } catch (IOException e) {
+            throw new ErrorImportacioException("Error llegint el fitxer: " + e.getMessage());
+        } catch (Exception e) {
+            throw new ErrorImportacioException("Error processant les respostes: " + e.getMessage());
         }
     }
 
@@ -860,5 +1005,203 @@ public class CtrlDomini {
         HashMap<String, Resposta> respostesCarregades = ctrlPersistencia.getAllRespostes();
         ctrlResposta.setTotesRespostes(respostesCarregades);
         System.out.println("Respostes carregades.");
+    }
+
+    // --- Anàlisi i Clustering ---
+
+    /**
+     * Realitza clustering sobre els usuaris que han respost una enquesta.
+     * Els perfils generats s'assignen automàticament als usuaris i es persisten.
+     * 
+     * @param idEnquesta ID de l'enquesta a analitzar
+     * @param k Nombre de clusters
+     * @param usePlusPlus true per usar KMeans++, false per KMeans estàndard
+     * @param maxIters Màxim d'iteracions
+     * @param algoritmeNom Nom de l'algoritme per mostrar ("KMeans" o "KMeans++")
+     * @return Resultats del clustering amb clusters, silhouette i perfils assignats
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix
+     */
+    //(jairo)
+    public ResultatClustering analitzarEnquesta(String idEnquesta, int k, boolean usePlusPlus, 
+                                                 int maxIters, String algoritmeNom) 
+            throws EnquestaNoExisteixException {
+        
+        // 1. Obtenir l'enquesta
+        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+        if (enquesta == null) {
+            throw new EnquestaNoExisteixException(idEnquesta);
+        }
+        
+        // 2. Obtenir preguntes
+        List<Pregunta> preguntes = enquesta.getPreguntes();
+        if (preguntes.isEmpty()) {
+            throw new IllegalStateException("L'enquesta no té preguntes per analitzar.");
+        }
+        
+        // 3. Vectoritzar respostes (obtenir usuaris que han respost)
+        HashMap<String, Resposta> totesRespostes = ctrlResposta.getTotesRespostes();
+        List<String> usernames = new ArrayList<>();
+        List<String[]> dataVectors = new ArrayList<>();
+        HashMap<String, Integer> vectorToIndex = new HashMap<>(); // Mapea contingut vector -> índex
+        
+        for (String username : ctrlPersistencia.getAllUsuaris().keySet()) {
+            String[] vector = new String[preguntes.size()];
+            boolean teRespostes = false;
+            
+            for (int i = 0; i < preguntes.size(); i++) {
+                Pregunta p = preguntes.get(i);
+                // CORREGIT: la clau és idPregunta_username (no username_idPregunta)
+                String clauResposta = p.getId() + "_" + username;
+                Resposta resposta = totesRespostes.get(clauResposta);
+                
+                if (resposta != null) {
+                    vector[i] = resposta.getTextResposta();
+                    teRespostes = true;
+                } else {
+                    vector[i] = ""; // Valor buit si no ha respost
+                }
+            }
+            
+            if (teRespostes) {
+                int idx = dataVectors.size();
+                usernames.add(username);
+                dataVectors.add(vector);
+                // Crear clau única pel vector per identificar-lo després
+                String vectorKey = String.join("|", vector);
+                vectorToIndex.put(vectorKey, idx);
+            }
+        }
+        
+        if (dataVectors.size() < k) {
+            throw new IllegalStateException("No hi ha prou participants (" + dataVectors.size() + 
+                                          ") per crear " + k + " clusters.");
+        }
+        
+        // 4. Construir FeatureSpecs des de les preguntes
+        DistanceCalculator.FeatureSpec[] specs = ctrlAnalisi.buildSpecsFromPreguntas(preguntes);
+        
+        // 5. Executar clustering
+        List<Kluster> clusters = ctrlAnalisi.cluster(dataVectors, k, usePlusPlus, maxIters, specs);
+        
+        // 6. Calcular Silhouette
+        ClusterEvaluator evaluator = new ClusterEvaluator();
+        double silhouette = evaluator.silhouetteScore(clusters, specs);
+        double[] silhouettePerCluster = evaluator.silhouettePerCluster(clusters, specs);
+        
+        // 7. Crear i assignar perfils
+        List<String> preguntesText = new ArrayList<>();
+        for (Pregunta p : preguntes) {
+            preguntesText.add(p.getText());
+        }
+        
+        int perfilIdBase = (int) System.currentTimeMillis();
+        
+        for (int i = 0; i < clusters.size(); i++) {
+            Kluster cluster = clusters.get(i);
+            List<String[]> members = cluster.getMembers();
+            String[] centroid = cluster.getCentroid();
+            
+            // Generar nom del cluster
+            String clusterNom = generarNomCluster(i + 1, centroid, preguntes);
+            
+            // Crear perfil per aquest cluster
+            Perfil perfilCluster = new Perfil(
+                perfilIdBase + i,
+                "Perfil generat per clustering: " + clusterNom,
+                idEnquesta,
+                i,
+                clusterNom,
+                members.size(),
+                silhouettePerCluster[i],
+                centroid,
+                preguntesText,
+                algoritmeNom
+            );
+            
+            // Assignar perfil a cada usuari del cluster
+            for (String[] memberVector : members) {
+                // Buscar índex pel contingut del vector
+                String vectorKey = String.join("|", memberVector);
+                Integer memberIdx = vectorToIndex.get(vectorKey);
+                
+                if (memberIdx != null && memberIdx >= 0 && memberIdx < usernames.size()) {
+                    String username = usernames.get(memberIdx);
+                    Usuari usuari = ctrlPersistencia.getUsuari(username);
+                    if (usuari != null) {
+                        usuari.assignarPerfil(idEnquesta, perfilCluster);
+                        // Els usuaris ja es guarden en la persistència
+                    }
+                }
+            }
+        }
+        
+        // 8. Retornar resultats
+        return new ResultatClustering(clusters, silhouette, silhouettePerCluster, usernames, dataVectors, vectorToIndex);
+    }
+    
+    /**
+     * Genera un nom descriptiu per a un cluster basat en el seu centroide.
+     */
+    private String generarNomCluster(int index, String[] centroid, List<Pregunta> preguntes) {
+        if (preguntes.isEmpty() || centroid.length == 0) {
+            return "Cluster " + index;
+        }
+        
+        // Buscar la primera pregunta significativa
+        for (int i = 0; i < Math.min(preguntes.size(), centroid.length); i++) {
+            Pregunta p = preguntes.get(i);
+            String valor = centroid[i];
+            
+            if (valor != null && !valor.trim().isEmpty()) {
+                switch (p.getTipus()) {
+                    case NUMERICA:
+                        try {
+                            double num = Double.parseDouble(valor);
+                            if (num < 15) return "Grup Baix";
+                            else if (num < 30) return "Grup Mitjà";
+                            else return "Grup Alt";
+                        } catch (NumberFormatException e) {
+                            // Continuar amb la següent pregunta
+                        }
+                        break;
+                    case QUALITATIVA_ORDENADA:
+                        return "Grup " + valor;
+                    case QUALITATIVA_NO_ORDENADA_SIMPLE:
+                    case QUALITATIVA_NO_ORDENADA_MULTIPLE:
+                        String[] opcions = valor.split(",");
+                        if (opcions.length > 0) {
+                            return "Grup " + opcions[0].trim();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        
+        return "Cluster " + index;
+    }
+    
+    /**
+     * Classe auxiliar per retornar els resultats del clustering.
+     */
+    public static class ResultatClustering {
+        public final List<Kluster> clusters;
+        public final double silhouetteGlobal;
+        public final double[] silhouettePerCluster;
+        public final List<String> usernames;
+        public final List<String[]> dataVectors;
+        public final HashMap<String, Integer> vectorToIndex;
+        
+        public ResultatClustering(List<Kluster> clusters, double silhouetteGlobal, 
+                                 double[] silhouettePerCluster, List<String> usernames, 
+                                 List<String[]> dataVectors, HashMap<String, Integer> vectorToIndex) {
+            this.clusters = clusters;
+            this.silhouetteGlobal = silhouetteGlobal;
+            this.silhouettePerCluster = silhouettePerCluster;
+            this.usernames = usernames;
+            this.dataVectors = dataVectors;
+            this.vectorToIndex = vectorToIndex;
+        }
     }
 }

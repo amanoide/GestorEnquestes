@@ -72,7 +72,10 @@ public class MainDriver {
         System.out.println("│ 5. Veure totes les enquestes del sistema   │");
         System.out.println("│ 6. Estadístiques del sistema               │");
         System.out.println("│ 7. Consultar respostes d'una enquesta      │");
+        System.out.println("│ 11. Analitzar enquesta (Clustering)        │");
+        System.out.println("│ 12. Veure el meu perfil                    │");
         System.out.println("│ 10. Importar enquesta des de JSON          │");
+        System.out.println("│ 13. Importar respostes des de JSON         │");
         System.out.println("│ 9. Provar drivers individuals              │");
         System.out.println("│ 8. Tancar sessió (logout)                  │");
         System.out.println("│ 0. Sortir                                  │");
@@ -111,6 +114,15 @@ public class MainDriver {
                 break;
             case "10":
                 importarEnquesta();
+                break;
+            case "11":
+                analitzarEnquesta();
+                break;
+            case "12":
+                veureMeuPerfil();
+                break;
+            case "13":
+                importarRespostes();
                 break;
             case "0":
                 return false;
@@ -205,6 +217,41 @@ public class MainDriver {
             System.out.println("✓ Enquesta importada correctament!");
         } catch (ErrorImportacioException e) {
             System.out.println("❌ Error important l'enquesta: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error inesperat: " + e.getMessage());
+        }
+    }
+
+    private static void importarRespostes() {
+        System.out.println("\n═══ IMPORTAR RESPOSTES DES DE JSON ═══");
+        System.out.println("Fitxer d'exemple: exemple_respostes.json");
+        System.out.println("\nFormat esperat del JSON:");
+        System.out.println("{");
+        System.out.println("  \"enquesta_id\": \"ID_ENQUESTA\",");
+        System.out.println("  \"respostes\": [");
+        System.out.println("    {");
+        System.out.println("      \"username\": \"usuari1\",");
+        System.out.println("      \"respostes\": [");
+        System.out.println("        {\"pregunta_id\": \"P1\", \"resposta\": \"Text\"},");
+        System.out.println("        {\"pregunta_id\": \"P2\", \"resposta\": \"25\"}");
+        System.out.println("      ]");
+        System.out.println("    }");
+        System.out.println("  ]");
+        System.out.println("}\n");
+        
+        System.out.print("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
+        String path = in.nextLine().trim();
+        
+        // Si solo es un nombre de archivo, añadir la ruta completa
+        if (!path.contains("\\") && !path.contains("/")) {
+            path = System.getProperty("user.dir") + "\\" + path;
+        }
+        
+        try {
+            ctrlDomini.importarRespostes(path);
+            System.out.println("✓ Respostes importades correctament!");
+        } catch (ErrorImportacioException e) {
+            System.out.println("❌ Error important les respostes: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("❌ Error inesperat: " + e.getMessage());
         }
@@ -972,6 +1019,185 @@ public class MainDriver {
             } else if (totalRespostes > 0) {
                 System.out.println("  (Respostes de text lliure - veure detall per usuari)");
             }
+        }
+    }
+    
+    private static void analitzarEnquesta() {
+        System.out.println("\n═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══");
+        
+        ArrayList<Enquesta> totes = ctrlDomini.consultarEnquestes();
+        if (totes.isEmpty()) {
+            System.out.println("No hi ha enquestes al sistema.");
+            return;
+        }
+        
+        System.out.println("Enquestes disponibles:");
+        for (int i = 0; i < totes.size(); i++) {
+            Enquesta e = totes.get(i);
+            System.out.println((i + 1) + ". " + e.getTitol() + " (ID: " + e.getId() + ") - Participants: " + e.getParticipants().size());
+        }
+        
+        int num = -1;
+        boolean numValid = false;
+        
+        while (!numValid) {
+            try {
+                System.out.print("\nEscull enquesta (número): ");
+                num = Integer.parseInt(in.nextLine()) - 1;
+                
+                if (num < 0 || num >= totes.size()) {
+                    System.out.println("❌ Número no vàlid. Tria un número entre 1 i " + totes.size());
+                } else {
+                    numValid = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Si us plau, introdueix un número vàlid");
+            }
+        }
+        
+        Enquesta enquesta = totes.get(num);
+        
+        // Verificar si la enquesta tiene respuestas
+        HashMap<String, ArrayList<Resposta>> respostesPerUsuari = ctrlDomini.consultarRespostesEnquesta(enquesta.getId());
+        
+        if (respostesPerUsuari.isEmpty()) {
+            System.out.println("\n⚠ Aquesta enquesta no té respostes. Necessites almenys 2 participants per fer clustering.");
+            return;
+        }
+        
+        if (respostesPerUsuari.size() < 2) {
+            System.out.println("\n⚠ Necessites almenys 2 participants per fer clustering. Aquesta enquesta només té " + respostesPerUsuari.size() + " participant.");
+            return;
+        }
+        
+        // Solicitar número de clusters
+        int k = -1;
+        while (k < 2 || k > respostesPerUsuari.size()) {
+            try {
+                System.out.print("\nQuants grups (clusters) vols crear? (2-" + respostesPerUsuari.size() + "): ");
+                k = Integer.parseInt(in.nextLine());
+                if (k < 2) {
+                    System.out.println("❌ Necessites almenys 2 clusters");
+                } else if (k > respostesPerUsuari.size()) {
+                    System.out.println("❌ No pots tenir més clusters que participants (" + respostesPerUsuari.size() + ")");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Si us plau, introdueix un número vàlid");
+            }
+        }
+        
+        // Preguntar qué algoritmo usar
+        System.out.println("\nAlgoritme de clustering:");
+        System.out.println("  1. KMeans (inicialització aleatòria)");
+        System.out.println("  2. KMeans++ (inicialització intel·ligent - recomanat)");
+        System.out.print("Escull (1-2): ");
+        String algOpcio = in.nextLine();
+        boolean usePlusPlus = algOpcio.equals("2");
+        String algoritmeNom = usePlusPlus ? "KMeans++" : "KMeans";
+        
+        System.out.println("\n⏳ Analitzant respostes...");
+        
+        try {
+            // Delegar todo el clustering al CtrlDomini
+            CtrlDomini.ResultatClustering resultat = ctrlDomini.analitzarEnquesta(
+                enquesta.getId(), 
+                k, 
+                usePlusPlus, 
+                100, 
+                algoritmeNom
+            );
+            
+            // Mostrar resultados
+            System.out.println("\n╔══════════════════════════════════════════════╗");
+            System.out.println("║      RESULTATS DEL CLUSTERING               ║");
+            System.out.println("╚══════════════════════════════════════════════╝");
+            System.out.println("\n📊 Algoritme: " + algoritmeNom);
+            System.out.println("📊 Nombre de clusters: " + k);
+            System.out.println("📊 Participants analitzats: " + resultat.usernames.size());
+            System.out.printf("📊 Coeficient Silhouette global: %.3f%n", resultat.silhouetteGlobal);
+            
+            // Interpretación del Silhouette
+            System.out.print("   Qualitat: ");
+            double silhouette = resultat.silhouetteGlobal;
+            if (silhouette >= 0.7) {
+                System.out.println("Excel·lent ✓✓✓ (clusters ben separats i compactes)");
+            } else if (silhouette >= 0.5) {
+                System.out.println("Bona ✓✓ (estructura de clusters clara)");
+            } else if (silhouette >= 0.25) {
+                System.out.println("Acceptable ✓ (estructura present però amb superposició)");
+            } else if (silhouette >= 0) {
+                System.out.println("Pobra (clusters poc definits)");
+            } else {
+                System.out.println("Molt pobra (molts punts mal assignats)");
+            }
+            
+            // Mostrar cada cluster
+            List<Pregunta> preguntes = enquesta.getPreguntes();
+            for (int i = 0; i < resultat.clusters.size(); i++) {
+                Kluster cluster = resultat.clusters.get(i);
+                List<String[]> members = cluster.getMembers();
+                String[] centroid = cluster.getCentroid();
+                
+                System.out.println("\n┌─ CLUSTER " + (i + 1) + " ─┐");
+                System.out.println("│ Mida: " + members.size() + " participants");
+                System.out.printf("│ Silhouette: %.3f%n", resultat.silhouettePerCluster[i]);
+                
+                // Mostrar centroide (perfil característic del cluster)
+                System.out.println("│ Perfil característic:");
+                for (int j = 0; j < preguntes.size(); j++) {
+                    Pregunta p = preguntes.get(j);
+                    System.out.println("│   " + p.getText() + ": " + centroid[j]);
+                }
+                
+                // Mostrar miembros del cluster
+                System.out.println("│ Membres:");
+                for (String[] memberVector : members) {
+                    // Buscar el índice usando el contenido del vector
+                    String vectorKey = String.join("|", memberVector);
+                    Integer memberIdx = resultat.vectorToIndex.get(vectorKey);
+                    
+                    if (memberIdx != null && memberIdx < resultat.usernames.size()) {
+                        System.out.println("│   - " + resultat.usernames.get(memberIdx));
+                    }
+                }
+                System.out.println("└" + "─".repeat(50) + "┘");
+            }
+            
+            System.out.println("\n✓ Anàlisi completada i perfils assignats!");
+            System.out.println("\n💡 Interpretació:");
+            System.out.println("   - Cada cluster representa un grup d'usuaris amb respostes similars");
+            System.out.println("   - El 'Perfil característic' mostra la resposta típica del grup");
+            System.out.println("   - Els perfils s'han guardat per a cada usuari");
+            System.out.println("   - Usa l'opció 12 per veure el teu perfil");
+            
+        } catch (Exception e) {
+            System.out.println("❌ Error durant l'anàlisi: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    private static void veureMeuPerfil() {
+        System.out.println("\n═══ EL MEU PERFIL ═══");
+        
+        HashMap<String, Perfil> perfils = usuariActual.getPerfils();
+        
+        if (perfils.isEmpty()) {
+            System.out.println("⚠ Encara no tens cap perfil assignat.");
+            System.out.println("  Els perfils es generen quan s'analitza una enquesta que has respost.");
+            System.out.println("  Usa l'opció 11 per analitzar una enquesta.");
+            return;
+        }
+        
+        System.out.println("Tens " + perfils.size() + " perfil(s) assignat(s):\n");
+        
+        int i = 1;
+        for (Map.Entry<String, Perfil> entry : perfils.entrySet()) {
+            Perfil perfil = entry.getValue();
+            
+            System.out.println("═══ PERFIL " + i + " ═══");
+            System.out.println(perfil.getPerfilLlegible());
+            System.out.println();
+            i++;
         }
     }
     

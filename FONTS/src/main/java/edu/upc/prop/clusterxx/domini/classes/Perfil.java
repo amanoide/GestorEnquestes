@@ -1,8 +1,11 @@
 package edu.upc.prop.clusterxx.domini.classes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Classe que representa un perfil d'usuari.
- * Conté informació per agrupar usuaris en clusters.
+ * Classe que representa un perfil d'usuari basat en clustering.
+ * Conté informació sobre el cluster al qual pertany l'usuari i les seves característiques.
  * @author ClusterXX
  */
 public class Perfil {
@@ -10,46 +13,122 @@ public class Perfil {
     private Integer id;
     /** Descripció del tipus de perfil per al clustering */
     private String descripcion;
+    /** ID de l'enquesta sobre la qual es va fer l'anàlisi */
+    private String idEnquesta;
+    /** Índex del cluster al qual pertany aquest perfil (0, 1, 2, ...) */
+    private Integer clusterIndex;
+    /** Nom del cluster (per exemple: "Estudiants dedicats", "Usuaris insatisfets") */
+    private String clusterNom;
+    /** Mida del cluster (nombre de membres) */
+    private Integer clusterMida;
+    /** Coeficient Silhouette del cluster (qualitat del cluster) */
+    private Double clusterSilhouette;
+    /** Vector característic del perfil (centroide del cluster) */
+    private String[] vectorCaracteristic;
+    /** Noms de les preguntes (per interpretar el vector característic) */
+    private List<String> nomsPreguntes;
+    /** Algoritme utilitzat per generar el perfil (KMeans, KMeans++, etc.) */
+    private String algoritme;
+    /** Timestamp de quan es va crear el perfil */
+    private long timestamp;
 
     /**
-     * Constructor de la classe Perfil
+     * Constructor bàsic de la classe Perfil (mantingut per compatibilitat)
      * @param id Identificador únic del perfil
      * @param descripcion Descripció del perfil
      */
     public Perfil(Integer id, String descripcion) {
         this.id = id;
         this.descripcion = descripcion;
+        this.nomsPreguntes = new ArrayList<>();
+        this.timestamp = System.currentTimeMillis();
     }
-
+    
     /**
-     * Obté l'identificador del perfil
-     * @return Identificador únic del perfil
+     * Constructor complet per crear un perfil amb informació de clustering
+     * @param id Identificador únic del perfil
+     * @param descripcion Descripció del perfil
+     * @param idEnquesta ID de l'enquesta analitzada
+     * @param clusterIndex Índex del cluster
+     * @param clusterNom Nom descriptiu del cluster
+     * @param clusterMida Nombre de membres del cluster
+     * @param clusterSilhouette Coeficient Silhouette del cluster
+     * @param vectorCaracteristic Vector característic (centroide)
+     * @param nomsPreguntes Noms de les preguntes
+     * @param algoritme Algoritme utilitzat
      */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     * Modifica l'identificador del perfil
-     * @param id Nou identificador únic per al perfil
-     */
-    public void setId(Integer id) {
+    public Perfil(Integer id, String descripcion, String idEnquesta, Integer clusterIndex,
+                  String clusterNom, Integer clusterMida, Double clusterSilhouette,
+                  String[] vectorCaracteristic, List<String> nomsPreguntes, String algoritme) {
         this.id = id;
-    }
-
-    /**
-     * Obté la descripció del perfil
-     * @return Descripció detallada del perfil
-     */
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    /**
-     * Modifica la descripció del perfil
-     * @param descripcion Nova descripció per al perfil
-     */
-    public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+        this.idEnquesta = idEnquesta;
+        this.clusterIndex = clusterIndex;
+        this.clusterNom = clusterNom;
+        this.clusterMida = clusterMida;
+        this.clusterSilhouette = clusterSilhouette;
+        this.vectorCaracteristic = vectorCaracteristic;
+        this.nomsPreguntes = new ArrayList<>(nomsPreguntes);
+        this.algoritme = algoritme;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    // ========== Mètodes Útils ==========
+    
+    /**
+     * Verifica si aquest perfil té informació de clustering
+     * @return true si el perfil té dades de clustering, false altrament
+     */
+    public boolean teClustering() {
+        return clusterIndex != null && vectorCaracteristic != null;
+    }
+    
+    /**
+     * Obté una representació llegible del perfil característic
+     * @return String amb el format "Pregunta: Resposta" per cada dimensió
+     */
+    public String getPerfilLlegible() {
+        if (!teClustering()) {
+            return "Perfil sense dades de clustering";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Perfil del Cluster ").append(clusterIndex+1).append(": ").append(clusterNom).append("\n");
+        sb.append("Enquesta: ").append(idEnquesta).append("\n");
+        sb.append("Algoritme: ").append(algoritme).append("\n");
+        sb.append("Mida del cluster: ").append(clusterMida).append(" membres\n");
+        sb.append("Qualitat (Silhouette): ").append(String.format("%.3f", clusterSilhouette)).append("\n\n");
+        sb.append("Característiques:\n");
+        
+        for (int i = 0; i < vectorCaracteristic.length && i < nomsPreguntes.size(); i++) {
+            sb.append("  - ").append(nomsPreguntes.get(i))
+              .append(": ").append(vectorCaracteristic[i]).append("\n");
+        }
+        
+        return sb.toString();
+    }
+    
+    /**
+     * Obté la qualitat del cluster en format text
+     * @return Descripció de la qualitat basada en el coeficient Silhouette
+     */
+    public String getQualitatText() {
+        if (clusterSilhouette == null) return "Desconeguda";
+        
+        if (clusterSilhouette >= 0.7) return "Excel·lent";
+        else if (clusterSilhouette >= 0.5) return "Bona";
+        else if (clusterSilhouette >= 0.25) return "Acceptable";
+        else if (clusterSilhouette >= 0) return "Pobra";
+        else return "Molt pobra";
+    }
+    
+    @Override
+    public String toString() {
+        if (teClustering()) {
+            return "Perfil{id=" + id + ", cluster=" + clusterNom + ", mida=" + clusterMida + 
+                   ", silhouette=" + String.format("%.3f", clusterSilhouette) + "}";
+        } else {
+            return "Perfil{id=" + id + ", descripcion='" + descripcion + "'}";
+        }
     }
 }
