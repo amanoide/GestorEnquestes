@@ -64,14 +64,8 @@ public class Enquesta {
     public ArrayList<Pregunta> getPreguntes() {
         return new ArrayList<>(preguntes.values());
     }
-    //(jairo)
-    public void modificarTitol(String nouTitol) {
-        this.titol = nouTitol;
-    }
     
-    public void modificarDescripcio(String novaDescripcio) {
-        this.descripcio = novaDescripcio;
-    }
+    
 
     //(jairo)
     public void modificarPregunta(String idPregunta, Pregunta nova) {
@@ -85,6 +79,11 @@ public class Enquesta {
         if (!participants.contains(username)) {
             participants.add(username);
         }
+    }
+
+    //(jairo)
+    public void eliminarParticipacio(String username) {
+        participants.remove(username);
     }
 
     public boolean haRespostUsuari(String username) {

@@ -27,6 +27,9 @@ sourceSets {
     drivers {
         java {
             srcDirs = ['src/drivers/java']
+
+            exclude '**/CtrlPerfilDriver.java'
+            exclude '**/CtrlAnalisiDriver.java'
         }
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output

@@ -1,4 +1,4 @@
-package edu.upc.prop.clusterxx.controladors;
+/*package edu.upc.prop.clusterxx.controladors;
 
 // Importacions dels controladors
 import edu.upc.prop.clusterxx.domini.controladors.CtrlPerfil;
@@ -171,4 +171,4 @@ public class CtrlPerfilDriver {
             System.out.println("  ID: " + p.getId() + " Descripció: " + p.getDescripcion());
         }
     }
-}
+//}*/

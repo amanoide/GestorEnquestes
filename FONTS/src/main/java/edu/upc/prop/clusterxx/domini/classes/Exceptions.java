@@ -88,6 +88,15 @@ public final class Exceptions {
     }
 
     /**
+     * Excepció llançada quan es vol afegir una pregunta que ja existeix.
+     */
+    public static class PreguntaJaExisteixException extends Exception {
+        public PreguntaJaExisteixException(String idPregunta, String idEnquesta) {
+            super("Ja existeix una pregunta amb l'ID '" + idPregunta + "' a l'enquesta '" + idEnquesta + "'.");
+        }
+    }
+
+    /**
      * Excepció llançada quan una resposta no és vàlida.
      */
     public static class RespostaInvalidaException extends Exception {

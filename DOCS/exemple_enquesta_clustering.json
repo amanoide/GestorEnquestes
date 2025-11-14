@@ -1,0 +1,36 @@
+{
+  "id": "enc_prog",
+  "titol": "Satisfaccio del Curs de Programacio",
+  "descripcio": "Enquesta per avaluar la satisfaccio dels estudiants amb el curs de programacio",
+  "preguntes": [
+    {
+      "id": "p1",
+      "text": "Quantes hores estudies per setmana?",
+      "tipus": "numerica",
+      "min": 0,
+      "max": 50
+    },
+    {
+      "id": "p2",
+      "text": "Com valores el professor?",
+      "tipus": "qualitativa_ordenada",
+      "opcions": [
+        {"id": 1, "text": "Malo", "ordre": 1},
+        {"id": 2, "text": "Regular", "ordre": 2},
+        {"id": 3, "text": "Bueno", "ordre": 3},
+        {"id": 4, "text": "Excelente", "ordre": 4}
+      ]
+    },
+    {
+      "id": "p3",
+      "text": "Quins llenguatges programes?",
+      "tipus": "qualitativa_multiple",
+      "max_seleccions": 3,
+      "opcions": [
+        {"id": 1, "text": "Java"},
+        {"id": 2, "text": "Python"},
+        {"id": 3, "text": "C++"}
+      ]
+    }
+  ]
+}

@@ -1,45 +1,39 @@
 package edu.upc.prop.clusterxx.domini.controladors;
 
+import edu.upc.prop.clusterxx.domini.classes.*;
+
 import java.util.List;
 
-import edu.upc.prop.clusterxx.domini.classes.ClusteringAlgorithm;
-import edu.upc.prop.clusterxx.domini.classes.KMeans;
-
 /**
- * Controlador simple que actúa como fachada para ejecutar algoritmos de clustering.
+ * Controlador de análisis para clustering de usuarios por respuestas (todos String).
+ * Requiere FeatureSpec[] para calcular distancias por dimensión según tipo de variable.
  */
 public class CtrlAnalisi {
-    private KMeans kmeans;
 
-    public CtrlAnalisi() { }
-
-    /** Ejecuta KMeans con parámetros básicos y devuelve las etiquetas. */
-    public int[] executarKMeans(int k, List<double[]> data) {
-        return executarKMeans(k, data, false, KMeans.Distance.EUCLIDEAN, 42L);
+    /**
+     * Ejecuta clustering KMeans o KMeans++ sobre datos vectorizados (String[]).
+     * @param data Lista de puntos, cada punto es un array de String
+     * @param k número de clústeres
+     * @param usePlusPlus true para inicialización KMeans++
+     * @param maxIters máximo de iteraciones
+     * @param specs especificación por dimensión del tipo de variable
+     * @return lista de clústeres con centroides y miembros
+     */
+    public List<Kluster> cluster(List<String[]> data, int k, boolean usePlusPlus, int maxIters, DistanceCalculator.FeatureSpec[] specs) {
+        if (usePlusPlus) return new KMeansPlusPlus().fit(data, k, maxIters, specs);
+        return new KMeans().fit(data, k, maxIters, specs);
     }
 
-    /** Ejecuta KMeans con opciones avanzadas. */
-    public int[] executarKMeans(int k, List<double[]> data, boolean useKpp, KMeans.Distance dist, long seed) {
-        if (data == null || data.isEmpty()) return new int[0];
-        int dim = data.get(0).length;
-        KMeans km = new KMeans(k, dim);
-        km.setSeed(seed); km.setDistance(dist); km.fit(data, useKpp);
-        this.kmeans = km;
-        return km.getLabels();
+    /**
+     * Helper para construir un punto a partir de valores String.
+     * Todos los valores deben ser String.
+     */
+    public String[] buildPoint(String... values) {
+        return values;
     }
 
-    /** Ejecuta cualquier algoritmo que implemente ClusteringAlgorithm. */
-    public int[] executar(ClusteringAlgorithm algorithm, List<double[]> data, boolean useKpp) {
-        if (algorithm == null || data == null || data.isEmpty()) return new int[0];
-        algorithm.fit(data, useKpp);
-        if (algorithm instanceof KMeans) this.kmeans = (KMeans) algorithm;
-        return algorithm.getLabels();
-    }
-
-    public KMeans getKMeans() { return kmeans; }
-
-    public double silhouette(List<double[]> data) {
-        if (kmeans == null) return Double.NaN;
-        return kmeans.silhouette(data);
+    /** Construye los FeatureSpec[] desde una lista de Preguntas del dominio (mismo orden). */
+    public DistanceCalculator.FeatureSpec[] buildSpecsFromPreguntas(List<Pregunta> preguntas) {
+        return FeatureSpecFactory.fromPreguntas(preguntas);
     }
 }

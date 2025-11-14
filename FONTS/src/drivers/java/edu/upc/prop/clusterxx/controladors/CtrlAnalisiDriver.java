@@ -1,4 +1,4 @@
-package edu.upc.prop.clusterxx.controladors;
+/*package edu.upc.prop.clusterxx.controladors;
 
 // Importacions dels controladors
 import edu.upc.prop.clusterxx.domini.controladors.CtrlAnalisi;
@@ -208,4 +208,4 @@ public class CtrlAnalisiDriver {
             System.out.println(Arrays.toString(labels));
         }
     }
-}
+//}*/

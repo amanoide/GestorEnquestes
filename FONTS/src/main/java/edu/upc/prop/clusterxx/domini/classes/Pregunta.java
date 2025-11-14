@@ -10,8 +10,10 @@ public class Pregunta {
     private TipusPregunta tipus; // (jairo) Tipus de pregunta
     private ArrayList<Opcio> opcions; // Per a preguntes qualitatives
     private int maxSeleccions; // Per a preguntes qualitatives múltiples (q)
-    private Double valorMinim; // Per a preguntes numèriques
-    private Double valorMaxim; // Per a preguntes numèriques
+    private Double valorMinim; // Per a preguntes numèriques (rang permès)
+    private Double valorMaxim; // Per a preguntes numèriques (rang permès)
+    private Double valorMesAlt; // Per a preguntes numèriques (valor més alt entre les respostes)
+    private Double valorMesBaix; // Per a preguntes numèriques (valor més baix entre les respostes)
     private HashMap<String, Resposta> respostes; // username -> Resposta (COMPOSICIÓ)
 
     /**
@@ -110,6 +112,14 @@ public class Pregunta {
 
     public Double getValorMaxim() {
         return valorMaxim;
+    }
+    
+    public Double getValorMesAlt() {
+        return valorMesAlt;
+    }
+    
+    public Double getValorMesBaix() {
+        return valorMesBaix;
     }
 
     // Setters
@@ -242,6 +252,23 @@ public class Pregunta {
      */
     public void afegirResposta(String username, Resposta resposta) {
         respostes.put(username, resposta);
+        
+        // Si és una pregunta numèrica, actualitzar els valors màxim i mínim
+        if (this.tipus == TipusPregunta.NUMERICA && resposta != null) {
+            try {
+                Double valor = Double.parseDouble(resposta.getTextResposta());
+                
+                if (valorMesAlt == null || valor > valorMesAlt) {
+                    valorMesAlt = valor;
+                }
+                
+                if (valorMesBaix == null || valor < valorMesBaix) {
+                    valorMesBaix = valor;
+                }
+            } catch (NumberFormatException e) {
+                // Si la resposta no és un número vàlid, ignorem l'actualització
+            }
+        }
     }
 
     /**
@@ -250,7 +277,38 @@ public class Pregunta {
      * @return La resposta eliminada o null si no existia
      */
     public Resposta eliminarResposta(String username) {
-        return respostes.remove(username);
+        Resposta eliminada = respostes.remove(username);
+        
+        // Si és una pregunta numèrica, recalcular els valors màxim i mínim
+        if (this.tipus == TipusPregunta.NUMERICA && eliminada != null) {
+            recalcularValorsNumerics();
+        }
+        
+        return eliminada;
+    }
+    
+    /**
+     * Recalcula els valors màxim i mínim de les respostes numèriques.
+     */
+    private void recalcularValorsNumerics() {
+        valorMesAlt = null;
+        valorMesBaix = null;
+        
+        for (Resposta r : respostes.values()) {
+            try {
+                Double valor = Double.parseDouble(r.getTextResposta());
+                
+                if (valorMesAlt == null || valor > valorMesAlt) {
+                    valorMesAlt = valor;
+                }
+                
+                if (valorMesBaix == null || valor < valorMesBaix) {
+                    valorMesBaix = valor;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar respostes no numèriques
+            }
+        }
     }
 
     /**

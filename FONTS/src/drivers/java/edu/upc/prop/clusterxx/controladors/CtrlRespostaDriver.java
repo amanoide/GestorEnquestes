@@ -19,6 +19,7 @@ import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaJaContestadaException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaNoExisteixException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.ParametreInvalidException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.PermisDenegatException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.PreguntaNoExisteixException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.RespostaInvalidaException;
@@ -175,7 +176,12 @@ public class CtrlRespostaDriver {
 
     private static void contestarEnquesta() {
         System.out.println("\n═══ RESPONDRE ENQUESTA ═══");
-        ArrayList<Enquesta> totes = cd.consultarEnquestes();
+        ArrayList<Enquesta> totes = new ArrayList<>();
+        try{
+         totes = cd.consultarEnquestes();
+        } catch (UsuariNoAutenticatException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }
         if (totes.isEmpty()) {
             System.out.println("No hi ha enquestes al sistema.");
             return;
@@ -280,7 +286,7 @@ public class CtrlRespostaDriver {
             cd.contestarEnquesta(enquesta.getId(), respostes, idPreguntaPerResposta);//esto ya lo hace contestarEnquesta 
             System.out.println("\n✓ Enquesta completada! Gràcies per participar.");
             
-        } catch (UsuariNoAutenticatException | EnquestaNoExisteixException | EnquestaJaContestadaException | PreguntaNoExisteixException | RespostaInvalidaException /*| ParametreInvalidException*/ e) {
+        } catch (UsuariNoAutenticatException | EnquestaNoExisteixException | EnquestaJaContestadaException | PreguntaNoExisteixException | RespostaInvalidaException | ParametreInvalidException e) {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
@@ -290,8 +296,13 @@ public class CtrlRespostaDriver {
     
     private static void testModificarResposta() {
         System.out.println("----MODIFICAR RESPOSTA----");
-        ArrayList<Enquesta> totes = cd.consultarEnquestes();
-        if (totes.isEmpty()) {
+        
+        ArrayList<Enquesta> totes = new ArrayList<>();
+        try{
+         totes = cd.consultarEnquestes();
+        } catch (UsuariNoAutenticatException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }        if (totes.isEmpty()) {
             System.out.println("No hi ha enquestes al sistema.");
             return;
         }
@@ -420,12 +431,12 @@ public class CtrlRespostaDriver {
                     novaResposta = in.nextLine();
                     break;
             }
-             cd.modificarResposta(admin, enquesta.getId(), idP, novaResposta);
+             cd.modificarResposta(enquesta.getId(), idP, novaResposta);
             System.out.println("✓ Resposta modificada correctament!");
             
         
         
-        } catch (EnquestaNoExisteixException | PreguntaNoExisteixException | RespostaNoExisteixException | PermisDenegatException e) {
+        } catch (EnquestaNoExisteixException | PreguntaNoExisteixException | RespostaNoExisteixException | RespostaInvalidaException | UsuariNoAutenticatException | ParametreInvalidException e) {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
@@ -433,7 +444,12 @@ public class CtrlRespostaDriver {
   
     private static void testEsborrarResposta() {
         System.out.println("----ESBORRAR RESPOSTA----");
-        ArrayList<Enquesta> totes = cd.consultarEnquestes();
+        ArrayList<Enquesta> totes = new ArrayList<>();
+        try{
+         totes = cd.consultarEnquestes();
+        } catch (UsuariNoAutenticatException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }
         if (totes.isEmpty()) {
             System.out.println("No hi ha enquestes al sistema.");
             return;
@@ -505,7 +521,7 @@ public class CtrlRespostaDriver {
             cd.esborrarResposta(enquesta.getId());
             System.out.println("✓ Resposta esborrada correctament!");
             
-        }  catch (EnquestaNoExisteixException | PreguntaNoExisteixException | RespostaNoExisteixException | PermisDenegatException e) {
+        }  catch (EnquestaNoExisteixException | UsuariNoAutenticatException | RespostaNoExisteixException | ParametreInvalidException e) {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
@@ -516,8 +532,12 @@ public class CtrlRespostaDriver {
     private static void testConsultarRespostesEnquesta() {
         System.out.println("\n════ CONSULTAR RESPOSTES D'UNA ENQUESTA ════");
         
-        ArrayList<Enquesta> totes = cd.consultarEnquestes();
-        if (totes.isEmpty()) {
+ArrayList<Enquesta> totes = new ArrayList<>();
+        try{
+         totes = cd.consultarEnquestes();
+        } catch (UsuariNoAutenticatException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }        if (totes.isEmpty()) {
             System.out.println("❌ No hi ha enquestes al sistema.");
             return;
         }

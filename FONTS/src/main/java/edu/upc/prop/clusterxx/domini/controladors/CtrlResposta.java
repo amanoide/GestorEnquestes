@@ -19,13 +19,16 @@ public class CtrlResposta {
     
     /**
      * Registra una resposta individual.
-     * @param idResposta ID de la resposta
+     * Genera automàticament l'ID de la resposta com: idPregunta + "_" + username
      * @param idPregunta ID de la pregunta
      * @param textResposta Text de la resposta
      * @param usuari Usuari que respon
      * @param pregunta Pregunta a la qual es respon
      */
-    public void registrarResposta(String idResposta, String idPregunta, String textResposta, Usuari usuari, Pregunta pregunta) {
+    public void registrarResposta(String idPregunta, String textResposta, Usuari usuari, Pregunta pregunta) {
+        // Generar ID únic per la resposta
+        String idResposta = idPregunta + "_" + usuari.getUsername();
+        
         Resposta resposta = new Resposta(idResposta, idPregunta, textResposta, usuari);
         persistencia.afegirResposta(idResposta, resposta, pregunta);
     }
@@ -38,23 +41,23 @@ public class CtrlResposta {
      * @return 0 si s'ha modificat correctament, 1 si no existia la resposta, 2 si no té permisos.
      */
     //(jairo)
-    public int modificarResposta(Usuari usuari, Pregunta pregunta, String novaResposta) {
-        String username = usuari.getUsername();
+    public void modificarResposta(Resposta resposta, String novaResposta) {
+        resposta.modificarResposta(novaResposta);
+    }
+
+    /**
+     * Esborra una resposta específica.
+     * Delega les operacions d'eliminació de persistència i de la pregunta.
+     * @param resposta La resposta a esborrar.
+     * @param pregunta La pregunta on està la resposta.
+     */
+    //(jairo)
+    public void esborrarResposta(Resposta resposta, Pregunta pregunta) {
+        // Eliminar de persistència
+        persistencia.eliminarResposta(resposta.getId());
         
-        // Buscar la resposta en la pregunta
-        Resposta resposta = pregunta.getResposta(username);
-        
-        if (resposta != null) {
-            // Verificar que el usuario que intenta modificar es el propietario
-            if (!resposta.getUsernameUsuari().equals(username)) {
-                return 2; // No tiene permisos
-            }
-            
-            resposta.modificarResposta(novaResposta);
-            return 0; // Modificada correctamente
-        }
-        
-        return 1; // No existe la resposta
+        // Eliminar de la pregunta
+        pregunta.eliminarResposta(resposta.getUsernameUsuari());
     }
 
     /**

@@ -12,7 +12,6 @@
 package edu.upc.prop.clusterxx.controladors;
 
 // Importacions dels controladors
-import edu.upc.prop.clusterxx.domini.controladors.CtrlUsuari;
 import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 
 // Importacions del paquet de domini
@@ -20,8 +19,6 @@ import edu.upc.prop.clusterxx.domini.classes.Usuari;
 import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
 
 // Importacions de Java
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -144,7 +141,7 @@ public class CtrlUsuariDriver {
             case "Get Usuari Actual":
                 testGetUsuariActual();
                 break;
-            case "4":
+            case "5":
             case "Check Password":
                 testCheckPassword();
                 break;

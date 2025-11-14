@@ -23,7 +23,9 @@ import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaNoExisteixExcept
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.ErrorImportacioException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.ParametreInvalidException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.PermisDenegatException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.PreguntaJaExisteixException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.PreguntaNoExisteixException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.RespostaInvalidaException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariJaExisteixException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariNoAutenticatException;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
@@ -186,14 +188,20 @@ public class CtrlEnquestaDriver {
         System.out.println("\n─── MODIFICAR TÍTOL ───");
         System.out.println("Introdueix ID enquesta a modificar: ");
         String id = in.nextLine();
-        Enquesta enquesta = cd.getEnquesta(id);
+        
+        Enquesta enquesta = null;
+        try{
+        enquesta = cd.getEnquesta(id);
+        } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }
         System.out.println("Títol actual: " + enquesta.getTitol());
         System.out.print("Nou títol: ");
         String nouTitol = in.nextLine();
         try {
             cd.modificarTitolEnquesta(id, nouTitol);
             System.out.println("✓ Títol modificat!");
-        } catch (EnquestaNoExisteixException | PermisDenegatException e) {
+        } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException | PermisDenegatException e) {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
@@ -202,14 +210,19 @@ public class CtrlEnquestaDriver {
         System.out.println("\n─── MODIFICAR DESCRIPCIÓ ───");
         System.out.println("Introdueix ID enquesta a modificar: ");
         String id = in.nextLine();
-        Enquesta enquesta = cd.getEnquesta(id);
+        Enquesta enquesta = null;
+        try{
+        enquesta = cd.getEnquesta(id);
+        } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }
         System.out.println("Descripció actual: " + enquesta.getDescripcio());
         System.out.print("Nova descripció: ");
         String novaDesc = in.nextLine();
         try {
             cd.modificarDescripcioEnquesta(id, novaDesc);
             System.out.println("✓ Descripció modificada!");
-        } catch (EnquestaNoExisteixException | PermisDenegatException e) {
+        } catch (ParametreInvalidException | UsuariNoAutenticatException | EnquestaNoExisteixException | PermisDenegatException e) {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
@@ -233,8 +246,12 @@ public class CtrlEnquestaDriver {
         System.out.println("\n─── AFEGIR PREGUNTA ───");
         System.out.print("Introdueix ID enquesta a la qual afegir la pregunta: ");
         String idEnquesta = in.nextLine();
-        Enquesta enquesta = cd.getEnquesta(idEnquesta);
-        System.out.print("ID de la pregunta: ");
+        Enquesta enquesta = null;
+        try{
+        enquesta = cd.getEnquesta(idEnquesta);
+        } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }        System.out.print("ID de la pregunta: ");
         String id = in.nextLine();
         
         // Verificar si ja existeix aquesta pregunta a l'enquesta
@@ -318,7 +335,7 @@ public class CtrlEnquestaDriver {
         try {
             cd.afegirPregunta(id, pregunta);
             System.out.println("Pregunta afegida correctament!");
-        } catch (EnquestaNoExisteixException | PermisDenegatException e) {
+        } catch (ParametreInvalidException | UsuariNoAutenticatException | PreguntaJaExisteixException | RespostaInvalidaException | EnquestaNoExisteixException | PermisDenegatException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
@@ -327,13 +344,17 @@ public class CtrlEnquestaDriver {
         System.out.println("\n─── ELIMINAR PREGUNTA ───");
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
-        Enquesta enquesta = cd.getEnquesta(idEnquesta);
-        
+Enquesta enquesta = null;
+        try{
+        enquesta = cd.getEnquesta(idEnquesta);
+        } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }        
         Pregunta p = escollirPregunta(enquesta);
         try {
             cd.eliminarPregunta(idEnquesta, p.getId());
             System.out.println("✓ Pregunta eliminada!");
-        } catch (EnquestaNoExisteixException | PermisDenegatException e) {
+        } catch (ParametreInvalidException | PreguntaNoExisteixException | UsuariNoAutenticatException | EnquestaNoExisteixException | PermisDenegatException e) {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
@@ -343,8 +364,12 @@ public class CtrlEnquestaDriver {
         System.out.println("\n─── MODIFICAR PREGUNTA ───");
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
-        Enquesta enquesta = cd.getEnquesta(idEnquesta);
-        
+Enquesta enquesta = null;
+        try{
+        enquesta = cd.getEnquesta(idEnquesta);
+        } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }        
         
         Pregunta preguntaActual = escollirPregunta(enquesta);
 
@@ -403,7 +428,7 @@ public class CtrlEnquestaDriver {
                 cd.modificarPregunta(enquesta.getId(), preguntaActual.getId(), novaPregunta);
                 System.out.println("✓ Pregunta modificada correctament!");
                 
-            } catch (EnquestaNoExisteixException | PermisDenegatException e) {
+            } catch (ParametreInvalidException | UsuariNoAutenticatException | EnquestaNoExisteixException | PreguntaNoExisteixException | PermisDenegatException | RespostaInvalidaException e) {
                 System.out.println("❌ Error: " + e.getMessage());
             }
             
@@ -484,7 +509,7 @@ public class CtrlEnquestaDriver {
                 cd.modificarPregunta(idEnquesta, preguntaActual.getId(), novaPregunta);
                 System.out.println("✓ Pregunta modificada correctament!");
                 
-            } catch (EnquestaNoExisteixException | PermisDenegatException e) {
+            } catch (ParametreInvalidException | UsuariNoAutenticatException | EnquestaNoExisteixException | PreguntaNoExisteixException | PermisDenegatException | RespostaInvalidaException e) {
                 System.out.println("❌ Error: " + e.getMessage());
             }
             
@@ -514,8 +539,12 @@ public class CtrlEnquestaDriver {
     private static void testEliminarOpcioDePregunta() {
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
-        Enquesta enquesta = cd.getEnquesta(idEnquesta);
-        Pregunta preguntaActual = escollirPregunta(enquesta);
+Enquesta enquesta = null;
+        try{
+        enquesta = cd.getEnquesta(idEnquesta);
+        } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }                Pregunta preguntaActual = escollirPregunta(enquesta);
 
         //mostrar opcions de la pregunta actuaal
         System.out.println("\n─── OPCIONS DE LA PREGUNTA ───");
@@ -527,7 +556,7 @@ public class CtrlEnquestaDriver {
         try{
         cd.eliminarOpcioDePregunta(idEnquesta, preguntaActual.getId(), idOpcio);
         System.out.println("Opció eliminada");
-        } catch (EnquestaNoExisteixException | PreguntaNoExisteixException | PermisDenegatException e) {
+        } catch (ParametreInvalidException | UsuariNoAutenticatException | EnquestaNoExisteixException | PreguntaNoExisteixException | PermisDenegatException | RespostaInvalidaException e) {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
@@ -536,7 +565,14 @@ public class CtrlEnquestaDriver {
 
     private static void consultarEnquestes() {
         System.out.println("\n─── LLISTAT D'ENQUESTES ───");
-        List<Enquesta> enquestes = cd.consultarEnquestes();
+        List<Enquesta> enquestes = null;
+        try{
+        enquestes = cd.consultarEnquestes();
+        } catch (UsuariNoAutenticatException e){
+            System.out.println("❌ Error: " + e.getMessage());
+
+        }
+        
         if (enquestes.isEmpty()) {
             System.out.println("No hi ha enquestes disponibles.");
         } else {

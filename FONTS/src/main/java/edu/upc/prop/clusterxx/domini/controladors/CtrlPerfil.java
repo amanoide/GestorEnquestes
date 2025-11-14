@@ -27,7 +27,9 @@ public class CtrlPerfil {
     public void modificarPerfil(String id, String novaDescripcio) {
         Perfil p = persistencia.getPerfil(id);
         if (p != null) {
-            p.setDescripcion(novaDescripcio);
+            // Crear un nou perfil amb la nova descripció
+            Perfil nouPerfil = new Perfil(Integer.parseInt(id), novaDescripcio);
+            persistencia.afegirPerfil(id, nouPerfil);
         }
     }
 
