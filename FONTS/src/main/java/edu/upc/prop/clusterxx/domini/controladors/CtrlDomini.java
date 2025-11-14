@@ -426,10 +426,11 @@ public class CtrlDomini {
                 return new Pregunta(id, text, TipusPregunta.QUALITATIVA_ORDENADA, 1);
                 
             case "qualitativa_simple":
-            case "multiple":
+            case "simple":
                 return new Pregunta(id, text, TipusPregunta.QUALITATIVA_NO_ORDENADA_SIMPLE, 1);
                 
             case "qualitativa_multiple":
+            case "multiple":
                 int maxSeleccions = json.optInt("max_seleccions", 3);
                 return new Pregunta(id, text, TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE, maxSeleccions);
                 
@@ -599,13 +600,7 @@ public class CtrlDomini {
         }
     }
 
-    /**
-     * Importa un conjunt de respostes des d'un fitxer.
-     * @param path La ruta del fitxer.
-     */
-    public void importarRespostes(String path) throws ErrorImportacioException {
-        // Lògica per llegir el fitxer i registrar les respostes
-    }
+   
 
     // --- Casos de Uso: Consultes ---
 

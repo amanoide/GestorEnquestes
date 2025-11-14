@@ -72,6 +72,7 @@ public class MainDriver {
         System.out.println("│ 5. Veure totes les enquestes del sistema   │");
         System.out.println("│ 6. Estadístiques del sistema               │");
         System.out.println("│ 7. Consultar respostes d'una enquesta      │");
+        System.out.println("│ 10. Importar enquesta des de JSON          │");
         System.out.println("│ 9. Provar drivers individuals              │");
         System.out.println("│ 8. Tancar sessió (logout)                  │");
         System.out.println("│ 0. Sortir                                  │");
@@ -107,6 +108,9 @@ public class MainDriver {
                 break;
             case "9":
                 menuDrivers();
+                break;
+            case "10":
+                importarEnquesta();
                 break;
             case "0":
                 return false;
@@ -185,9 +189,39 @@ public class MainDriver {
         }
     }
 
+    private static void importarEnquesta() {
+        System.out.println("\n═══ IMPORTAR ENQUESTA DES DE JSON ═══");
+        System.out.println("Fitxer d'exemple: exemple_enquesta.json");
+        System.out.print("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
+        String path = in.nextLine().trim();
+        
+        // Si solo es un nombre de archivo, añadir la ruta completa
+        if (!path.contains("\\") && !path.contains("/")) {
+            path = System.getProperty("user.dir") + "\\" + path;
+        }
+        
+        try {
+            ctrlDomini.importarEnquesta(path);
+            System.out.println("✓ Enquesta importada correctament!");
+        } catch (ErrorImportacioException e) {
+            System.out.println("❌ Error important l'enquesta: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error inesperat: " + e.getMessage());
+        }
+    }
+
     private static void llistarMevesEnquestes() {
         System.out.println("\n═══ LES MEVES ENQUESTES ═══");
-        List<Enquesta> mevesEnquestes = usuariActual.getEnquestesCreades();
+        
+        // Obtener todas las encuestas del sistema y filtrar por creador
+        ArrayList<Enquesta> totesEnquestes = ctrlDomini.consultarEnquestes();
+        List<Enquesta> mevesEnquestes = new ArrayList<>();
+        
+        for (Enquesta e : totesEnquestes) {
+            if (e.getIdCreador().equals(usuariActual.getUsername())) {
+                mevesEnquestes.add(e);
+            }
+        }
         
         if (mevesEnquestes.isEmpty()) {
             System.out.println("No has creat cap enquesta encara.");
