@@ -2,7 +2,7 @@ package edu.upc.prop.clusterxx.controladors;
 
 // Importacions dels controladors
 import edu.upc.prop.clusterxx.domini.controladors.CtrlAnalisi;
-
+import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 // Importacions dels stubs de domini
 import edu.upc.prop.clusterxx.domini.classes.ClusteringAlgorithm;
 import edu.upc.prop.clusterxx.domini.classes.KMeans;
@@ -23,6 +23,7 @@ public class CtrlAnalisiDriver {
 
     private static Scanner in;
     private static CtrlAnalisi ca;
+    private static CtrlDomini cd;
     
     /**
      * Emmagatzemem les últimes dades creades per poder-les
