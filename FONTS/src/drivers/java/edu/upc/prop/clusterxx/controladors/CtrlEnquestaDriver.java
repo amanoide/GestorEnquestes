@@ -17,11 +17,14 @@ import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 
 // Importacions del paquet de domini
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.CredencialsIncorrectesException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaJaExisteixException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaNoExisteixException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.ErrorImportacioException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.ParametreInvalidException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.PermisDenegatException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.PreguntaNoExisteixException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariJaExisteixException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariNoAutenticatException;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
@@ -74,7 +77,9 @@ public class CtrlEnquestaDriver {
     private static void init() {
         in = new Scanner(System.in);
         cd = new CtrlDomini();
-        admin = cd.getUsuariActual();
+        admin = new Usuari("USER_MOCK", "1234");
+        Usuari.login(admin);
+        
     }
 
     /**
@@ -153,7 +158,7 @@ public class CtrlEnquestaDriver {
                 break;
         }
     }
-
+    
     // --- Mètodes de Test ---
 
     // --- Enquestes ---

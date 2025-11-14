@@ -79,7 +79,7 @@ public class CtrlUsuariDriver {
         System.out.println("--- Mètodes de Sessió (deleguen a Usuari Estàtic) ---");
         System.out.println("(1) Registrar Usuari");
         System.out.println("(2) Login");
-        System.out.println("(3) Logout");
+        System.out.println("(3) Consulta Usuari Actual");
         /*
         System.out.println("(4) Canviar Contrasenya");
         System.out.println("(5) Esborrar Usuari");
@@ -109,9 +109,11 @@ public class CtrlUsuariDriver {
             case "Login":
                 testLogin();
                 break;
-                case "3":
-                gestioEnquestes();
+            case "3":
+            case "Consulta Usuari actual":
+                testGetUsuariActual();
                 break;
+            
             
            /* case "4":
             case "Canviar Contrasenya":
@@ -157,36 +159,6 @@ public class CtrlUsuariDriver {
         }
     }
 
-    private static void gestioEnquestes() {
-        try {
-            String fullClassName = "edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver";
-            Class<?> clazz = Class.forName(fullClassName);
-            java.lang.reflect.Method mainMethod = clazz.getMethod("main", String[].class);
-            
-            System.out.println("\n═══════════════════════════════════════════");
-            System.out.println("   Executant ");
-            System.out.println("═══════════════════════════════════════════\n");
-            
-            String[] args = new String[0];
-            mainMethod.invoke(null, (Object) args);
-            
-            System.out.println("\n═══════════════════════════════════════════");
-            System.out.println("   Fi de ");
-            System.out.println("═══════════════════════════════════════════");
-            
-            // Recrear el Scanner después de ejecutar el driver
-            // porque muchos drivers hacen in.close() al terminar
-            in = new Scanner(System.in);
-            
-        } catch (ClassNotFoundException e) {
-            System.out.println("❌ Error: No s'ha trobat la classe del driver: " + e.getMessage());
-        } catch (NoSuchMethodException e) {
-            System.out.println("❌ Error: El driver no té un mètode main()");
-        } catch (Exception e) {
-            System.out.println("❌ Error en executar el driver: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
     // --- Mètodes de Test (Sessió) ---
     
     private static void testRegistrarUsuari() {
@@ -223,25 +195,9 @@ public class CtrlUsuariDriver {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
-/*
-    private static void logout() {
-        System.out.println("\n✓ Sessió tancada. Fins aviat, " + usuariActual.getUsername() + "!");
-        usuariActual = null;
-    }
 
-    private static void canviarcontrasenya() {
-        System.out.print("Introdueix la nova contrasenya: ");
-        String novaPassword = in.nextLine();
-        if (usuariActual == null) {
-            System.out.println("No hi ha cap usuari actual autenticat.");
-            return;
-        }
-    // HAURIA D'HAVER UNA OPERACIÓ A CtrlUsuari PER CANVIAR LA CONTRASENYA, NO FER-HO DIRECTAMENT DES DEL DRIVER
-        usuariActual.setPassword(novaPassword);
-        System.out.println("Contrasenya canviada correctament per l'usuari '" + usuariActual.getUsername() + "'.");
-    }
 
-    prvate static void testEsborrarUsuari() {
+    /*private static void testEsborrarUsuari() {
         if (usuariActual == null) {
             System.out.println("No hi ha cap usuari actual autenticat.");
             return;
@@ -250,21 +206,21 @@ public class CtrlUsuariDriver {
         logout(); // Fem logout abans d'eliminar
         cd.eliminarUsuari(usernameAEliminar);
         System.out.println("Usuari '" + usernameAEliminar + "' eliminat correctament.");
-    }
+    }*/
 
     private static void testGetUsuariActual() {
-        Usuari usuari = cu.getUsuariActual();
+        Usuari usuari = cd.getUsuariActual();
         if (usuari == null) {
             System.out.println("No hi ha cap usuari actual (estàtic) autenticat.");
         } else {
             System.out.println("L'usuari actual (estàtic) és: " + usuari.getUsername());
         }
     }
-
+/*
     private static void testCheckPassword() {
         System.out.print("Introdueix la contrasenya a comprovar (per l'usuari actual): ");
         String password = in.nextLine();
-        boolean correcte = cu.checkPassword(password);
+        boolean correcte = cd.checkPassword(password);
         if(!correcte){
             System.out.println("Contrasenya incorrecta.");
             return;
