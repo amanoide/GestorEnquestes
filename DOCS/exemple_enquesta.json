@@ -1,0 +1,54 @@
+{
+  "id": "enquesta_exemple",
+  "titol": "Enquesta d'exemple",
+  "descripcio": "Aquesta es una enquesta d'exemple per provar la importacio",
+  "preguntes": [
+    {
+      "id": "p1",
+      "text": "Quina es la teva edat?",
+      "tipus": "numerica",
+      "min": 0,
+      "max": 120
+    },
+    {
+      "id": "p2",
+      "text": "Quin es el teu nivell d'estudis?",
+      "tipus": "qualitativa_ordenada",
+      "opcions": [
+        {"id": 1, "text": "Primaria", "ordre": 1},
+        {"id": 2, "text": "Secundaria", "ordre": 2},
+        {"id": 3, "text": "Batxillerat", "ordre": 3},
+        {"id": 4, "text": "Universitat", "ordre": 4}
+      ]
+    },
+    {
+      "id": "p3",
+      "text": "Quins idiomes parles?",
+      "tipus": "qualitativa_multiple",
+      "max_seleccions": 3,
+      "opcions": [
+        {"id": 1, "text": "Catala"},
+        {"id": 2, "text": "Castella"},
+        {"id": 3, "text": "Angles"},
+        {"id": 4, "text": "Frances"},
+        {"id": 5, "text": "Alemany"}
+      ]
+    },
+    {
+      "id": "p4",
+      "text": "Quin es el teu color preferit?",
+      "tipus": "qualitativa_simple",
+      "opcions": [
+        {"id": 1, "text": "Vermell"},
+        {"id": 2, "text": "Blau"},
+        {"id": 3, "text": "Verd"},
+        {"id": 4, "text": "Groc"}
+      ]
+    },
+    {
+      "id": "p5",
+      "text": "Comentaris o suggeriments",
+      "tipus": "text"
+    }
+  ]
+}
