@@ -40,14 +40,14 @@ public class CtrlEnquesta {
     public void modificarTitolEnquesta(String id, String nouTitol) {
         Enquesta e = persistencia.getEnquesta(id);
         if (e != null) {
-            e.modificarTitol(nouTitol);
+            e.setTitol(nouTitol);
         }
     }
 
     public void modificarDescripcioEnquesta(String id, String novaDescripcio) {
         Enquesta e = persistencia.getEnquesta(id);
         if (e != null) {
-            e.modificarDescripcio(novaDescripcio);
+            e.setDescripcio(novaDescripcio);
         }
     }
 
@@ -99,6 +99,10 @@ public class CtrlEnquesta {
                 p.eliminarOpcio(idOpcio);
             }
         }
+    }
+
+    public void eliminarParticipacio(Enquesta enquesta, String username) {
+        enquesta.eliminarParticipacio(username);
     }
 
     public Pregunta getPregunta(String idEnquesta, String idPregunta) {
