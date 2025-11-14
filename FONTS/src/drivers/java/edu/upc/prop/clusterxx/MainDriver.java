@@ -265,9 +265,10 @@ public class MainDriver {
     private static void llistarMevesEnquestes() {
         System.out.println("\n═══ LES MEVES ENQUESTES ═══");
         
-        // Obtener todas las encuestas del sistema y filtrar por creador
-        ArrayList<Enquesta> totesEnquestes = ctrlDomini.consultarEnquestes();
-        List<Enquesta> mevesEnquestes = new ArrayList<>();
+        try {
+            // Obtener todas las encuestas del sistema y filtrar por creador
+            ArrayList<Enquesta> totesEnquestes = ctrlDomini.consultarEnquestes();
+            List<Enquesta> mevesEnquestes = new ArrayList<>();
         
         for (Enquesta e : totesEnquestes) {
             if (e.getIdCreador().equals(usuariActual.getUsername())) {
@@ -287,6 +288,9 @@ public class MainDriver {
                 System.out.println("   Participants: " + e.getParticipants().size());
                 System.out.println();
             }
+        }
+        } catch (UsuariNoAutenticatException e) {
+            System.out.println("❌ Error: " + e.getMessage());
         }
     }
 
@@ -434,7 +438,7 @@ public class MainDriver {
         try {
             ctrlDomini.afegirPregunta(enquesta.getId(), pregunta);
             System.out.println("✓ Pregunta afegida correctament!");
-        } catch (ParametreInvalidException | UsuariNoAutenticatException | EnquestaNoExisteixException | PermisDenegatException | PreguntaJaExisteixException e) {
+        } catch (ParametreInvalidException | UsuariNoAutenticatException | EnquestaNoExisteixException | PermisDenegatException | PreguntaJaExisteixException | RespostaInvalidaException e) {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
@@ -1114,53 +1118,54 @@ public class MainDriver {
         
         // Utilitzar el mètode de CtrlDomini
         // Nota: consultarRespostesEnquesta retorna HashMap<username, ArrayList<Resposta>>
-        HashMap<String, ArrayList<Resposta>> respostesPerUsuariOriginal = ctrlDomini.consultarRespostesEnquesta(enquesta.getId());
+        try {
+            HashMap<String, ArrayList<Resposta>> respostesPerUsuariOriginal = ctrlDomini.consultarRespostesEnquesta(enquesta.getId());
         
-        if (respostesPerUsuariOriginal.isEmpty()) {
-            System.out.println("\n⚠ Aquesta enquesta encara no té respostes.");
-            return;
-        }
-        
-        System.out.println("\n═══ RESPOSTES DE: " + enquesta.getTitol() + " ═══");
-        
-        // Reorganitzar les respostes en un format més còmode: usuari -> (idPregunta -> Resposta)
-        HashMap<String, HashMap<String, Resposta>> respostesPerUsuari = new HashMap<>();
-        
-        for (Map.Entry<String, ArrayList<Resposta>> entry : respostesPerUsuariOriginal.entrySet()) {
-            String username = entry.getKey();
-            ArrayList<Resposta> respostes = entry.getValue();
-            
-            HashMap<String, Resposta> respostesUsuari = new HashMap<>();
-            for (Resposta r : respostes) {
-                respostesUsuari.put(r.getIdPregunta(), r);
+            if (respostesPerUsuariOriginal.isEmpty()) {
+                System.out.println("\n⚠ Aquesta enquesta encara no té respostes.");
+                return;
             }
             
-            respostesPerUsuari.put(username, respostesUsuari);
-        }
-        
-        System.out.println("Total de participants: " + respostesPerUsuari.size());
-        
-        // Mostrar les respostes agrupades per usuari
-        for (Map.Entry<String, HashMap<String, Resposta>> entryUsuari : respostesPerUsuari.entrySet()) {
-            String username = entryUsuari.getKey();
-            HashMap<String, Resposta> respostesUsuari = entryUsuari.getValue();
+            System.out.println("\n═══ RESPOSTES DE: " + enquesta.getTitol() + " ═══");
             
-            System.out.println("\n┌─ Usuari: " + username + " ─┐");
+            // Reorganitzar les respostes en un format més còmode: usuari -> (idPregunta -> Resposta)
+            HashMap<String, HashMap<String, Resposta>> respostesPerUsuari = new HashMap<>();
             
-            for (Pregunta p : enquesta.getPreguntes()) {
-                Resposta resposta = respostesUsuari.get(p.getId());
+            for (Map.Entry<String, ArrayList<Resposta>> entry : respostesPerUsuariOriginal.entrySet()) {
+                String username = entry.getKey();
+                ArrayList<Resposta> respostes = entry.getValue();
                 
-                if (resposta != null) {
-                    System.out.println("│ ➤ " + p.getText());
-                    System.out.println("│   Resposta: " + resposta.getTextResposta());
-                } else {
-                    System.out.println("│ ➤ " + p.getText());
-                    System.out.println("│   Resposta: [Sense respondre]");
+                HashMap<String, Resposta> respostesUsuari = new HashMap<>();
+                for (Resposta r : respostes) {
+                    respostesUsuari.put(r.getIdPregunta(), r);
                 }
+                
+                respostesPerUsuari.put(username, respostesUsuari);
             }
             
-            System.out.println("└" + "─".repeat(50) + "┘");
-        }
+            System.out.println("Total de participants: " + respostesPerUsuari.size());
+            
+            // Mostrar les respostes agrupades per usuari
+            for (Map.Entry<String, HashMap<String, Resposta>> entryUsuari : respostesPerUsuari.entrySet()) {
+                String username = entryUsuari.getKey();
+                HashMap<String, Resposta> respostesUsuari = entryUsuari.getValue();
+                
+                System.out.println("\n┌─ Usuari: " + username + " ─┐");
+                
+                for (Pregunta p : enquesta.getPreguntes()) {
+                    Resposta resposta = respostesUsuari.get(p.getId());
+                    
+                    if (resposta != null) {
+                        System.out.println("│ ➤ " + p.getText());
+                        System.out.println("│   Resposta: " + resposta.getTextResposta());
+                    } else {
+                        System.out.println("│ ➤ " + p.getText());
+                        System.out.println("│   Resposta: [Sense respondre]");
+                    }
+                }
+                
+                System.out.println("└" + "─".repeat(50) + "┘");
+            }
         
         // Estadístiques bàsiques per pregunta
         System.out.println("\n═══ RESUM PER PREGUNTA ═══");
@@ -1208,9 +1213,10 @@ public class MainDriver {
             }
         }
         
-        } catch (UsuariNoAutenticatException e) {
+        } catch (ParametreInvalidException | EnquestaNoExisteixException | UsuariNoAutenticatException e) {
             System.out.println("❌ Error: " + e.getMessage());
-        } catch (ParametreInvalidException | EnquestaNoExisteixException e) {
+        }
+        } catch (UsuariNoAutenticatException e) {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
@@ -1288,7 +1294,8 @@ public class MainDriver {
     private static void analitzarEnquesta() {
         System.out.println("\n═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══");
         
-        ArrayList<Enquesta> totes = ctrlDomini.consultarEnquestes();
+        try {
+            ArrayList<Enquesta> totes = ctrlDomini.consultarEnquestes();
         if (totes.isEmpty()) {
             System.out.println("No hi ha enquestes al sistema.");
             return;
@@ -1320,47 +1327,47 @@ public class MainDriver {
         
         Enquesta enquesta = totes.get(num);
         
-        // Verificar si la enquesta tiene respuestas
-        HashMap<String, ArrayList<Resposta>> respostesPerUsuari = ctrlDomini.consultarRespostesEnquesta(enquesta.getId());
-        
-        if (respostesPerUsuari.isEmpty()) {
-            System.out.println("\n⚠ Aquesta enquesta no té respostes. Necessites almenys 2 participants per fer clustering.");
-            return;
-        }
-        
-        if (respostesPerUsuari.size() < 2) {
-            System.out.println("\n⚠ Necessites almenys 2 participants per fer clustering. Aquesta enquesta només té " + respostesPerUsuari.size() + " participant.");
-            return;
-        }
-        
-        // Solicitar número de clusters
-        int k = -1;
-        while (k < 2 || k > respostesPerUsuari.size()) {
-            try {
-                System.out.print("\nQuants grups (clusters) vols crear? (2-" + respostesPerUsuari.size() + "): ");
-                k = Integer.parseInt(in.nextLine());
-                if (k < 2) {
-                    System.out.println("❌ Necessites almenys 2 clusters");
-                } else if (k > respostesPerUsuari.size()) {
-                    System.out.println("❌ No pots tenir més clusters que participants (" + respostesPerUsuari.size() + ")");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("❌ Si us plau, introdueix un número vàlid");
-            }
-        }
-        
-        // Preguntar qué algoritmo usar
-        System.out.println("\nAlgoritme de clustering:");
-        System.out.println("  1. KMeans (inicialització aleatòria)");
-        System.out.println("  2. KMeans++ (inicialització intel·ligent - recomanat)");
-        System.out.print("Escull (1-2): ");
-        String algOpcio = in.nextLine();
-        boolean usePlusPlus = algOpcio.equals("2");
-        String algoritmeNom = usePlusPlus ? "KMeans++" : "KMeans";
-        
-        System.out.println("\n⏳ Analitzant respostes...");
-        
         try {
+            // Verificar si la enquesta tiene respuestas
+            HashMap<String, ArrayList<Resposta>> respostesPerUsuari = ctrlDomini.consultarRespostesEnquesta(enquesta.getId());
+            
+            if (respostesPerUsuari.isEmpty()) {
+                System.out.println("\n⚠ Aquesta enquesta no té respostes. Necessites almenys 2 participants per fer clustering.");
+                return;
+            }
+            
+            if (respostesPerUsuari.size() < 2) {
+                System.out.println("\n⚠ Necessites almenys 2 participants per fer clustering. Aquesta enquesta només té " + respostesPerUsuari.size() + " participant.");
+                return;
+            }
+            
+            // Solicitar número de clusters
+            int k = -1;
+            while (k < 2 || k > respostesPerUsuari.size()) {
+                try {
+                    System.out.print("\nQuants grups (clusters) vols crear? (2-" + respostesPerUsuari.size() + "): ");
+                    k = Integer.parseInt(in.nextLine());
+                    if (k < 2) {
+                        System.out.println("❌ Necessites almenys 2 clusters");
+                    } else if (k > respostesPerUsuari.size()) {
+                        System.out.println("❌ No pots tenir més clusters que participants (" + respostesPerUsuari.size() + ")");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("❌ Si us plau, introdueix un número vàlid");
+                }
+            }
+            
+            // Preguntar qué algoritmo usar
+            System.out.println("\nAlgoritme de clustering:");
+            System.out.println("  1. KMeans (inicialització aleatòria)");
+            System.out.println("  2. KMeans++ (inicialització intel·ligent - recomanat)");
+            System.out.print("Escull (1-2): ");
+            String algOpcio = in.nextLine();
+            boolean usePlusPlus = algOpcio.equals("2");
+            String algoritmeNom = usePlusPlus ? "KMeans++" : "KMeans";
+            
+            System.out.println("\n⏳ Analitzant respostes...");
+            
             // Delegar todo el clustering al CtrlDomini
             CtrlDomini.ResultatClustering resultat = ctrlDomini.analitzarEnquesta(
                 enquesta.getId(), 
@@ -1433,9 +1440,14 @@ public class MainDriver {
             System.out.println("   - Els perfils s'han guardat per a cada usuari");
             System.out.println("   - Usa l'opció 12 per veure el teu perfil");
             
+        } catch (ParametreInvalidException | EnquestaNoExisteixException | UsuariNoAutenticatException e) {
+            System.out.println("❌ Error: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("❌ Error durant l'anàlisi: " + e.getMessage());
             e.printStackTrace();
+        }
+        } catch (UsuariNoAutenticatException e) {
+            System.out.println("❌ Error: " + e.getMessage());
         }
     }
     

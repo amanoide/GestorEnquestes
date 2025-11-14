@@ -279,18 +279,12 @@ public class CtrlRespostaDriver {
                 return;
             }
 
-<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
             // Obtenir la pregunta
             Pregunta pregunta = enquesta.getPregunta(idPregunta);
             if (pregunta == null) {
                 System.out.println("ERROR: La pregunta amb ID '" + idPregunta + "' no existeix a aquesta enquesta.");
                 return;
             }
-=======
-        // COMENTAT: La signatura del mètode ha canviat després del merge
-        // int resultat = cr.esborrarResposta(usuariMock, idEnquesta, idPregunta);
-        int resultat = -1; // Funcionalitat desactivada
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
 
             // Obtenir l'usuari
             Usuari usuari = persistencia.getUsuari(username);
