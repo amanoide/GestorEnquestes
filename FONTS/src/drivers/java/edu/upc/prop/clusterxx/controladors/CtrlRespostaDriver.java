@@ -191,22 +191,16 @@ public class CtrlRespostaDriver {
                 return;
             }
 
-            // Generar ID únic per la resposta
-            String idResposta = "r" + contadorRespostes++;
-
-            // Registrar la resposta
-            cr.registrarResposta(idResposta, idPregunta, textResposta, usuari, pregunta);
-            System.out.println("Resposta registrada amb èxit! ID: " + idResposta);
+            // Registrar la resposta (l'ID es genera automàticament)
+            cr.registrarResposta(idPregunta, textResposta, usuari, pregunta);
+            
+            // Mostrar l'ID generat
+            String idRespostaGenerat = idPregunta + "_" + usuari.getUsername();
+            System.out.println("Resposta registrada amb èxit! ID: " + idRespostaGenerat);
         } catch (Exception e) {
             System.out.println("ERROR inesperat: " + e.getMessage());
             e.printStackTrace();
         }
-=======
-        // 4. Cridar al controlador
-        // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
-        // cr.registrarRespostes(enquestaMock, usuariMock, respostesUsuari);
-        System.out.println("[FUNCIONALITAT DESACTIVADA] Respostes registrades per l'usuari '" + username + "' a l'enquesta '" + idEnquesta + "'.");
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
     }
 
     /**

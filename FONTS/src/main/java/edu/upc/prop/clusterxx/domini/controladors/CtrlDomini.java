@@ -230,10 +230,11 @@ public class CtrlDomini {
      * @throws EnquestaNoExisteixException Si l'enquesta no existeix
      * @throws PermisDenegatException Si l'usuari no és el creador
      * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat
+     * @throws PreguntaJaExisteixException Si ja existeix una pregunta amb aquest ID a l'enquesta
+     * @throws RespostaInvalidaException Si l'enquesta ja té respostes d'usuaris
      */
-    //(jairo)
     public void afegirPregunta(String idEnquesta, Pregunta p) 
-            throws ParametreInvalidException, EnquestaNoExisteixException, PermisDenegatException, UsuariNoAutenticatException {
+            throws ParametreInvalidException, EnquestaNoExisteixException, PermisDenegatException, UsuariNoAutenticatException, PreguntaJaExisteixException, RespostaInvalidaException {
         // Validar que hi ha un usuari autenticat
         Usuari usuariActual = ctrlUsuari.getUsuariActual();
         if (usuariActual == null) {
@@ -255,14 +256,30 @@ public class CtrlDomini {
         }
         
         // Verificar que l'enquesta existeix
-        String idCreador = ctrlEnquesta.getIdCreador(idEnquesta);
-        if (idCreador == null) {
+        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+        if (enquesta == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
         
+        // Verificar que la pregunta NO existeix ja a l'enquesta
+        if (enquesta.getPregunta(p.getId()) != null) {
+            throw new PreguntaJaExisteixException(p.getId(), idEnquesta);
+        }
+        
         // Verificar permisos
+        String idCreador = enquesta.getIdCreador();
         if (!idCreador.equals(usuariActual.getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot afegir preguntes.");
+        }
+        
+        // CRÍTICO: Si l'enquesta ja té respostes (participacions), NO es poden afegir més preguntes
+        // (crearia inconsistència: alguns usuaris haurien contestat amb menys preguntes)
+        if (!enquesta.getParticipants().isEmpty()) {
+            throw new RespostaInvalidaException(
+                "No es pot afegir una pregunta a una enquesta que ja té respostes (" + 
+                enquesta.getParticipants().size() + " participant/s). " +
+                "Afegir preguntes crearia inconsistència en les respostes existents."
+            );
         }
         
         ctrlEnquesta.afegirPregunta(idEnquesta, p);
@@ -270,85 +287,309 @@ public class CtrlDomini {
 
     /**
      * Elimina una pregunta d'una enquesta.
+     * Elimina també totes les respostes associades a aquesta pregunta.
      * @param idEnquesta L'ID de l'enquesta.
      * @param idPregunta L'ID de la pregunta a eliminar.
+     * @throws ParametreInvalidException Si algun paràmetre és invàlid
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix
+     * @throws PreguntaNoExisteixException Si la pregunta no existeix a l'enquesta
+     * @throws PermisDenegatException Si l'usuari no és el creador
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat
      */
-    //(jairo)
-    public void eliminarPregunta(String idEnquesta, String idPregunta) throws EnquestaNoExisteixException, PermisDenegatException {
-        String idCreador = ctrlEnquesta.getIdCreador(idEnquesta);
-        if (idCreador == null) {
+    public void eliminarPregunta(String idEnquesta, String idPregunta) 
+            throws ParametreInvalidException, EnquestaNoExisteixException, PreguntaNoExisteixException, PermisDenegatException, UsuariNoAutenticatException {
+        // Validar que hi ha un usuari autenticat
+        Usuari usuariActual = ctrlUsuari.getUsuariActual();
+        if (usuariActual == null) {
+            throw new UsuariNoAutenticatException("Cal estar autenticat per eliminar preguntes d'una enquesta.");
+        }
+        
+        // Validar paràmetres
+        if (idEnquesta == null || idEnquesta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de l'enquesta no pot estar buit.");
+        }
+        if (idPregunta == null || idPregunta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de la pregunta no pot estar buit.");
+        }
+        
+        // Verificar que l'enquesta existeix
+        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+        if (enquesta == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
+        
+        // Verificar que la pregunta existeix a l'enquesta
+        Pregunta pregunta = enquesta.getPregunta(idPregunta);
+        if (pregunta == null) {
+            throw new PreguntaNoExisteixException("La pregunta amb ID '" + idPregunta + "' no existeix a l'enquesta '" + idEnquesta + "'.");
+        }
+        
+        // Verificar permisos
+        String idCreador = enquesta.getIdCreador();
+        if (!idCreador.equals(usuariActual.getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot eliminar preguntes.");
         }
+        
+        // IMPORTANT: Eliminar totes les respostes associades a aquesta pregunta abans d'eliminar-la
+        // Crear una llista temporal per evitar ConcurrentModificationException
+        HashMap<String, Resposta> respostesPregunta = pregunta.getRespostes();
+        ArrayList<String> idsRespostes = new ArrayList<>(respostesPregunta.keySet());
+        
+        for (String username : idsRespostes) {
+            Resposta resposta = respostesPregunta.get(username);
+            // 1. Eliminar de la pregunta (associació local)
+            pregunta.eliminarResposta(username);
+            // 2. Eliminar de persistència i usuari (associacions globals)
+            ctrlPersistencia.eliminarResposta(resposta.getId());
+        }
+        
+        // Ara podem eliminar la pregunta de manera segura
         ctrlEnquesta.eliminarPregunta(idEnquesta, idPregunta);
     }
 
     /**
      * Modifica una pregunta existent en una enquesta.
+     * IMPORTANT: Només es pot modificar una pregunta si NO té cap resposta associada.
+     * Si ja té respostes, s'ha d'eliminar la pregunta i crear-ne una de nova.
+     * 
      * @param idEnquesta L'ID de l'enquesta.
      * @param idPregunta L'ID de la pregunta a modificar.
      * @param nova La nova informació de la pregunta.
+     * @throws ParametreInvalidException Si algun paràmetre és invàlid
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix
+     * @throws PreguntaNoExisteixException Si la pregunta no existeix a l'enquesta
+     * @throws PermisDenegatException Si l'usuari no és el creador
+     * @throws RespostaInvalidaException Si la pregunta ja té respostes associades
      */
     //(jairo)
-    public void modificarPregunta(String idEnquesta, String idPregunta, Pregunta nova) throws EnquestaNoExisteixException, PermisDenegatException {
-        String idCreador = ctrlEnquesta.getIdCreador(idEnquesta);
-        if (idCreador == null) {
+    public void modificarPregunta(String idEnquesta, String idPregunta, Pregunta nova) 
+            throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, 
+                   PreguntaNoExisteixException, PermisDenegatException, RespostaInvalidaException {
+        // Validar que hi ha un usuari autenticat
+        Usuari usuariActual = ctrlUsuari.getUsuariActual();
+        if (usuariActual == null) {
+            throw new UsuariNoAutenticatException("Cal estar autenticat per modificar preguntes d'una enquesta.");
+        }
+        
+        // Validar paràmetres
+        if (idEnquesta == null || idEnquesta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de l'enquesta no pot estar buit.");
+        }
+        if (idPregunta == null || idPregunta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de la pregunta no pot estar buit.");
+        }
+        if (nova == null) {
+            throw new ParametreInvalidException("La nova pregunta no pot ser null.");
+        }
+        if (nova.getText() == null || nova.getText().trim().isEmpty()) {
+            throw new ParametreInvalidException("El text de la nova pregunta no pot estar buit.");
+        }
+        if (nova.getId() == null || nova.getId().trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de la nova pregunta no pot estar buit.");
+        }
+        
+        // Verificar que l'enquesta existeix
+        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+        if (enquesta == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
+        
+        // Verificar que la pregunta existeix a l'enquesta
+        Pregunta preguntaActual = enquesta.getPregunta(idPregunta);
+        if (preguntaActual == null) {
+            throw new PreguntaNoExisteixException("La pregunta amb ID '" + idPregunta + "' no existeix a l'enquesta '" + idEnquesta + "'.");
+        }
+        
+        // Verificar permisos
+        String idCreador = enquesta.getIdCreador();
+        if (!idCreador.equals(usuariActual.getUsername())) {
             throw new PermisDenegatException("Només el creador de l'enquesta pot modificar preguntes.");
         }
+        
+        // Verificar que l'ID de la nova pregunta coincideix amb l'ID de la pregunta a modificar
+        if (!nova.getId().equals(idPregunta)) {
+            throw new ParametreInvalidException(
+                "L'ID de la nova pregunta ('" + nova.getId() + "') ha de coincidir amb l'ID de la pregunta a modificar ('" + idPregunta + "')."
+            );
+        }
+        
+        // CRÍTICO: Si hi ha respostes, NO es pot modificar RES
+        HashMap<String, Resposta> respostesExistents = preguntaActual.getRespostes();
+        if (!respostesExistents.isEmpty()) {
+            throw new RespostaInvalidaException(
+                "No es pot modificar una pregunta que ja té respostes (" + respostesExistents.size() + " resposta/es). " +
+                "Per modificar-la, primer elimina la pregunta i crea-la de nou."
+            );
+        }
+        
+        // Si no hi ha respostes, podem modificar usant el mètode de CtrlEnquesta
         ctrlEnquesta.modificarPregunta(idEnquesta, idPregunta, nova);
     }
 
     /**
      * Afegeix una opció a una pregunta d'una enquesta.
+     * Només es poden afegir opcions a preguntes qualitatives.
      * @param idEnquesta L'ID de l'enquesta.
      * @param idPregunta L'ID de la pregunta.
      * @param o L'opció a afegir.
+     * @throws ParametreInvalidException Si algun paràmetre és invàlid
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix
+     * @throws PreguntaNoExisteixException Si la pregunta no existeix
+     * @throws PermisDenegatException Si l'usuari no és el creador
+     * @throws RespostaInvalidaException Si el tipus de pregunta no admet opcions o l'opció ja existeix
      */
     //(jairo)
-    public void afegirOpcioAPregunta(String idEnquesta, String idPregunta, Opcio o) throws EnquestaNoExisteixException, PermisDenegatException, PreguntaNoExisteixException {
-        String idCreador = ctrlEnquesta.getIdCreador(idEnquesta);
-        if (idCreador == null) {
+    public void afegirOpcioAPregunta(String idEnquesta, String idPregunta, Opcio o) 
+            throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, 
+                   PreguntaNoExisteixException, PermisDenegatException, RespostaInvalidaException {
+        // Validar que hi ha un usuari autenticat
+        Usuari usuariActual = ctrlUsuari.getUsuariActual();
+        if (usuariActual == null) {
+            throw new UsuariNoAutenticatException("Cal estar autenticat per afegir opcions a preguntes.");
+        }
+        
+        // Validar paràmetres
+        if (idEnquesta == null || idEnquesta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de l'enquesta no pot estar buit.");
+        }
+        if (idPregunta == null || idPregunta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de la pregunta no pot estar buit.");
+        }
+        if (o == null) {
+            throw new ParametreInvalidException("L'opció no pot ser null.");
+        }
+        if (o.getText() == null || o.getText().trim().isEmpty()) {
+            throw new ParametreInvalidException("El text de l'opció no pot estar buit.");
+        }
+        
+        // Verificar que l'enquesta existeix
+        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+        if (enquesta == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
-            throw new PermisDenegatException("Només el creador de l'enquesta pot modificar preguntes.");
-        }
-        // Verificar que la pregunta existe
-        Pregunta pregunta = ctrlEnquesta.getPregunta(idEnquesta, idPregunta);
+        
+        // Verificar que la pregunta existeix
+        Pregunta pregunta = enquesta.getPregunta(idPregunta);
         if (pregunta == null) {
-            throw new PreguntaNoExisteixException(idPregunta);
+            throw new PreguntaNoExisteixException("La pregunta amb ID '" + idPregunta + "' no existeix a l'enquesta '" + idEnquesta + "'.");
         }
-        // Delegar a CtrlEnquesta
+        
+        // Verificar permisos
+        String idCreador = enquesta.getIdCreador();
+        if (!idCreador.equals(usuariActual.getUsername())) {
+            throw new PermisDenegatException("Només el creador de l'enquesta pot afegir opcions a preguntes.");
+        }
+        
+        // Verificar que el tipus de pregunta admet opcions
+        if (!pregunta.tipusAdmetOpcions()) {
+            throw new RespostaInvalidaException(
+                "No es poden afegir opcions a preguntes de tipus " + pregunta.getTipus() + 
+                ". Només les preguntes qualitatives admeten opcions predefinides."
+            );
+        }
+        
+        // Verificar que no existeix ja una opció amb aquest ID
+        if (pregunta.getOpcio(o.getId()) != null) {
+            throw new RespostaInvalidaException(
+                "Ja existeix una opció amb l'ID " + o.getId() + " a la pregunta '" + idPregunta + "'."
+            );
+        }
+        
+        // CRÍTICO: Si hi ha respostes, NO es pot afegir cap opció nova
+        // (podria alterar la semàntica de les respostes existents)
+        HashMap<String, Resposta> respostesExistents = pregunta.getRespostes();
+        if (!respostesExistents.isEmpty()) {
+            throw new RespostaInvalidaException(
+                "No es pot afegir una opció a una pregunta que ja té respostes (" + respostesExistents.size() + " resposta/es). " +
+                "Afegir opcions podria alterar el significat de les respostes existents."
+            );
+        }
+        
+        // Si totes les validacions passen, afegir l'opció
         ctrlEnquesta.afegirOpcioAPregunta(idEnquesta, idPregunta, o);
     }
     
 
     /**
-     * Elimina una opció d'una pregunta.
+     * Elimina una opció d'una pregunta d'una enquesta.
+     * Només es poden eliminar opcions de preguntes qualitatives.
      * @param idEnquesta L'ID de l'enquesta.
      * @param idPregunta L'ID de la pregunta.
      * @param idOpcio L'ID de l'opció a eliminar.
+     * @throws ParametreInvalidException Si algun paràmetre és invàlid
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix
+     * @throws PreguntaNoExisteixException Si la pregunta no existeix
+     * @throws PermisDenegatException Si l'usuari no és el creador
+     * @throws RespostaInvalidaException Si el tipus de pregunta no admet opcions o l'opció no existeix
      */
     //(jairo)
-    public void eliminarOpcioDePregunta(String idEnquesta, String idPregunta, int idOpcio) throws EnquestaNoExisteixException, PermisDenegatException, PreguntaNoExisteixException {
-        String idCreador = ctrlEnquesta.getIdCreador(idEnquesta);
-        if (idCreador == null) {
+    public void eliminarOpcioDePregunta(String idEnquesta, String idPregunta, int idOpcio) 
+            throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, 
+                   PreguntaNoExisteixException, PermisDenegatException, RespostaInvalidaException {
+        // Validar que hi ha un usuari autenticat
+        Usuari usuariActual = ctrlUsuari.getUsuariActual();
+        if (usuariActual == null) {
+            throw new UsuariNoAutenticatException("Cal estar autenticat per eliminar opcions de preguntes.");
+        }
+        
+        // Validar paràmetres
+        if (idEnquesta == null || idEnquesta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de l'enquesta no pot estar buit.");
+        }
+        if (idPregunta == null || idPregunta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de la pregunta no pot estar buit.");
+        }
+        if (idOpcio < 0) {
+            throw new ParametreInvalidException("L'ID de l'opció no pot ser negatiu.");
+        }
+        
+        // Verificar que l'enquesta existeix
+        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+        if (enquesta == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
-        if (!idCreador.equals(ctrlUsuari.getUsuariActual().getUsername())) {
-            throw new PermisDenegatException("Només el creador de l'enquesta pot modificar preguntes.");
-        }
-        // Verificar que la pregunta existe
-        Pregunta pregunta = ctrlEnquesta.getPregunta(idEnquesta, idPregunta);
+        
+        // Verificar que la pregunta existeix
+        Pregunta pregunta = enquesta.getPregunta(idPregunta);
         if (pregunta == null) {
-            throw new PreguntaNoExisteixException(idPregunta);
+            throw new PreguntaNoExisteixException("La pregunta amb ID '" + idPregunta + "' no existeix a l'enquesta '" + idEnquesta + "'.");
         }
-        // Delegar a CtrlEnquesta
+        
+        // Verificar permisos
+        String idCreador = enquesta.getIdCreador();
+        if (!idCreador.equals(usuariActual.getUsername())) {
+            throw new PermisDenegatException("Només el creador de l'enquesta pot eliminar opcions de preguntes.");
+        }
+        
+        // Verificar que el tipus de pregunta admet opcions
+        if (!pregunta.tipusAdmetOpcions()) {
+            throw new RespostaInvalidaException(
+                "No es poden eliminar opcions de preguntes de tipus " + pregunta.getTipus() + 
+                ". Només les preguntes qualitatives tenen opcions predefinides."
+            );
+        }
+        
+        // Verificar que l'opció existeix
+        if (pregunta.getOpcio(idOpcio) == null) {
+            throw new RespostaInvalidaException(
+                "No existeix cap opció amb l'ID " + idOpcio + " a la pregunta '" + idPregunta + "'."
+            );
+        }
+        
+        // CRÍTICO: Si hi ha respostes, NO es pot eliminar cap opció
+        // (les respostes podrien referenciar aquesta opció)
+        HashMap<String, Resposta> respostesExistents = pregunta.getRespostes();
+        if (!respostesExistents.isEmpty()) {
+            throw new RespostaInvalidaException(
+                "No es pot eliminar una opció d'una pregunta que ja té respostes (" + respostesExistents.size() + " resposta/es). " +
+                "Eliminar opcions invalidaria les respostes existents."
+            );
+        }
+        
+        // Si totes les validacions passen, eliminar l'opció
         ctrlEnquesta.eliminarOpcioDepregunta(idEnquesta, idPregunta, idOpcio);
     }
 
@@ -514,16 +755,28 @@ public class CtrlDomini {
      * Processa la contestació d'una enquesta per part d'un usuari.
      * Guarda totes les respostes a les preguntes i registra la participació.
      * @param idEnquesta ID de l'enquesta a contestar
-     * @param usuari Usuari que contesta l'enquesta
      * @param respostes HashMap amb idResposta -> textResposta
      * @param idsPreguntaPerResposta HashMap amb idResposta -> idPregunta
      * @throws UsuariNoAutenticatException Si no hi ha usuari autenticat
      * @throws EnquestaNoExisteixException Si l'enquesta no existeix
      * @throws PreguntaNoExisteixException Si alguna pregunta no existeix
      * @throws RespostaInvalidaException Si alguna resposta no és vàlida pel tipus de pregunta
+     * @throws ParametreInvalidException Si algun paràmetre és null
      */
     public void contestarEnquesta(String idEnquesta, HashMap<String, String> respostes, HashMap<String, String> idsPreguntaPerResposta) 
-            throws UsuariNoAutenticatException, EnquestaNoExisteixException, EnquestaJaContestadaException, PreguntaNoExisteixException, RespostaInvalidaException {
+            throws UsuariNoAutenticatException, EnquestaNoExisteixException, EnquestaJaContestadaException, 
+                   PreguntaNoExisteixException, RespostaInvalidaException, ParametreInvalidException {
+        
+        // Validar paràmetres
+        if (idEnquesta == null || idEnquesta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de l'enquesta no pot estar buit.");
+        }
+        if (respostes == null) {
+            throw new ParametreInvalidException("El mapa de respostes no pot ser null.");
+        }
+        if (idsPreguntaPerResposta == null) {
+            throw new ParametreInvalidException("El mapa d'idsPreguntaPerResposta no pot ser null.");
+        }
         
         // Verificar que hi ha un usuari autenticat
         Usuari usuari = ctrlUsuari.getUsuariActual();
@@ -550,24 +803,26 @@ public class CtrlDomini {
             String textResposta = entry.getValue();
             String idPregunta = idsPreguntaPerResposta.get(idResposta);
             
-            if (idPregunta != null) {
-                // Verificar que la pregunta existe
-                Pregunta pregunta = enquesta.getPregunta(idPregunta);
-                if (pregunta == null) {
-                    throw new PreguntaNoExisteixException(idPregunta);
-                }
-                
-                // Validar resposta segons el tipus de pregunta
-                if (!pregunta.validarResposta(textResposta)) {
-                    throw new RespostaInvalidaException(
-                        "Resposta invàlida per la pregunta " + idPregunta + 
-                        " (tipus: " + pregunta.getTipus() + "): " + textResposta
-                    );
-                }
-                
-                // Guardar la pregunta validada para usarla después
-                preguntesValidades.put(idResposta, pregunta);
+            if (idPregunta == null) {
+                throw new ParametreInvalidException("No s'ha especificat idPregunta per la resposta " + idResposta);
             }
+            
+            // Verificar que la pregunta existe
+            Pregunta pregunta = enquesta.getPregunta(idPregunta);
+            if (pregunta == null) {
+                throw new PreguntaNoExisteixException(idPregunta);
+            }
+            
+            // Validar resposta segons el tipus de pregunta
+            if (!pregunta.validarResposta(textResposta)) {
+                throw new RespostaInvalidaException(
+                    "Resposta invàlida per la pregunta " + idPregunta + 
+                    " (tipus: " + pregunta.getTipus() + "): " + textResposta
+                );
+            }
+            
+            // Guardar la pregunta validada para usarla después
+            preguntesValidades.put(idResposta, pregunta);
         }
         
         // PASO 2: Si llegamos aquí, TODAS las respuestas son válidas → guardarlas
@@ -575,12 +830,10 @@ public class CtrlDomini {
             String idResposta = entry.getKey();
             String textResposta = entry.getValue();
             Pregunta pregunta = preguntesValidades.get(idResposta);
+            String idPregunta = idsPreguntaPerResposta.get(idResposta);
             
-            if (pregunta != null) {
-                String idPregunta = idsPreguntaPerResposta.get(idResposta);
-                // Registrar la resposta (se guarda en CtrlPersistencia, Pregunta y Usuari)
-                ctrlResposta.registrarResposta(idResposta, idPregunta, textResposta, usuari, pregunta);
-            }
+            // Registrar la resposta (l'ID es genera automàticament dins)
+            ctrlResposta.registrarResposta(idPregunta, textResposta, usuari, pregunta);
         }
         
         // PASO 3: Registrar participación
@@ -598,7 +851,7 @@ public class CtrlDomini {
      * @throws RespostaNoExisteixException Si l'usuari no ha respost aquesta pregunta.
      * @throws RespostaInvalidaException Si la nova resposta no és vàlida pel tipus de pregunta.
      * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
-     * @throws ParametreInvalidException Si la nova resposta és null.
+     * @throws ParametreInvalidException Si algun paràmetre és invàlid.
      */
     //(jairo)
     public void modificarResposta(String idEnquesta, String idPregunta, String novaResposta) 
@@ -611,24 +864,24 @@ public class CtrlDomini {
             throw new UsuariNoAutenticatException("Cal estar autenticat per modificar respostes.");
         }
         
-        // Validació 2: Verificar que la nova resposta no és nul·la
+        // Validació 2: Validar paràmetres
+        if (idEnquesta == null || idEnquesta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de l'enquesta no pot estar buit.");
+        }
+        if (idPregunta == null || idPregunta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de la pregunta no pot estar buit.");
+        }
         if (novaResposta == null) {
             throw new ParametreInvalidException("La nova resposta no pot ser null.");
         }
         
-        // Validació 3: Verificar que l'enquesta existeix
-        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
-        if (enquesta == null) {
-            throw new EnquestaNoExisteixException(idEnquesta);
-        }
-        
-        // Validació 4: Verificar que la pregunta existeix en l'enquesta
+        // Validació 3: Verificar que la pregunta existeix en l'enquesta
         Pregunta pregunta = ctrlEnquesta.getPregunta(idEnquesta, idPregunta);
         if (pregunta == null) {
             throw new PreguntaNoExisteixException(idPregunta);
         }
         
-        // Validació 5: Verificar que existeix la resposta de l'usuari autenticat a aquesta pregunta
+        // Validació 4: Verificar que existeix la resposta de l'usuari autenticat a aquesta pregunta
         // Nota: getResposta() busca per username, per tant si existeix, sempre serà del mateix usuari
         Resposta respostaExistent = pregunta.getResposta(usuariActual.getUsername());
         if (respostaExistent == null) {
@@ -637,7 +890,7 @@ public class CtrlDomini {
             );
         }
         
-        // Validació 6: Validar el format de la nova resposta segons el tipus de pregunta
+        // Validació 5: Validar el format de la nova resposta segons el tipus de pregunta
         if (!pregunta.validarResposta(novaResposta)) {
             throw new RespostaInvalidaException(
                 "La nova resposta no és vàlida per la pregunta " + idPregunta + 
@@ -646,7 +899,7 @@ public class CtrlDomini {
         }
         
         // Si totes les validacions passen, modificar la resposta directament
-        respostaExistent.modificarResposta(novaResposta);
+        ctrlResposta.modificarResposta(respostaExistent,novaResposta);
         
         // Nota: La persistència s'actualitza automàticament perquè l'objecte Resposta
         // es modifica directament i està guardat al HashMap de CtrlPersistencia
@@ -660,10 +913,11 @@ public class CtrlDomini {
      * @throws EnquestaNoExisteixException Si l'enquesta no existeix.
      * @throws RespostaNoExisteixException Si l'usuari no ha contestat aquesta enquesta.
      * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
+     * @throws ParametreInvalidException Si l'ID de l'enquesta és invàlid.
      */
     //(jairo)
     public void esborrarResposta(String idEnquesta) 
-            throws EnquestaNoExisteixException, RespostaNoExisteixException, UsuariNoAutenticatException {
+            throws EnquestaNoExisteixException, RespostaNoExisteixException, UsuariNoAutenticatException, ParametreInvalidException {
         
         // Validació 1: Verificar que hi ha un usuari autenticat
         Usuari usuariActual = ctrlUsuari.getUsuariActual();
@@ -671,13 +925,18 @@ public class CtrlDomini {
             throw new UsuariNoAutenticatException("Cal estar autenticat per esborrar respostes.");
         }
         
-        // Validació 2: Verificar que l'enquesta existeix
+        // Validació 2: Validar paràmetre
+        if (idEnquesta == null || idEnquesta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'ID de l'enquesta no pot estar buit.");
+        }
+        
+        // Validació 3: Verificar que l'enquesta existeix
         Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
         if (enquesta == null) {
             throw new EnquestaNoExisteixException(idEnquesta);
         }
         
-        // Validació 3: Verificar que l'usuari ha contestat aquesta enquesta
+        // Validació 4: Verificar que l'usuari ha contestat aquesta enquesta
         if (!enquesta.haRespostUsuari(usuariActual.getUsername())) {
             throw new RespostaNoExisteixException(
                 "L'usuari " + usuariActual.getUsername() + " no ha contestat l'enquesta " + idEnquesta
@@ -692,16 +951,13 @@ public class CtrlDomini {
             Resposta resposta = pregunta.getResposta(usuariActual.getUsername());
             
             if (resposta != null) {
-                // 1. Eliminar de CtrlPersistencia (això també elimina de l'usuari automàticament)
-                ctrlPersistencia.eliminarResposta(resposta.getId());
-                
-                // 2. Eliminar de la pregunta (no ho fa automàticament CtrlPersistencia)
-                pregunta.eliminarResposta(usuariActual.getUsername());
+                // DELEGATION: Delegar a CtrlResposta
+                ctrlResposta.esborrarResposta(resposta, pregunta);
             }
         }
         
         // Eliminar l'usuari de la llista de participants de l'enquesta
-        enquesta.eliminarParticipacio(usuariActual.getUsername());
+        ctrlEnquesta.eliminarParticipacio(enquesta, usuariActual.getUsername());
     }
 
     /**
@@ -881,6 +1137,7 @@ public class CtrlDomini {
 
     /**
      * Registra una resposta per una pregunta d'una enquesta.
+     * L'ID de la resposta es genera automàticament com: idPregunta + "_" + username
      * @param idEnquesta L'ID de l'enquesta.
      * @param usuari L'usuari que respon.
      * @param idPregunta L'ID de la pregunta.
@@ -893,14 +1150,8 @@ public class CtrlDomini {
             return; // No es pot registrar si la pregunta no existeix
         }
         
-        // Generar ID únic per la resposta
-        String idResposta = idPregunta + "_" + usuari.getUsername();
-        
-        // Crear la resposta
-        Resposta resposta = new Resposta(idResposta, idPregunta, textResposta, usuari);
-        
-        // Guardar a persistència
-        ctrlPersistencia.afegirResposta(idResposta, resposta, pregunta);
+        // Registrar la resposta (l'ID es genera automàticament dins de CtrlResposta)
+        ctrlResposta.registrarResposta(idPregunta, textResposta, usuari, pregunta);
     }
 
     /**
@@ -993,6 +1244,14 @@ public class CtrlDomini {
         
         // Si tot és correcte, establir l'usuari actual
         ctrlUsuari.login(usuari);
+    }
+    
+    /**
+     * Tanca la sessió de l'usuari actual.
+     * Estableix l'usuari actual a null.
+     */
+    public void logout() {
+        ctrlUsuari.logout();
     }
     
     public boolean checkPassword(String password) {

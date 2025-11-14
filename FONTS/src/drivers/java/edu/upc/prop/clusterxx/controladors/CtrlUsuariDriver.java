@@ -80,8 +80,9 @@ public class CtrlUsuariDriver {
         System.out.println("--- Mètodes de Sessió (deleguen a Usuari Estàtic) ---");
         System.out.println("(1) Registrar Usuari");
         System.out.println("(2) Login");
-        System.out.println("(3) Get Usuari Actual");
-        System.out.println("(4) Check Password");
+        System.out.println("(3) Logout");
+        System.out.println("(4) Get Usuari Actual");
+        System.out.println("(5) Check Password");
         System.out.println("--- Mètodes de Gestió (HashMap intern per Persistència) ---");
         System.out.println("(10) Afegir Usuari (al HashMap intern)");
         System.out.println("(11) Get Usuari (del HashMap intern)");
@@ -111,10 +112,14 @@ public class CtrlUsuariDriver {
                 testLogin();
                 break;
             case "3":
+            case "Logout":
+                testLogout();
+                break;
+            case "4":
             case "Get Usuari Actual":
                 testGetUsuariActual();
                 break;
-            case "4":
+            case "5":
             case "Check Password":
                 testCheckPassword();
                 break;
@@ -185,6 +190,17 @@ public class CtrlUsuariDriver {
         } catch (Exception e) {
             System.out.println("Error al fer login: " + e.getMessage());
         }
+    }
+
+    private static void testLogout() {
+        Usuari actual = cu.getUsuariActual();
+        if (actual == null) {
+            System.out.println("No hi ha cap usuari autenticat.");
+            return;
+        }
+        String username = actual.getUsername();
+        cu.logout();
+        System.out.println("Logout correcte. Sessió tancada per l'usuari '" + username + "'.");
     }
 
     private static void testGetUsuariActual() {

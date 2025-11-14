@@ -101,6 +101,10 @@ public class CtrlEnquesta {
         }
     }
 
+    public void eliminarParticipacio(Enquesta enquesta, String username) {
+        enquesta.eliminarParticipacio(username);
+    }
+
     public Pregunta getPregunta(String idEnquesta, String idPregunta) {
         Enquesta e = persistencia.getEnquesta(idEnquesta);
         if (e != null) {

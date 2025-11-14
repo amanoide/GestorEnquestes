@@ -21,6 +21,10 @@ public class CtrlUsuari {
         Usuari.login(usuari);
     }
 
+    public void logout() {
+        Usuari.logout();
+    }
+
     public void registrarUsuari(String username, String password) throws UsuariJaExisteixException {
         // Crear el nou usuari directament
         Usuari nouUsuari = new Usuari(username, password);

@@ -79,10 +79,11 @@ public class CtrlDominiDriver {
         System.out.println("--- Gestió d'Usuaris ---");
         System.out.println("(1) Registrar Usuari");
         System.out.println("(2) Login");
-        System.out.println("(3) Mostrar Usuari Actual");
-        System.out.println("(4) Comprovar Contrasenya Usuari Actual");
-        System.out.println("(5) Crear Perfil");
-        System.out.println("(6) Mostrar Perfil");
+        System.out.println("(3) Logout");
+        System.out.println("(4) Mostrar Usuari Actual");
+        System.out.println("(5) Comprovar Contrasenya Usuari Actual");
+        System.out.println("(6) Crear Perfil");
+        System.out.println("(7) Mostrar Perfil");
         System.out.println("--- Gestió d'Enquestes ---");
         System.out.println("(10) Crear Enquesta");
         System.out.println("(11) Consultar Totes les Enquestes");
@@ -118,15 +119,18 @@ public class CtrlDominiDriver {
                 testLogin();
                 break;
             case "3":
-                testMostrarUsuariActual();
+                testLogout();
                 break;
             case "4":
-                testcheckPassword();
+                testMostrarUsuariActual();
                 break;
             case "5":
-                testcrearPerfil();
+                testcheckPassword();
                 break;
             case "6":
+                testcrearPerfil();
+                break;
+            case "7":
                 testMostraPerfil();
                 break;
             
@@ -202,6 +206,17 @@ public class CtrlDominiDriver {
         String password = in.nextLine();
         cd.login(username, password);
         System.out.println("Login correcte. Benvingut, " + username + ".");
+    }
+
+    private static void testLogout() {
+        Usuari actual = cd.getUsuariActual();
+        if (actual == null) {
+            System.out.println("No hi ha cap usuari autenticat.");
+            return;
+        }
+        String username = actual.getUsername();
+        cd.logout();
+        System.out.println("Logout correcte. Sessió tancada per l'usuari '" + username + "'.");
     }
 
     private static void testMostrarUsuariActual() {
@@ -303,7 +318,7 @@ public class CtrlDominiDriver {
     // --- Mètodes de Test per a Preguntes ---
 
     private static void testAfegirPregunta() 
-            throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, PermisDenegatException {
+            throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, PermisDenegatException, PreguntaJaExisteixException {
         System.out.println("Introdueix ID enquesta on afegir la pregunta: ");
         String idEnquesta = in.nextLine();
         
@@ -316,7 +331,7 @@ public class CtrlDominiDriver {
 /*
  * NO ES COMPROVA SI LA PREGUNTA EXISTEIX A L'ENQUESTA?
  */
-    private static void testEliminarPregunta() throws EnquestaNoExisteixException, PermisDenegatException {
+    private static void testEliminarPregunta() throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, PreguntaNoExisteixException, PermisDenegatException {
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
         System.out.println("Introdueix ID pregunta a eliminar: ");
@@ -328,7 +343,7 @@ public class CtrlDominiDriver {
 /*
  * NO ES COMPROVA SI LA PREGUNTA EXISTEIX A L'ENQUESTA?
  */
-    private static void testmodificarPregunta() throws EnquestaNoExisteixException, PermisDenegatException {
+    private static void testmodificarPregunta() throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, PreguntaNoExisteixException, PermisDenegatException, RespostaInvalidaException {
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
         System.out.println("Introdueix ID pregunta a modificar: ");
@@ -340,7 +355,7 @@ public class CtrlDominiDriver {
 /*
  * NO ES COMPROVA SI LA PREGUNTA EXISTEIX A L'ENQUESTA?
  */
-    private static void testAfegirOpcioAPregunta() throws Exception {
+    private static void testAfegirOpcioAPregunta() throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, PreguntaNoExisteixException, PermisDenegatException, RespostaInvalidaException {
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
         System.out.println("Introdueix ID pregunta: ");
@@ -364,7 +379,7 @@ public class CtrlDominiDriver {
         System.out.println("Opció afegida.");
     }
 
-    private static void testEliminarOpcioDePregunta() throws Exception {
+    private static void testEliminarOpcioDePregunta() throws ParametreInvalidException, UsuariNoAutenticatException, EnquestaNoExisteixException, PreguntaNoExisteixException, PermisDenegatException, RespostaInvalidaException {
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
         System.out.println("Introdueix ID pregunta: ");
