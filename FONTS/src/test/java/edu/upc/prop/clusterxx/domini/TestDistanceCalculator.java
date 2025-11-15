@@ -5,8 +5,6 @@ import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator.FeatureSpec;
 import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator.VariableKind;
 
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -18,16 +16,6 @@ import java.util.List;
 public class TestDistanceCalculator {
 
     private final DistanceCalculator dc = new DistanceCalculator();
-
-    @BeforeClass
-    public static void iniTests() {
-        System.out.println("Iniciant els tests de DistanceCalculator.\n");
-    }
-
-    @AfterClass
-    public static void fiTests() {
-        System.out.println("Finalitzats els tests de DistanceCalculator.\n");
-    }
 
     /* -------------------- Helpers -------------------- */
 

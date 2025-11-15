@@ -5,9 +5,7 @@ import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
 
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -39,14 +37,6 @@ public class TestEnquesta {
     private Pregunta pQual(String id, String text, TipusPregunta tipus, int maxSel) {
         return new Pregunta(id, text, tipus, maxSel);
     } */
-
-    /**
-     * Missatge en pantalla d'inici dels tests de la classe Enquesta.
-     */
-    @BeforeClass
-    public static void iniTestEnquesta() {
-        System.out.println("Iniciant els tests de la classe Enquesta.");
-    }
 
     Enquesta e;
     Usuari u;
@@ -253,11 +243,4 @@ public class TestEnquesta {
         assertTrue(participantsPost.contains("usuari2"));
     }
     
-    /**
-     * Missatge en pantalla de finalització dels tests de la classe Enquesta.
-     */
-    @AfterClass
-    public static void fiTestEnquesta() {
-        System.out.println("Finalitzant els tests de la classe Enquesta."); 
-    }
 }

@@ -2,8 +2,6 @@ package edu.upc.prop.clusterxx.domini;
 
 import edu.upc.prop.clusterxx.domini.classes.Perfil;
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -13,14 +11,6 @@ import java.util.List;
  * Tests de la classe Perfil.
  */
 public class TestPerfil {
-	/**
-	 * Missatge en pantalla d'inici dels tests de la classe Perfil.
-	 */
-	@BeforeClass
-	public static void iniTestPerfil() {
-		System.out.println("Iniciant tests de la classe Perfil\n");
-	}
-
 	/**
 	 * Crea un perfil complet amb els paràmetres més utilitzats durant els tests.
 	 * @param silhouette valor de la silhouette a utilitzar.
@@ -147,11 +137,4 @@ public class TestPerfil {
 		assertEquals("Molt pobra", crearPerfilComplet(-0.2).getQualitatText());
 	}
 
-	/**
-	 * Missatge en pantalla de finalització dels tests de la classe Perfil.
-	 */
-	@AfterClass
-	public static void fiTestPerfil() {
-		System.out.println("Finalitzats tests de la classe Perfil\n");
-	}
 }

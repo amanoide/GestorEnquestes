@@ -4,9 +4,7 @@ import edu.upc.prop.clusterxx.domini.classes.Usuari;
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 import static edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariJaExisteixException;
 import static edu.upc.prop.clusterxx.domini.classes.Exceptions.CredencialsIncorrectesException;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -16,14 +14,6 @@ import java.util.List;
  * Tests de la classe Usuari.
  */
 public class TestUsuari {
-    /**
-     * Missatge en pantalla d'inici dels tests d'Usuari.
-     */
-    @BeforeClass
-    public static void iniTestUsuari() {
-        System.out.println("Iniciant tests de la classe Usuari");
-    }
-
     /**
      * Reseteja l'estat dels usuaris abans de cada test.
      */
@@ -126,11 +116,4 @@ public class TestUsuari {
         assertEquals("usuari2", Usuari.getUsuariActual().getUsername());
     }
     
-    /**
-     * Missatge en pantalla de finalització dels tests d'Usuari.
-     */
-    @AfterClass
-    public static void fiTestUsuari() {
-        System.out.println("Finalitzats tests de la classe Usuari");
-    }
 }

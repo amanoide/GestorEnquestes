@@ -4,8 +4,6 @@ import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import java.util.List;
 
@@ -13,14 +11,6 @@ import java.util.List;
  * Tests de la classe Pregunta.
  */
 public class TestPregunta {   
-    /**
-     * Missatge en pantalla d'inici dels tests de la classe Pregunta.
-     */
-    @BeforeClass
-    public static void iniTestPregunta() {
-        System.out.println("Iniciant tests de la classe Pregunta\n");
-    }
-
     /*  ===========================================
             TESTS CONSTRUCTORES CLASSE PREGUNTA
         =========================================== */
@@ -401,12 +391,5 @@ public class TestPregunta {
         assertEquals(expected, p.toString());
     }
 
-    /**
-     * Missatge en pantalla de finalització dels tests de la classe Pregunta.
-     */
-    @AfterClass
-    public static void fiTestPregunta() {
-        System.out.println("\nFinalitzats els tests de la classe Pregunta");
-    }
 }
 

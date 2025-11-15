@@ -4,8 +4,6 @@ import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator;
 import edu.upc.prop.clusterxx.domini.classes.Kluster;
 
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -15,14 +13,6 @@ import java.util.List;
  * Tests de la classe Kluster.
  */
 public class TestKluster {
-
-    /**
-     * Missatge en pantalla d'inici dels tests de la classe Kluster.
-     */
-    @BeforeClass
-    public static void iniTestKluster() {
-        System.out.println("Iniciant els tests de la classe Kluster.\n");
-    }
 
     /**
      * Helper que crea especificacions numèriques per totes les dimensions.
@@ -209,11 +199,4 @@ public class TestKluster {
         assertEquals(expected, k.toString());
     }
 
-    /**
-     * Missatge de finalització.
-     */
-    @AfterClass
-    public static void fiTestKluster() {
-        System.out.println("Finalitzats els tests de la classe Kluster.\n");
-    }
 }

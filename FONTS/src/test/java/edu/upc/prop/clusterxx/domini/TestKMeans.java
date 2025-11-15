@@ -4,8 +4,6 @@ import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator;
 import edu.upc.prop.clusterxx.domini.classes.KMeans;
 
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -43,14 +41,6 @@ public class TestKMeans {
     }
 
     /**
-     * Missatge en pantalla d'inici dels tests de la classe KMeans.
-     */
-    @BeforeClass
-    public static void iniTestKMeans() {
-        System.out.println("Iniciant els tests de la classe KMeans.");
-    }
-
-    /**
      * Test constructora KMeans.
      */
     @Test(expected = IllegalArgumentException.class)
@@ -58,11 +48,4 @@ public class TestKMeans {
         new KMeans().fit(dadesDosClusters(), 0, 2, specsNumeriques(2));
     }
 
-    /**
-     * Missatge en pantalla de finalització dels tests de la classe KMeans.
-     */
-    @AfterClass
-    public static void fiTestKMeans() {
-        System.out.println("Finalitzant els tests de la classe KMeans.");
-    }
 }   

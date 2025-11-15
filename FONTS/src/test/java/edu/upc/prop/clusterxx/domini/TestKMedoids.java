@@ -5,8 +5,6 @@ import edu.upc.prop.clusterxx.domini.classes.Kluster;
 import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator;
 
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -17,14 +15,6 @@ import java.util.List;
  * Tests de la classe KMedoids.
  */
 public class TestKMedoids {
-
-    /**
-     * Missatge en pantalla d'inici dels tests de la classe KMedoids.
-     */
-    @BeforeClass
-    public static void iniTestKMedoids() {
-        System.out.println("Iniciant els tests de la classe KMedoids.");
-    }
 
     /**
      * Test del constructor KMedoids.
@@ -298,11 +288,4 @@ public class TestKMedoids {
         assertEquals("Deberían haber 3 clusters", 3, clusters1.size());
     }
 
-    /**
-     * Missatge en pantalla de finalització dels tests de la classe KMedoids.
-     */
-    @AfterClass
-    public static void fiTestKMedoids() {
-        System.out.println("Finalitzant els tests de la classe KMedoids.");
-    }
 }

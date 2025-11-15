@@ -5,8 +5,6 @@ import edu.upc.prop.clusterxx.domini.classes.KMeansPlusPlus;
 import edu.upc.prop.clusterxx.domini.classes.Kluster;
 
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -61,16 +59,6 @@ public class TestKMeansPlusPlus {
         for (int i = 0; i < 4; i++) dades.add(new String[]{"0", "0"});
         for (int i = 0; i < 4; i++) dades.add(new String[]{"10", "10"});
         return dades;
-    }
-
-    @BeforeClass
-    public static void iniTestKMeansPlusPlus() {
-        System.out.println("Iniciant els tests de la classe KMeansPlusPlus.\n");
-    }
-
-    @AfterClass
-    public static void fiTestKMeansPlusPlus() {
-        System.out.println("Finalitzats els tests de la classe KMeansPlusPlus.\n");
     }
 
     /**

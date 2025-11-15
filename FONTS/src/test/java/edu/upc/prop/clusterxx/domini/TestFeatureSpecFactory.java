@@ -7,8 +7,6 @@ import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -18,16 +16,6 @@ import java.util.List;
  * Tests de la classe FeatureSpecFactory.
  */
 public class TestFeatureSpecFactory {
-
-    @BeforeClass
-    public static void iniTests() {
-        System.out.println("Iniciant els tests de FeatureSpecFactory.\n");
-    }
-
-    @AfterClass
-    public static void fiTests() {
-        System.out.println("Finalitzats els tests de FeatureSpecFactory.\n");
-    }
 
     /* -------------------- Helpers -------------------- */
 

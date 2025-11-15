@@ -5,8 +5,6 @@ import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator;
 import edu.upc.prop.clusterxx.domini.classes.Kluster;
 
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -44,16 +42,6 @@ public class TestClusterEvaluator {
         clusters.add(cluster(new String[]{"0"}, new String[]{"0"}, new String[]{"0"}));
         clusters.add(cluster(new String[]{"10"}, new String[]{"10"}, new String[]{"10"}));
         return clusters;
-    }
-
-    @BeforeClass
-    public static void iniTests() {
-        System.out.println("Iniciant els tests de la classe ClusterEvaluator.\n");
-    }
-
-    @AfterClass
-    public static void fiTests() {
-        System.out.println("Finalitzats els tests de la classe ClusterEvaluator.\n");
     }
 
         /*  =============================================
