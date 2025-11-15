@@ -25,6 +25,30 @@ public class CtrlAnalisi {
     }
 
     /**
+     * Ejecuta clustering con el algoritmo especificado.
+     * @param data Lista de puntos, cada punto es un array de String
+     * @param k número de clústeres
+     * @param algorithm nombre del algoritmo: "KMeans", "KMeans++", "KMedoids"
+     * @param maxIters máximo de iteraciones
+     * @param specs especificación por dimensión del tipo de variable
+     * @return lista de clústeres con centroides/medoides y miembros
+     */
+    public List<Kluster> clusterWithAlgorithm(List<String[]> data, int k, String algorithm, int maxIters, DistanceCalculator.FeatureSpec[] specs) {
+        if (algorithm == null) algorithm = "KMeans";
+        
+        switch (algorithm.toLowerCase()) {
+            case "kmeans++":
+                return new KMeansPlusPlus().fit(data, k, maxIters, specs);
+            case "kmedoids":
+            case "k-medoids":
+                return new KMedoids().fit(data, k, maxIters, specs);
+            case "kmeans":
+            default:
+                return new KMeans().fit(data, k, maxIters, specs);
+        }
+    }
+
+    /**
      * Helper para construir un punto a partir de valores String.
      * Todos los valores deben ser String.
      */
