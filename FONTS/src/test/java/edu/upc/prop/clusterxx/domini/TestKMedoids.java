@@ -131,7 +131,7 @@ public class TestKMedoids {
         data.add(new String[]{"3"});
 
         DistanceCalculator.FeatureSpec[] specs = {
-            DistanceCalculator.FeatureSpec.numeric()
+            DistanceCalculator.FeatureSpec.numeric(0.0, 10.0)
         };
 
         KMedoids kmedoids = new KMedoids();
@@ -151,7 +151,7 @@ public class TestKMedoids {
         data.add(new String[]{"2"});
 
         DistanceCalculator.FeatureSpec[] specs = {
-            DistanceCalculator.FeatureSpec.numeric()
+            DistanceCalculator.FeatureSpec.numeric(0.0, 10.0)
         };
 
         KMedoids kmedoids = new KMedoids();
@@ -169,7 +169,7 @@ public class TestKMedoids {
         data.add(new String[]{"2"});
 
         DistanceCalculator.FeatureSpec[] specs = {
-            DistanceCalculator.FeatureSpec.numeric()
+            DistanceCalculator.FeatureSpec.numeric(0.0, 10.0)
         };
 
         KMedoids kmedoids = new KMedoids();
@@ -185,7 +185,7 @@ public class TestKMedoids {
         List<String[]> data = new ArrayList<>();
 
         DistanceCalculator.FeatureSpec[] specs = {
-            DistanceCalculator.FeatureSpec.numeric()
+            DistanceCalculator.FeatureSpec.numeric(0.0, 10.0)
         };
 
         KMedoids kmedoids = new KMedoids();
@@ -221,7 +221,7 @@ public class TestKMedoids {
         data.add(new String[]{"JavaScript,TypeScript"});
 
         DistanceCalculator.FeatureSpec[] specs = {
-            DistanceCalculator.FeatureSpec.nominalMulti(null, 3)
+            DistanceCalculator.FeatureSpec.nominalMulti(3)
         };
 
         KMedoids kmedoids = new KMedoids();
