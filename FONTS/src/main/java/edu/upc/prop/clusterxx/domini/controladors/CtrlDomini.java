@@ -838,8 +838,14 @@ public class CtrlDomini {
                     // Verificar que l'usuari existeix
                     Usuari usuari = ctrlPersistencia.getUsuari(username);
                     if (usuari == null) {
-                        System.out.println("⚠ Avís: L'usuari '" + username + "' no existeix, se saltarà.");
-                        continue;
+                        //IMPORTANTE: CREO EL USUARIO SI NO EXISTE PARA HACER LA PRUEBA DE IMPORTAR RESPOSTA PARA NO TENER QUE CREARLOS A MANO
+                        //ESTO SE TIENE QUE QUITAR LUEGO
+                        ctrlUsuari.registrarUsuari(username, "imported_password");
+                        usuari = ctrlPersistencia.getUsuari(username);
+
+                        //DE MOMENTO COMENTO ESTO PARA QUE NO SALGA EL AVISO LUEGO DEBEMOS QUITAR LA CREACION AUTOMATICA Y PONERLO OTRA VEZ
+                        //System.out.println("⚠ Avís: L'usuari '" + username + "' no existeix, se saltarà.");
+                        //continue;
                     }
                     
                     // Importar les respostes d'aquest usuari
@@ -1395,6 +1401,24 @@ public class CtrlDomini {
     
     public boolean checkPassword(String password) {
         return ctrlUsuari.checkPassword(password);
+    }
+
+    public void eliminarUsuari(String username) throws ParametreInvalidException {
+        // Validar que el paràmetre no sigui nul o buit
+        if (username == null || username.trim().isEmpty()) {
+            throw new ParametreInvalidException("El nom d'usuari no pot estar buit.");
+        }
+        
+        // Normalitzar el username (eliminar espais)
+        String normalizedUsername = username.trim();
+
+        Usuari usuariact = ctrlUsuari.getUsuariActual();
+
+        if(usuariact != null && normalizedUsername.equals(usuariact.getUsername())) {
+            ctrlUsuari.logout();
+        }
+
+        ctrlUsuari.eliminarUsuari(normalizedUsername);
     }
 
     public void crearPerfil(String id, String descripcio) {

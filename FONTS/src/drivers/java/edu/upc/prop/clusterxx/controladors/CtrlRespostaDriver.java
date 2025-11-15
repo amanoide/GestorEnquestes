@@ -17,25 +17,17 @@ import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 
 // Importacions dels stubs de domini
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaJaContestadaException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaNoExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.ParametreInvalidException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.PermisDenegatException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.PreguntaNoExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.RespostaInvalidaException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.RespostaNoExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariNoAutenticatException;
+
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
-import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
 
 // Importacions de Java
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.List;
 
@@ -111,7 +103,7 @@ public class CtrlRespostaDriver {
             cd.afegirPregunta("1", preguntaNum);
             cd.afegirPregunta("1", preguntaOrd);
             cd.afegirPregunta("1", preguntaQS);
-            //cd.afegirPregunta("1", preguntaQM);
+            cd.afegirPregunta("1", preguntaQM);
 
             
             System.out.println("✓ Enquesta mock registrada correctament en CtrlDomini");
@@ -130,6 +122,10 @@ public class CtrlRespostaDriver {
         System.out.println("(2) Modificar Resposta");
         System.out.println("(3) Esborrar Resposta");
         System.out.println("(4) Importar Respostes des de Fitxer");
+        System.out.println("(5) Consultar Respostes");
+
+        System.out.println("CREACIÓ DE MOCKS:");
+        System.out.println("(500) Importar Enquesta");
         System.out.println("------------------------");
         System.out.println("(0|sortir) - Tancar driver");
         System.out.println("Escull una opció: ");
@@ -140,6 +136,10 @@ public class CtrlRespostaDriver {
      */
     private static void gestionarEntrada(String input) throws Exception {
         switch (input) {
+            case "500" :
+            case "Importar Enquesta" :
+                testImportarEnquesta();
+                break;  
             case "1":
             case "Contestar enquesta":
                 contestarEnquesta();
@@ -152,10 +152,10 @@ public class CtrlRespostaDriver {
             case "Esborrar Resposta":
                 testEsborrarResposta();
                 break;
-           /* case "4":
+            case "4":
             case "Importar Respostes des de Fitxer":
-                testGetRespostesEnquesta();
-                break;*/
+                importarRespostes();
+                break;
             case "5":
             case "Consultar Respostes":
                 testConsultarRespostesEnquesta();
@@ -171,8 +171,30 @@ public class CtrlRespostaDriver {
 
 
     // --- Mètodes de Test ---
+    
+   private static void testImportarEnquesta() {
+        
+        System.out.println("\n═══ IMPORTAR ENQUESTA DES DE JSON ═══");
+        System.out.println("Fitxer d'exemple: exemple_enquesta.json");
+    System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
+        String path = in.nextLine().trim();
+        
+        // Si solo es un nombre de archivo, añadir la ruta completa
+        if (!path.contains("\\") && !path.contains("/")) {
+            path = System.getProperty("user.dir") + "\\" + path;
+        }
+        
+        try {
+            cd.importarEnquesta(path);
+            System.out.println("✓ Enquesta importada correctament!");
+        } catch (ErrorImportacioException e) {
+            System.out.println("❌ Error important l'enquesta: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error inesperat: " + e.getMessage());
+        }
+    
 
-   
+    }
 
     private static void contestarEnquesta() {
         System.out.println("\n═══ RESPONDRE ENQUESTA ═══");
@@ -215,9 +237,7 @@ public class CtrlRespostaDriver {
             Enquesta enquesta = totes.get(num);
             List<Pregunta> preguntes = enquesta.getPreguntes();
             
-            if (preguntes.isEmpty()) {
-                throw new PreguntaNoExisteixException("L'enquesta no té preguntes");
-            }
+            //DEBEIA PARAR LA EJECUCION SI NO HAY PREGUNTAS
             
             HashMap<String, String> respostes = new HashMap<>();
             HashMap<String, String> idPreguntaPerResposta = new HashMap<>();
@@ -237,9 +257,22 @@ public class CtrlRespostaDriver {
                         
                     case NUMERICA:
                         System.out.print("  Valor (" + p.getValorMinim() + "-" + p.getValorMaxim() + "): ");
-                        String respNum = in.nextLine();
-                        respostes.put(p.getId(), respNum);
-                        idPreguntaPerResposta.put(p.getId(), p.getId());
+                        boolean valid = false;
+                        while(!valid){
+                            String respNum = in.nextLine();
+                            try{
+                                double valor = Double.parseDouble(respNum);
+                                if(valor < p.getValorMinim() || valor > p.getValorMaxim()){
+                                    System.out.print("  ❌ Valor fora de rang. Torna a intentar: ");
+                                } else {
+                                    respostes.put(p.getId(), respNum);
+                                    idPreguntaPerResposta.put(p.getId(), p.getId());
+                                    valid = true;
+                                }
+                            } catch (NumberFormatException e){
+                                System.out.print("  ❌ Si us plau, introdueix un número vàlid: ");
+                            }
+                        }
                         break;
                         
                     case QUALITATIVA_ORDENADA:
@@ -274,7 +307,7 @@ public class CtrlRespostaDriver {
                         for (int j = 0; j < opcionsM.size(); j++) {
                             System.out.println("  " + (j + 1) + ". " + opcionsM.get(j).getText());
                         }
-                        System.out.print("  Escull opcions separades per comes (ex: 1,3,4): ");
+                        System.out.print("  Escull opcions separades per comes (ex: opcio1,opcio2,opcio3): ");
                         String opcionsEsc = in.nextLine();
                         
                         respostes.put(p.getId(), opcionsEsc);
@@ -290,8 +323,6 @@ public class CtrlRespostaDriver {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
-
-
 
     
     private static void testModificarResposta() {
@@ -526,13 +557,37 @@ public class CtrlRespostaDriver {
         }
     }
 
+    // TODAS LAS RESPUESTAS A ENQUESTAS DEBE EXISTIR TANTO LA ENCUESTA COMO LOS USUARIOS QUE RESPONDEN Y PREGUNTAS
+    //SI NO NO IRÁ CORRECTAMENTE
+    private static void importarRespostes() {
+        System.out.println("----IMPORTAR RESPOSTES DES DE FITXER----");
+        // Implementació pendent segons l'especificació del fitxer
+        System.out.println("Fitxer d'exemple: exemple_resposta.json");
+        System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
+        String path = in.nextLine().trim();
+        
+        // Si solo es un nombre de archivo, añadir la ruta completa
+        if (!path.contains("\\") && !path.contains("/")) {
+            path = System.getProperty("user.dir") + "\\" + path;
+        }
+        
+        try {
+            cd.importarRespostes(path);
+            System.out.println("✓ Resposta importada correctament!");
+        } catch (ErrorImportacioException e) {
+            System.out.println("❌ Error important la resposta: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error inesperat: " + e.getMessage());
+        }
+        
+    }
      /**
      * Consulta todas las respostas de una enquesta agrupadas por usuario.
      */
     private static void testConsultarRespostesEnquesta() {
         System.out.println("\n════ CONSULTAR RESPOSTES D'UNA ENQUESTA ════");
         
-ArrayList<Enquesta> totes = new ArrayList<>();
+        ArrayList<Enquesta> totes = new ArrayList<>();
         try{
          totes = cd.consultarEnquestes();
         } catch (UsuariNoAutenticatException e){
@@ -571,64 +626,34 @@ ArrayList<Enquesta> totes = new ArrayList<>();
         
         try {
             // 2) Obtenir respostes de l'enquesta (agrupades per usuari)
-            HashMap<String, ArrayList<Resposta>> respostesPerUsuari = 
+            HashMap<String, ArrayList<Resposta>> respostesPerPregunta = 
                 cd.consultarRespostesEnquesta(enquesta.getId());
             
-            if (respostesPerUsuari == null || respostesPerUsuari.isEmpty()) {
+            if (respostesPerPregunta == null || respostesPerPregunta.isEmpty()) {
                 System.out.println("\n❌ No hi ha respostes per aquesta enquesta.");
                 return;
             }
             
-            // 3) Mostrar respostes agrupades per usuari
+            // 3) Mostrar respostes agrupades per pregunta
             System.out.println("\n═══════════════════════════════════════");
             System.out.println("RESPOSTES DE L'ENQUESTA: " + enquesta.getTitol());
             System.out.println("ID: " + enquesta.getId());
             System.out.println("═══════════════════════════════════════\n");
             
-            int totalUsuaris = respostesPerUsuari.size();
-            System.out.println("Total d'usuaris que han contestat: " + totalUsuaris + "\n");
-            
-            int usuariNum = 1;
-            for (String username : respostesPerUsuari.keySet()) {
-                ArrayList<Resposta> respostesUsuari = respostesPerUsuari.get(username);
+
+            for (String idPregunta : respostesPerPregunta.keySet()) {
+                System.out.println("── Pregunta ID: " + idPregunta + " ──");
+                ArrayList<Resposta> respostes = respostesPerPregunta.get(idPregunta);
                 
-                System.out.println("─────────────────────────────────────");
-                System.out.println(usuariNum + ". USUARI: " + username);
-                System.out.println("─────────────────────────────────────");
-                
-                List<Pregunta> preguntes = enquesta.getPreguntes();
-                int contador = 1;
-                
-                for (Pregunta p : preguntes) {
-                    // Buscar la resposta d'aquesta pregunta per aquest usuari
-                    Resposta respostaFound = null;
-                    for (Resposta r : respostesUsuari) {
-                        if (r.getIdPregunta().equals(p.getId())) {
-                            respostaFound = r;
-                            break;
-                        }
-                    }
-                    
-                    System.out.println(contador + ". Pregunta: " + p.getText());
-                    System.out.println("   Tipus: " + p.getTipus());
-                    
-                    if (respostaFound != null) {
-                        System.out.println("   ✓ Resposta: " + respostaFound.getTextResposta());
-                    } else {
-                        System.out.println("   ✗ Sense resposta");
-                    }
-                    System.out.println();
-                    contador++;
+                for (Resposta r : respostes) {
+                    System.out.println("Usuari: " + r.getUsernameUsuari() + " | Resposta: " + r.getTextResposta());
                 }
-                
-                System.out.println("Respostes d'aquest usuari: " + respostesUsuari.size() + "/" + preguntes.size());
                 System.out.println();
-                usuariNum++;
             }
-            
-            System.out.println("═══════════════════════════════════════");
-            System.out.println("Resum: " + totalUsuaris + " usuaris, " + 
-                              respostesPerUsuari.values().stream().mapToInt(ArrayList::size).sum() + " respostes totals");
+
+
+                
+
             
         } catch (Exception e) {
             System.out.println("❌ Error consultant respostes: " + e.getMessage());
