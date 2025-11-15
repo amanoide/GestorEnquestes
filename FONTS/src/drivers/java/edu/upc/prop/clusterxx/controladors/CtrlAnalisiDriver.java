@@ -1,19 +1,25 @@
 package edu.upc.prop.clusterxx.controladors;
 
-// Importacions dels controladors
-import edu.upc.prop.clusterxx.domini.controladors.CtrlAnalisi;
-
-// Importacions dels stubs de domini
-import edu.upc.prop.clusterxx.domini.classes.ClusteringAlgorithm;
-import edu.upc.prop.clusterxx.domini.classes.KMeans;
-import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
-
 // Importacions de Java
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 import java.util.Scanner;
+
+// Importacions dels stubs de domini
+import edu.upc.prop.clusterxx.domini.classes.Enquesta;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaNoExisteixException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.ErrorImportacioException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.ParametreInvalidException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariNoAutenticatException;
+import edu.upc.prop.clusterxx.domini.classes.Kluster;
+import edu.upc.prop.clusterxx.domini.classes.Perfil;
+import edu.upc.prop.clusterxx.domini.classes.Pregunta;
+import edu.upc.prop.clusterxx.domini.classes.Resposta;
+import edu.upc.prop.clusterxx.domini.classes.Usuari;
+// Importacions dels controladors
+import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 
 /**
  * Driver per provar la classe CtrlAnalisi.
@@ -22,13 +28,9 @@ import java.util.Scanner;
 public class CtrlAnalisiDriver {
 
     private static Scanner in;
-    private static CtrlAnalisi ca;
-    
-    /**
-     * Emmagatzemem les últimes dades creades per poder-les
-     * passar al mètode silhouette().
-     */
-    private static List<double[]> dadesActuals;
+    private static CtrlDomini cd;
+    private static Usuari admin;
+
 
     public static void main(String[] args) {
         init();
@@ -52,45 +54,37 @@ public class CtrlAnalisiDriver {
 
     private static void init() {
         in = new Scanner(System.in);
-        ca = new CtrlAnalisi();
-        dadesActuals = new ArrayList<>(); // Inicialitzem la llista
+        cd = new CtrlDomini();
+        admin = new Usuari("USER_MOCK", "1234");
+        Usuari.login(admin);
     }
 
     private static void mostra_metodes() {
         System.out.println("\n--- Menú CtrlAnalisi ---");
-        System.out.println("(1) Crear Dades de Mostra");
-        System.out.println("--- Proves ---");
-        System.out.println("(10) Executar KMeans");
-        System.out.println("(11) Executar KMeans avançat)");
-        System.out.println("(12) Executar generic");
-        System.out.println("(13) Calcular Silhouette");
         System.out.println("------------------------");
+        System.out.println("(1) Importar enquesta");
+        System.out.println("(2) Importar Respostes");
+        System.out.println("(3) Analitzar enquesta");
+        System.out.println("(4) Veure el meu perfil");
         System.out.println("(0|sortir) - Tancar driver");
-        System.out.print("Escull una opció: ");
+        System.out.println("Escull una opció: ");
     }
 
     private static void gestionarEntrada(String input) throws Exception {
         switch (input) {
             case "1":
-            case "Crear Dades de Mostra":
-                crearDadesMostra();
+                testImportarEnquesta();
                 break;
-            case "10":
-            case "Executar KMeans":
-                testExecutarKMeansSimple();
+            case "2":
+                importarRespostes();
                 break;
-            case "11":
-            case "Executar KMeans avançat":
-                testExecutarKMeansAvançat();
+            case "3":
+                analitzarEnquesta();
                 break;
-            case "12":
-            case "Executar generic":
-                testExecutarGeneric();
+            case "4":
+                veureMeuPerfil();
                 break;
-            case "13":
-            case "Calcular Silhouette":
-                testSilhouette();
-                break;
+
             case "0":
             case "sortir":
                 break;
@@ -100,111 +94,312 @@ public class CtrlAnalisiDriver {
         }
     }
 
-    // --- Mètodes de Test ---
-
-    private static void testExecutarKMeansSimple() {
-        if (dadesActuals.isEmpty()) {
-            System.out.println("Primer has de crear dades (opció 1).");
-            return;
-        }
-        System.out.println("Introdueix el número de clusters (k): ");
-        int k = Integer.parseInt(in.nextLine());
-
-        int[] labels = ca.executarKMeans(k, dadesActuals);
-        
-        System.out.println("Execució simple completada. Etiquetes (clusters) assignades:");
-        imprimirLabels(labels);
-    }
-
-    private static void testExecutarKMeansAvançat() {
-        if (dadesActuals.isEmpty()) {
-            System.out.println("Primer has de crear dades (opció 1).");
-            return;
-        }
-        System.out.println("Introdueix el número de clusters (k): ");
-        int k = Integer.parseInt(in.nextLine());
-        System.out.println("Vols fer servir K-means++ (true/false): ");
-        boolean useKpp = Boolean.parseBoolean(in.nextLine());
-        System.out.println("Distància (EUCLIDEAN o MANHATTAN): ");
-        KMeans.Distance dist = KMeans.Distance.valueOf(in.nextLine().toUpperCase());
-        System.out.println("Introdueix el seed (llavor, un número llarg): ");
-        long seed = Long.parseLong(in.nextLine());
-
-        int[] labels = ca.executarKMeans(k, dadesActuals, useKpp, dist, seed);
-
-        System.out.println("Execució avançada completada. Etiquetes (clusters) assignades:");
-        imprimirLabels(labels);
-    }
-
-    private static void testExecutarGeneric() {
-        if (dadesActuals.isEmpty()) {
-            System.out.println("Primer has de crear dades (opció 1).");
-            return;
-        }
-        System.out.print("Introdueix el número de clusters (k) per l'algorisme stub: ");
-        int k = Integer.parseInt(in.nextLine());
-        int dim = dadesActuals.get(0).length;
-        
-        // Creem un stub de KMeans (que és un ClusteringAlgorithm) per passar-lo
-        ClusteringAlgorithm algorismeStub = new KMeans(k, dim);
-        
-        System.out.print("Vols fer servir K-means++ (true/false): ");
-        boolean useKpp = Boolean.parseBoolean(in.nextLine());
-
-        int[] labels = ca.executar(algorismeStub, dadesActuals, useKpp);
-        
-        System.out.println("Execució genèrica completada. Etiquetes (clusters) assignades:");
-        imprimirLabels(labels);
-    }
-
-    private static void testSilhouette() {
-        if (dadesActuals.isEmpty()) {
-            System.out.println("Primer has de crear dades (opció 1) i executar un KMeans (opció 10 o 11).");
-            return;
-        }
-        
-        // El mètode silhouette depèn de les dades i de l'últim 'kmeans' guardat a CtrlAnalisi
-        double score = ca.silhouette(dadesActuals);
-        
-        if (Double.isNaN(score)) {
-            System.out.println("ERROR: No s'ha pogut calcular. Has executat un KMeans abans (opció 10, 11 o 12)?");
-        } else {
-            System.out.println("Puntuació Silhouette (simulada) de l'última execució: " + score);
-        }
-    }
 
     // --- Mètodes Auxiliars ---
 
-    /**
-     * Mètode auxiliar per crear una llista de dades aleatòries.
-     * Guarda el resultat a la variable estàtica 'dadesActuals'.
-     */
-    private static void crearDadesMostra() {
-        dadesActuals.clear(); // Neteja dades anteriors
-        System.out.println("Quants punts de dades vols crear? ");
-        int n = Integer.parseInt(in.nextLine());
-        System.out.println("Quina dimensió (quants valors per punt)? ");
-        int dim = Integer.parseInt(in.nextLine());
+    private static void testImportarEnquesta() {
         
-        Random r = new Random();
-        for (int i = 0; i < n; i++) {
-            double[] punt = new double[dim];
-            for (int j = 0; j < dim; j++) {
-                punt[j] = r.nextDouble() * 100; // Valors aleatoris 0-100
-            }
-            dadesActuals.add(punt);
+        System.out.println("\n═══ IMPORTAR ENQUESTA DES DE JSON ═══");
+        System.out.println("Fitxer d'exemple: exemple_enquesta.json");
+    System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
+        String path = in.nextLine().trim();
+        
+        // Si solo es un nombre de archivo, añadir la ruta completa
+        if (!path.contains("\\") && !path.contains("/")) {
+            path = System.getProperty("user.dir") + "\\" + path;
         }
-        System.out.println("S'han creat " + n + " dades de dimensió " + dim + ".");
+        
+        try {
+            cd.importarEnquesta(path);
+            System.out.println("✓ Enquesta importada correctament!");
+        } catch (ErrorImportacioException e) {
+            System.out.println("❌ Error important l'enquesta: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error inesperat: " + e.getMessage());
+        }
+    
+
     }
 
-    /**
-     * Mètode auxiliar per imprimir l'array d'etiquetes.
-     */
-    private static void imprimirLabels(int[] labels) {
-        if (labels == null || labels.length == 0) {
-            System.out.println("[]");
-        } else {
-            System.out.println(Arrays.toString(labels));
+    private static void importarRespostes() {
+        System.out.println("----IMPORTAR RESPOSTES DES DE FITXER----");
+        // Implementació pendent segons l'especificació del fitxer
+        System.out.println("Fitxer d'exemple: exemple_resposta.json");
+        System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
+        String path = in.nextLine().trim();
+        
+        // Si solo es un nombre de archivo, añadir la ruta completa
+        if (!path.contains("\\") && !path.contains("/")) {
+            path = System.getProperty("user.dir") + "\\" + path;
+        }
+        
+        try {
+            cd.importarRespostes(path);
+            System.out.println("✓ Resposta importada correctament!");
+        } catch (ErrorImportacioException e) {
+            System.out.println("❌ Error important la resposta: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error inesperat: " + e.getMessage());
+        }
+        
+    }
+
+    private static void analitzarEnquesta() {
+        System.out.println("\n═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══");
+        
+        try {
+            ArrayList<Enquesta> totes = cd.consultarEnquestes();
+        if (totes.isEmpty()) {
+            System.out.println("No hi ha enquestes al sistema.");
+            return;
+        }
+        
+        System.out.println("Enquestes disponibles:");
+        for (int i = 0; i < totes.size(); i++) {
+            Enquesta e = totes.get(i);
+            System.out.println((i + 1) + ". " + e.getTitol() + " (ID: " + e.getId() + ") - Participants: " + e.getParticipants().size());
+        }
+        
+        int num = -1;
+        boolean numValid = false;
+        
+        while (!numValid) {
+            try {
+                System.out.print("\nEscull enquesta (número): ");
+                num = Integer.parseInt(in.nextLine()) - 1;
+                
+                if (num < 0 || num >= totes.size()) {
+                    System.out.println("❌ Número no vàlid. Tria un número entre 1 i " + totes.size());
+                } else {
+                    numValid = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Si us plau, introdueix un número vàlid");
+            }
+        }
+        
+        Enquesta enquesta = totes.get(num);
+        
+        try {
+            // Verificar si la enquesta tiene respuestas
+            HashMap<String, ArrayList<Resposta>> respostesPerUsuari = cd.consultarRespostesEnquesta(enquesta.getId());
+            
+            if (respostesPerUsuari.isEmpty()) {
+                System.out.println("\n⚠ Aquesta enquesta no té respostes. Necessites almenys 2 participants per fer clustering.");
+                return;
+            }
+            
+            if (respostesPerUsuari.size() < 2) {
+                System.out.println("\n⚠ Necessites almenys 2 participants per fer clustering. Aquesta enquesta només té " + respostesPerUsuari.size() + " participant.");
+                return;
+            }
+            
+            // Preguntar cómo escoger k
+            System.out.println("\n¿Com vols escollir el nombre de clusters (k)?");
+            System.out.println("  1. Manual (tu esculls k)");
+            System.out.println("  2. Aleatori (k entre 2 i √n)");
+            System.out.println("  3. Automàtic (millor k segons Silhouette)");
+            System.out.print("Escull (1-3): ");
+            String kOpcio = in.nextLine();
+            
+            int k = -1;
+            boolean autoK = false;
+            int nParticipants = respostesPerUsuari.size();
+            int kMax = (int) Math.sqrt(nParticipants);
+            
+            switch (kOpcio) {
+                case "1": // Manual
+                    while (k < 2 || k > nParticipants) {
+                        try {
+                            System.out.print("\nQuants grups (clusters) vols crear? (2-" + nParticipants + "): ");
+                            k = Integer.parseInt(in.nextLine());
+                            if (k < 2) {
+                                System.out.println("❌ Necessites almenys 2 clusters");
+                            } else if (k > nParticipants) {
+                                System.out.println("❌ No pots tenir més clusters que participants (" + nParticipants + ")");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("❌ Si us plau, introdueix un número vàlid");
+                        }
+                    }
+                    break;
+                    
+                case "2": // Aleatorio
+                    k = 2 + new java.util.Random().nextInt(Math.max(1, kMax - 1));
+                    System.out.println("✓ k escollit aleatòriament: " + k);
+                    break;
+                    
+                case "3": // Automático con Silhouette
+                    autoK = true;
+                    k = 2; // Valor temporal, se calculará el mejor
+                    System.out.println("✓ S'avaluaran diferents valors de k (2 fins a " + Math.min(10, kMax) + ")");
+                    break;
+                    
+                default:
+                    System.out.println("⚠️ Opció no vàlida, s'usarà k=3 per defecte");
+                    k = 3;
+            }
+            
+            // Preguntar qué algoritmo usar
+            System.out.println("\nAlgoritme de clustering:");
+            System.out.println("  1. KMeans (inicialització aleatòria)");
+            System.out.println("  2. KMeans++ (inicialització intel·ligent - recomanat)");
+            System.out.println("  3. KMedoids (medoides reals - robust a outliers)");
+            System.out.print("Escull (1-3): ");
+            String algOpcio = in.nextLine();
+            
+            boolean usePlusPlus = algOpcio.equals("2");
+            String algoritmeNom;
+            switch (algOpcio) {
+                case "2":
+                    algoritmeNom = "KMeans++";
+                    break;
+                case "3":
+                    algoritmeNom = "KMedoids";
+                    break;
+                case "1":
+                default:
+                    algoritmeNom = "KMeans";
+                    break;
+            }
+            
+            // Si es automático, calcular mejor k con Silhouette
+            if (autoK) {
+                System.out.println("\n⏳ Avaluant diferents valors de k...");
+                int kMin = 2;
+                int kMaxAuto = Math.min(10, Math.max(kMax, 3));
+                double bestSilhouette = -1;
+                int bestK = 2;
+                
+                for (int kTest = kMin; kTest <= kMaxAuto; kTest++) {
+                    CtrlDomini.ResultatClustering tempResultat = cd.analitzarEnquesta(
+                        enquesta.getId(), 
+                        kTest, 
+                        usePlusPlus, 
+                        100, 
+                        algoritmeNom
+                    );
+                    
+                    double silhouette = tempResultat.silhouetteGlobal;
+                    System.out.printf("  k=%d → Silhouette=%.3f%n", kTest, silhouette);
+                    
+                    if (silhouette > bestSilhouette) {
+                        bestSilhouette = silhouette;
+                        bestK = kTest;
+                    }
+                }
+                
+                k = bestK;
+                System.out.println("\n✓ Millor k trobat: " + k + " (Silhouette=" + String.format("%.3f", bestSilhouette) + ")");
+            }
+            
+            System.out.println("\n⏳ Analitzant respostes" + (autoK ? " amb k=" + k : "") + "...");
+            
+            // Delegar todo el clustering al CtrlDomini
+            CtrlDomini.ResultatClustering resultat = cd.analitzarEnquesta(
+                enquesta.getId(), 
+                k, 
+                usePlusPlus, 
+                100, 
+                algoritmeNom
+            );
+            
+            // Mostrar resultados
+            System.out.println("\n╔══════════════════════════════════════════════╗");
+            System.out.println("║      RESULTATS DEL CLUSTERING               ║");
+            System.out.println("╚══════════════════════════════════════════════╝");
+            System.out.println("\n📊 Algoritme: " + algoritmeNom);
+            System.out.println("📊 Nombre de clusters: " + k);
+            System.out.println("📊 Participants analitzats: " + resultat.usernames.size());
+            System.out.printf("📊 Coeficient Silhouette global: %.3f%n", resultat.silhouetteGlobal);
+            
+            // Interpretación del Silhouette
+            System.out.print("   Qualitat: ");
+            double silhouette = resultat.silhouetteGlobal;
+            if (silhouette >= 0.7) {
+                System.out.println("Excel·lent ✓✓✓ (clusters ben separats i compactes)");
+            } else if (silhouette >= 0.5) {
+                System.out.println("Bona ✓✓ (estructura de clusters clara)");
+            } else if (silhouette >= 0.25) {
+                System.out.println("Acceptable ✓ (estructura present però amb superposició)");
+            } else if (silhouette >= 0) {
+                System.out.println("Pobra (clusters poc definits)");
+            } else {
+                System.out.println("Molt pobra (molts punts mal assignats)");
+            }
+            
+            // Mostrar cada cluster
+            List<Pregunta> preguntes = enquesta.getPreguntes();
+            for (int i = 0; i < resultat.clusters.size(); i++) {
+                Kluster cluster = resultat.clusters.get(i);
+                List<String[]> members = cluster.getMembers();
+                String[] centroid = cluster.getCentroid();
+                
+                System.out.println("\n┌─ CLUSTER " + (i + 1) + " ─┐");
+                System.out.println("│ Mida: " + members.size() + " participants");
+                System.out.printf("│ Silhouette: %.3f%n", resultat.silhouettePerCluster[i]);
+                
+                // Mostrar centroide (perfil característic del cluster)
+                System.out.println("│ Perfil característic:");
+                for (int j = 0; j < preguntes.size(); j++) {
+                    Pregunta p = preguntes.get(j);
+                    System.out.println("│   " + p.getText() + ": " + centroid[j]);
+                }
+                
+                // Mostrar miembros del cluster
+                System.out.println("│ Membres:");
+                for (String[] memberVector : members) {
+                    // Buscar el índice usando el contenido del vector
+                    String vectorKey = String.join("|", memberVector);
+                    Integer memberIdx = resultat.vectorToIndex.get(vectorKey);
+                    
+                    if (memberIdx != null && memberIdx < resultat.usernames.size()) {
+                        System.out.println("│   - " + resultat.usernames.get(memberIdx));
+                    }
+                }
+                System.out.println("└" + "─".repeat(50) + "┘");
+            }
+            
+            System.out.println("\n✓ Anàlisi completada i perfils assignats!");
+            System.out.println("\n💡 Interpretació:");
+            System.out.println("   - Cada cluster representa un grup d'usuaris amb respostes similars");
+            System.out.println("   - El 'Perfil característic' mostra la resposta típica del grup");
+            System.out.println("   - Els perfils s'han guardat per a cada usuari");
+            System.out.println("   - Usa l'opció 12 per veure el teu perfil");
+            
+        } catch (ParametreInvalidException | EnquestaNoExisteixException | UsuariNoAutenticatException e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error durant l'anàlisi: " + e.getMessage());
+            e.printStackTrace();
+        }
+        } catch (UsuariNoAutenticatException e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+
+    private static void veureMeuPerfil() {
+        System.out.println("\n═══ EL MEU PERFIL ═══");
+        
+        HashMap<String, Perfil> perfils = admin.getPerfils();
+        
+        if (perfils.isEmpty()) {
+            System.out.println("⚠ Encara no tens cap perfil assignat.");
+            System.out.println("  Els perfils es generen quan s'analitza una enquesta que has respost.");
+            System.out.println("  Usa l'opció 11 per analitzar una enquesta.");
+            return;
+        }
+        
+        System.out.println("Tens " + perfils.size() + " perfil(s) assignat(s):\n");
+        
+        int i = 1;
+        for (Map.Entry<String, Perfil> entry : perfils.entrySet()) {
+            Perfil perfil = entry.getValue();
+            
+            System.out.println("═══ PERFIL " + i + " ═══");
+            System.out.println(perfil.getPerfilLlegible());
+            System.out.println();
+            i++;
         }
     }
 }

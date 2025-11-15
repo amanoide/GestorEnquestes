@@ -1,6 +1,3 @@
-/* 
-
-
 /**
  * Driver per a la classe CtrlResposta.
  * Permet provar les funcionalitats de registre, modificació, esborrat i consulta de respostes.7
@@ -16,21 +13,23 @@
 package edu.upc.prop.clusterxx.controladors;
 
 // Importacions dels controladors
-import edu.upc.prop.clusterxx.domini.controladors.CtrlResposta;
-import edu.upc.prop.clusterxx.domini.controladors.CtrlPersistencia;
+import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 
 // Importacions dels stubs de domini
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
+
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
+import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
+import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
-import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
 
 // Importacions de Java
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
+import java.util.List;
 
 /**
  * Driver per provar la classe CtrlResposta.
@@ -42,10 +41,9 @@ import java.util.Scanner;
 public class CtrlRespostaDriver {
 
     private static Scanner in;
-    private static CtrlResposta cr;
-    private static CtrlPersistencia persistencia;
-    private static int contadorRespostes = 1; // Contador para generar IDs únicos
-    
+    private static CtrlDomini cd;
+    private static Usuari admin;
+    private static Enquesta enquesta;
     /**
      * Mètode principal que executa el driver.
      */
@@ -74,8 +72,45 @@ public class CtrlRespostaDriver {
      */
     private static void init() {
         in = new Scanner(System.in);
-        cr = new CtrlResposta();
-        persistencia = CtrlPersistencia.getInstance();
+        cd = new CtrlDomini();
+        admin = new Usuari("USER_MOCK", "1234");
+        Usuari.login(admin);
+
+        //crear opcions mock per les preguntes que ho requereixin
+        Opcio opcio1 = new Opcio(1, "OPCIO1");
+        Opcio opcioOrdenada = new Opcio(2, "OPCIO2", 2);
+        
+        //crear preguntes mock hi ha d'haver una de cada tipus amb una opcio les d'opció
+        Pregunta preguntaText = new Pregunta("1", "PREGUNTA DE TEXT LLIURE", "text");
+        Pregunta preguntaNum = new Pregunta("2", "PREGUNTA NUMERICA", 0.0, 10.0);
+        Pregunta preguntaOrd = new Pregunta("3", "PREGUNTA QUALITATIVA", "qualitativa_ordenada");
+        preguntaOrd.afegirOpcio(opcioOrdenada);
+        Pregunta preguntaQS = new Pregunta("4", "PREGUNTA QUALITATIVA SIMPLE", "qualitativa_simple");
+        preguntaQS.afegirOpcio(opcio1);
+        Pregunta preguntaQM = new Pregunta("5", "PREGUNTA QUALITATIVA MULTIPLE", "qualitativa_multiple");
+        preguntaQM.afegirOpcio(opcio1);
+        preguntaQM.afegirOpcio(opcio1);
+
+        //crear enquesta mock
+        enquesta = new Enquesta("1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA", admin);
+         
+        // ✓ REGISTRAR L'ENQUESTA EN EL CONTROLADOR
+        try {
+            cd.crearEnquesta(admin, "1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
+            
+            // Afegir les preguntes a través del controlador
+            cd.afegirPregunta("1", preguntaText);
+            cd.afegirPregunta("1", preguntaNum);
+            cd.afegirPregunta("1", preguntaOrd);
+            cd.afegirPregunta("1", preguntaQS);
+            cd.afegirPregunta("1", preguntaQM);
+
+            
+            System.out.println("✓ Enquesta mock registrada correctament en CtrlDomini");
+        } catch (Exception e) {
+            System.out.println("⚠️ Error registrant enquesta mock: " + e.getMessage());
+            // Continuar igualment amb la enquesta local si falla
+        }
     }
 
     /**
@@ -83,15 +118,14 @@ public class CtrlRespostaDriver {
      */
     private static void mostra_metodes() {
         System.out.println("\n--- Menú CtrlResposta ---");
-        System.out.println("(1) Registrar Respostes d'Usuari a Enquesta");
+        System.out.println("(1) Contestar enquesta");
         System.out.println("(2) Modificar Resposta");
         System.out.println("(3) Esborrar Resposta");
-        System.out.println("--- Consultes ---");
-        System.out.println("(10) Consultar Respostes d'una Enquesta");
-        System.out.println("(11) Consultar Respostes d'un Usuari");
-        System.out.println("(12) Consultar Núm. Participants d'Enquesta");
-        System.out.println("(13) Consultar Núm. Total d'Enquestes amb Respostes");
-        System.out.println("(14) Netejar Totes les Respostes");
+        System.out.println("(4) Importar Respostes des de Fitxer");
+        System.out.println("(5) Consultar Respostes");
+
+        System.out.println("CREACIÓ DE MOCKS:");
+        System.out.println("(500) Importar Enquesta");
         System.out.println("------------------------");
         System.out.println("(0|sortir) - Tancar driver");
         System.out.println("Escull una opció: ");
@@ -102,9 +136,13 @@ public class CtrlRespostaDriver {
      */
     private static void gestionarEntrada(String input) throws Exception {
         switch (input) {
+            case "500" :
+            case "Importar Enquesta" :
+                testImportarEnquesta();
+                break;  
             case "1":
-            case "Registrar Respostes d'Usuari a Enquesta":
-                testRegistrarRespostes();
+            case "Contestar enquesta":
+                contestarEnquesta();
                 break;
             case "2":
             case "Modificar Resposta":
@@ -114,27 +152,13 @@ public class CtrlRespostaDriver {
             case "Esborrar Resposta":
                 testEsborrarResposta();
                 break;
-            case "10":
-            case "Consultar Respostes d'una Enquesta":
-                testGetRespostesEnquesta();
+            case "4":
+            case "Importar Respostes des de Fitxer":
+                importarRespostes();
                 break;
-            case "11":
-            case "Consultar Respostes d'un Usuari":
-                testGetRespostesUsuari();
-                break;
-            
-                case "12":
-            case "Consultar Núm. Participants d'Enquesta":
-                testGetNumParticipants();
-                break;
-            case "13":
-            case "Consultar Núm. Total d'Enquestes amb Respostes":
-                testGetNumEnquestesAmbRespostes();
-                break;
-            case "14":
-            case "Netejar Totes les Respostes":
-                cr.netejarRespostes();
-                System.out.println("Totes les respostes han estat esborrades.");
+            case "5":
+            case "Consultar Respostes":
+                testConsultarRespostesEnquesta();
                 break;
             case "0":
             case "sortir":
@@ -147,321 +171,493 @@ public class CtrlRespostaDriver {
 
 
     // --- Mètodes de Test ---
-
-    /**
-     * Prova registrar una resposta individual d'un usuari a una pregunta d'una enquesta.
-     */
-    private static void testRegistrarRespostes() {
-        System.out.print("Introdueix ID enquesta: ");
-        String idEnquesta = in.nextLine();
-        System.out.print("Introdueix ID pregunta: ");
-        String idPregunta = in.nextLine();
-        System.out.print("Introdueix nom d'usuari: ");
-        String username = in.nextLine();
-        System.out.print("Introdueix text resposta: ");
-        String textResposta = in.nextLine();
-
-        try {
-            // Obtenir l'enquesta
-            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
-            if (enquesta == null) {
-                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
-                return;
-            }
-
-<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
-            // Obtenir la pregunta
-            Pregunta pregunta = enquesta.getPregunta(idPregunta);
-            if (pregunta == null) {
-                System.out.println("ERROR: La pregunta amb ID '" + idPregunta + "' no existeix a aquesta enquesta.");
-                return;
-            }
-
-            // Obtenir o crear l'usuari
-            Usuari usuari = persistencia.getUsuari(username);
-            if (usuari == null) {
-                System.out.println("L'usuari no existeix. Creant usuari nou...");
-                usuari = new Usuari(username, "password123");
-                persistencia.afegirUsuari(username, usuari);
-            }
-
-            // Validar la resposta
-            if (!pregunta.validarResposta(textResposta)) {
-                System.out.println("ERROR: La resposta no és vàlida per aquesta pregunta.");
-                return;
-            }
-
-            // Registrar la resposta (l'ID es genera automàticament)
-            cr.registrarResposta(idPregunta, textResposta, usuari, pregunta);
-            
-            // Mostrar l'ID generat
-            String idRespostaGenerat = idPregunta + "_" + usuari.getUsername();
-            System.out.println("Resposta registrada amb èxit! ID: " + idRespostaGenerat);
-        } catch (Exception e) {
-            System.out.println("ERROR inesperat: " + e.getMessage());
-            e.printStackTrace();
+    
+   private static void testImportarEnquesta() {
+        
+        System.out.println("\n═══ IMPORTAR ENQUESTA DES DE JSON ═══");
+        System.out.println("Fitxer d'exemple: exemple_enquesta.json");
+    System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
+        String path = in.nextLine().trim();
+        
+        // Si solo es un nombre de archivo, añadir la ruta completa
+        if (!path.contains("\\") && !path.contains("/")) {
+            path = System.getProperty("user.dir") + "\\" + path;
         }
+        
+        try {
+            cd.importarEnquesta(path);
+            System.out.println("✓ Enquesta importada correctament!");
+        } catch (ErrorImportacioException e) {
+            System.out.println("❌ Error important l'enquesta: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error inesperat: " + e.getMessage());
+        }
+    
+
     }
 
-    /**
-     * Prova modificar una resposta existent d'un usuari a una pregunta.
-     */
-    private static void testModificarResposta() {
-        System.out.print("Introdueix nom d'usuari: ");
-        String username = in.nextLine();
-        System.out.print("Introdueix ID enquesta: ");
-        String idEnquesta = in.nextLine();
-        System.out.print("Introdueix ID pregunta: ");
-        String idPregunta = in.nextLine();
-        System.out.print("Introdueix el NOU text de la resposta: ");
-        String novaResposta = in.nextLine();
-
-        try {
-            // Obtenir l'enquesta
-            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
-            if (enquesta == null) {
-                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
-                return;
-            }
-
-<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
-            // Obtenir la pregunta
-            Pregunta pregunta = enquesta.getPregunta(idPregunta);
-            if (pregunta == null) {
-                System.out.println("ERROR: La pregunta amb ID '" + idPregunta + "' no existeix a aquesta enquesta.");
-                return;
-            }
-=======
-        //AQUÍ SERIA EL USUARI ACTUAL SUPONGO EN VEZ DEL MOCK
-        // COMENTAT: La signatura del mètode ha canviat després del merge
-        // int resultat = cr.modificarResposta(usuariMock, idEnquesta, idPregunta, novaResposta);
-        int resultat = -1; // Funcionalitat desactivada
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
-
-            // Obtenir l'usuari
-            Usuari usuari = persistencia.getUsuari(username);
-            if (usuari == null) {
-                System.out.println("ERROR: L'usuari '" + username + "' no existeix.");
-                return;
-            }
-
-            // Validar la nova resposta
-            if (!pregunta.validarResposta(novaResposta)) {
-                System.out.println("ERROR: La nova resposta no és vàlida per aquesta pregunta.");
-                return;
-            }
-
-            // Modificar la resposta
-            cr.modificarResposta(usuari, pregunta, novaResposta);
-            System.out.println("Resposta modificada amb èxit!");
-        } catch (Exception e) {
-            System.out.println("ERROR inesperat: " + e.getMessage());
-            e.printStackTrace();
+    private static void contestarEnquesta() {
+        System.out.println("\n═══ RESPONDRE ENQUESTA ═══");
+        ArrayList<Enquesta> totes = new ArrayList<>();
+        try{
+         totes = cd.consultarEnquestes();
+        } catch (UsuariNoAutenticatException e){
+            System.out.println("❌ Error: " + e.getMessage());
         }
-    }
-
-    /**
-     * Prova esborrar una resposta d'un usuari a una pregunta.
-     */
-    private static void testEsborrarResposta() {
-        System.out.print("Introdueix nom d'usuari: ");
-        String username = in.nextLine();
-        System.out.print("Introdueix ID enquesta: ");
-        String idEnquesta = in.nextLine();
-        System.out.print("Introdueix ID pregunta: ");
-        String idPregunta = in.nextLine();
-
-        try {
-            // Obtenir l'enquesta
-            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
-            if (enquesta == null) {
-                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
-                return;
-            }
-
-            // Obtenir la pregunta
-            Pregunta pregunta = enquesta.getPregunta(idPregunta);
-            if (pregunta == null) {
-                System.out.println("ERROR: La pregunta amb ID '" + idPregunta + "' no existeix a aquesta enquesta.");
-                return;
-            }
-
-            // Obtenir l'usuari
-            Usuari usuari = persistencia.getUsuari(username);
-            if (usuari == null) {
-                System.out.println("ERROR: L'usuari '" + username + "' no existeix.");
-                return;
-            }
-
-            // Esborrar la resposta
-            cr.esborrarResposta(usuari, pregunta);
-            System.out.println("Resposta esborrada amb èxit!");
-        } catch (Exception e) {
-            System.out.println("ERROR inesperat: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Prova la consulta de totes les respostes d'una enquesta.
-     */
-    private static void testGetRespostesEnquesta() {
-        System.out.print("Introdueix ID enquesta: ");
-        String idEnquesta = in.nextLine();
-
-<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
-        try {
-            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
-            if (enquesta == null) {
-                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
-                return;
-=======
-        // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
-        // HashMap<String, ArrayList<Resposta>> respostesPerUsuari = cr.getRespostesEnquesta(idEnquesta);
-        HashMap<String, ArrayList<Resposta>> respostesPerUsuari = new HashMap<>(); // Funcionalitat desactivada
-
-        if (respostesPerUsuari.isEmpty()) {
-            System.out.println("No s'han trobat respostes per a l'enquesta '" + idEnquesta + "'.");
+        if (totes.isEmpty()) {
+            System.out.println("No hi ha enquestes al sistema.");
             return;
         }
-
-        System.out.println("Respostes de l'enquesta '" + idEnquesta + "':");
-        for (Map.Entry<String, ArrayList<Resposta>> entry : respostesPerUsuari.entrySet()) {
-            System.out.println("  > Usuari: " + entry.getKey());
-            for (Resposta r : entry.getValue()) {
-                System.out.println("    - Pregunta: id: " + r.getIdPregunta() + ", Resposta: " + r.getTextResposta());
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
+        
+        System.out.println("Enquestes disponibles:");
+        for (int i = 0; i < totes.size(); i++) {
+            Enquesta e = totes.get(i);
+            System.out.println((i + 1) + ". " + e.getTitol() + " (ID: " + e.getId() + ")");
+        }
+        
+        int num = -1;
+        boolean numValid = false;
+        
+        while (!numValid) {
+            try {
+                System.out.print("\nEscull enquesta (número): ");
+                num = Integer.parseInt(in.nextLine()) - 1;
+                
+                if (num < 0 || num >= totes.size()) {
+                    System.out.println("❌ Número no vàlid. Tria un número entre 1 i " + totes.size());
+                } else {
+                    numValid = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Si us plau, introdueix un número vàlid");
             }
+        }
+        
+        try {
+            Enquesta enquesta = totes.get(num);
+            List<Pregunta> preguntes = enquesta.getPreguntes();
+            
+            //DEBEIA PARAR LA EJECUCION SI NO HAY PREGUNTAS
+            
+            HashMap<String, String> respostes = new HashMap<>();
+            HashMap<String, String> idPreguntaPerResposta = new HashMap<>();
+            System.out.println("\n─── " + enquesta.getTitol() + " ───");
+            System.out.println(enquesta.getDescripcio() + "\n");
+            
+            for (Pregunta p : preguntes) {
+                System.out.println("➤ " + p.getText());
+                
+                switch (p.getTipus()) {
+                    case TEXT_LLIURE:
+                        System.out.print("  Resposta: ");
+                        String respText = in.nextLine();
+                        respostes.put(p.getId(), respText);
+                        idPreguntaPerResposta.put(p.getId(), p.getId());
+                        break;
+                        
+                    case NUMERICA:
+                        System.out.print("  Valor (" + p.getValorMinim() + "-" + p.getValorMaxim() + "): ");
+                        boolean valid = false;
+                        while(!valid){
+                            String respNum = in.nextLine();
+                            try{
+                                double valor = Double.parseDouble(respNum);
+                                if(valor < p.getValorMinim() || valor > p.getValorMaxim()){
+                                    System.out.print("  ❌ Valor fora de rang. Torna a intentar: ");
+                                } else {
+                                    respostes.put(p.getId(), respNum);
+                                    idPreguntaPerResposta.put(p.getId(), p.getId());
+                                    valid = true;
+                                }
+                            } catch (NumberFormatException e){
+                                System.out.print("  ❌ Si us plau, introdueix un número vàlid: ");
+                            }
+                        }
+                        break;
+                        
+                    case QUALITATIVA_ORDENADA:
+                    case QUALITATIVA_NO_ORDENADA_SIMPLE:
+                        List<Opcio> opcions = p.getOpcions();
+                        for (int j = 0; j < opcions.size(); j++) {
+                            System.out.println("  " + (j + 1) + ". " + opcions.get(j).getText());
+                        }
+                        
+                        int opcioIdx = -1;
+                        boolean opcioValida = false;
+                        while (!opcioValida) {
+                            try {
+                                System.out.print("  Escull opció (1-" + opcions.size() + "): ");
+                                opcioIdx = Integer.parseInt(in.nextLine()) - 1;
+                                if (opcioIdx < 0 || opcioIdx >= opcions.size()) {
+                                    System.out.println("  ❌ Opció no vàlida. Tria entre 1 i " + opcions.size());
+                                } else {
+                                    opcioValida = true;
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("  ❌ Si us plau, introdueix un número vàlid");
+                            }
+                        }
+                        respostes.put(p.getId(), opcions.get(opcioIdx).getText());
+                        idPreguntaPerResposta.put(p.getId(), p.getId());
+                        
+                        break;
+                        
+                    case QUALITATIVA_NO_ORDENADA_MULTIPLE:
+                        List<Opcio> opcionsM = p.getOpcions();
+                        for (int j = 0; j < opcionsM.size(); j++) {
+                            System.out.println("  " + (j + 1) + ". " + opcionsM.get(j).getText());
+                        }
+                        System.out.print("  Escull opcions separades per comes (ex: opcio1,opcio2,opcio3): ");
+                        String opcionsEsc = in.nextLine();
+                        
+                        respostes.put(p.getId(), opcionsEsc);
+                        idPreguntaPerResposta.put(p.getId(), p.getId());
+                        break;
+                }
+            }
+            
+            cd.contestarEnquesta(enquesta.getId(), respostes, idPreguntaPerResposta);//esto ya lo hace contestarEnquesta 
+            System.out.println("\n✓ Enquesta completada! Gràcies per participar.");
+            
+        } catch (UsuariNoAutenticatException | EnquestaNoExisteixException | EnquestaJaContestadaException | PreguntaNoExisteixException | RespostaInvalidaException | ParametreInvalidException e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
 
-            ArrayList<Pregunta> preguntes = enquesta.getPreguntes();
+    
+    private static void testModificarResposta() {
+        System.out.println("----MODIFICAR RESPOSTA----");
+        
+        ArrayList<Enquesta> totes = new ArrayList<>();
+        try{
+         totes = cd.consultarEnquestes();
+        } catch (UsuariNoAutenticatException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }        if (totes.isEmpty()) {
+            System.out.println("No hi ha enquestes al sistema.");
+            return;
+        }
+        
+        System.out.println("Enquestes disponibles:");
+        for (int i = 0; i < totes.size(); i++) {
+            Enquesta e = totes.get(i);
+            System.out.println((i + 1) + ". " + e.getTitol() + " (ID: " + e.getId() + ")");
+        }
+        
+        int num = -1;
+        boolean numValid = false;
+        
+        while (!numValid) {
+            try {
+                System.out.print("\nEscull enquesta (número): ");
+                num = Integer.parseInt(in.nextLine()) - 1;
+                
+                if (num < 0 || num >= totes.size()) {
+                    System.out.println("❌ Número no vàlid. Tria un número entre 1 i " + totes.size());
+                } else {
+                    numValid = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Si us plau, introdueix un número vàlid");
+            }
+        }
+        try {
+            Enquesta enquesta = totes.get(num);
+
+            List<Pregunta> preguntes = enquesta.getPreguntes();
+            
             if (preguntes.isEmpty()) {
-                System.out.println("L'enquesta '" + idEnquesta + "' no té preguntes.");
+                System.out.println("❌ L'enquesta no té preguntes.");
                 return;
             }
-
-            boolean hiHaRespostes = false;
-            System.out.println("\nRespostes de l'enquesta '" + idEnquesta + "':");
             
-            for (Pregunta pregunta : preguntes) {
-                Map<String, edu.upc.prop.clusterxx.domini.classes.Resposta> respostesPregunta = pregunta.getRespostes();
+            System.out.println("\n─── " + enquesta.getTitol() + " ───");
+            System.out.println(enquesta.getDescripcio() + "\n");
+            
+            // 1) Mostrar totes les preguntes amb opcions
+            System.out.println("SELECCIONA UNA PREGUNTA PER MODIFICAR LA SEVA RESPOSTA:\n");
+            for (int i = 0; i < preguntes.size(); i++) {
+                Pregunta p = preguntes.get(i);
+                System.out.println((i + 1) + ". " + p.getText() + " (" + p.getTipus() + ")");
                 
-                if (!respostesPregunta.isEmpty()) {
-                    hiHaRespostes = true;
-                    System.out.println("\n  Pregunta: " + pregunta.getText());
-                    for (Map.Entry<String, edu.upc.prop.clusterxx.domini.classes.Resposta> respostaEntry : respostesPregunta.entrySet()) {
-                        edu.upc.prop.clusterxx.domini.classes.Resposta resposta = respostaEntry.getValue();
-                        System.out.println("    - Usuari: " + resposta.getUsernameUsuari() + 
-                                         " | Resposta: " + resposta.getTextResposta());
+                // Mostrar opcions si les té
+                if (p.getOpcions() != null && !p.getOpcions().isEmpty()) {
+                    for (int j = 0; j < p.getOpcions().size(); j++) {
+                        System.out.println("   " + (j + 1) + ". " + p.getOpcions().get(j).getText());
                     }
                 }
             }
             
-            if (!hiHaRespostes) {
-                System.out.println("No s'han trobat respostes per aquesta enquesta.");
-            }
-        } catch (Exception e) {
-            System.out.println("ERROR inesperat: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Prova la consulta de les respostes d'un usuari específic.
-     */
-    private static void testGetRespostesUsuari() {
-        System.out.print("Introdueix nom d'usuari: ");
-        String username = in.nextLine();
-
-<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
-        try {
-            Usuari usuari = persistencia.getUsuari(username);
-            if (usuari == null) {
-                System.out.println("ERROR: L'usuari '" + username + "' no existeix.");
-                return;
-            }
-=======
-        // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
-        // ArrayList<Resposta> respostes = cr.getRespostesUsuari(idEnquesta, username);
-        ArrayList<Resposta> respostes = new ArrayList<>(); // Funcionalitat desactivada
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
-
-            HashMap<String, edu.upc.prop.clusterxx.domini.classes.Resposta> respostesUsuari = usuari.getRespostesUsuari();
-            if (respostesUsuari.isEmpty()) {
-                System.out.println("L'usuari '" + username + "' no té respostes registrades.");
-                return;
-            }
-
-            System.out.println("\nRespostes de l'usuari '" + username + "':");
-            for (Map.Entry<String, edu.upc.prop.clusterxx.domini.classes.Resposta> entry : respostesUsuari.entrySet()) {
-                edu.upc.prop.clusterxx.domini.classes.Resposta resposta = entry.getValue();
-                System.out.println("  - Resposta ID: " + resposta.getId() + 
-                                 " | Pregunta ID: " + resposta.getIdPregunta() + 
-                                 " | Text: " + resposta.getTextResposta());
-            }
-        } catch (Exception e) {
-            System.out.println("ERROR inesperat: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
- 
-    /**
-     * Prova la consulta del número de participants d'una enquesta.
-     */
-    private static void testGetNumParticipants() {
-        System.out.print("Introdueix ID enquesta: ");
-        String idEnquesta = in.nextLine();
-<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
-
-        try {
-            Enquesta enquesta = persistencia.getEnquesta(idEnquesta);
-            if (enquesta == null) {
-                System.out.println("ERROR: L'enquesta amb ID '" + idEnquesta + "' no existeix.");
-                return;
-            }
-
-            int numParticipants = enquesta.getNumParticipants();
-            System.out.println("L'enquesta '" + idEnquesta + "' té " + numParticipants + " participants.");
-        } catch (Exception e) {
-            System.out.println("ERROR inesperat: " + e.getMessage());
-            e.printStackTrace();
-        }
-=======
-        // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
-        // int num = cr.getNumParticipants(idEnquesta);
-        int num = 0; // Funcionalitat desactivada
-        System.out.println("L'enquesta '" + idEnquesta + "' té " + num + " participants.");
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
-    }
-
-    /**
-     * Prova la consulta del número total d'enquestes amb respostes.
-     */
-    private static void testGetNumEnquestesAmbRespostes() {
-<<<<<<< HEAD:src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
-        try {
-            ArrayList<Enquesta> enquestes = persistencia.getAllEnquestes();
-            int numEnquestesAmbRespostes = 0;
-
-            for (Enquesta enquesta : enquestes) {
-                if (enquesta.getNumParticipants() > 0) {
-                    numEnquestesAmbRespostes++;
+            // 2) Seleccionar pregunta
+            System.out.print("\nEscull número de pregunta (1-" + preguntes.size() + "): ");
+            int seleccio = -1;
+            boolean seleccioValida = false;
+            
+            while (!seleccioValida) {
+                try {
+                    seleccio = Integer.parseInt(in.nextLine()) - 1;
+                    if (seleccio < 0 || seleccio >= preguntes.size()) {
+                        System.out.println("❌ Selecció no vàlida. Tria entre 1 i " + preguntes.size());
+                        System.out.print("Torna a intentar: ");
+                    } else {
+                        seleccioValida = true;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("❌ Si us plau, introdueix un número vàlid.");
+                    System.out.print("Torna a intentar: ");
                 }
             }
+            
+            Pregunta preguntaSeleccionada = preguntes.get(seleccio);
+            String novaResposta = "";
+            String idP = preguntaSeleccionada.getId();
+            
+            // 3) Demanar nova resposta segons el tipus de pregunta
+            System.out.println("\n─── NOVA RESPOSTA PARA: " + preguntaSeleccionada.getText() + " ───\n");
+            
+            switch (preguntaSeleccionada.getTipus()) {
+                case TEXT_LLIURE:
+                    System.out.print("Introdueix la nova resposta: ");
+                    novaResposta = in.nextLine();
+                    break;
+                    
+                case NUMERICA:
+                    System.out.print("Introdueix nova resposta numèrica (" + preguntaSeleccionada.getValorMinim() + "-" + preguntaSeleccionada.getValorMaxim() + "): ");
+                    novaResposta = in.nextLine();
+                    break;
+                    
+                case QUALITATIVA_ORDENADA:
+                case QUALITATIVA_NO_ORDENADA_SIMPLE:
+                    List<Opcio> opcions = preguntaSeleccionada.getOpcions();
+                    System.out.println("Selecciona una opció:");
+                    for (int j = 0; j < opcions.size(); j++) {
+                        System.out.println((j + 1) + ". " + opcions.get(j).getText());
+                    }
+                    
+                    int opcioIdx = -1;
+                    boolean opcioValida = false;
+                    while (!opcioValida) {
+                        try {
+                            System.out.print("Escull opció (1-" + opcions.size() + "): ");
+                            opcioIdx = Integer.parseInt(in.nextLine()) - 1;
+                            if (opcioIdx < 0 || opcioIdx >= opcions.size()) {
+                                System.out.println("❌ Opció no vàlida. Tria entre 1 i " + opcions.size());
+                            } else {
+                                opcioValida = true;
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("❌ Si us plau, introdueix un número vàlid");
+                        }
+                    }
+                    novaResposta = opcions.get(opcioIdx).getText();
+                    break;
+                    
+                case QUALITATIVA_NO_ORDENADA_MULTIPLE:
+                    List<Opcio> opcionsM = preguntaSeleccionada.getOpcions();
+                    System.out.println("Selecciona una o més opcions (separades per comes):");
+                    for (int j = 0; j < opcionsM.size(); j++) {
+                        System.out.println((j + 1) + ". " + opcionsM.get(j).getText());
+                    }
+                    System.out.print("Escull opcions (ex: 1,3,4): ");
+                    novaResposta = in.nextLine();
+                    break;
+            }
+             cd.modificarResposta(enquesta.getId(), idP, novaResposta);
+            System.out.println("✓ Resposta modificada correctament!");
+            
+        
+        
+        } catch (EnquestaNoExisteixException | PreguntaNoExisteixException | RespostaNoExisteixException | RespostaInvalidaException | UsuariNoAutenticatException | ParametreInvalidException e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
 
-            System.out.println("Hi ha un total de " + numEnquestesAmbRespostes + " enquestes amb respostes.");
+  
+    private static void testEsborrarResposta() {
+        System.out.println("----ESBORRAR RESPOSTA----");
+        ArrayList<Enquesta> totes = new ArrayList<>();
+        try{
+         totes = cd.consultarEnquestes();
+        } catch (UsuariNoAutenticatException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+        if (totes.isEmpty()) {
+            System.out.println("No hi ha enquestes al sistema.");
+            return;
+        }
+        
+        System.out.println("Enquestes disponibles:");
+        for (int i = 0; i < totes.size(); i++) {
+            Enquesta e = totes.get(i);
+            System.out.println((i + 1) + ". " + e.getTitol() + " (ID: " + e.getId() + ")");
+        }
+        
+        int num = -1;
+        boolean numValid = false;
+        
+        while (!numValid) {
+            try {
+                System.out.print("\nEscull enquesta (número): ");
+                num = Integer.parseInt(in.nextLine()) - 1;
+                
+                if (num < 0 || num >= totes.size()) {
+                    System.out.println("❌ Número no vàlid. Tria un número entre 1 i " + totes.size());
+                } else {
+                    numValid = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Si us plau, introdueix un número vàlid");
+            }
+        }
+        try {
+            Enquesta enquesta = totes.get(num);
+            List<Pregunta> preguntes = enquesta.getPreguntes();
+            
+            if (preguntes.isEmpty()) {
+                System.out.println("❌ L'enquesta no té preguntes.");
+                return;
+            }
+            
+            System.out.println("\n─── " + enquesta.getTitol() + " ───");
+            System.out.println(enquesta.getDescripcio() + "\n");
+            
+            // 1) Mostrar totes les preguntes amb opcions
+            for (int i = 0; i < preguntes.size(); i++) {
+                Pregunta p = preguntes.get(i);
+                System.out.println((i + 1) + ". " + p.getText() + " (" + p.getTipus() + ")");
+                
+                // Mostrar opcions si les té
+                if (p.getOpcions() != null && !p.getOpcions().isEmpty()) {
+                    for (int j = 0; j < p.getOpcions().size(); j++) {
+                        System.out.println("   " + (j + 1) + ". " + p.getOpcions().get(j).getText());
+                    }
+                }
+            }
+          
+            
+            // Aquí podrías mostrar la resposta actual si el controlador ho permet
+            // Per ara, mostrem un missatge informatiu
+            System.out.println("\n⚠️ Estàs a punt d'esborrar la resposta d'aquesta pregunta.");
+            
+            // 4) Confirmació final (doble confirmació per esborrats)
+            System.out.print("\n¿Estàs segur que vols esborrar aquesta resposta? (S/N): ");
+            String confirma = in.nextLine();
+            
+            if (!confirma.equalsIgnoreCase("S")) {
+                System.out.println("ℹ️ Acció cancel·lada.");
+                return;
+            }
+            
+            // 5) Esborrar resposta
+            cd.esborrarResposta(enquesta.getId());
+            System.out.println("✓ Resposta esborrada correctament!");
+            
+        }  catch (EnquestaNoExisteixException | UsuariNoAutenticatException | RespostaNoExisteixException | ParametreInvalidException e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+
+    // TODAS LAS RESPUESTAS A ENQUESTAS DEBE EXISTIR TANTO LA ENCUESTA COMO LOS USUARIOS QUE RESPONDEN Y PREGUNTAS
+    //SI NO NO IRÁ CORRECTAMENTE
+    private static void importarRespostes() {
+        System.out.println("----IMPORTAR RESPOSTES DES DE FITXER----");
+        // Implementació pendent segons l'especificació del fitxer
+        System.out.println("Fitxer d'exemple: exemple_resposta.json");
+        System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
+        String path = in.nextLine().trim();
+        
+        // Si solo es un nombre de archivo, añadir la ruta completa
+        if (!path.contains("\\") && !path.contains("/")) {
+            path = System.getProperty("user.dir") + "\\" + path;
+        }
+        
+        try {
+            cd.importarRespostes(path);
+            System.out.println("✓ Resposta importada correctament!");
+        } catch (ErrorImportacioException e) {
+            System.out.println("❌ Error important la resposta: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("ERROR inesperat: " + e.getMessage());
+            System.out.println("❌ Error inesperat: " + e.getMessage());
+        }
+        
+    }
+     /**
+     * Consulta todas las respostas de una enquesta agrupadas por usuario.
+     */
+    private static void testConsultarRespostesEnquesta() {
+        System.out.println("\n════ CONSULTAR RESPOSTES D'UNA ENQUESTA ════");
+        
+        ArrayList<Enquesta> totes = new ArrayList<>();
+        try{
+         totes = cd.consultarEnquestes();
+        } catch (UsuariNoAutenticatException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }        if (totes.isEmpty()) {
+            System.out.println("❌ No hi ha enquestes al sistema.");
+            return;
+        }
+        
+        // 1) Seleccionar enquesta
+        System.out.println("\nEnquestes disponibles:");
+        for (int i = 0; i < totes.size(); i++) {
+            Enquesta e = totes.get(i);
+            System.out.println((i + 1) + ". " + e.getTitol() + " (ID: " + e.getId() + ")");
+        }
+        
+        int numEnq = -1;
+        boolean numValid = false;
+        
+        while (!numValid) {
+            try {
+                System.out.print("\nEscull enquesta (número): ");
+                numEnq = Integer.parseInt(in.nextLine()) - 1;
+                
+                if (numEnq < 0 || numEnq >= totes.size()) {
+                    System.out.println("❌ Número no vàlid. Tria un número entre 1 i " + totes.size());
+                } else {
+                    numValid = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Si us plau, introdueix un número vàlid");
+            }
+        }
+        
+        Enquesta enquesta = totes.get(numEnq);
+        
+        try {
+            // 2) Obtenir respostes de l'enquesta (agrupades per usuari)
+            HashMap<String, ArrayList<Resposta>> respostesPerPregunta = 
+                cd.consultarRespostesEnquesta(enquesta.getId());
+            
+            if (respostesPerPregunta == null || respostesPerPregunta.isEmpty()) {
+                System.out.println("\n❌ No hi ha respostes per aquesta enquesta.");
+                return;
+            }
+            
+            // 3) Mostrar respostes agrupades per pregunta
+            System.out.println("\n═══════════════════════════════════════");
+            System.out.println("RESPOSTES DE L'ENQUESTA: " + enquesta.getTitol());
+            System.out.println("ID: " + enquesta.getId());
+            System.out.println("═══════════════════════════════════════\n");
+            
+
+            for (String idPregunta : respostesPerPregunta.keySet()) {
+                System.out.println("── Pregunta ID: " + idPregunta + " ──");
+                ArrayList<Resposta> respostes = respostesPerPregunta.get(idPregunta);
+                
+                for (Resposta r : respostes) {
+                    System.out.println("Usuari: " + r.getUsernameUsuari() + " | Resposta: " + r.getTextResposta());
+                }
+                System.out.println();
+            }
+
+
+                
+
+            
+        } catch (Exception e) {
+            System.out.println("❌ Error consultant respostes: " + e.getMessage());
             e.printStackTrace();
         }
     }
-=======
-        // COMENTAT: Aquest mètode ja no existeix després del merge amb Marc
-        // int num = cr.getNumEnquestesAmbRespostes();
-        int num = 0; // Funcionalitat desactivada
-        System.out.println("Hi ha un total de " + num + " enquestes amb respostes.");
-    }
-    
-
-
->>>>>>> 984b1583f67ffeaaf7fd39829524318335ad535e:ENTREGA/FONTS/src/drivers/java/edu/upc/prop/clusterxx/controladors/CtrlRespostaDriver.java
 }
