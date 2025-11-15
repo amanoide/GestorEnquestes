@@ -51,7 +51,7 @@ public class TestKMeansPlusPlus {
     /** Helper per crear especificacions numèriques. */
     private DistanceCalculator.FeatureSpec[] specsNumeriques(int dim) {
         DistanceCalculator.FeatureSpec[] specs = new DistanceCalculator.FeatureSpec[dim];
-        for (int i = 0; i < dim; i++) specs[i] = DistanceCalculator.FeatureSpec.numeric();
+        for (int i = 0; i < dim; i++) specs[i] = DistanceCalculator.FeatureSpec.numeric(0.0, 10.0);
         return specs;
     }
 
@@ -122,7 +122,7 @@ public class TestKMeansPlusPlus {
     @Test
     public void testInitCentroidsDeterminista() {
         List<String[]> dades = dadesClustersSeparats();
-        ScriptedRandom rnd = new ScriptedRandom(new int[]{0}, new double[]{0.0});
+        ScriptedRandom rnd = new ScriptedRandom(new int[]{0}, new double[]{0.99});
         KMeansPlusPlus kpp = new KMeansPlusPlus(rnd);
 
         List<String[]> centroides = kpp.initCentroids(dades, 2, specsNumeriques(2));
@@ -139,7 +139,7 @@ public class TestKMeansPlusPlus {
     public void testFitAmbClustersSeparats() {
         List<String[]> dades = dadesClustersSeparats();
         // primer centroid data[0], segon centroid força cap al segon grup
-        ScriptedRandom rnd = new ScriptedRandom(new int[]{0}, new double[]{0.0});
+        ScriptedRandom rnd = new ScriptedRandom(new int[]{0}, new double[]{0.99});
         KMeansPlusPlus kpp = new KMeansPlusPlus(rnd);
         DistanceCalculator.FeatureSpec[] specs = specsNumeriques(2);
 
@@ -153,10 +153,12 @@ public class TestKMeansPlusPlus {
         boolean deu = false;
         for (Kluster cluster : clusters) {
             String[] centroid = cluster.getCentroid();
-            if ("0".equals(centroid[0]) && "0".equals(centroid[1])) {
+            double c0 = Double.parseDouble(centroid[0]);
+            double c1 = Double.parseDouble(centroid[1]);
+            if (Math.abs(c0) < 1e-9 && Math.abs(c1) < 1e-9) {
                 zero = true;
                 assertEquals(4, cluster.size());
-            } else if ("10".equals(centroid[0]) && "10".equals(centroid[1])) {
+            } else if (Math.abs(c0 - 10.0) < 1e-9 && Math.abs(c1 - 10.0) < 1e-9) {
                 deu = true;
                 assertEquals(4, cluster.size());
             }

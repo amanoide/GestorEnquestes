@@ -83,7 +83,8 @@ public class TestPerfil {
 	@Test
 	public void testToStringAmbClustering() {
 		Perfil p = new Perfil(99, "Desc", "E9", 2, "Exploradors", 5,0.75, new String[]{"Alta"}, Arrays.asList("Participació"), "KMeans");
-		assertEquals("Perfil{id=99, cluster=Exploradors, mida=5, silhouette=0.750}", p.toString());
+		String expected = "Perfil{id=99, cluster=Exploradors, mida=5, silhouette=" + String.format("%.3f", 0.75) + "}";
+		assertEquals(expected, p.toString());
 	}
 
 	/**

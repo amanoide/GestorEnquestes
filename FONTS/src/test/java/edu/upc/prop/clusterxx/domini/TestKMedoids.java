@@ -211,7 +211,7 @@ public class TestKMedoids {
     @Test(expected = IllegalArgumentException.class)
     public void testDataNull() {
         DistanceCalculator.FeatureSpec[] specs = {
-            DistanceCalculator.FeatureSpec.numeric()
+            DistanceCalculator.FeatureSpec.numeric(0.0, 10.0)
         };
         new KMedoids().fit(null, 2, 10, specs);
     }
@@ -227,7 +227,7 @@ public class TestKMedoids {
         data.add(new String[]{"3"});
 
         DistanceCalculator.FeatureSpec[] specs = {
-            DistanceCalculator.FeatureSpec.numeric()
+            DistanceCalculator.FeatureSpec.numeric(0.0, 10.0)
         };
 
         List<Kluster> clusters = new KMedoids().fit(data, 2, 0, specs);

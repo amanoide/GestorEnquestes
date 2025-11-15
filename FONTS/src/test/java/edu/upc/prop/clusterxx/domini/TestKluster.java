@@ -29,7 +29,9 @@ public class TestKluster {
      */
     private DistanceCalculator.FeatureSpec[] specsNumeriques(int dimensions) {
         DistanceCalculator.FeatureSpec[] specs = new DistanceCalculator.FeatureSpec[dimensions];
-        Arrays.fill(specs, DistanceCalculator.FeatureSpec.numeric());
+        for (int i = 0; i < dimensions; ++i) {
+            specs[i] = DistanceCalculator.FeatureSpec.numeric(0.0, 10.0);
+        }
         return specs;
     }
 
@@ -149,7 +151,9 @@ public class TestKluster {
         boolean changed = k.recomputeCentroid(specs);
 
         assertTrue(changed);
-        assertArrayEquals(new String[]{"1", "1"}, k.getCentroid());
+        String[] centroid = k.getCentroid();
+        assertEquals(4.0 / 3.0, Double.parseDouble(centroid[0]), 1e-9);
+        assertEquals(4.0 / 3.0, Double.parseDouble(centroid[1]), 1e-9);
 
         assertFalse(k.recomputeCentroid(specs)); // sense nous membres no hauria de canviar
     }
@@ -164,7 +168,7 @@ public class TestKluster {
         k.addMember(new String[]{"B"});
         k.addMember(new String[]{"A"});
 
-        DistanceCalculator.FeatureSpec[] specs = {DistanceCalculator.FeatureSpec.nominalSingle(null)};
+        DistanceCalculator.FeatureSpec[] specs = {DistanceCalculator.FeatureSpec.nominalSingle()};
         boolean changed = k.recomputeCentroid(specs);
 
         assertTrue(changed);
@@ -187,6 +191,7 @@ public class TestKluster {
     @Test(expected = IllegalArgumentException.class)
     public void testRecomputeSpecsIncorrectes() {
         Kluster k = new Kluster(new String[]{"0", "0"});
+        k.addMember(new String[]{"0", "0"});
         k.recomputeCentroid(specsNumeriques(1));
     }
 

@@ -119,8 +119,7 @@ public class TestFeatureSpecFactory {
         Pregunta p = preguntaNominalSimple("vermell", "verd");
         DistanceCalculator.FeatureSpec spec = FeatureSpecFactory.fromPregunta(p);
         assertEquals(DistanceCalculator.VariableKind.NOMINAL_SINGLE, spec.kind);
-        assertTrue(spec.domain.contains("vermell"));
-        assertTrue(spec.domain.contains("verd"));
+        assertNull(spec.maxSelections);
     }
 
     /**
@@ -130,7 +129,7 @@ public class TestFeatureSpecFactory {
     public void testPreguntaNominalSenseOpcions() {
         Pregunta p = preguntaNominalSimple();
         DistanceCalculator.FeatureSpec spec = FeatureSpecFactory.fromPregunta(p);
-        assertTrue(spec.domain.isEmpty());
+        assertEquals(DistanceCalculator.VariableKind.NOMINAL_SINGLE, spec.kind);
     }
 
     /**
@@ -142,8 +141,6 @@ public class TestFeatureSpecFactory {
         DistanceCalculator.FeatureSpec spec = FeatureSpecFactory.fromPregunta(p);
         assertEquals(DistanceCalculator.VariableKind.NOMINAL_MULTI, spec.kind);
         assertEquals(Integer.valueOf(2), spec.maxSelections);
-        assertTrue(spec.domain.contains("groc"));
-        assertEquals(3, spec.domain.size());
     }
 
     /**

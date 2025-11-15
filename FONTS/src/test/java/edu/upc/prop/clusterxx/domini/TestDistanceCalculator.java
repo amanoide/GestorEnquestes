@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -37,7 +36,7 @@ public class TestDistanceCalculator {
     }
 
     private FeatureSpec numeric() {
-        return FeatureSpec.numeric();
+        return FeatureSpec.numeric(0.0, 10.0);
     }
 
     private FeatureSpec numeric(double min, double max) {
@@ -52,16 +51,12 @@ public class TestDistanceCalculator {
         return FeatureSpec.ordinal(order, m);
     }
 
-    private FeatureSpec ordinalWith(int m) {
-        return FeatureSpec.ordinalWithM(m);
-    }
-
     private FeatureSpec nominalSingle() {
-        return FeatureSpec.nominalSingle(new HashSet<>());
+        return FeatureSpec.nominalSingle();
     }
 
     private FeatureSpec nominalMulti() {
-        return FeatureSpec.nominalMulti(new HashSet<>());
+        return FeatureSpec.nominalMulti();
     }
 
     private FeatureSpec freeText() {
@@ -89,12 +84,12 @@ public class TestDistanceCalculator {
     }
 
     /**
-     * Sense normalització explícita la distància numèrica ha de ser la diferència absoluta.
+     * Sense rang definit les especificacions numèriques han de llençar una excepció.
      */
-    @Test
-    public void testDistanceNumericSenseNormalitzar() {
-        double d = dc.distance(new String[]{"1"}, new String[]{"4"}, specs(numeric()));
-        assertEquals(3.0, d, 1e-9);
+    @Test(expected = IllegalArgumentException.class)
+    public void testDistanceNumericSenseRang() {
+        FeatureSpec spec = new FeatureSpec(VariableKind.NUMERIC);
+        dc.distance(new String[]{"1"}, new String[]{"4"}, specs(spec));
     }
 
     /**
@@ -107,12 +102,11 @@ public class TestDistanceCalculator {
     }
 
     /**
-     * Un rang degenerat (min = max) ha de comportar-se com una distància sense normalitzar.
+     * Un rang degenerat (min = max) ha de llençar una excepció per evitar divisions per zero.
      */
-    @Test
-    public void testDistanceNumericMinIgualMaxSenseNormalitzar() {
-        double d = dc.distance(new String[]{"1"}, new String[]{"4"}, specs(numeric(5, 5)));
-        assertEquals(3.0, d, 1e-9);
+    @Test(expected = IllegalArgumentException.class)
+    public void testDistanceNumericMinIgualMaxLlencaExcepcio() {
+        dc.distance(new String[]{"1"}, new String[]{"4"}, specs(numeric(5, 5)));
     }
 
     /**
@@ -139,8 +133,8 @@ public class TestDistanceCalculator {
     public void testDistanceManhattanBase() {
         double d = dc.distanceManhattan(new String[]{"1", "baix"}, new String[]{"2", "alt"},
             specs(numeric(), ordinal(Arrays.asList("baix", "alt"))));
-        // numeric diff = 1, normalized by N=2 -> 0.5; ordinal diff = 1/(2-1)=1, normalized by N=2 -> 0.5; sum=1
-        assertEquals(1.0, d, 1e-9);
+        // numeric local diff = 1/(10) = 0.1 -> 0.05 after dividir per N; ordinal = 1 -> 0.5
+        assertEquals(0.55, d, 1e-9);
     }
 
     /**
@@ -160,7 +154,7 @@ public class TestDistanceCalculator {
      */
     @Test
     public void testDistanceNumericNulls() {
-        FeatureSpec spec = new FeatureSpec(VariableKind.NUMERIC);
+        FeatureSpec spec = numeric();
         double d = dc.distance(new String[]{null}, new String[]{"1"}, specs(spec));
         assertEquals(1.0, d, 1e-9);
     }
@@ -179,12 +173,11 @@ public class TestDistanceCalculator {
         ===================================================== */
 
     /**
-     * Sense ordre definit, dues respostes ordinales diferents compten com a distància completa.
+     * Sense ordre definit el càlcul ha de llençar una excepció perquè falta informació.
      */
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testDistanceOrdinalSenseOrdre() {
-        double d = dc.distance(new String[]{"A"}, new String[]{"B"}, specs(ordinal(null)));
-        assertEquals(1.0, d, 1e-9);
+        dc.distance(new String[]{"A"}, new String[]{"B"}, specs(ordinal(null)));
     }
 
     /**
@@ -219,14 +212,12 @@ public class TestDistanceCalculator {
     }
 
     /**
-     * Sense llista però amb M fixat, qualsevol diferència s'ha de considerar màxima.
+     * Sense llista encara que hi hagi M definit s'ha de llençar una excepció.
      */
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testDistanceOrdinalSenseLlistaAmbM() {
-        FeatureSpec spec = ordinalWith(4);
-        double d = dc.distance(new String[]{"X"}, new String[]{"Y"}, specs(spec));
-        // sense ordre, es compara per igualtat -> 1.0
-        assertEquals(1.0, d, 1e-9);
+        FeatureSpec spec = new FeatureSpec(VariableKind.ORDINAL, null, 4, null, null, null);
+        dc.distance(new String[]{"X"}, new String[]{"Y"}, specs(spec));
     }
 
         /*  =======================================================
@@ -328,7 +319,7 @@ public class TestDistanceCalculator {
      */
     @Test
     public void testFreeTextParcial() {
-        double d = dc.distance(new String[]{"gat"}, new String[]{"gató"}, specs(freeText()));
+        double d = dc.distance(new String[]{"gat"}, new String[]{"got"}, specs(freeText()));
         assertTrue("La distància ha de ser entre 0 i 1", d > 0 && d < 1);
     }
 

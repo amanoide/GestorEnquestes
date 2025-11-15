@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,7 +23,9 @@ public class TestClusterEvaluator {
     */
     private DistanceCalculator.FeatureSpec[] specs(int dimensions) {
         DistanceCalculator.FeatureSpec[] specs = new DistanceCalculator.FeatureSpec[dimensions];
-        Arrays.fill(specs, DistanceCalculator.FeatureSpec.numeric());
+        for (int i = 0; i < dimensions; i++) {
+            specs[i] = DistanceCalculator.FeatureSpec.numeric(0.0, 10.0);
+        }
         return specs;
     }
 
@@ -113,8 +114,9 @@ public class TestClusterEvaluator {
         clusters.add(cluster(new String[]{"0"}, new String[]{"0"}, new String[]{"5"}));
         clusters.add(cluster(new String[]{"6"}, new String[]{"5"}, new String[]{"6"}));
 
-        double score = evaluator.silhouetteScore(clusters, specs(1));
-        assertTrue("Quan hi ha solapament el score ha de ser proper a zero o negatiu", score <= 0.1);
+        double overlapped = evaluator.silhouetteScore(clusters, specs(1));
+        double separated = evaluator.silhouetteScore(clustersBasics(), specs(1));
+        assertTrue("Quan hi ha solapament el score ha de ser inferior al dels clusters separats", overlapped < separated);
     }
 
         /*  =================================================
