@@ -1341,20 +1341,50 @@ public class MainDriver {
                 return;
             }
             
-            // Solicitar número de clusters
+            // Preguntar cómo escoger k
+            System.out.println("\n¿Com vols escollir el nombre de clusters (k)?");
+            System.out.println("  1. Manual (tu esculls k)");
+            System.out.println("  2. Aleatori (k entre 2 i √n)");
+            System.out.println("  3. Automàtic (millor k segons Silhouette)");
+            System.out.print("Escull (1-3): ");
+            String kOpcio = in.nextLine();
+            
             int k = -1;
-            while (k < 2 || k > respostesPerUsuari.size()) {
-                try {
-                    System.out.print("\nQuants grups (clusters) vols crear? (2-" + respostesPerUsuari.size() + "): ");
-                    k = Integer.parseInt(in.nextLine());
-                    if (k < 2) {
-                        System.out.println("❌ Necessites almenys 2 clusters");
-                    } else if (k > respostesPerUsuari.size()) {
-                        System.out.println("❌ No pots tenir més clusters que participants (" + respostesPerUsuari.size() + ")");
+            boolean autoK = false;
+            int nParticipants = respostesPerUsuari.size();
+            int kMax = (int) Math.sqrt(nParticipants);
+            
+            switch (kOpcio) {
+                case "1": // Manual
+                    while (k < 2 || k > nParticipants) {
+                        try {
+                            System.out.print("\nQuants grups (clusters) vols crear? (2-" + nParticipants + "): ");
+                            k = Integer.parseInt(in.nextLine());
+                            if (k < 2) {
+                                System.out.println("❌ Necessites almenys 2 clusters");
+                            } else if (k > nParticipants) {
+                                System.out.println("❌ No pots tenir més clusters que participants (" + nParticipants + ")");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("❌ Si us plau, introdueix un número vàlid");
+                        }
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("❌ Si us plau, introdueix un número vàlid");
-                }
+                    break;
+                    
+                case "2": // Aleatorio
+                    k = 2 + new java.util.Random().nextInt(Math.max(1, kMax - 1));
+                    System.out.println("✓ k escollit aleatòriament: " + k);
+                    break;
+                    
+                case "3": // Automático con Silhouette
+                    autoK = true;
+                    k = 2; // Valor temporal, se calculará el mejor
+                    System.out.println("✓ S'avaluaran diferents valors de k (2 fins a " + Math.min(10, kMax) + ")");
+                    break;
+                    
+                default:
+                    System.out.println("⚠️ Opció no vàlida, s'usarà k=3 per defecte");
+                    k = 3;
             }
             
             // Preguntar qué algoritmo usar
@@ -1380,7 +1410,37 @@ public class MainDriver {
                     break;
             }
             
-            System.out.println("\n⏳ Analitzant respostes...");
+            // Si es automático, calcular mejor k con Silhouette
+            if (autoK) {
+                System.out.println("\n⏳ Avaluant diferents valors de k...");
+                int kMin = 2;
+                int kMaxAuto = Math.min(10, Math.max(kMax, 3));
+                double bestSilhouette = -1;
+                int bestK = 2;
+                
+                for (int kTest = kMin; kTest <= kMaxAuto; kTest++) {
+                    CtrlDomini.ResultatClustering tempResultat = ctrlDomini.analitzarEnquesta(
+                        enquesta.getId(), 
+                        kTest, 
+                        usePlusPlus, 
+                        100, 
+                        algoritmeNom
+                    );
+                    
+                    double silhouette = tempResultat.silhouetteGlobal;
+                    System.out.printf("  k=%d → Silhouette=%.3f%n", kTest, silhouette);
+                    
+                    if (silhouette > bestSilhouette) {
+                        bestSilhouette = silhouette;
+                        bestK = kTest;
+                    }
+                }
+                
+                k = bestK;
+                System.out.println("\n✓ Millor k trobat: " + k + " (Silhouette=" + String.format("%.3f", bestSilhouette) + ")");
+            }
+            
+            System.out.println("\n⏳ Analitzant respostes" + (autoK ? " amb k=" + k : "") + "...");
             
             // Delegar todo el clustering al CtrlDomini
             CtrlDomini.ResultatClustering resultat = ctrlDomini.analitzarEnquesta(
