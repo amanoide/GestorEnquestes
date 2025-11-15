@@ -86,6 +86,26 @@ public class DistanceCalculator {
         return euclidean / n;
     }
 
+    /**
+     * Distancia Manhattan (L1): sum(|d_i| / N)
+     * Más robusta a outliers que la Euclidiana. Recomendada para K-Medoids.
+     * La normalización se aplica a cada distancia local antes de sumar.
+     */
+    public double distanceManhattan(String[] a, String[] b, FeatureSpec[] specs) {
+        if (a == null || b == null || specs == null)
+            throw new IllegalArgumentException("Arguments cannot be null");
+        if (a.length != b.length || a.length != specs.length)
+            throw new IllegalArgumentException("Vectors and specs must have same length");
+
+        double sum = 0.0;
+        double n = (double) a.length;
+        for (int i = 0; i < a.length; i++) {
+            double d = localDistance(a[i], b[i], specs[i]);
+            sum += d / n;  // normalizar cada distancia local antes de sumar
+        }
+        return sum;
+    }
+
     /** Calcula la distancia local en una dimensión según el tipo de variable. */
     private double localDistance(String ai, String bi, FeatureSpec spec) {
         switch (spec.kind) {

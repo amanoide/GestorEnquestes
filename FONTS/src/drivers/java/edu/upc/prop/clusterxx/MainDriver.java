@@ -1361,10 +1361,24 @@ public class MainDriver {
             System.out.println("\nAlgoritme de clustering:");
             System.out.println("  1. KMeans (inicialització aleatòria)");
             System.out.println("  2. KMeans++ (inicialització intel·ligent - recomanat)");
-            System.out.print("Escull (1-2): ");
+            System.out.println("  3. KMedoids (medoides reals - robust a outliers)");
+            System.out.print("Escull (1-3): ");
             String algOpcio = in.nextLine();
+            
             boolean usePlusPlus = algOpcio.equals("2");
-            String algoritmeNom = usePlusPlus ? "KMeans++" : "KMeans";
+            String algoritmeNom;
+            switch (algOpcio) {
+                case "2":
+                    algoritmeNom = "KMeans++";
+                    break;
+                case "3":
+                    algoritmeNom = "KMedoids";
+                    break;
+                case "1":
+                default:
+                    algoritmeNom = "KMeans";
+                    break;
+            }
             
             System.out.println("\n⏳ Analitzant respostes...");
             

@@ -1444,9 +1444,9 @@ public class CtrlDomini {
      * 
      * @param idEnquesta ID de l'enquesta a analitzar
      * @param k Nombre de clusters
-     * @param usePlusPlus true per usar KMeans++, false per KMeans estàndard
+     * @param usePlusPlus true per usar KMeans++, false per KMeans estàndard (ignorat si algoritmeNom és especificat)
      * @param maxIters Màxim d'iteracions
-     * @param algoritmeNom Nom de l'algoritme per mostrar ("KMeans" o "KMeans++")
+     * @param algoritmeNom Nom de l'algoritme: "KMeans", "KMeans++", "KMedoids"
      * @return Resultats del clustering amb clusters, silhouette i perfils assignats
      * @throws EnquestaNoExisteixException Si l'enquesta no existeix
      */
@@ -1509,8 +1509,14 @@ public class CtrlDomini {
         // 4. Construir FeatureSpecs des de les preguntes
         DistanceCalculator.FeatureSpec[] specs = ctrlAnalisi.buildSpecsFromPreguntas(preguntes);
         
-        // 5. Executar clustering
-        List<Kluster> clusters = ctrlAnalisi.cluster(dataVectors, k, usePlusPlus, maxIters, specs);
+        // 5. Executar clustering amb l'algoritme especificat
+        List<Kluster> clusters;
+        if (algoritmeNom != null && (algoritmeNom.equalsIgnoreCase("KMedoids") || 
+                                     algoritmeNom.equalsIgnoreCase("K-Medoids"))) {
+            clusters = ctrlAnalisi.clusterWithAlgorithm(dataVectors, k, "KMedoids", maxIters, specs);
+        } else {
+            clusters = ctrlAnalisi.cluster(dataVectors, k, usePlusPlus, maxIters, specs);
+        }
         
         // 6. Calcular Silhouette
         ClusterEvaluator evaluator = new ClusterEvaluator();
