@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * Tests exhaustius per la classe DistanceCalculator.
+ * Tests per la classe DistanceCalculator.
  */
 public class TestDistanceCalculator {
 
@@ -68,30 +68,56 @@ public class TestDistanceCalculator {
         return FeatureSpec.freeText();
     }
 
-    /* -------------------- distance() -------------------- */
+        /*  ===========================================
+            TESTS distance() CLASSE DistanceCalculator
+        =============================================== */
 
+    /**
+     * Rebutja la comparació quan algun vector és nul ja que no es poden calcular distàncies.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testDistanceAmbNulls() {
         dc.distance(null, new String[]{"1"}, specs(numeric()));
     }
 
+    /**
+     * Les dimensions dels vectors han de coincidir; altrament cal llençar una excepció.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testDistanceDimensionsIncorrectes() {
         dc.distance(new String[]{"1"}, new String[]{"1", "2"}, specs(numeric()));
     }
 
+    /**
+     * Sense normalització explícita la distància numèrica ha de ser la diferència absoluta.
+     */
     @Test
     public void testDistanceNumericSenseNormalitzar() {
         double d = dc.distance(new String[]{"1"}, new String[]{"4"}, specs(numeric()));
         assertEquals(3.0, d, 1e-9);
     }
 
+    /**
+     * Amb normalització els valors s'han d'escalar al rang indicat.
+     */
     @Test
     public void testDistanceNumericNormalitzat() {
         double d = dc.distance(new String[]{"1"}, new String[]{"4"}, specs(numeric(0, 10)));
         assertEquals(0.3, d, 1e-9);
     }
 
+    /**
+     * Un rang degenerat (min = max) ha de comportar-se com una distància sense normalitzar.
+     */
+    @Test
+    public void testDistanceNumericMinIgualMaxSenseNormalitzar() {
+        double d = dc.distance(new String[]{"1"}, new String[]{"4"}, specs(numeric(5, 5)));
+        assertEquals(3.0, d, 1e-9);
+    }
+
+    /**
+     * Les distàncies mixtes han de combinar les contribucions de totes les dimensions.
+     */
     @Test
     public void testDistanceMezclaDimensions() {
         FeatureSpec[] specs = specs(numeric(), ordinal(Arrays.asList("baix", "mig", "alt")), nominalSingle());
@@ -102,8 +128,13 @@ public class TestDistanceCalculator {
         assertTrue("La distància ha de ser positiva", dist > 0);
     }
 
-    /* -------------------- distanceManhattan() -------------------- */
+        /*  ==============================================
+            TESTS distanceManhattan() CLASSE DistanceCalculator
+        ================================================== */
 
+    /**
+     * La distància Manhattan ha de sumar les diferències normalitzades de cada dimensió.
+     */
     @Test
     public void testDistanceManhattanBase() {
         double d = dc.distanceManhattan(new String[]{"1", "baix"}, new String[]{"2", "alt"},
@@ -112,8 +143,21 @@ public class TestDistanceCalculator {
         assertEquals(1.0, d, 1e-9);
     }
 
-    /* -------------------- distanceNumeric() -------------------- */
+    /**
+     * També en la distància Manhattan les dimensions han de coincidir exactament.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDistanceManhattanDimensionsIncorrectes() {
+        dc.distanceManhattan(new String[]{"1"}, new String[]{"1", "2"}, specs(numeric()));
+    }
 
+        /*  ================================================
+            TESTS distanceNumeric() CLASSE DistanceCalculator
+        ==================================================== */
+
+    /**
+     * Les components numèriques nul·les s'han de tractar com a valors mancant amb distància màxima.
+     */
     @Test
     public void testDistanceNumericNulls() {
         FeatureSpec spec = new FeatureSpec(VariableKind.NUMERIC);
@@ -121,20 +165,31 @@ public class TestDistanceCalculator {
         assertEquals(1.0, d, 1e-9);
     }
 
+    /**
+     * Els valors no parsejables també han de produir la distància màxima.
+     */
     @Test
     public void testDistanceNumericNoParsejable() {
         double d = dc.distance(new String[]{"abc"}, new String[]{"2"}, specs(numeric()));
         assertEquals(1.0, d, 1e-9);
     }
 
-    /* -------------------- distanceOrdinal() -------------------- */
+        /*  =================================================
+            TESTS distanceOrdinal() CLASSE DistanceCalculator
+        ===================================================== */
 
+    /**
+     * Sense ordre definit, dues respostes ordinales diferents compten com a distància completa.
+     */
     @Test
     public void testDistanceOrdinalSenseOrdre() {
         double d = dc.distance(new String[]{"A"}, new String[]{"B"}, specs(ordinal(null)));
         assertEquals(1.0, d, 1e-9);
     }
 
+    /**
+     * Quan hi ha ordre, la distància s'ha d'escalar segons la separació relativa.
+     */
     @Test
     public void testDistanceOrdinalAmbOrdre() {
         FeatureSpec spec = ordinal(Arrays.asList("A", "B", "C"));
@@ -143,6 +198,9 @@ public class TestDistanceCalculator {
         assertEquals(1.0, d, 1e-9);
     }
 
+    /**
+     * Si el valor no existeix a l'ordre definit s'ha de considerar una diferència màxima.
+     */
     @Test
     public void testDistanceOrdinalForaOrdre() {
         FeatureSpec spec = ordinal(Arrays.asList("A", "B"));
@@ -150,6 +208,9 @@ public class TestDistanceCalculator {
         assertEquals(1.0, d, 1e-9);
     }
 
+    /**
+     * El paràmetre M explícit ha de normalitzar la distància encara que hi hagi poques opcions.
+     */
     @Test
     public void testDistanceOrdinalAmbMExplicit() {
         FeatureSpec spec = ordinal(Arrays.asList("A", "B", "C"), 5);
@@ -157,6 +218,9 @@ public class TestDistanceCalculator {
         assertEquals(0.5, d, 1e-9); // diff 2 / (5-1)
     }
 
+    /**
+     * Sense llista però amb M fixat, qualsevol diferència s'ha de considerar màxima.
+     */
     @Test
     public void testDistanceOrdinalSenseLlistaAmbM() {
         FeatureSpec spec = ordinalWith(4);
@@ -165,34 +229,53 @@ public class TestDistanceCalculator {
         assertEquals(1.0, d, 1e-9);
     }
 
-    /* -------------------- distanceNominalSingle() -------------------- */
+        /*  =======================================================
+            TESTS distanceNominalSingle() CLASSE DistanceCalculator
+        =========================================================== */
 
+    /**
+     * Les respostes iguals en nominal simple han de donar distància zero.
+     */
     @Test
     public void testNominalSingleIguals() {
         double d = dc.distance(new String[]{"A"}, new String[]{"A"}, specs(nominalSingle()));
         assertEquals(0.0, d, 1e-9);
     }
 
+    /**
+     * Valors diferents en nominal simple representen la distància màxima.
+     */
     @Test
     public void testNominalSingleDistints() {
         double d = dc.distance(new String[]{"A"}, new String[]{"B"}, specs(nominalSingle()));
         assertEquals(1.0, d, 1e-9);
     }
 
+    /**
+     * La manca de valor també s'ha de considerar diferent d'un valor definit.
+     */
     @Test
     public void testNominalSingleNull() {
         double d = dc.distance(new String[]{null}, new String[]{"B"}, specs(nominalSingle()));
         assertEquals(1.0, d, 1e-9);
     }
 
-    /* -------------------- distanceNominalMulti() -------------------- */
+        /*  ======================================================
+            TESTS distanceNominalMulti() CLASSE DistanceCalculator
+        =========================================== */
 
+    /**
+     * En nominal múltiple la mateixa bossa d'etiquetes ha de donar distància zero.
+     */
     @Test
     public void testNominalMultiIguals() {
         double d = dc.distance(new String[]{"A,B"}, new String[]{"B,A"}, specs(nominalMulti()));
         assertEquals(0.0, d, 1e-9);
     }
 
+    /**
+     * La distància parcial ha de seguir la mètrica de Jaccard (intersecció/uniò).
+     */
     @Test
     public void testNominalMultiParcial() {
         double d = dc.distance(new String[]{"A,B"}, new String[]{"B,C"}, specs(nominalMulti()));
@@ -200,46 +283,71 @@ public class TestDistanceCalculator {
         assertEquals(2.0 / 3.0, d, 1e-9);
     }
 
+    /**
+     * Dues respostes buides s'han de considerar equivalents.
+     */
     @Test
     public void testNominalMultiBuids() {
         double d = dc.distance(new String[]{""}, new String[]{""}, specs(nominalMulti()));
         assertEquals(0.0, d, 1e-9);
     }
 
+    /**
+     * Si una resposta és nul·la la distància s'ha de considerar màxima.
+     */
     @Test
     public void testNominalMultiAmbNull() {
         double d = dc.distance(new String[]{null}, new String[]{"A"}, specs(nominalMulti()));
         assertEquals(1.0, d, 1e-9);
     }
 
-    /* -------------------- distanceFreeText() -------------------- */
+        /*  ==================================================
+            TESTS distanceFreeText() CLASSE DistanceCalculator
+        ====================================================== */
 
+    /**
+     * El text lliure idèntic ha de retornar distància zero.
+     */
     @Test
     public void testFreeTextIdentic() {
         double d = dc.distance(new String[]{"hola"}, new String[]{"hola"}, specs(freeText()));
         assertEquals(0.0, d, 1e-9);
     }
 
+    /**
+     * Textos completament diferents han de produir distància màxima.
+     */
     @Test
     public void testFreeTextCompletamentDistint() {
         double d = dc.distance(new String[]{"a"}, new String[]{"bcd"}, specs(freeText()));
         assertEquals(1.0, d, 1e-9);
     }
 
+    /**
+     * Variacions parcials s'han de reflectir amb valors intermedis entre 0 i 1.
+     */
     @Test
     public void testFreeTextParcial() {
         double d = dc.distance(new String[]{"gat"}, new String[]{"gató"}, specs(freeText()));
         assertTrue("La distància ha de ser entre 0 i 1", d > 0 && d < 1);
     }
 
+    /**
+     * El text nul s'ha d'interpretar com a diferent de qualsevol cadena no nul·la.
+     */
     @Test
     public void testFreeTextNull() {
         double d = dc.distance(new String[]{null}, new String[]{"b"}, specs(freeText()));
         assertEquals(1.0, d, 1e-9);
     }
 
-    /* -------------------- distanceManhattan combinat -------------------- */
+        /*  ============================================================
+            TESTS distanceManhattan() combinat CLASSE DistanceCalculator
+        ================================================================ */
 
+    /**
+     * La distància Manhattan combinada ha d'agregar correctament diferents tipus de variables.
+     */
     @Test
     public void testDistanceManhattanMescla() {
         FeatureSpec[] specs = specs(numeric(), nominalSingle(), freeText());

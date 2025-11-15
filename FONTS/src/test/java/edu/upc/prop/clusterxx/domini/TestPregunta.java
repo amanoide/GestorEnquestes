@@ -89,7 +89,7 @@ public class TestPregunta {
     }
     
     /** 
-     * Tests de la constructora amb String per a mapejar el tipus de pregunta.
+     * Comprova que la constructora amb String tradueix tots els àlies al TipusPregunta correcte.
      */
     @Test
     public void constructorAmbString_mappingTipus() {
@@ -201,6 +201,21 @@ public class TestPregunta {
     }
 
     /**
+     * Eliminar una opció que no existeix no ha d'afectar la llista actual.
+     */
+    @Test
+    public void testEliminarOpcioInexistentNoCanvia() {
+        Pregunta p = new Pregunta("P12b", "Preferències", TipusPregunta.QUALITATIVA_NO_ORDENADA_SIMPLE, 1);
+        Opcio o1 = new Opcio(1, "Opció real");
+        p.afegirOpcio(o1);
+
+        p.eliminarOpcio(999);
+
+        assertEquals(1, p.getOpcions().size());
+        assertTrue(p.getOpcions().contains(o1));
+    }
+
+    /**
      * Tests de retornar null si opció no existeix.
      */
     @Test
@@ -265,6 +280,16 @@ public class TestPregunta {
     }
 
     /**
+     * Sense rang numèric definit qualsevol valor parsejable ha de ser vàlid.
+     */
+    @Test
+    public void testValidarRespostaNumericaSenseRang() {
+        Pregunta p = new Pregunta("P20b", "Sense límits", null, null);
+        assertTrue(p.validarResposta("-999"));
+        assertTrue(p.validarResposta("999"));
+    }
+
+    /**
      * Tests de validació de respostes per a preguntes qualitatives simples.
      */
     @Test
@@ -299,6 +324,18 @@ public class TestPregunta {
     }
 
     /**
+     * Les respostes múltiples han de ser tolerants amb espais extra i majúscules/minúscules.
+     */
+    @Test
+    public void testValidarRespostaQualitativaMultipleAmbEspais() {
+        Pregunta p = new Pregunta("P5b", "Quins idiomes parles?", TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE, 3);
+        p.afegirOpcio(new Opcio(1, "Anglès"));
+        p.afegirOpcio(new Opcio(2, "Francès"));
+
+        assertTrue(p.validarResposta(" Anglès , Francès "));
+    }
+
+    /**
      * Tests de validació de respostes per a preguntes de text lliure.
      */
     @Test
@@ -324,6 +361,9 @@ public class TestPregunta {
         assertEquals(esperat, p.toString());
     }
 
+    /**
+     * Les preguntes numèriques han d'incloure el rang dins del toString.
+     */
     @Test
     public void testToStringNumerica() {
         Pregunta p = new Pregunta("P24", "Quantes mascotes has tingut al llarg de la teva vida?", 0.0, 50.0);
@@ -331,6 +371,9 @@ public class TestPregunta {
         assertEquals(esperat, p.toString());
     }
 
+    /**
+     * Les preguntes qualitatives simples han de mostrar el recompte d'opcions.
+     */
     @Test 
     public void testToStringQualitativaSimple() {
         Pregunta p = new Pregunta("P25", "Quina modalitat de treball prefereixes?", TipusPregunta.QUALITATIVA_NO_ORDENADA_SIMPLE, 1);
@@ -342,6 +385,9 @@ public class TestPregunta {
         assertEquals(expected, p.toString());
     }
 
+    /**
+     * En les preguntes múltiples també s'ha d'imprimir el màxim de seleccions permès.
+     */
     @Test 
     public void testToStringQualitativaMúltiple() {
         Pregunta p = new Pregunta("P26", "Tria més d'una opció.", TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE, 3);

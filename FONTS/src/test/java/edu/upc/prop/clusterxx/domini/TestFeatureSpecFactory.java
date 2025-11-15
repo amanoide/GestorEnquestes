@@ -66,13 +66,21 @@ public class TestFeatureSpecFactory {
         return new Pregunta("Q5", "Text lliure");
     }
 
-    /* -------------------- fromPregunta -------------------- */
+        /*  ==============================================
+            TESTS fromPregunta() CLASSE FeatureSpecFactory
+        =================================================== */
 
+    /**
+     * No es pot construir una FeatureSpec a partir d'una pregunta nul·la.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testFromPreguntaNull() {
         FeatureSpecFactory.fromPregunta(null);
     }
 
+    /**
+     * Les preguntes numèriques amb rang han de generar especificacions amb min i max.
+     */
     @Test
     public void testPreguntaNumericaAmbRang() {
         DistanceCalculator.FeatureSpec spec = FeatureSpecFactory.fromPregunta(preguntaNumerica(0.0, 10.0));
@@ -81,6 +89,19 @@ public class TestFeatureSpecFactory {
         assertEquals(Double.valueOf(10.0), spec.numericMax);
     }
 
+    /**
+     * Si no hi ha rang numèric definit, els límits han de quedar a null.
+     */
+    @Test
+    public void testPreguntaNumericaSenseRang() {
+        DistanceCalculator.FeatureSpec spec = FeatureSpecFactory.fromPregunta(preguntaNumerica(null, null));
+        assertNull(spec.numericMin);
+        assertNull(spec.numericMax);
+    }
+
+    /**
+     * Les preguntes ordenades s'han de mapejar a variables ordinales amb l'ordre corresponent.
+     */
     @Test
     public void testPreguntaOrdenada() {
         Pregunta p = preguntaOrdenada("baix", "mig", "alt");
@@ -90,6 +111,9 @@ public class TestFeatureSpecFactory {
         assertEquals(Integer.valueOf(3), spec.ordinalCardinality);
     }
 
+    /**
+     * Les preguntes qualitatives simples han de generar un domini amb totes les opcions.
+     */
     @Test
     public void testPreguntaNominalSimple() {
         Pregunta p = preguntaNominalSimple("vermell", "verd");
@@ -99,6 +123,19 @@ public class TestFeatureSpecFactory {
         assertTrue(spec.domain.contains("verd"));
     }
 
+    /**
+     * Si la pregunta qualitativa no té opcions, el domini ha de quedar buit.
+     */
+    @Test
+    public void testPreguntaNominalSenseOpcions() {
+        Pregunta p = preguntaNominalSimple();
+        DistanceCalculator.FeatureSpec spec = FeatureSpecFactory.fromPregunta(p);
+        assertTrue(spec.domain.isEmpty());
+    }
+
+    /**
+     * Les preguntes múltiples han de capturar el màxim de seleccions i totes les opcions.
+     */
     @Test
     public void testPreguntaNominalMultiple() {
         Pregunta p = preguntaNominalMultiple(2, "groc", "blau", "negre");
@@ -109,20 +146,31 @@ public class TestFeatureSpecFactory {
         assertEquals(3, spec.domain.size());
     }
 
+    /**
+     * Les preguntes de text lliure han de produir el tipus FREE_TEXT.
+     */
     @Test
     public void testPreguntaTextLliure() {
         DistanceCalculator.FeatureSpec spec = FeatureSpecFactory.fromPregunta(preguntaText());
         assertEquals(DistanceCalculator.VariableKind.FREE_TEXT, spec.kind);
     }
 
-    /* -------------------- fromPreguntas -------------------- */
+        /*  ===============================================
+            TESTS fromPreguntas() CLASSE FeatureSpecFactory
+        =================================================== */
 
+    /**
+     * La fàbrica ha de manejar col·leccions nul·les retornant un array buit.
+     */
     @Test
     public void testFromPreguntasNull() {
         DistanceCalculator.FeatureSpec[] specs = FeatureSpecFactory.fromPreguntas(null);
         assertEquals(0, specs.length);
     }
 
+    /**
+     * Es comprova que cada tipus de pregunta es converteix a la especificació correcta.
+     */
     @Test
     public void testFromPreguntasDiverses() {
         List<Pregunta> preguntes = Arrays.asList(
@@ -139,5 +187,14 @@ public class TestFeatureSpecFactory {
         assertEquals(DistanceCalculator.VariableKind.NOMINAL_SINGLE, specs[2].kind);
         assertEquals(DistanceCalculator.VariableKind.NOMINAL_MULTI, specs[3].kind);
         assertEquals(DistanceCalculator.VariableKind.FREE_TEXT, specs[4].kind);
+    }
+
+    /**
+     * Si la llista conté algun element nul s'ha de llençar una excepció.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testFromPreguntasAmbElementNull() {
+        List<Pregunta> preguntes = Arrays.asList(preguntaNumerica(0.0, 1.0), null);
+        FeatureSpecFactory.fromPreguntas(preguntes);
     }
 }

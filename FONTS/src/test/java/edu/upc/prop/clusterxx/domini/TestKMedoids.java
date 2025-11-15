@@ -206,6 +206,38 @@ public class TestKMedoids {
     }
 
     /**
+     * Les dades nul·les s'han de rebutjar immediatament perquè l'algoritme necessita observacions.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDataNull() {
+        DistanceCalculator.FeatureSpec[] specs = {
+            DistanceCalculator.FeatureSpec.numeric()
+        };
+        new KMedoids().fit(null, 2, 10, specs);
+    }
+
+    /**
+     * maxIters zero ha de comportar-se com el valor per defecte però seguir assignant tots els punts.
+     */
+    @Test
+    public void testMaxIterZeroUtilitzaPerDefecte() {
+        List<String[]> data = new ArrayList<>();
+        data.add(new String[]{"1"});
+        data.add(new String[]{"2"});
+        data.add(new String[]{"3"});
+
+        DistanceCalculator.FeatureSpec[] specs = {
+            DistanceCalculator.FeatureSpec.numeric()
+        };
+
+        List<Kluster> clusters = new KMedoids().fit(data, 2, 0, specs);
+
+        assertEquals(2, clusters.size());
+        int total = clusters.stream().mapToInt(Kluster::size).sum();
+        assertEquals(data.size(), total);
+    }
+
+    /**
      * Test con datos nominales múltiples.
      */
     @Test

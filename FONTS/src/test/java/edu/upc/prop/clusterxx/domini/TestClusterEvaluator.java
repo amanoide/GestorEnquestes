@@ -14,13 +14,14 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Tests de la classe ClusterEvaluator, seguint l'estil d'Opció i la resta de proves.
+ * Tests de la classe ClusterEvaluator.
  */
 public class TestClusterEvaluator {
 
     private final ClusterEvaluator evaluator = new ClusterEvaluator();
 
-    /** Helper per crear especificacions numèriques. */
+    /** Helper per crear especificacions numèriques. 
+    */
     private DistanceCalculator.FeatureSpec[] specs(int dimensions) {
         DistanceCalculator.FeatureSpec[] specs = new DistanceCalculator.FeatureSpec[dimensions];
         Arrays.fill(specs, DistanceCalculator.FeatureSpec.numeric());
@@ -54,23 +55,37 @@ public class TestClusterEvaluator {
         System.out.println("Finalitzats els tests de la classe ClusterEvaluator.\n");
     }
 
-    /* -------------------- silhouetteScore -------------------- */
+        /*  =============================================
+            TESTS silhouetteScore CLASSE ClusterEvaluator
+        ================================================= */
 
+    /**
+     * No es pot calcular el silhouette si la llista de klústers és nul·la.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testSilhouetteScoreClustersNull() {
         evaluator.silhouetteScore(null, specs(1));
     }
 
+    /**
+     * També s'ha de rebutjar una llista buida de klústers.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testSilhouetteScoreClustersBuits() {
         evaluator.silhouetteScore(new ArrayList<>(), specs(1));
     }
 
+    /**
+     * Les especificacions de distància són obligatòries per normalitzar les dimensions.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testSilhouetteScoreSenseSpecs() {
         evaluator.silhouetteScore(clustersBasics(), null);
     }
 
+    /**
+     * Amb un únic clúster el silhouette global ha de ser zero.
+     */
     @Test
     public void testSilhouetteScoreUnSolCluster() {
         List<Kluster> clusters = new ArrayList<>();
@@ -78,6 +93,9 @@ public class TestClusterEvaluator {
         assertEquals(0.0, evaluator.silhouetteScore(clusters, specs(1)), 1e-9);
     }
 
+    /**
+     * Klústers ben separats haurien de donar un silhouette positiu alt.
+     */
     @Test
     public void testSilhouetteScoreClustersSeparats() {
         List<Kluster> clusters = clustersBasics();
@@ -86,6 +104,9 @@ public class TestClusterEvaluator {
         assertEquals(clusters.size() * 2, clusters.stream().mapToInt(Kluster::size).sum());
     }
 
+    /**
+     * Quan hi ha solapament important el silhouette s'ha d'aproximar a zero o ser negatiu.
+     */
     @Test
     public void testSilhouetteScoreClustersSolapats() {
         List<Kluster> clusters = new ArrayList<>();
@@ -96,18 +117,29 @@ public class TestClusterEvaluator {
         assertTrue("Quan hi ha solapament el score ha de ser proper a zero o negatiu", score <= 0.1);
     }
 
-    /* -------------------- silhouettePerCluster -------------------- */
+        /*  =================================================
+            TESTS silhouettePerCluster CLASSE ClusterEvaluator
+        ===================================================== */
 
+    /**
+     * La versió per clúster també ha de validar que la llista no sigui nul·la.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testSilhouettePerClusterNull() {
         evaluator.silhouettePerCluster(null, specs(1));
     }
 
+    /**
+     * I cal comprovar que les especificacions no siguin nul·les.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testSilhouettePerClusterSenseSpecs() {
         evaluator.silhouettePerCluster(clustersBasics(), null);
     }
 
+    /**
+     * Els clústers buits han de retornar un silhouette zero per no introduir soroll.
+     */
     @Test
     public void testSilhouettePerClusterBuit() {
         List<Kluster> clusters = new ArrayList<>();
@@ -118,6 +150,9 @@ public class TestClusterEvaluator {
         assertEquals(0.0, scores[0], 1e-9);
     }
 
+    /**
+     * En el cas ideal cada clúster hauria de tenir un silhouette per sobre de 0.5.
+     */
     @Test
     public void testSilhouettePerClusterValors() {
         List<Kluster> clusters = clustersBasics();

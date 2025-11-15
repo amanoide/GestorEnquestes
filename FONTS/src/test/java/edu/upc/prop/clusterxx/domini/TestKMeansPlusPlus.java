@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Tests de la classe KMeansPlusPlus, seguint l'estil dels altres tests de domini.
+ * Tests de la classe KMeansPlusPlus.
  */
 public class TestKMeansPlusPlus {
 
@@ -73,34 +73,52 @@ public class TestKMeansPlusPlus {
         System.out.println("Finalitzats els tests de la classe KMeansPlusPlus.\n");
     }
 
+    /**
+     * initCentroids ha de rebutjar conjunts de dades nuls.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testInitCentroidsDataNull() {
         new KMeansPlusPlus().initCentroids(null, 2, specsNumeriques(2));
     }
 
+    /**
+     * Tampoc no es pot inicialitzar amb llistes buides de punts.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testInitCentroidsDataBuida() {
         new KMeansPlusPlus().initCentroids(new ArrayList<>(), 1, specsNumeriques(1));
     }
 
+    /**
+     * Una k zero ha de llençar excepció perquè com a mínim cal un clúster.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testInitCentroidsKAmbZero() {
         List<String[]> dades = dadesClustersSeparats();
         new KMeansPlusPlus().initCentroids(dades, 0, specsNumeriques(2));
     }
 
+    /**
+     * k no pot superar el nombre de vectors disponibles.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testInitCentroidsKMassaGran() {
         List<String[]> dades = dadesClustersSeparats();
         new KMeansPlusPlus().initCentroids(dades, dades.size() + 1, specsNumeriques(2));
     }
 
+    /**
+     * Les especificacions són obligatòries per mesurar les distàncies durant la inicialització.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testInitCentroidsSenseSpecs() {
         List<String[]> dades = dadesClustersSeparats();
         new KMeansPlusPlus().initCentroids(dades, 2, null);
     }
 
+    /**
+     * Amb un Random determinista s'han de seleccionar consistentment els centroides dels dos grups.
+     */
     @Test
     public void testInitCentroidsDeterminista() {
         List<String[]> dades = dadesClustersSeparats();
@@ -114,6 +132,9 @@ public class TestKMeansPlusPlus {
         assertArrayEquals(new String[]{"10", "10"}, centroides.get(1));
     }
 
+    /**
+     * La combinació d'inicialització i fit ha de reconstruir els dos clústers separats.
+     */
     @Test
     public void testFitAmbClustersSeparats() {
         List<String[]> dades = dadesClustersSeparats();
