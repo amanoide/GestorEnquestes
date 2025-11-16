@@ -175,7 +175,7 @@ public class CtrlEnquestaDriver {
         String descripcio = in.nextLine();
         
         try {
-            cd.crearEnquesta(admin, id, titol, descripcio);
+            cd.crearEnquesta(id, titol, descripcio);
             System.out.println("✓ Enquesta creada correctament!");
             System.out.println("  ID: " + id);
             System.out.println("  Títol: " + titol);

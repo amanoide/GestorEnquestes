@@ -104,7 +104,7 @@ public class CtrlRespostaDriver {
          
         // ✓ REGISTRAR L'ENQUESTA EN EL CONTROLADOR
         try {
-            cd.crearEnquesta(admin, "1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
+            cd.crearEnquesta("1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
             
             // Afegir les preguntes a través del controlador
             cd.afegirPregunta("1", preguntaText);

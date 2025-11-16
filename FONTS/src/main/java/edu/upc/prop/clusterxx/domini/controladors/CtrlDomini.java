@@ -56,10 +56,10 @@ public class CtrlDomini {
      */
 
     // (jairo)
-    public void crearEnquesta(Usuari usuari, String id, String titol, String descripcio) 
+    public void crearEnquesta(String id, String titol, String descripcio) 
             throws ParametreInvalidException, EnquestaJaExisteixException, UsuariNoAutenticatException {
         
-        // Validació 1: Comprovar que l'usuari existeix i no és null
+        Usuari usuari = ctrlUsuari.getUsuariActual();
         if (usuari == null) {
             throw new UsuariNoAutenticatException("Cal estar autenticat per crear una enquesta.");
         }
@@ -79,10 +79,6 @@ public class CtrlDomini {
             throw new EnquestaJaExisteixException(id);
         }
         
-        // Validació 5: Comprovar que l'usuari està registrat al sistema
-        if (ctrlUsuari.getUsuariActual() == null) {
-            throw new UsuariNoAutenticatException("Cal estar autenticat per crear una enquesta.");
-        }
         
         // Si totes les validacions passen, crear l'enquesta
         ctrlEnquesta.crearEnquesta(id, titol, descripcio, usuari);
