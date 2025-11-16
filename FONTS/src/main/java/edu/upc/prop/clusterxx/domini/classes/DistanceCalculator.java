@@ -4,61 +4,150 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-/** Calcula distancias entre vectores heterogéneos. */
+/**
+ * Calculadora de distancias entre vectores heterogéneos.
+ * 
+ * <p>Esta clase permite calcular distancias entre vectores que contienen diferentes tipos
+ * de variables (numéricas, ordinales, nominales, texto libre). Soporta dos métricas
+ * de distancia principales:</p>
+ * 
+ * <ul>
+ *   <li><b>Distancia Euclidiana (L2):</b> √(Σd²ᵢ) / N - Recomendada para K-Means y K-Means++</li>
+ *   <li><b>Distancia Manhattan (L1):</b> Σ(dᵢ/N) - Recomendada para K-Medoids (más robusta a outliers)</li>
+ * </ul>
+ * 
+ * <p>La distancia se calcula combinando distancias locales específicas para cada tipo de
+ * variable, permitiendo el análisis de datos heterogéneos de forma consistente.</p>
+ * 
+ * @author ClusterXX Team
+ * @version 2.0
+ */
 public class DistanceCalculator {
 
-    /** Tipos de variables soportadas para la distancia local. */
+    /**
+     * Tipos de variables soportadas para el cálculo de distancia local.
+     * 
+     * <p>Cada tipo de variable tiene asociada una función de distancia específica
+     * que normaliza adecuadamente las diferencias entre valores.</p>
+     */
     public enum VariableKind {
-        NUMERIC,            // cuantitativa: un solo número
-        ORDINAL,            // cualitativa ordenada: un valor con orden predefinido
-        NOMINAL_SINGLE,     // cualitativa no ordenada (un solo valor)
-        NOMINAL_MULTI,      // cualitativa no ordenada múltiple (conjunto de valores)
-        FREE_TEXT           // string libre
+        /** Variable cuantitativa: representa un valor numérico continuo o discreto */
+        NUMERIC,
+        
+        /** Variable cualitativa ordenada: modalidades con un orden predefinido (ej: bajo, medio, alto) */
+        ORDINAL,
+        
+        /** Variable cualitativa no ordenada: un único valor de un conjunto de categorías */
+        NOMINAL_SINGLE,
+        
+        /** Variable cualitativa no ordenada múltiple: conjunto de valores seleccionados */
+        NOMINAL_MULTI,
+        
+        /** Variable de texto libre: cadena de caracteres sin estructura predefinida */
+        FREE_TEXT
     }
 
     /**
-     * Especificación por dimensión con metadatos necesarios para calcular la distancia local.
-     * - kind: tipo de variable
-     * - ordinalOrder: lista ordenada de modalidades para variables ordinales (opcional)
-     * - domain: conjunto de modalidades posibles (para nominal simple o múltiple) (opcional)
+     * Especificación de características para una dimensión del vector.
+     * 
+     * <p>Define los metadatos necesarios para calcular la distancia local en una dimensión
+     * específica del vector de datos. Dependiendo del tipo de variable (kind), se utilizan
+     * diferentes campos opcionales:</p>
+     * 
+     * <ul>
+     *   <li><b>NUMERIC:</b> Usa numericMin y numericMax para normalizar</li>
+     *   <li><b>ORDINAL:</b> Usa ordinalOrder y ordinalCardinality para calcular posiciones</li>
+     *   <li><b>NOMINAL_SINGLE/MULTI:</b> No requiere metadatos adicionales</li>
+     *   <li><b>FREE_TEXT:</b> No requiere metadatos adicionales</li>
+     * </ul>
+     * 
+     * @see VariableKind
      */
     public static class FeatureSpec {
+        /** Tipo de variable para esta dimensión */
         public final VariableKind kind;
-        public final List<String> ordinalOrder; // sólo para ORDINAL (puede ser null hasta definir fórmula)
-        public final Integer ordinalCardinality; // m = número de modalidades (para ORDINAL, puede ser null)
-    public final Set<String> domain;        // para NOMINAL_* (opcional; actualmente NO se usa en el cálculo)
-        // Metadatos opcionales útiles
-        public final Double numericMin;         // para NUMERIC (puede ser null)
-        public final Double numericMax;         // para NUMERIC (puede ser null)
-        public final Integer maxSelections;     // para NOMINAL_MULTI (puede ser null)
+        
+        /** Lista ordenada de modalidades para variables ORDINAL (obligatorio para ORDINAL) */
+        public final List<String> ordinalOrder;
+        
+        /** Número de modalidades para variables ORDINAL (m, puede ser null) */
+        public final Integer ordinalCardinality;
+        
+        /** Valor mínimo para variables NUMERIC (obligatorio para NUMERIC) */
+        public final Double numericMin;
+        
+        /** Valor máximo para variables NUMERIC (obligatorio para NUMERIC) */
+        public final Double numericMax;
+        
+        /** Número máximo de selecciones permitidas para NOMINAL_MULTI (puede ser null) */
+        public final Integer maxSelections;
 
+        /**
+         * Constructor básico con solo el tipo de variable.
+         * 
+         * @param kind Tipo de variable (no puede ser null)
+         */
         public FeatureSpec(VariableKind kind) {
-            this(kind, null, null);
+            this(kind, null, null, null, null, null);
         }
 
-        public FeatureSpec(VariableKind kind, List<String> ordinalOrder, Set<String> domain) {
-            this(kind, ordinalOrder, null, domain, null, null, null);
+        /**
+         * Constructor con tipo y orden ordinal.
+         * 
+         * @param kind Tipo de variable (no puede ser null)
+         * @param ordinalOrder Lista ordenada para variables ORDINAL
+         */
+        public FeatureSpec(VariableKind kind, List<String> ordinalOrder) {
+            this(kind, ordinalOrder, null, null, null, null);
         }
 
-        public FeatureSpec(VariableKind kind, List<String> ordinalOrder, Integer ordinalCardinality, Set<String> domain,
+        /**
+         * Constructor completo con todos los metadatos opcionales.
+         * 
+         * @param kind Tipo de variable (no puede ser null)
+         * @param ordinalOrder Lista ordenada para ORDINAL
+         * @param ordinalCardinality Número de modalidades para ORDINAL
+         * @param numericMin Valor mínimo para NUMERIC
+         * @param numericMax Valor máximo para NUMERIC
+         * @param maxSelections Número máximo de selecciones para NOMINAL_MULTI
+         */
+        public FeatureSpec(VariableKind kind, List<String> ordinalOrder, Integer ordinalCardinality,
                            Double numericMin, Double numericMax, Integer maxSelections) {
             this.kind = Objects.requireNonNull(kind, "kind");
             this.ordinalOrder = ordinalOrder;
             this.ordinalCardinality = ordinalCardinality;
-            this.domain = domain;
             this.numericMin = numericMin;
             this.numericMax = numericMax;
             this.maxSelections = maxSelections;
         }
 
-        public static FeatureSpec numeric() { return new FeatureSpec(VariableKind.NUMERIC); }
-        public static FeatureSpec numeric(Double min, Double max) { return new FeatureSpec(VariableKind.NUMERIC, null, null, null, min, max, null); }
-        public static FeatureSpec ordinal(List<String> order) { return new FeatureSpec(VariableKind.ORDINAL, order, null, null, null, null, null); }
-        public static FeatureSpec ordinal(List<String> order, Integer m) { return new FeatureSpec(VariableKind.ORDINAL, order, m, null, null, null, null); }
-        public static FeatureSpec ordinalWithM(Integer m) { return new FeatureSpec(VariableKind.ORDINAL, null, m, null, null, null, null); }
-        public static FeatureSpec nominalSingle(Set<String> domain) { return new FeatureSpec(VariableKind.NOMINAL_SINGLE, null, null, domain, null, null, null); }
-        public static FeatureSpec nominalMulti(Set<String> domain) { return new FeatureSpec(VariableKind.NOMINAL_MULTI, null, null, domain, null, null, null); }
-        public static FeatureSpec nominalMulti(Set<String> domain, Integer maxSelections) { return new FeatureSpec(VariableKind.NOMINAL_MULTI, null, null, domain, null, null, maxSelections); }
+        /** Crea una especificación para variable numérica con rango [min, max]. 
+         * @param min Valor mínimo del rango (obligatorio)
+         * @param max Valor máximo del rango (obligatorio, debe ser > min)
+         */
+        public static FeatureSpec numeric(Double min, Double max) { return new FeatureSpec(VariableKind.NUMERIC, null, null, min, max, null); }
+        
+        /** Crea una especificación para variable ordinal con orden de modalidades. 
+         * @param order Lista ordenada de modalidades (obligatorio, no puede ser null ni vacía)
+         */
+        public static FeatureSpec ordinal(List<String> order) { return new FeatureSpec(VariableKind.ORDINAL, order, null, null, null, null); }
+        
+        /** Crea una especificación para variable ordinal con orden y cardinalidad m. 
+         * @param order Lista ordenada de modalidades (obligatorio, no puede ser null ni vacía)
+         * @param m Cardinalidad (número de modalidades)
+         */
+        public static FeatureSpec ordinal(List<String> order, Integer m) { return new FeatureSpec(VariableKind.ORDINAL, order, m, null, null, null); }
+        
+        /** Crea una especificación para variable nominal simple. */
+        public static FeatureSpec nominalSingle() { return new FeatureSpec(VariableKind.NOMINAL_SINGLE); }
+        
+        /** Crea una especificación para variable nominal múltiple. */
+        public static FeatureSpec nominalMulti() { return new FeatureSpec(VariableKind.NOMINAL_MULTI); }
+        
+        /** Crea una especificación para variable nominal múltiple con máximo de selecciones. */
+        public static FeatureSpec nominalMulti(Integer maxSelections) { return new FeatureSpec(VariableKind.NOMINAL_MULTI, null, null, null, null, maxSelections); }
+        
+        /** Crea una especificación para variable de texto libre. */
         public static FeatureSpec freeText() { return new FeatureSpec(VariableKind.FREE_TEXT); }
     }
 
@@ -66,8 +155,24 @@ public class DistanceCalculator {
     // A partir de ahora, SIEMPRE se debe proporcionar FeatureSpec[] para cada dimensión.
 
     /**
-     * Distancia Euclídea generalizada: sqrt( sum(d_i^2) ) seleccionando la distancia local por tipo de variable.
-     * Todos los valores vienen como String, y se convierten según el tipo de variable (FeatureSpec.kind).
+     * Calcula la distancia Euclidiana (L2) entre dos vectores heterogéneos.
+     * 
+     * <p>Fórmula: d(a,b) = √(Σdᵢ²) / N, donde:</p>
+     * <ul>
+     *   <li>dᵢ = distancia local en la dimensión i (según el tipo de variable)</li>
+     *   <li>N = número de dimensiones (longitud de los vectores)</li>
+     * </ul>
+     * 
+     * <p>La normalización por N asegura que la distancia esté acotada y sea comparable
+     * independientemente del número de dimensiones.</p>
+     * 
+     * <p><b>Uso recomendado:</b> Algoritmos K-Means y K-Means++</p>
+     * 
+     * @param a Primer vector de valores (como Strings)
+     * @param b Segundo vector de valores (como Strings)
+     * @param specs Especificaciones de tipo para cada dimensión
+     * @return Distancia Euclidiana normalizada entre a y b, en el rango [0, ∞)
+     * @throws IllegalArgumentException si algún argumento es null o las longitudes no coinciden
      */
     public double distance(String[] a, String[] b, FeatureSpec[] specs) {
         if (a == null || b == null || specs == null)
@@ -86,7 +191,59 @@ public class DistanceCalculator {
         return euclidean / n;
     }
 
-    /** Calcula la distancia local en una dimensión según el tipo de variable. */
+    /**
+     * Calcula la distancia Manhattan (L1) entre dos vectores heterogéneos.
+     * 
+     * <p>Fórmula: d(a,b) = Σ(dᵢ/N), donde:</p>
+     * <ul>
+     *   <li>dᵢ = distancia local en la dimensión i (según el tipo de variable)</li>
+     *   <li>N = número de dimensiones (longitud de los vectores)</li>
+     * </ul>
+     * 
+     * <p>La normalización se aplica a cada distancia local antes de sumar, lo que
+     * asegura que todas las dimensiones contribuyan equitativamente al resultado final.</p>
+     * 
+     * <p><b>Ventajas sobre la distancia Euclidiana:</b></p>
+     * <ul>
+     *   <li>Más robusta a valores atípicos (outliers)</li>
+     *   <li>Menos sensible a dimensiones con valores extremos</li>
+     *   <li>Comportamiento más estable en espacios de alta dimensionalidad</li>
+     * </ul>
+     * 
+     * <p><b>Uso recomendado:</b> Algoritmo K-Medoids (PAM)</p>
+     * 
+     * @param a Primer vector de valores (como Strings)
+     * @param b Segundo vector de valores (como Strings)
+     * @param specs Especificaciones de tipo para cada dimensión
+     * @return Distancia Manhattan normalizada entre a y b, en el rango [0, ∞)
+     * @throws IllegalArgumentException si algún argumento es null o las longitudes no coinciden
+     */
+    public double distanceManhattan(String[] a, String[] b, FeatureSpec[] specs) {
+        if (a == null || b == null || specs == null)
+            throw new IllegalArgumentException("Arguments cannot be null");
+        if (a.length != b.length || a.length != specs.length)
+            throw new IllegalArgumentException("Vectors and specs must have same length");
+
+        double sum = 0.0;
+        double n = (double) a.length;
+        for (int i = 0; i < a.length; i++) {
+            double d = localDistance(a[i], b[i], specs[i]);
+            sum += d / n;  // normalizar cada distancia local antes de sumar
+        }
+        return sum;
+    }
+
+    /**
+     * Calcula la distancia local en una dimensión según el tipo de variable.
+     * 
+     * <p>Delega el cálculo a funciones específicas según el tipo de variable
+     * definido en la especificación (FeatureSpec).</p>
+     * 
+     * @param ai Valor del primer vector en la dimensión i
+     * @param bi Valor del segundo vector en la dimensión i
+     * @param spec Especificación del tipo de variable para esta dimensión
+     * @return Distancia local normalizada en el rango [0, 1]
+     */
     private double localDistance(String ai, String bi, FeatureSpec spec) {
         switch (spec.kind) {
             case NUMERIC:
@@ -108,23 +265,37 @@ public class DistanceCalculator {
     // ================== Distancia local por tipo (todos reciben String) ==================
 
     /**
-     * NUMERIC: convierte el String a double y calcula |a - b| / (max - min).
-     * Si no se proporcionan min/max, devuelve |a - b| sin normalizar.
+     * Calcula la distancia entre dos valores numéricos.
+     * 
+     * <p>Fórmula: d = |a - b| / (max - min)</p>
+     * 
+     * <p>La normalización por el rango [min, max] asegura que el resultado esté en [0,1],
+     * donde 0 indica valores idénticos y 1 indica la máxima diferencia posible en el rango.</p>
+     * 
+     * <p><b>Precondición:</b> min y max deben estar definidos y max > min.
+     * Si no se cumplen estas condiciones, se lanzará IllegalArgumentException.</p>
+     * 
+     * @param a Primer valor numérico (como String)
+     * @param b Segundo valor numérico (como String)
+     * @param min Valor mínimo del rango (no puede ser null)
+     * @param max Valor máximo del rango (no puede ser null)
+     * @return Distancia normalizada en el rango [0,1]
+     * @throws IllegalArgumentException si min o max son null, o si max <= min
      */
     private double distanceNumeric(String a, String b, Double min, Double max) {
         if (a == null || b == null) return 1.0;
+        if (min == null || max == null) {
+            throw new IllegalArgumentException("min y max son requeridos para variables NUMERIC");
+        }
+        if (max <= min) {
+            throw new IllegalArgumentException("max debe ser mayor que min (max=" + max + ", min=" + min + ")");
+        }
+        
         try {
             double da = Double.parseDouble(a);
             double db = Double.parseDouble(b);
             double diff = Math.abs(da - db);
-            
-            // Normalizar por el rango si está disponible
-            if (min != null && max != null && max > min) {
-                return diff / (max - min);
-            }
-            
-            // Sin normalización, devolver la diferencia absoluta
-            return diff;
+            return diff / (max - min);
         } catch (NumberFormatException e) {
             // Si no se pueden parsear como números, considerar máxima discrepancia
             return 1.0;
@@ -132,14 +303,34 @@ public class DistanceCalculator {
     }
 
     /**
-     * ORDINAL: usa el orden de modalidades para calcular |pos(a) - pos(b)| / (m-1).
+     * Calcula la distancia entre dos valores ordinales.
+     * 
+     * <p>Utiliza las posiciones de los valores en el orden predefinido para calcular
+     * la distancia. Fórmula: d = |pos(a) - pos(b)| / (m-1), donde m es el número de
+     * modalidades.</p>
+     * 
+     * <p>Ejemplos:</p>
+     * <ul>
+     *   <li>order = ["bajo", "medio", "alto"], a="bajo", b="alto" → d = 2/2 = 1.0</li>
+     *   <li>order = ["bajo", "medio", "alto"], a="bajo", b="medio" → d = 1/2 = 0.5</li>
+     * </ul>
+     * 
+     * <p><b>Precondición:</b> order debe estar definido y no puede ser vacío.
+     * Si no se cumple, se lanzará IllegalArgumentException.</p>
+     * 
+     * @param a Primer valor ordinal
+     * @param b Segundo valor ordinal
+     * @param order Lista ordenada de modalidades (no puede ser null ni vacía)
+     * @param m Cardinalidad (número de modalidades, puede ser null)
+     * @return Distancia normalizada [0,1], o 1.0 si algún valor no se encuentra en el orden
+     * @throws IllegalArgumentException si order es null o vacía
      */
     private double distanceOrdinal(String a, String b, List<String> order, Integer m) {
         if (a == null || b == null) return 1.0;
         if (order == null || order.isEmpty()) {
-            // Sin orden definido, usar igualdad básica
-            return a.equals(b) ? 0.0 : 1.0;
+            throw new IllegalArgumentException("order es requerido para variables ORDINAL");
         }
+        
         int ia = order.indexOf(a);
         int ib = order.indexOf(b);
         if (ia < 0 || ib < 0) return 1.0; // Valor no encontrado en el orden
@@ -151,7 +342,19 @@ public class DistanceCalculator {
     }
 
     /**
-     * NOMINAL_SINGLE: 0 si son iguales, 1 si distintos.
+     * Calcula la distancia entre dos valores nominales simples.
+     * 
+     * <p>Implementa una métrica binaria simple:</p>
+     * <ul>
+     *   <li>d = 0 si a == b (mismo valor)</li>
+     *   <li>d = 1 si a ≠ b (valores diferentes)</li>
+     * </ul>
+     * 
+     * <p>Ejemplo: Si a="rojo" y b="rojo" → d=0; si a="rojo" y b="azul" → d=1</p>
+     * 
+     * @param a Primer valor nominal
+     * @param b Segundo valor nominal
+     * @return 0.0 si son iguales, 1.0 si son diferentes
      */
     private double distanceNominalSingle(String a, String b) {
         if (a == null || b == null) return 1.0;
@@ -159,7 +362,25 @@ public class DistanceCalculator {
     }
 
     /**
-     * NOMINAL_MULTI: parsea los strings como "opcion1,opcion2,opcion3" y calcula 1 - Jaccard.
+     * Calcula la distancia entre dos conjuntos de valores nominales múltiples.
+     * 
+     * <p>Utiliza la distancia de Jaccard: d = 1 - J(A,B), donde J(A,B) es el
+     * coeficiente de Jaccard (intersección dividida por unión).</p>
+     * 
+     * <p>Fórmula: d = 1 - |A ∩ B| / |A ∪ B|</p>
+     * 
+     * <p>Ejemplo:</p>
+     * <ul>
+     *   <li>A = {rojo, azul}, B = {azul, verde} → J = 1/3, d = 2/3</li>
+     *   <li>A = {rojo, azul}, B = {rojo, azul} → J = 1, d = 0</li>
+     *   <li>A = {rojo}, B = {verde} → J = 0, d = 1</li>
+     * </ul>
+     * 
+     * <p>Los valores deben estar separados por comas: "opcion1,opcion2,opcion3"</p>
+     * 
+     * @param a Primer conjunto de valores (formato: "valor1,valor2,...")
+     * @param b Segundo conjunto de valores (formato: "valor1,valor2,...")
+     * @return Distancia de Jaccard en el rango [0,1]
      */
     private double distanceNominalMulti(String a, String b) {
         if (a == null || b == null) return 1.0;
@@ -179,7 +400,15 @@ public class DistanceCalculator {
         return 1.0 - jaccard;
     }
 
-    /** Parsea un string "opcion1,opcion2,opcion3" a Set<String>. */
+    /**
+     * Parsea un string con valores separados por comas a un conjunto (Set).
+     * 
+     * <p>Formato esperado: "opcion1,opcion2,opcion3"</p>
+     * <p>Espacios en blanco alrededor de cada valor son eliminados.</p>
+     * 
+     * @param value String con valores separados por comas
+     * @return Set con los valores parseados (vacío si value es null o vacío)
+     */
     private Set<String> parseMultiString(String value) {
         Set<String> result = new java.util.HashSet<>();
         if (value == null || value.trim().isEmpty()) return result;
@@ -191,23 +420,81 @@ public class DistanceCalculator {
     }
 
     /**
-     * FREE_TEXT: distancia de Levenshtein normalizada entre strings.
+     * Calcula la distancia entre dos textos libres usando una fórmula basada en Levenshtein.
+     * 
+     * <p>La distancia de Levenshtein mide el número mínimo de operaciones
+     * (inserción, eliminación, sustitución) necesarias para transformar un string en otro.</p>
+     * 
+     * <p><b>Fórmula:</b></p>
+     * <pre>
+     * d = (lev(a,b) - |len(a) - len(b)|) / (max(len(a), len(b)) - |len(a) - len(b)|)
+     * </pre>
+     * 
+     * <p>Donde:</p>
+     * <ul>
+     *   <li>lev(a,b) = distancia de Levenshtein entre a y b</li>
+     *   <li>len(a), len(b) = longitudes de los strings a y b</li>
+     *   <li>|len(a) - len(b)| = diferencia absoluta de longitudes</li>
+     * </ul>
+     * 
+     * <p>Esta fórmula penaliza más las diferencias en caracteres cuando los strings
+     * tienen longitudes similares, normalizando por la longitud común efectiva.</p>
+     * 
+     * <p><b>Casos especiales:</b></p>
+     * <ul>
+     *   <li>Si ambos strings están vacíos → d = 0.0</li>
+     *   <li>Si tienen la misma longitud → d = lev / len</li>
+     *   <li>Si el denominador es 0 (uno vacío, otro no) → d = 1.0</li>
+     * </ul>
+     * 
+     * @param a Primer texto
+     * @param b Segundo texto
+     * @return Distancia normalizada en el rango [0,1]
      */
     private double distanceFreeText(String a, String b) {
         if (a == null || b == null) return 1.0;
         
-        int lev = levenshtein(a, b);
-        int maxLen = Math.max(a.length(), b.length());
+        int lenA = a.length();
+        int lenB = b.length();
         
-        // Normalizar por la longitud máxima
-        if (maxLen == 0) return 0.0;
-        return lev / (double) maxLen;
+        // Caso especial: ambos vacíos
+        if (lenA == 0 && lenB == 0) return 0.0;
+        
+        int lev = levenshtein(a, b);
+        int maxLen = Math.max(lenA, lenB);
+        int diffLen = Math.abs(lenA - lenB);
+        
+        // Numerador: lev - |len(a) - len(b)|
+        int numerator = lev - diffLen;
+        
+        // Denominador: max(len(a), len(b)) - |len(a) - len(b)|
+        int denominator = maxLen - diffLen;
+        
+        // Si el denominador es 0, significa que uno es vacío y el otro no
+        // o que la diferencia de longitudes es igual a la longitud máxima
+        if (denominator == 0) return 1.0;
+        
+        return numerator / (double) denominator;
     }
 
     /**
      * Calcula la distancia de Levenshtein entre dos strings usando programación dinámica.
-     * Representa el número mínimo de operaciones (inserción, eliminación, sustitución) 
-     * para transformar s en t.
+     * 
+     * <p>Representa el número mínimo de operaciones de edición (inserción, eliminación,
+     * sustitución) necesarias para transformar el string s en el string t.</p>
+     * 
+     * <p><b>Algoritmo:</b> Programación dinámica con optimización de espacio O(n)
+     * en lugar de O(m×n), usando solo dos arrays en lugar de una matriz completa.</p>
+     * 
+     * <p><b>Complejidad:</b></p>
+     * <ul>
+     *   <li>Tiempo: O(m × n), donde m = |s|, n = |t|</li>
+     *   <li>Espacio: O(n) - solo almacena dos filas en lugar de la matriz completa</li>
+     * </ul>
+     * 
+     * @param s String origen
+     * @param t String destino
+     * @return Número mínimo de operaciones de edición necesarias
      */
     private int levenshtein(String s, String t) {
         int m = s.length();

@@ -1057,8 +1057,14 @@ public class CtrlDomini {
                     // Verificar que l'usuari existeix
                     Usuari usuari = ctrlPersistencia.getUsuari(username);
                     if (usuari == null) {
-                        System.out.println("⚠ Avís: L'usuari '" + username + "' no existeix, se saltarà.");
-                        continue;
+                        //IMPORTANTE: CREO EL USUARIO SI NO EXISTE PARA HACER LA PRUEBA DE IMPORTAR RESPOSTA PARA NO TENER QUE CREARLOS A MANO
+                        //ESTO SE TIENE QUE QUITAR LUEGO
+                        ctrlUsuari.registrarUsuari(username, "imported_password");
+                        usuari = ctrlPersistencia.getUsuari(username);
+
+                        //DE MOMENTO COMENTO ESTO PARA QUE NO SALGA EL AVISO LUEGO DEBEMOS QUITAR LA CREACION AUTOMATICA Y PONERLO OTRA VEZ
+                        //System.out.println("⚠ Avís: L'usuari '" + username + "' no existeix, se saltarà.");
+                        //continue;
                     }
                     
                     // Importar les respostes d'aquest usuari
@@ -1616,6 +1622,24 @@ public class CtrlDomini {
         return ctrlUsuari.checkPassword(password);
     }
 
+    public void eliminarUsuari(String username) throws ParametreInvalidException {
+        // Validar que el paràmetre no sigui nul o buit
+        if (username == null || username.trim().isEmpty()) {
+            throw new ParametreInvalidException("El nom d'usuari no pot estar buit.");
+        }
+        
+        // Normalitzar el username (eliminar espais)
+        String normalizedUsername = username.trim();
+
+        Usuari usuariact = ctrlUsuari.getUsuariActual();
+
+        if(usuariact != null && normalizedUsername.equals(usuariact.getUsername())) {
+            ctrlUsuari.logout();
+        }
+
+        ctrlUsuari.eliminarUsuari(normalizedUsername);
+    }
+
     public void crearPerfil(String id, String descripcio) {
         ctrlPerfil.crearPerfil(id, descripcio);
     }
@@ -1658,14 +1682,98 @@ public class CtrlDomini {
     // --- Anàlisi i Clustering ---
 
     /**
+     * Encuentra el valor óptimo de k para clustering de una encuesta.
+     * Vectoriza las respuestas y evalúa diferentes valores de k con Silhouette.
+     * 
+     * @param idEnquesta ID de la encuesta
+     * @param kMin Valor mínimo de k a evaluar
+     * @param kMax Valor máximo de k a evaluar
+     * @param algoritmeNom Algoritmo a usar: "KMeans", "KMeans++", "KMedoids"
+     * @param maxIters Máximo de iteraciones
+     * @return Resultado con el mejor k y scores de Silhouette
+     * @throws EnquestaNoExisteixException Si la encuesta no existe
+     */
+    public CtrlAnalisi.OptimalKResult trobarMillorK(String idEnquesta, int kMin, int kMax,
+                                                     String algoritmeNom, int maxIters)
+            throws EnquestaNoExisteixException {
+        
+        // 1. Obtenir l'enquesta
+        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+        if (enquesta == null) {
+            throw new EnquestaNoExisteixException(idEnquesta);
+        }
+        
+        // 2. Obtenir preguntes
+        List<Pregunta> preguntes = enquesta.getPreguntes();
+        if (preguntes.isEmpty()) {
+            throw new IllegalStateException("L'enquesta no té preguntes per analitzar.");
+        }
+        
+        // 3. Vectoritzar respostes
+        HashMap<String, Resposta> totesRespostes = ctrlResposta.getTotesRespostes();
+        List<String[]> dataVectors = new ArrayList<>();
+        
+        for (String username : ctrlPersistencia.getAllUsuaris().keySet()) {
+            String[] vector = new String[preguntes.size()];
+            boolean teRespostes = false;
+            
+            for (int i = 0; i < preguntes.size(); i++) {
+                Pregunta p = preguntes.get(i);
+                String clauResposta = p.getId() + "_" + username;
+                Resposta resposta = totesRespostes.get(clauResposta);
+                
+                if (resposta != null) {
+                    vector[i] = resposta.getTextResposta();
+                    teRespostes = true;
+                } else {
+                    vector[i] = "";
+                }
+            }
+            
+            if (teRespostes) {
+                dataVectors.add(vector);
+            }
+        }
+        
+        if (dataVectors.size() < kMin) {
+            throw new IllegalStateException("No hi ha prou participants (" + dataVectors.size() + 
+                                          ") per evaluar k=" + kMin);
+        }
+        
+        // 4. Construir FeatureSpecs
+        DistanceCalculator.FeatureSpec[] specs = ctrlAnalisi.buildSpecsFromPreguntas(preguntes);
+        
+        // 5. Delegar búsqueda de k óptimo a CtrlAnalisi
+        return ctrlAnalisi.findOptimalK(dataVectors, kMin, kMax, algoritmeNom, maxIters, specs);
+    }
+
+    /**
+     * Selecciona un valor de k aleatorio para una encuesta.
+     * 
+     * @param idEnquesta ID de la encuesta
+     * @return Valor de k aleatorio
+     * @throws EnquestaNoExisteixException Si la encuesta no existe
+     */
+    public int escollirKAleatori(String idEnquesta) throws EnquestaNoExisteixException {
+        // Obtenir nombre de participants
+        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+        if (enquesta == null) {
+            throw new EnquestaNoExisteixException(idEnquesta);
+        }
+        
+        int numParticipants = enquesta.getParticipants().size();
+        return ctrlAnalisi.selectRandomK(numParticipants);
+    }
+
+    /**
      * Realitza clustering sobre els usuaris que han respost una enquesta.
      * Els perfils generats s'assignen automàticament als usuaris i es persisten.
      * 
      * @param idEnquesta ID de l'enquesta a analitzar
      * @param k Nombre de clusters
-     * @param usePlusPlus true per usar KMeans++, false per KMeans estàndard
+     * @param usePlusPlus true per usar KMeans++, false per KMeans estàndard (ignorat si algoritmeNom és especificat)
      * @param maxIters Màxim d'iteracions
-     * @param algoritmeNom Nom de l'algoritme per mostrar ("KMeans" o "KMeans++")
+     * @param algoritmeNom Nom de l'algoritme: "KMeans", "KMeans++", "KMedoids"
      * @return Resultats del clustering amb clusters, silhouette i perfils assignats
      * @throws EnquestaNoExisteixException Si l'enquesta no existeix
      */
@@ -1728,8 +1836,14 @@ public class CtrlDomini {
         // 4. Construir FeatureSpecs des de les preguntes
         DistanceCalculator.FeatureSpec[] specs = ctrlAnalisi.buildSpecsFromPreguntas(preguntes);
         
-        // 5. Executar clustering
-        List<Kluster> clusters = ctrlAnalisi.cluster(dataVectors, k, usePlusPlus, maxIters, specs);
+        // 5. Executar clustering amb l'algoritme especificat
+        List<Kluster> clusters;
+        if (algoritmeNom != null && (algoritmeNom.equalsIgnoreCase("KMedoids") || 
+                                     algoritmeNom.equalsIgnoreCase("K-Medoids"))) {
+            clusters = ctrlAnalisi.clusterWithAlgorithm(dataVectors, k, "KMedoids", maxIters, specs);
+        } else {
+            clusters = ctrlAnalisi.cluster(dataVectors, k, usePlusPlus, maxIters, specs);
+        }
         
         // 6. Calcular Silhouette
         ClusterEvaluator evaluator = new ClusterEvaluator();

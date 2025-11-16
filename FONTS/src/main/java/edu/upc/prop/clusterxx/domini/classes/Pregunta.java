@@ -71,10 +71,10 @@ public class Pregunta {
                 this.tipus = TipusPregunta.QUALITATIVA_ORDENADA;
                 break;
             case "qualitativa_simple":
-            case "multiple":
                 this.tipus = TipusPregunta.QUALITATIVA_NO_ORDENADA_SIMPLE;
                 break;
             case "qualitativa_multiple":
+            case "multiple":
                 this.tipus = TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE;
                 this.maxSeleccions = 3; // Per defecte
                 break;
