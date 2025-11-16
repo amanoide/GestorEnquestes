@@ -1,0 +1,30 @@
+Objecte de la prova:
+- S'executen i validen els casos d'ús del subsistema d'usuari: registre (creació), autenticació (login/logout), consulta d'usuari actual i esborrat d'usuari.
+- Es comproven tant els fluxos correctes (happy paths) com múltiples errors (duplicats, credencials incorrectes, paràmetres invàlids).
+
+Altres elements integrats a la prova:
+- CtrlDomini: la capa de domini conté la lògica real de validacions i persistència; el driver de proves invoca CtrlDomini per exercitar-la.
+- CtrlPersistencia (in-memory): s'usa per emmagatzemar temporalment els usuaris durant la prova.
+
+Fitxers de dades necessaris:
+- No cal cap fitxer extern per executar aquest driver. Tots els usuaris es creen dinàmicament durant l'execució.
+
+Valors estudiats:
+- Entrades vàlides: noms d'usuari amb >=3 caràcters (ex. auto1, auto2) i contrasenyes amb >=4 caràcters (pwd1).
+- Entrades invàlides: username buit, username massa curt ("a"), password massa curta, intents de registre duplicat.
+- Estratègia: combinació caixa blanca (provar condicions de validació de domini) i caixa negra (inputs que provoquen errors observables).
+
+Efectes estudiats:
+- Missatges d'error i d'èxit a la consola.
+- Estat intern: usuari actual (login/logout) i efectes persistents d'operacions (registre, esborrat).
+- Robustesa del flux interactiu davant d'entrades inesperades (text on s'espera número, línies buides).
+
+Operativa (ús ràpid):
+- Script d'execució: `ENTREGA/EXE/CtrlUsuari/run_tests.sh`.
+- Instruccions: des del directori `ENTREGA/EXE/CtrlUsuari`:
+  chmod +x run_tests.sh
+  ./run_tests.sh
+- El script crida la task Gradle `runCtrlUsuariDriver` des del directori `ENTREGA/FONTS` per llançar el driver automàticament. La sortida mostra el pas a pas de les proves.
+
+Notes:
+- Si vols inputs diferents o escenaris nous, edita el heredoc dins de `run_tests.sh` o executa `./gradlew runCtrlUsuariDriver` manualment per fer proves interactives.

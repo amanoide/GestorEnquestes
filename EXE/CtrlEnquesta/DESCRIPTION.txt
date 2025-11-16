@@ -1,0 +1,31 @@
+Objecte de la prova:
+- Provar la gestió d'enquestes i preguntes: crear/modificar/esborrar enquestes, afegir/modificar/esborrar preguntes i opcions, importar enquestes des de JSON.
+- Classes provades: CtrlEnquesta a través de les invocacions de CtrlDomini; Pregunta, Opcio, Enquesta (estructura d'objectes) i validacions.
+
+Altres elements integrats a la prova:
+- Reutilització de CtrlDomini i CtrlPersistencia per emmagatzematge i validacions.
+- Parts del codi de Pregunta/Opcio s'executen i s'integren per comprovar interoperabilitat.
+
+Fitxers de dades necessaris:
+- Exemple d'enquesta JSON: `exemple_enquesta.json` (ubicat habitualment a `ENTREGA/DOCS/` o directament al directori on s'executi el driver si s'indica només el nom).
+- El fitxer conté la descripció estructurada de l'enquesta (id, títol, preguntes, opcions). El test d'import només llegeix i descarta si el format és invàlid.
+
+Valors estudiats:
+- Casos vàlids: crear enquesta amb id no existent, afegir preguntes de tots els tipus amb opcions correctes.
+- Casos invàlids: intentar modificar/esborrar enquestes no existents, afegir preguntes duplicades, afegir opcions a preguntes numèriques, valors no numèrics on s'esperen números.
+- Estratègia: caixa blanca per validar rutes crítiques (existència d'IDs, rangs numèrics) i caixa negra per provar entrades mal formades (strings buits, ordres no numèrics).
+
+Efectes estudiats:
+- Comprovació de la interacció entre el driver i el model: llistats d'enquestes, visualització de preguntes i opcions, missatges d'error informatius.
+- Validacions en pantalla i reintents (p.ex. sol·licitar de nou un número si l'entrada no és vàlida).
+
+Operativa (ús ràpid):
+- Script d'execució: `ENTREGA/EXE/CtrlEnquesta/run_tests.sh`.
+- Execució des de la carpeta del script:
+  chmod +x run_tests.sh
+  ./run_tests.sh
+- El script crida la task Gradle `runCtrlEnquestaDriver` des de `ENTREGA/FONTS` i envia una seqüència d'inputs preparada. El fitxer `PROVA.txt` conté una execució d'exemple amb sortida capturada.
+
+Notes:
+- Per provar la importació, assegura't que `exemple_enquesta.json` està disponible en la ruta indicada (o canvia la ruta en el script a `ENTREGA/DOCS/exemple_enquesta_clustering.json`).
+- Pots executar el driver en mode interactiu amb `./gradlew runCtrlEnquestaDriver` i fer proves manuals.
