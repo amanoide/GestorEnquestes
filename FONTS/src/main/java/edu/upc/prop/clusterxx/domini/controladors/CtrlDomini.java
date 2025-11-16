@@ -1053,14 +1053,9 @@ public class CtrlDomini {
                     // Verificar que l'usuari existeix
                     Usuari usuari = ctrlPersistencia.getUsuari(username);
                     if (usuari == null) {
-                        //IMPORTANTE: CREO EL USUARIO SI NO EXISTE PARA HACER LA PRUEBA DE IMPORTAR RESPOSTA PARA NO TENER QUE CREARLOS A MANO
-                        //ESTO SE TIENE QUE QUITAR LUEGO
-                        ctrlUsuari.registrarUsuari(username, "imported_password");
-                        usuari = ctrlPersistencia.getUsuari(username);
-
-                        //DE MOMENTO COMENTO ESTO PARA QUE NO SALGA EL AVISO LUEGO DEBEMOS QUITAR LA CREACION AUTOMATICA Y PONERLO OTRA VEZ
-                        //System.out.println("⚠ Avís: L'usuari '" + username + "' no existeix, se saltarà.");
-                        //continue;
+                        
+                        System.out.println("⚠ Avís: L'usuari '" + username + "' no existeix, se saltarà.");
+                        continue;
                     }
                     
                     // Importar les respostes d'aquest usuari

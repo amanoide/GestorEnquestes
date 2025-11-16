@@ -43,13 +43,14 @@ public class CtrlRespostaDriver {
     private static Scanner in;
     private static CtrlDomini cd;
     private static Usuari admin;
-    private static Enquesta enquesta;
     /**
      * Mètode principal que executa el driver.
      */
     public static void main(String[] args) {
         init();
         System.out.println("Driver de testeig de CtrlResposta");
+        System.out.println("Tens un usuari mock creat Username: USER_MOCK, Password: 1234\n");
+        System.out.println("Hi ha una enquesta mock creada amb ID: 1, Títol: ENQUESTA_MOCK\n");
 
         String input = "";
         while (!input.equals("0") && !input.equals("sortir")) {
@@ -73,26 +74,46 @@ public class CtrlRespostaDriver {
     private static void init() {
         in = new Scanner(System.in);
         cd = new CtrlDomini();
-        admin = new Usuari("USER_MOCK", "1234");
-        Usuari.login(admin);
-
-        //crear opcions mock per les preguntes que ho requereixin
-        Opcio opcio1 = new Opcio(1, "OPCIO1");
-        Opcio opcioOrdenada = new Opcio(2, "OPCIO2", 2);
         
+        //USUARI ADMIN MOCK PER DEFECTE
+        try{
+            cd.registrarUsuari("USER_MOCK", "1234");
+        } catch (UsuariJaExisteixException | ParametreInvalidException e){
+            // Usuari ja existeix, podem continuar
+        }
+         try {
+            cd.login("USER_MOCK", "1234");
+            System.out.println("✓ Login correcte!");
+        } catch (CredencialsIncorrectesException | ParametreInvalidException e) {
+            System.out.println("❌ Error en el login: " + e.getMessage());
+        }
+        admin = cd.getUsuariActual();
+        
+        //CREACIÓ D'UNA ENQUESTA MOCK AMB TOTS ELS TIPUS DE PREGUNTES PER PROVAR LES RESPOSTES
+
         //crear preguntes mock hi ha d'haver una de cada tipus amb una opcio les d'opció
         Pregunta preguntaText = new Pregunta("1", "PREGUNTA DE TEXT LLIURE", "text");
-        Pregunta preguntaNum = new Pregunta("2", "PREGUNTA NUMERICA", 0.0, 10.0);
-        Pregunta preguntaOrd = new Pregunta("3", "PREGUNTA QUALITATIVA", "qualitativa_ordenada");
-        preguntaOrd.afegirOpcio(opcioOrdenada);
-        Pregunta preguntaQS = new Pregunta("4", "PREGUNTA QUALITATIVA SIMPLE", "qualitativa_simple");
-        preguntaQS.afegirOpcio(opcio1);
-        Pregunta preguntaQM = new Pregunta("5", "PREGUNTA QUALITATIVA MULTIPLE", "qualitativa_multiple");
-        preguntaQM.afegirOpcio(opcio1);
-        preguntaQM.afegirOpcio(opcio1);
 
-        //crear enquesta mock
-        enquesta = new Enquesta("1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA", admin);
+        Pregunta preguntaNum = new Pregunta("2", "PREGUNTA NUMERICA", 0.0, 120.0);
+
+        Pregunta preguntaOrd = new Pregunta("3", "PREGUNTA QUALITATIVA", "qualitativa_ordenada");
+        preguntaOrd.afegirOpcio(new Opcio(1, "OPCIO1", 1));
+        preguntaOrd.afegirOpcio(new Opcio(2, "OPCIO2", 2));
+        preguntaOrd.afegirOpcio(new Opcio(3, "OPCIO3", 3));
+        preguntaOrd.afegirOpcio(new Opcio(4, "OPCIO4", 4));
+
+        Pregunta preguntaQS = new Pregunta("4", "PREGUNTA QUALITATIVA SIMPLE", "qualitativa_simple");
+        preguntaQS.afegirOpcio(new Opcio(0, "OPCIO0"));
+        preguntaQS.afegirOpcio(new Opcio(1, "OPCIO1"));
+        preguntaQS.afegirOpcio(new Opcio(2, "OPCIO2"));
+        preguntaQS.afegirOpcio(new Opcio(3, "OPCIO3"));
+
+        Pregunta preguntaQM = new Pregunta("5", "PREGUNTA QUALITATIVA MULTIPLE", "qualitativa_multiple");
+        preguntaQM.afegirOpcio(new Opcio(0, "OPCIO0"));
+        preguntaQM.afegirOpcio(new Opcio(1, "OPCIO1"));
+        preguntaQM.afegirOpcio(new Opcio(2, "OPCIO2"));
+        preguntaQM.afegirOpcio(new Opcio(3, "OPCIO3"));
+
          
         // ✓ REGISTRAR L'ENQUESTA EN EL CONTROLADOR
         try {
@@ -126,6 +147,8 @@ public class CtrlRespostaDriver {
 
         System.out.println("CREACIÓ DE MOCKS:");
         System.out.println("(500) Importar Enquesta");
+        System.out.println("(501) Crear Usuari Mock (per provar respostes)");
+        System.out.println("(502) Loggin dels Usuaris Mocks");
         System.out.println("------------------------");
         System.out.println("(0|sortir) - Tancar driver");
         System.out.println("Escull una opció: ");
@@ -140,6 +163,14 @@ public class CtrlRespostaDriver {
             case "Importar Enquesta" :
                 testImportarEnquesta();
                 break;  
+            case "501":
+            case "Crear Usuari Mock":
+                crearUsuariMock();
+                break;
+            case "502":
+            case "Loggin dels Usuaris Mocks":
+                loginUsuarisMocks();
+                break;
             case "1":
             case "Contestar enquesta":
                 contestarEnquesta();
@@ -171,7 +202,38 @@ public class CtrlRespostaDriver {
 
 
     // --- Mètodes de Test ---
+   private static void crearUsuariMock(){
+        System.out.println("\n═══ CREAR USUARI MOCK ═══");
+        System.out.print("Nom d'usuari: ");
+        String nomUsuari = in.nextLine().trim();
+        System.out.print("Contrasenya: ");
+        String contrasenya = in.nextLine().trim();
+        
+        try{
+            cd.registrarUsuari(nomUsuari, contrasenya);
+        } catch (UsuariJaExisteixException | ParametreInvalidException e){
+            // Usuari ja existeix, podem continuar
+        }
+
+        System.out.println("✓ Usuari mock creat correctament! amb Username: " + nomUsuari + ", Password: " + contrasenya);
+        
+    }
     
+    private static void loginUsuarisMocks(){
+        System.out.println("\n═══ LOGIN USUARIS MOCK ═══");
+        System.out.print("Nom d'usuari: ");
+        String nomUsuari = in.nextLine().trim();
+        System.out.print("Contrasenya: ");
+        String contrasenya = in.nextLine().trim();
+        
+        try {
+            cd.login(nomUsuari, contrasenya);
+            System.out.println("✓ Login correcte!");
+        } catch (CredencialsIncorrectesException | ParametreInvalidException e) {
+            System.out.println("❌ Error en el login: " + e.getMessage());
+        }
+    } 
+
    private static void testImportarEnquesta() {
         
         System.out.println("\n═══ IMPORTAR ENQUESTA DES DE JSON ═══");
@@ -316,7 +378,7 @@ public class CtrlRespostaDriver {
                 }
             }
             
-            cd.contestarEnquesta(enquesta.getId(), respostes, idPreguntaPerResposta);//esto ya lo hace contestarEnquesta 
+            cd.contestarEnquesta(enquesta.getId(), respostes, idPreguntaPerResposta);
             System.out.println("\n✓ Enquesta completada! Gràcies per participar.");
             
         } catch (UsuariNoAutenticatException | EnquestaNoExisteixException | EnquestaJaContestadaException | PreguntaNoExisteixException | RespostaInvalidaException | ParametreInvalidException e) {
@@ -475,6 +537,7 @@ public class CtrlRespostaDriver {
   
     private static void testEsborrarResposta() {
         System.out.println("----ESBORRAR RESPOSTA----");
+        System.out.println("EBORRARÀS LA RESPOSTADEL USUÀRI AMB EL QUE ESTAS LOGGEJAT");
         ArrayList<Enquesta> totes = new ArrayList<>();
         try{
          totes = cd.consultarEnquestes();
@@ -561,6 +624,8 @@ public class CtrlRespostaDriver {
     //SI NO NO IRÁ CORRECTAMENTE
     private static void importarRespostes() {
         System.out.println("----IMPORTAR RESPOSTES DES DE FITXER----");
+        System.out.println(" ALERTA, SI ELS USUARIS QUE RESPONEN A L'ENQUESTA NO EXISTEIXEN, NO ES PODRAN IMPORTAR LES RESPOSTES ");
+        System.out.println(" HAURÁS DE CREAR ELS USUARIS ABANS D'IMPORTAR LES RESPOSTES AMB L'OPCIÓ 501");
         // Implementació pendent segons l'especificació del fitxer
         System.out.println("Fitxer d'exemple: exemple_resposta.json");
         System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
