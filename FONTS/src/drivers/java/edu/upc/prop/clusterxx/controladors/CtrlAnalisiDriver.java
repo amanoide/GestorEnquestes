@@ -203,9 +203,7 @@ public class CtrlAnalisiDriver {
             String kOpcio = in.nextLine();
             
             int k = -1;
-            boolean autoK = false;
             int nParticipants = respostesPerUsuari.size();
-            int kMax = (int) Math.sqrt(nParticipants);
             
             switch (kOpcio) {
                 case "1": // Manual
@@ -224,15 +222,13 @@ public class CtrlAnalisiDriver {
                     }
                     break;
                     
-                case "2": // Aleatorio
-                    k = 2 + new java.util.Random().nextInt(Math.max(1, kMax - 1));
+                case "2": // Aleatorio - delegar a CtrlDomini
+                    k = cd.escollirKAleatori(enquesta.getId());
                     System.out.println("✓ k escollit aleatòriament: " + k);
                     break;
                     
-                case "3": // Automático con Silhouette
-                    autoK = true;
-                    k = 2; // Valor temporal, se calculará el mejor
-                    System.out.println("✓ S'avaluaran diferents valors de k (2 fins a " + Math.min(10, kMax) + ")");
+                case "3": // Automático - delegar a CtrlDomini
+                    System.out.println("✓ S'avaluaran diferents valors de k per trobar l'òptim...");
                     break;
                     
                 default:
@@ -263,37 +259,35 @@ public class CtrlAnalisiDriver {
                     break;
             }
             
-            // Si es automático, calcular mejor k con Silhouette
-            if (autoK) {
+            // Si es automático, buscar el mejor k
+            if (kOpcio.equals("3")) {
                 System.out.println("\n⏳ Avaluant diferents valors de k...");
-                int kMin = 2;
-                int kMaxAuto = Math.min(10, Math.max(kMax, 3));
-                double bestSilhouette = -1;
-                int bestK = 2;
                 
-                for (int kTest = kMin; kTest <= kMaxAuto; kTest++) {
-                    CtrlDomini.ResultatClustering tempResultat = cd.analitzarEnquesta(
-                        enquesta.getId(), 
-                        kTest, 
-                        usePlusPlus, 
-                        100, 
-                        algoritmeNom
-                    );
-                    
-                    double silhouette = tempResultat.silhouetteGlobal;
-                    System.out.printf("  k=%d → Silhouette=%.3f%n", kTest, silhouette);
-                    
-                    if (silhouette > bestSilhouette) {
-                        bestSilhouette = silhouette;
-                        bestK = kTest;
-                    }
+                // Obtener rango sugerido usando CtrlAnalisi
+                CtrlAnalisi ctrlAnalisi = new CtrlAnalisi();
+                int[] range = ctrlAnalisi.suggestKRange(nParticipants);
+                int kMin = range[0];
+                int kMax = range[1];
+                
+                // Buscar k óptimo usando CtrlDomini
+                CtrlAnalisi.OptimalKResult result = cd.trobarMillorK(
+                    enquesta.getId(), 
+                    kMin, 
+                    kMax, 
+                    algoritmeNom, 
+                    100
+                );
+                
+                // Mostrar resultados de la evaluación
+                for (int kTest = kMin; kTest <= kMax; kTest++) {
+                    System.out.printf("  k=%d → Silhouette=%.3f%n", kTest, result.getSilhouetteForK(kTest));
                 }
                 
-                k = bestK;
-                System.out.println("\n✓ Millor k trobat: " + k + " (Silhouette=" + String.format("%.3f", bestSilhouette) + ")");
+                k = result.bestK;
+                System.out.println("\n✓ Millor k trobat: " + k + " (Silhouette=" + String.format("%.3f", result.bestSilhouette) + ")");
             }
             
-            System.out.println("\n⏳ Analitzant respostes" + (autoK ? " amb k=" + k : "") + "...");
+            System.out.println("\n⏳ Analitzant respostes amb k=" + k + "...");
             
             // Delegar todo el clustering al CtrlDomini
             CtrlDomini.ResultatClustering resultat = cd.analitzarEnquesta(
