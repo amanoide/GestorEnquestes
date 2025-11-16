@@ -13,7 +13,6 @@ import java.util.ArrayList;
  * Controlador de persistencia centralitzat que emmagatzema totes les dades del sistema en memòria.
  * Utilitza el patró Singleton per garantir una única instància.
  * Tots els controladors accedeixen a aquesta classe per obtenir i modificar dades.
- * @author ClusterXX
  */
 public class CtrlPersistencia {
     private static CtrlPersistencia instance;
