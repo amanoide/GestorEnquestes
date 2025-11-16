@@ -6,14 +6,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 // Importacions dels stubs de domini
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.CredencialsIncorrectesException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaNoExisteixException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.ErrorImportacioException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.ParametreInvalidException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariJaExisteixException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariNoAutenticatException;
 import edu.upc.prop.clusterxx.domini.classes.Kluster;
+import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Perfil;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
@@ -36,6 +45,9 @@ public class CtrlAnalisiDriver {
     public static void main(String[] args) {
         init();
         System.out.println("Driver de testeig de CtrlAnalisi");
+        System.out.println("ENQUESTES MOCK CREADES AMB DIVERSOS TIPUS DE PREGUNTES I RESPOSTES");
+        System.out.println("USUARI ADMIN PER DEFECTE: USER_MOCK / 1234");
+        System.out.println("USUARIS QUE RESPONEN LES ENQUESTES: alice, bob, carla, dave AMB (pwd1) TOTS");
 
         String input = "";
         while (!input.equals("0") && !input.equals("sortir")) {
@@ -56,33 +68,62 @@ public class CtrlAnalisiDriver {
     private static void init() {
         in = new Scanner(System.in);
         cd = new CtrlDomini();
-        admin = new Usuari("USER_MOCK", "1234");
-        Usuari.login(admin);
+        
+
+        //USUARI ADMIN MOCK PER DEFECTE
+        try{
+            cd.registrarUsuari("USER_MOCK", "1234");
+        } catch (UsuariJaExisteixException | ParametreInvalidException e){
+            // Usuari ja existeix, podem continuar
+        }
+         try {
+            cd.login("USER_MOCK", "1234");
+            System.out.println("✓ Login correcte!");
+        } catch (CredencialsIncorrectesException | ParametreInvalidException e) {
+            System.out.println("❌ Error en el login: " + e.getMessage());
+        }
+        admin = cd.getUsuariActual();
+        
+        //CREACIÓ D'UNA ENQUESTA MOCK AMB TOTS ELS TIPUS DE PREGUNTES PER PROVAR LES RESPOSTES
+        crearEnquestaMock();
+        //CREACIÓ DE RESPOSTES MOCK PER A L'ENQUESTA CREADA
+        crearRespostesMock();
+        
+        
+
     }
 
     private static void mostra_metodes() {
         System.out.println("\n--- Menú CtrlAnalisi ---");
         System.out.println("------------------------");
-        System.out.println("(1) Importar enquesta");
-        System.out.println("(2) Importar Respostes");
-        System.out.println("(3) Analitzar enquesta");
-        System.out.println("(4) Veure el meu perfil");
+        
+        System.out.println("(1) Analitzar enquesta");
+        System.out.println("(2) Veure el meu perfil");
+
+        System.out.println("CREACIÓ DE MOCKS:");
+        System.out.println("(500) Importar Enquesta");
+        System.out.println("(501) Importar Respostes");
+        System.out.println("(502) Loggin dels Usuaris Mocks");
+        System.out.println("------------------------");
         System.out.println("(0|sortir) - Tancar driver");
         System.out.println("Escull una opció: ");
     }
 
     private static void gestionarEntrada(String input) throws Exception {
         switch (input) {
-            case "1":
+            case "500":
                 testImportarEnquesta();
                 break;
-            case "2":
+            case "501":
                 importarRespostes();
                 break;
-            case "3":
+            case "502":
+                loginUsuarisMocks();
+                break;
+            case "1":
                 analitzarEnquesta();
                 break;
-            case "4":
+            case "2":
                 veureMeuPerfil();
                 break;
 
@@ -96,7 +137,7 @@ public class CtrlAnalisiDriver {
     }
 
 
-    // --- Mètodes Auxiliars ---
+    // --- Mètodes de creació de mocks ---
 
     private static void testImportarEnquesta() {
         
@@ -124,6 +165,7 @@ public class CtrlAnalisiDriver {
 
     private static void importarRespostes() {
         System.out.println("----IMPORTAR RESPOSTES DES DE FITXER----");
+        System.out.println("TOTS ELS USUÀRIS QUE NO EXISTEIXIN PRÈVIAMENT ES CREARAN AMB PASSWORD 'pwd1'");
         // Implementació pendent segons l'especificació del fitxer
         System.out.println("Fitxer d'exemple: exemple_resposta.json");
         System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
@@ -132,6 +174,14 @@ public class CtrlAnalisiDriver {
         // Si solo es un nombre de archivo, añadir la ruta completa
         if (!path.contains("\\") && !path.contains("/")) {
             path = System.getProperty("user.dir") + "\\" + path;
+        }
+        
+        // Pre-registrar usuaris que es troben al fitxer de respostes
+        try {
+            registrarUsuarisDelFitxerRespostes(path);
+        } catch (Exception e) {
+            System.out.println("⚠ Advertència llegint usuaris del fitxer: " + e.getMessage());
+            // Continuar igualment amb la importació
         }
         
         try {
@@ -144,6 +194,201 @@ public class CtrlAnalisiDriver {
         }
         
     }
+
+    /**
+     * Llegeix el fitxer JSON de respostes, extreu els usernames únics
+     * i registra aquells usuaris que no existeixen al sistema.
+     * No llança excepcions, només imprimeix missatges.
+     * @param path La ruta del fitxer JSON
+     */
+    private static void registrarUsuarisDelFitxerRespostes(String path) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(path)));
+            JSONObject json = new JSONObject(content);
+            
+            Set<String> usuarisARegistrar = new HashSet<>();
+            
+            if (json.has("respostes")) {
+                JSONArray respostesArray = json.getJSONArray("respostes");
+                
+                for (int i = 0; i < respostesArray.length(); i++) {
+                    JSONObject respostaUsuariJson = respostesArray.getJSONObject(i);
+                    if (respostaUsuariJson.has("username")) {
+                        String username = respostaUsuariJson.getString("username");
+                        usuarisARegistrar.add(username);
+                    }
+                }
+            }
+            
+            System.out.println("\n═══ PRE-REGISTRANT USUARIS DEL FITXER ═══");
+            
+            // Registrar els usuaris que no existeixen (password per defecte: "pwd1")
+            String defaultPassword = "pwd1";
+            for (String username : usuarisARegistrar) {
+                try {
+                    cd.registrarUsuari(username, defaultPassword);
+                    System.out.println("  ✓ Usuari creat: " + username);
+                } catch (UsuariJaExisteixException e) {
+                    System.out.println("  ℹ Usuari ja existeix: " + username);
+                } catch (ParametreInvalidException e) {
+                    System.out.println("  ⚠ Error creant usuari " + username + ": " + e.getMessage());
+                } catch (Exception e) {
+                    System.out.println("  ⚠ Error inesperat per usuari " + username + ": " + e.getMessage());
+                }
+            }
+            
+        } catch (Exception e) {
+            System.out.println("  ⚠ Error llegint el fitxer de respostes: " + e.getMessage());
+            // No llançar excepció, només continuar
+        }
+    }
+
+    private static void loginUsuarisMocks() {
+        System.out.println("\n═══ LOGIN USUARIS MOCK ═══");
+        System.out.print("Nom d'usuari: ");
+        String nomUsuari = in.nextLine().trim();
+        System.out.print("Contrasenya: ");
+        String contrasenya = in.nextLine().trim();
+        
+        try {
+            cd.login(nomUsuari, contrasenya);
+            System.out.println("✓ Login correcte!");
+        } catch (CredencialsIncorrectesException | ParametreInvalidException e) {
+            System.out.println("❌ Error en el login: " + e.getMessage());
+        }
+    }
+
+    // --- Mètodes auxiliars ---
+
+    private static void crearEnquestaMock() {
+        //CREACIÓ D'UNA ENQUESTA MOCK AMB TOTS ELS TIPUS DE PREGUNTES PER PROVAR LES RESPOSTES
+        
+        //crear preguntes mock hi ha d'haver una de cada tipus amb una opcio les d'opció
+        Pregunta preguntaText = new Pregunta("1", "PREGUNTA DE TEXT LLIURE", "text");
+
+        Pregunta preguntaNum = new Pregunta("2", "PREGUNTA NUMERICA", 0.0, 120.0);
+
+        Pregunta preguntaOrd = new Pregunta("3", "PREGUNTA QUALITATIVA", "qualitativa_ordenada");
+        preguntaOrd.afegirOpcio(new Opcio(1, "OPCIO1", 1));
+        preguntaOrd.afegirOpcio(new Opcio(2, "OPCIO2", 2));
+        preguntaOrd.afegirOpcio(new Opcio(3, "OPCIO3", 3));
+        preguntaOrd.afegirOpcio(new Opcio(4, "OPCIO4", 4));
+
+        Pregunta preguntaQS = new Pregunta("4", "PREGUNTA QUALITATIVA SIMPLE", "qualitativa_simple");
+        preguntaQS.afegirOpcio(new Opcio(0, "OPCIO0"));
+        preguntaQS.afegirOpcio(new Opcio(1, "OPCIO1"));
+        preguntaQS.afegirOpcio(new Opcio(2, "OPCIO2"));
+        preguntaQS.afegirOpcio(new Opcio(3, "OPCIO3"));
+
+        Pregunta preguntaQM = new Pregunta("5", "PREGUNTA QUALITATIVA MULTIPLE", "qualitativa_multiple");
+        preguntaQM.afegirOpcio(new Opcio(0, "OPCIO0"));
+        preguntaQM.afegirOpcio(new Opcio(1, "OPCIO1"));
+        preguntaQM.afegirOpcio(new Opcio(2, "OPCIO2"));
+        preguntaQM.afegirOpcio(new Opcio(3, "OPCIO3"));
+
+         
+        // ✓ REGISTRAR L'ENQUESTA EN EL CONTROLADOR
+        try {
+            cd.crearEnquesta(admin, "1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
+            
+            // Afegir les preguntes a través del controlador
+            cd.afegirPregunta("1", preguntaText);
+            cd.afegirPregunta("1", preguntaNum);
+            cd.afegirPregunta("1", preguntaOrd);
+            cd.afegirPregunta("1", preguntaQS);
+            cd.afegirPregunta("1", preguntaQM);
+
+            
+            System.out.println("✓ Enquesta mock registrada correctament en CtrlDomini");
+        } catch (Exception e) {
+            System.out.println("⚠️ Error registrant enquesta mock: " + e.getMessage());
+            // Continuar igualment amb la enquesta local si falla
+        }
+    }
+
+    private static void crearRespostesMock() {
+        // CREACIÓ DE RESPOSTES MOCK PER A L'ENQUESTA CREADA
+        // Creame unas respuestas para la enquesta mock
+        // Crear alguns usuaris mock i registrar respostes diverses
+    String[] mockUsers = {"alice", "bob", "carla", "dave"};
+    // Password must be at least 4 characters according to CtrlDomini validation
+    String defaultPwd = "pwd1";
+
+        for (String u : mockUsers) {
+            try {
+                cd.registrarUsuari(u, defaultPwd);
+            } catch (UsuariJaExisteixException | ParametreInvalidException e) {
+                // Si ja existeix, continuem
+            }
+
+            // Login com l'usuari mock per obtenir la instància persistida
+            try {
+                cd.login(u, defaultPwd);
+            } catch (Exception e) {
+                System.out.println("⚠ No s'ha pogut fer login de " + u + ": " + e.getMessage());
+            }
+
+            Usuari usu = cd.getUsuariActual();
+            if (usu == null) {
+                // Fallback: crear un Usuari temporal (això no hauria de passar si el login funciona)
+                usu = new Usuari(u, defaultPwd);
+            }
+
+            // Respostes mock (cada usuari té respostes diferents per diversitat de dades)
+            try {
+                switch (u) {
+                    case "alice":
+                        cd.registrarResposta("1", usu, "1", "Molt satisfet amb el servei"); // text
+                        cd.registrarResposta("1", usu, "2", "25"); // numeric
+                        cd.registrarResposta("1", usu, "3", "OPCIO2"); // ordenada (text de l'opció)
+                        cd.registrarResposta("1", usu, "4", "OPCIO1"); // qualitativa simple
+                        cd.registrarResposta("1", usu, "5", "0,1"); // multiple (ids)
+                        break;
+                    case "bob":
+                        cd.registrarResposta("1", usu, "1", "No m'agrada gaire");
+                        cd.registrarResposta("1", usu, "2", "80");
+                        cd.registrarResposta("1", usu, "3", "OPCIO4");
+                        cd.registrarResposta("1", usu, "4", "OPCIO2");
+                        cd.registrarResposta("1", usu, "5", "OPCIO1,OPCIO3"); // multiple (texts)
+                        break;
+                    case "carla":
+                        cd.registrarResposta("1", usu, "1", "Interessant i útil");
+                        cd.registrarResposta("1", usu, "2", "42");
+                        cd.registrarResposta("1", usu, "3", "OPCIO1");
+                        cd.registrarResposta("1", usu, "4", "OPCIO0");
+                        cd.registrarResposta("1", usu, "5", "2");
+                        break;
+                    case "dave":
+                        cd.registrarResposta("1", usu, "1", "Pot millorar");
+                        cd.registrarResposta("1", usu, "2", "5");
+                        cd.registrarResposta("1", usu, "3", "OPCIO3");
+                        cd.registrarResposta("1", usu, "4", "OPCIO3");
+                        cd.registrarResposta("1", usu, "5", "0,2,3");
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("⚠ Error registrant respostes per " + u + ": " + e.getMessage());
+            }
+
+            // Registrar participació perquè l'enquesta compti aquest usuari com a participant
+            try {
+                cd.registrarParticipacio("1", u);
+            } catch (Exception e) {
+                // Ignorar; és només un driver de proves
+            }
+
+            // Tornar a l'usuari admin perquè el driver segueixi amb l'state esperat
+            try {
+                cd.login("USER_MOCK", "1234");
+            } catch (Exception e) {
+                // Ignorar
+            }
+
+            System.out.println("✓ Respostes mock registrades per usuari: " + u);
+        }
+    }
+    
+        //--- Mètodes de testeig de CtrlAnalisi ---
 
     private static void analitzarEnquesta() {
         System.out.println("\n═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══");
@@ -359,7 +604,6 @@ public class CtrlAnalisiDriver {
             System.out.println("   - Cada cluster representa un grup d'usuaris amb respostes similars");
             System.out.println("   - El 'Perfil característic' mostra la resposta típica del grup");
             System.out.println("   - Els perfils s'han guardat per a cada usuari");
-            System.out.println("   - Usa l'opció 12 per veure el teu perfil");
             
         } catch (ParametreInvalidException | EnquestaNoExisteixException | UsuariNoAutenticatException e) {
             System.out.println("❌ Error: " + e.getMessage());
@@ -375,7 +619,7 @@ public class CtrlAnalisiDriver {
     private static void veureMeuPerfil() {
         System.out.println("\n═══ EL MEU PERFIL ═══");
         
-        HashMap<String, Perfil> perfils = admin.getPerfils();
+        HashMap<String, Perfil> perfils = cd.getUsuariActual().getPerfils();
         
         if (perfils.isEmpty()) {
             System.out.println("⚠ Encara no tens cap perfil assignat.");

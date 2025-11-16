@@ -25,10 +25,18 @@ import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 // Importacions de Java
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -90,48 +98,7 @@ public class CtrlRespostaDriver {
         admin = cd.getUsuariActual();
         
         //CREACIÓ D'UNA ENQUESTA MOCK AMB TOTS ELS TIPUS DE PREGUNTES PER PROVAR LES RESPOSTES
-
-        //crear preguntes mock hi ha d'haver una de cada tipus amb una opcio les d'opció
-        Pregunta preguntaText = new Pregunta("1", "PREGUNTA DE TEXT LLIURE", "text");
-
-        Pregunta preguntaNum = new Pregunta("2", "PREGUNTA NUMERICA", 0.0, 120.0);
-
-        Pregunta preguntaOrd = new Pregunta("3", "PREGUNTA QUALITATIVA", "qualitativa_ordenada");
-        preguntaOrd.afegirOpcio(new Opcio(1, "OPCIO1", 1));
-        preguntaOrd.afegirOpcio(new Opcio(2, "OPCIO2", 2));
-        preguntaOrd.afegirOpcio(new Opcio(3, "OPCIO3", 3));
-        preguntaOrd.afegirOpcio(new Opcio(4, "OPCIO4", 4));
-
-        Pregunta preguntaQS = new Pregunta("4", "PREGUNTA QUALITATIVA SIMPLE", "qualitativa_simple");
-        preguntaQS.afegirOpcio(new Opcio(0, "OPCIO0"));
-        preguntaQS.afegirOpcio(new Opcio(1, "OPCIO1"));
-        preguntaQS.afegirOpcio(new Opcio(2, "OPCIO2"));
-        preguntaQS.afegirOpcio(new Opcio(3, "OPCIO3"));
-
-        Pregunta preguntaQM = new Pregunta("5", "PREGUNTA QUALITATIVA MULTIPLE", "qualitativa_multiple");
-        preguntaQM.afegirOpcio(new Opcio(0, "OPCIO0"));
-        preguntaQM.afegirOpcio(new Opcio(1, "OPCIO1"));
-        preguntaQM.afegirOpcio(new Opcio(2, "OPCIO2"));
-        preguntaQM.afegirOpcio(new Opcio(3, "OPCIO3"));
-
-         
-        // ✓ REGISTRAR L'ENQUESTA EN EL CONTROLADOR
-        try {
-            cd.crearEnquesta(admin, "1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
-            
-            // Afegir les preguntes a través del controlador
-            cd.afegirPregunta("1", preguntaText);
-            cd.afegirPregunta("1", preguntaNum);
-            cd.afegirPregunta("1", preguntaOrd);
-            cd.afegirPregunta("1", preguntaQS);
-            cd.afegirPregunta("1", preguntaQM);
-
-            
-            System.out.println("✓ Enquesta mock registrada correctament en CtrlDomini");
-        } catch (Exception e) {
-            System.out.println("⚠️ Error registrant enquesta mock: " + e.getMessage());
-            // Continuar igualment amb la enquesta local si falla
-        }
+        crearEnquestaMock();
     }
 
     /**
@@ -201,8 +168,9 @@ public class CtrlRespostaDriver {
     }
 
 
-    // --- Mètodes de Test ---
-   private static void crearUsuariMock(){
+
+    // --- CREACIO DE MOCKS ---
+    private static void crearUsuariMock(){
         System.out.println("\n═══ CREAR USUARI MOCK ═══");
         System.out.print("Nom d'usuari: ");
         String nomUsuari = in.nextLine().trim();
@@ -234,7 +202,7 @@ public class CtrlRespostaDriver {
         }
     } 
 
-   private static void testImportarEnquesta() {
+    private static void testImportarEnquesta() {
         
         System.out.println("\n═══ IMPORTAR ENQUESTA DES DE JSON ═══");
         System.out.println("Fitxer d'exemple: exemple_enquesta.json");
@@ -257,6 +225,54 @@ public class CtrlRespostaDriver {
     
 
     }
+
+    private static void crearEnquestaMock() {
+        //CREACIÓ D'UNA ENQUESTA MOCK AMB TOTS ELS TIPUS DE PREGUNTES PER PROVAR LES RESPOSTES
+        
+        //crear preguntes mock hi ha d'haver una de cada tipus amb una opcio les d'opció
+        Pregunta preguntaText = new Pregunta("1", "PREGUNTA DE TEXT LLIURE", "text");
+
+        Pregunta preguntaNum = new Pregunta("2", "PREGUNTA NUMERICA", 0.0, 120.0);
+
+        Pregunta preguntaOrd = new Pregunta("3", "PREGUNTA QUALITATIVA", "qualitativa_ordenada");
+        preguntaOrd.afegirOpcio(new Opcio(1, "OPCIO1", 1));
+        preguntaOrd.afegirOpcio(new Opcio(2, "OPCIO2", 2));
+        preguntaOrd.afegirOpcio(new Opcio(3, "OPCIO3", 3));
+        preguntaOrd.afegirOpcio(new Opcio(4, "OPCIO4", 4));
+
+        Pregunta preguntaQS = new Pregunta("4", "PREGUNTA QUALITATIVA SIMPLE", "qualitativa_simple");
+        preguntaQS.afegirOpcio(new Opcio(0, "OPCIO0"));
+        preguntaQS.afegirOpcio(new Opcio(1, "OPCIO1"));
+        preguntaQS.afegirOpcio(new Opcio(2, "OPCIO2"));
+        preguntaQS.afegirOpcio(new Opcio(3, "OPCIO3"));
+
+        Pregunta preguntaQM = new Pregunta("5", "PREGUNTA QUALITATIVA MULTIPLE", "qualitativa_multiple");
+        preguntaQM.afegirOpcio(new Opcio(0, "OPCIO0"));
+        preguntaQM.afegirOpcio(new Opcio(1, "OPCIO1"));
+        preguntaQM.afegirOpcio(new Opcio(2, "OPCIO2"));
+        preguntaQM.afegirOpcio(new Opcio(3, "OPCIO3"));
+
+         
+        // ✓ REGISTRAR L'ENQUESTA EN EL CONTROLADOR
+        try {
+            cd.crearEnquesta(admin, "1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
+            
+            // Afegir les preguntes a través del controlador
+            cd.afegirPregunta("1", preguntaText);
+            cd.afegirPregunta("1", preguntaNum);
+            cd.afegirPregunta("1", preguntaOrd);
+            cd.afegirPregunta("1", preguntaQS);
+            cd.afegirPregunta("1", preguntaQM);
+
+            
+            System.out.println("✓ Enquesta mock registrada correctament en CtrlDomini");
+        } catch (Exception e) {
+            System.out.println("⚠️ Error registrant enquesta mock: " + e.getMessage());
+            // Continuar igualment amb la enquesta local si falla
+        }
+    }
+
+    // --- METODES DE TEST DE RESPOSTES ---
 
     private static void contestarEnquesta() {
         System.out.println("\n═══ RESPONDRE ENQUESTA ═══");
@@ -385,7 +401,6 @@ public class CtrlRespostaDriver {
             System.out.println("❌ Error: " + e.getMessage());
         }
     }
-
     
     private static void testModificarResposta() {
         System.out.println("----MODIFICAR RESPOSTA----");
@@ -534,7 +549,6 @@ public class CtrlRespostaDriver {
         }
     }
 
-  
     private static void testEsborrarResposta() {
         System.out.println("----ESBORRAR RESPOSTA----");
         System.out.println("EBORRARÀS LA RESPOSTADEL USUÀRI AMB EL QUE ESTAS LOGGEJAT");
@@ -620,12 +634,9 @@ public class CtrlRespostaDriver {
         }
     }
 
-    // TODAS LAS RESPUESTAS A ENQUESTAS DEBE EXISTIR TANTO LA ENCUESTA COMO LOS USUARIOS QUE RESPONDEN Y PREGUNTAS
-    //SI NO NO IRÁ CORRECTAMENTE
     private static void importarRespostes() {
         System.out.println("----IMPORTAR RESPOSTES DES DE FITXER----");
-        System.out.println(" ALERTA, SI ELS USUARIS QUE RESPONEN A L'ENQUESTA NO EXISTEIXEN, NO ES PODRAN IMPORTAR LES RESPOSTES ");
-        System.out.println(" HAURÁS DE CREAR ELS USUARIS ABANS D'IMPORTAR LES RESPOSTES AMB L'OPCIÓ 501");
+        System.out.println("TOTS ELS USUÀRIS QUE NO EXISTEIXIN PRÈVIAMENT ES CREARAN AMB PASSWORD 'pwd1'");
         // Implementació pendent segons l'especificació del fitxer
         System.out.println("Fitxer d'exemple: exemple_resposta.json");
         System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
@@ -634,6 +645,14 @@ public class CtrlRespostaDriver {
         // Si solo es un nombre de archivo, añadir la ruta completa
         if (!path.contains("\\") && !path.contains("/")) {
             path = System.getProperty("user.dir") + "\\" + path;
+        }
+        
+        // Pre-registrar usuaris que es troben al fitxer de respostes
+        try {
+            registrarUsuarisDelFitxerRespostes(path);
+        } catch (Exception e) {
+            System.out.println("⚠ Advertència llegint usuaris del fitxer: " + e.getMessage());
+            // Continuar igualment amb la importació
         }
         
         try {
@@ -646,6 +665,55 @@ public class CtrlRespostaDriver {
         }
         
     }
+
+    /**
+     * Llegeix el fitxer JSON de respostes, extreu els usernames únics
+     * i registra aquells usuaris que no existeixen al sistema.
+     * No llança excepcions, només imprimeix missatges.
+     * @param path La ruta del fitxer JSON
+     */
+    private static void registrarUsuarisDelFitxerRespostes(String path) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(path)));
+            JSONObject json = new JSONObject(content);
+            
+            Set<String> usuarisARegistrar = new HashSet<>();
+            
+            if (json.has("respostes")) {
+                JSONArray respostesArray = json.getJSONArray("respostes");
+                
+                for (int i = 0; i < respostesArray.length(); i++) {
+                    JSONObject respostaUsuariJson = respostesArray.getJSONObject(i);
+                    if (respostaUsuariJson.has("username")) {
+                        String username = respostaUsuariJson.getString("username");
+                        usuarisARegistrar.add(username);
+                    }
+                }
+            }
+            
+            System.out.println("\n═══ PRE-REGISTRANT USUARIS DEL FITXER ═══");
+            
+            // Registrar els usuaris que no existeixen (password per defecte: "pwd1")
+            String defaultPassword = "pwd1";
+            for (String username : usuarisARegistrar) {
+                try {
+                    cd.registrarUsuari(username, defaultPassword);
+                    System.out.println("  ✓ Usuari creat: " + username);
+                } catch (UsuariJaExisteixException e) {
+                    System.out.println("  ℹ Usuari ja existeix: " + username);
+                } catch (ParametreInvalidException e) {
+                    System.out.println("  ⚠ Error creant usuari " + username + ": " + e.getMessage());
+                } catch (Exception e) {
+                    System.out.println("  ⚠ Error inesperat per usuari " + username + ": " + e.getMessage());
+                }
+            }
+            
+        } catch (Exception e) {
+            System.out.println("  ⚠ Error llegint el fitxer de respostes: " + e.getMessage());
+            // No llançar excepció, només continuar
+        }
+    }
+
      /**
      * Consulta todas las respostas de una enquesta agrupadas por usuario.
      */
