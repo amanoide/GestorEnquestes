@@ -1,21 +1,8 @@
-/**
- * Driver per a la classe CtrlResposta.
- * Permet provar les funcionalitats de registre, modificació, esborrat i consulta de respostes.7
- * S'utilitza per a la validació i testeig de la classe CtrlResposta.
- * 
- * @autor Joan Garvin Cardona
- * 
- * IMPORTANT:
- * ESTA A MITJES DE DESENVOLUPAMENT
- * 
- */
-
 package edu.upc.prop.clusterxx.controladors;
 
 // Importacions dels controladors
 import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 
-// Importacions dels stubs de domini
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
@@ -41,9 +28,6 @@ import java.util.List;
 /**
  * Driver per provar la classe CtrlResposta.
  * Permet provar el registre, modificació, esborrat i consulta de respostes.
- * 
- * HE AÑADIDO COMENTARIOS EN LOS TESTS DONDE HE VIST QUE FALTABA ALGUNA COMPROBACIÓN EN LOS CONTROLADORES O CLASES INTERNAS
- * PUEDE QUE FALTEN ALGUNOS TESTS MÁS, PERO HE INTENTADO CUBRIR LAS FUNCIONALIDADES PRINCIPALES.
  */
 public class CtrlRespostaDriver {
 
@@ -313,9 +297,7 @@ public class CtrlRespostaDriver {
         try {
             Enquesta enquesta = totes.get(num);
             List<Pregunta> preguntes = enquesta.getPreguntes();
-            
-            //DEBEIA PARAR LA EJECUCION SI NO HAY PREGUNTAS
-            
+                        
             HashMap<String, String> respostes = new HashMap<>();
             HashMap<String, String> idPreguntaPerResposta = new HashMap<>();
             System.out.println("\n─── " + enquesta.getTitol() + " ───");
@@ -611,8 +593,7 @@ public class CtrlRespostaDriver {
             }
           
             
-            // Aquí podrías mostrar la resposta actual si el controlador ho permet
-            // Per ara, mostrem un missatge informatiu
+         
             System.out.println("\n⚠️ Estàs a punt d'esborrar la resposta d'aquesta pregunta.");
             
             // 4) Confirmació final (doble confirmació per esborrats)
@@ -636,7 +617,6 @@ public class CtrlRespostaDriver {
     private static void importarRespostes() {
         System.out.println("----IMPORTAR RESPOSTES DES DE FITXER----");
         System.out.println("TOTS ELS USUÀRIS QUE NO EXISTEIXIN PRÈVIAMENT ES CREARAN AMB PASSWORD 'pwd1'");
-        // Implementació pendent segons l'especificació del fitxer
         System.out.println("Fitxer d'exemple: exemple_resposta.json");
         System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
         String path = in.nextLine().trim();

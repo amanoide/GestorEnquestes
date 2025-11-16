@@ -13,7 +13,6 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-// Importacions dels stubs de domini
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.CredencialsIncorrectesException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaNoExisteixException;
@@ -33,7 +32,6 @@ import edu.upc.prop.clusterxx.domini.controladors.CtrlAnalisi;
 
 /**
  * Driver per provar la classe CtrlAnalisi.
- * Aquest driver depèn dels STUBS de KMeans i ClusteringAlgorithm.
  */
 public class CtrlAnalisiDriver {
 
@@ -166,7 +164,6 @@ public class CtrlAnalisiDriver {
     private static void importarRespostes() {
         System.out.println("----IMPORTAR RESPOSTES DES DE FITXER----");
         System.out.println("TOTS ELS USUÀRIS QUE NO EXISTEIXIN PRÈVIAMENT ES CREARAN AMB PASSWORD 'pwd1'");
-        // Implementació pendent segons l'especificació del fitxer
         System.out.println("Fitxer d'exemple: exemple_resposta.json");
         System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
         String path = in.nextLine().trim();
@@ -181,7 +178,6 @@ public class CtrlAnalisiDriver {
             registrarUsuarisDelFitxerRespostes(path);
         } catch (Exception e) {
             System.out.println("⚠ Advertència llegint usuaris del fitxer: " + e.getMessage());
-            // Continuar igualment amb la importació
         }
         
         try {
@@ -239,7 +235,6 @@ public class CtrlAnalisiDriver {
             
         } catch (Exception e) {
             System.out.println("  ⚠ Error llegint el fitxer de respostes: " + e.getMessage());
-            // No llançar excepció, només continuar
         }
     }
 
@@ -308,7 +303,6 @@ public class CtrlAnalisiDriver {
 
     private static void crearRespostesMock() {
         // CREACIÓ DE RESPOSTES MOCK PER A L'ENQUESTA CREADA
-        // Creame unas respuestas para la enquesta mock
         // Crear alguns usuaris mock i registrar respostes diverses
     String[] mockUsers = {"alice", "bob", "carla", "dave"};
     // Password must be at least 4 characters according to CtrlDomini validation
@@ -374,14 +368,12 @@ public class CtrlAnalisiDriver {
             try {
                 cd.registrarParticipacio("1", u);
             } catch (Exception e) {
-                // Ignorar; és només un driver de proves
             }
 
             // Tornar a l'usuari admin perquè el driver segueixi amb l'state esperat
             try {
                 cd.login("USER_MOCK", "1234");
             } catch (Exception e) {
-                // Ignorar
             }
 
             System.out.println("✓ Respostes mock registrades per usuari: " + u);

@@ -1,15 +1,3 @@
-/**
- * Driver per a la classe CtrlEnquesta.
- * Permet provar les funcionalitats bàsiques de gestió d'enquestes,
- * preguntes i opcions.
- * 
- * @author Joan Garvin Cardona
- * 
- * IMPORTANT:
- * ESTA A MIG IMPLEMENTAR I PROVAR!
- * HE AÑADIDO COMENTARIOS EN LOS TESTS DONDE HE VIST QUE FALTABA ALGUNA COMPROBACIÓN EN LOS CONTROLADORES O CLASES INTERNAS
- * PUEDE QUE FALTEN ALGUNOS TESTS MÁS, PERO HE INTENTADO CUBRIR LAS FUNCIONALIDADES PRINCIPALES.
- */
 package edu.upc.prop.clusterxx.controladors;
 
 import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
@@ -63,9 +51,7 @@ public class CtrlEnquestaDriver {
         System.out.println("Tancant el driver. Adéu!");
     }
 
-    /**
-     * Inicialitza l'Scanner i el CtrlEnquesta.
-     */
+    
     private static void init() {
         in = new Scanner(System.in);
         cd = new CtrlDomini();
@@ -229,9 +215,7 @@ public class CtrlEnquestaDriver {
         }
         
     }
-/*
- * FALTA UNA EXCEPCIO DE SI LA PREGUNTA JA EXISTEIX
- */
+
     private static void testAfegirPregunta() {
         System.out.println("\n─── AFEGIR PREGUNTA ───");
         System.out.println("Introdueix ID enquesta a la qual afegir la pregunta: ");
@@ -578,7 +562,6 @@ public class CtrlEnquestaDriver {
         }
     }
     
-    //SUPOSO Q ES ASÍ
     private static void testEliminarOpcioDePregunta() {
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
@@ -592,7 +575,7 @@ public class CtrlEnquestaDriver {
         
         Pregunta preguntaActual = escollirPregunta(enquesta);
 
-        //mostrar opcions de la pregunta actuaal
+        //mostrar opcions de la pregunta actual
         System.out.println("\n─── OPCIONS DE LA PREGUNTA ───");
         for (Opcio o : preguntaActual.getOpcions()) {
             System.out.println("ID: " + o.getId() + " - Text: " + o.getText());

@@ -1,14 +1,3 @@
-/**
- * Driver per a la classe CtrlUsuari.
- * Permet provar els mètodes relacionats amb la gestió d'usuaris,
- * tant a nivell de sessió estàtica com a nivell de persistència.
- * 
- * @autor Joan Garvin Cardona
- * 
- * IMPORTANT:
- * ESTA A MITJES D'IMPLEMENTACIÓ I PROVA.
- */
-
 package edu.upc.prop.clusterxx.controladors;
 
 // Importacions dels controladors
@@ -25,9 +14,6 @@ import java.util.Scanner;
  * Driver per provar la classe CtrlUsuari.
  * Permet provar tant la gestió de la sessió estàtica (login/registre)
  * com la gestió del HashMap intern d'usuaris per a persistència.
- * 
- * HE AÑADIDO COMENTARIOS EN LOS TESTS DONDE HE VIST QUE FALTABA ALGUNA COMPROBACIÓN EN LOS CONTROLADORES O CLASES INTERNAS
- * PUEDE QUE FALTEN ALGUNOS TESTS MÁS, PERO HE INTENTADO CUBRIR LAS FUNCIONALIDADES PRINCIPALES.
  */
 public class CtrlUsuariDriver {
 
@@ -58,10 +44,7 @@ public class CtrlUsuariDriver {
         System.out.println("Tancant el driver. Adéu!");
     }
 
-    /**
-     * Inicialitza l'Scanner i el CtrlUsuari.
-     * Passem 'null' al constructor, ja que el driver no té CtrlPresentacio.
-     */
+    
     private static void init() {
         in = new Scanner(System.in);
         cd = new CtrlDomini();
