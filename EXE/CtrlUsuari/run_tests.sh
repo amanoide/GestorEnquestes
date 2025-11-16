@@ -20,25 +20,23 @@ CREAR Y REGISTRAR USUARIOS:
 1) Registrar usuario válido: auto1 / pwd1
 2) Intento de registrar duplicado: auto1 / pwd1
 3) Intento de registrar inválido (username vacío, pwd corta)
-4) Registrar usuario válido: auto2 / pwd1
 
 LOGIN Y LOGOUT:
-5) Login correcto: auto1 / pwd1
-6) Consultar usuario actual (debería ser auto1)
-7) Logout de auto1
-8) Intento de logout sin estar logueado (error esperat)
+4) Login correcto: auto1 / pwd1
+5) Consultar usuario actual (debería ser auto1)
+6) Logout de auto1
 
 LOGIN CON ERRORES:
-9) Login con contraseña incorrecta (error esperat)
-10) Login con usuario inexistente (error esperat)
-11) Intento de registrar con username muy corto "a" (error esperat)
+7) Login con contraseña incorrecta (error esperat)
+8) Login con usuario inexistente (error esperat)
+9) Intento de registrar con username muy corto "a" (error esperat)
+10) Intento de registrar con contraseña muy corta "p" (error esperat)
 
 MÁS USUARIOS:
-12) Registrar otro usuario válido: auto3 / pwd1
-13) Login correcto con auto3
-14) Intento de borrar usuario sin estar logueado (debería fallar)
-15) Borrar auto3 mientras está logueado (debería funcionar)
-16) Consultar usuario actual final
+11) Registrar otro usuario válido: auto2 / pwd1
+12) Login correcto con auto2
+13) Borrar auto2 mientras está logueado (debería funcionar)
+14) Consultar usuario actual final
 
 FINALIZAR:
 0) Sortir
@@ -62,15 +60,18 @@ auto1
 pwd1
 5
 3
-4
+2
 auto1
-wrongpwd
+pwd_wrong
 2
 noexist
 pwd1
 1
 a
 pwd1
+1
+auto2
+p
 1
 auto2
 pwd1

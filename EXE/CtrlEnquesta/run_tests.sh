@@ -69,10 +69,8 @@ Test Enquesta
 Descripcio inicial
 2
 NOEX
-Nou titol NOEX
 3
 NOEX
-Descripcio NOEX
 2
 E1
 Titol Actualitzat
@@ -131,42 +129,39 @@ Préssec
 10
 E1
 Q_text
-Duplicate
-1
 1
 E2
 Enquesta Buida
 Sense preguntes
 12
 NOEX
-Q_noex
-Text nou
-1
 12
 E1
 Q_no_exist
-Text
 1
+3
 12
 E1
-Q_text
-Text modificat TEXT
 1
+1
+Text modificat TEXT
 11
 E1
 Q_no_exist
+14
+1
 13
 E1
-2
-13
-E1
-3
-abc
 4
-2
+20
 13
 E1
 1
+abc
+4
+13
+E1
+2
 14
 E1
 3
@@ -182,6 +177,8 @@ E1
 20
 5
 /path/no/valida/enquesta.json
+5
+../DOCS/exemple_enquesta_clustering.json
 20
 4
 E1

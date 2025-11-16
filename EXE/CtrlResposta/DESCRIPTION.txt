@@ -1,6 +1,6 @@
 Objecte de la prova:
-- Provar la funcionalitat de registre, modificació, esborrat i consulta de respostes a enquestes.
-- Casos d'ús: contestar enquesta (per diferents tipus de pregunta), modificar resposta, esborrar resposta, importar respostes desde JSON i consultar les respostes existents.
+- Provar la funcionalitat de contestar, modificació, esborrat i importació de respostes a enquestes.
+- Casos d'ús: contestar enquesta (per diferents tipus de pregunta), modificar resposta, esborrar resposta, importar respostes desde JSON.
 - Classes provades: CtrlResposta (via CtrlDomini), Resposta, Pregunta (interpretació de formats de resposta), CtrlEnquesta (per registre i existència d'enquestes).
 
 Altres elements integrats a la prova:
@@ -8,7 +8,8 @@ Altres elements integrats a la prova:
 - Es reutilitzen els drivers/estructures de Pregunta/Opcio per convertir la resposta textual a les representacions esperades.
 
 Fitxers de dades necessaris:
-- `DOCS/exemple_resposta_clustering.json` (si existeix) — fitxer de mostra amb respostes en format JSON esperat pel mètode d'import.
+- `DOCS/exemple_resposta_clustering.json` — fitxer de mostra amb respostes en format JSON esperat pel mètode d'import.
+- `DOCS/exemple_enquesta_clustering.json` — fitxer de mostra de l'enquesta requerida per l'import de resposta en format JSON.
 - Si no existeix, el script prova també la ruta no vàlida per validar errors d'import.
 
 Valors estudiats:
@@ -27,6 +28,11 @@ Operativa (ús ràpid):
   chmod +x run_tests.sh
   ./run_tests.sh
 - El driver necessita que hi hagi una enquesta mock amb preguntes (ja la crea a init()). El script crearà usuaris mock i provarà tot el flux d'entrades i imports.
+
+
+-Si desitjes executar el driver individualment:
+ cd ENTREGA/FONTS
+ ./gradlew runCtrlRespostaDriver
 
 Notes:
 - Revisa `PROVA.txt` a la carpeta per veure una execució de mostra amb la sortida capturada.

@@ -26,5 +26,10 @@ Operativa (ús ràpid):
   ./run_tests.sh
 - El script crida la task Gradle `runCtrlUsuariDriver` des del directori `ENTREGA/FONTS` per llançar el driver automàticament. La sortida mostra el pas a pas de les proves.
 
+
+-Si desitjes executar el driver individualment:
+ cd ENTREGA/FONTS
+ ./gradlew runCtrlUsuariDriver
+
 Notes:
 - Si vols inputs diferents o escenaris nous, edita el heredoc dins de `run_tests.sh` o executa `./gradlew runCtrlUsuariDriver` manualment per fer proves interactives.

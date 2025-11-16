@@ -5,7 +5,7 @@ Objecte de la prova:
 
 Altres elements integrats a la prova:
 - CtrlResposta i CtrlEnquesta: respostes i estructures d'enquesta generades i reutilitzades per l'anàlisi.
-- Stubs d'algoritmes de clustering (KMeans, KMedoids) — el driver comprova la integració amb aquests stubs i la correcta interpretació de resultats.
+- Algoritmes de clustering (KMeans, KMedoids, KMeans++) — el driver comprova la integració i la correcta interpretació de resultats.
 
 Fitxers de dades necessaris:
 - Opcional: `ENTREGA/DOCS/exemple_enquesta_clustering.json` i `ENTREGA/DOCS/exemple_resposta_clustering.json` per provar importacions reals; si no existeixen, el driver crea enquestes/respostes mock a init().
@@ -26,6 +26,10 @@ Operativa (ús ràpid):
   chmod +x run_tests.sh
   ./run_tests.sh
 - El driver crearà usuaris i respostes mock; el script prova diversos modes d'elecció de k i algorismes.
+
+-Si desitjes executar el driver individualment:
+ cd ENTREGA/FONTS
+ ./gradlew runCtrlAnalisiDriver
 
 Notes:
 - Per proves detallades de l'optimització de k (caixa blanca), revisa l'output quan s'executa l'opció automàtica: el driver imprimeix silhuettes per a diferents k i el millor k triat.
