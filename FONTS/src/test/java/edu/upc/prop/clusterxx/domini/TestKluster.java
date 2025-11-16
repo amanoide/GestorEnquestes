@@ -1,10 +1,9 @@
 package edu.upc.prop.clusterxx.domini;
 
+import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator;
 import edu.upc.prop.clusterxx.domini.classes.Kluster;
 
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -14,178 +13,190 @@ import java.util.List;
  * Tests de la classe Kluster.
  */
 public class TestKluster {
+
     /**
-     * Missatge en pantalla d'inici dels tests de la classe Kluster.
+     * Helper que crea especificacions numèriques per totes les dimensions.
      */
-    @BeforeClass
-    public static void iniTestKluster() {
-        System.out.println("Iniciant els tests de la classe Kluster.");
+    private DistanceCalculator.FeatureSpec[] specsNumeriques(int dimensions) {
+        DistanceCalculator.FeatureSpec[] specs = new DistanceCalculator.FeatureSpec[dimensions];
+        for (int i = 0; i < dimensions; ++i) {
+            specs[i] = DistanceCalculator.FeatureSpec.numeric(0.0, 10.0);
+        }
+        return specs;
     }
 
     /**
-     * Test constructora Kluster.
+     * La constructora ha de guardar una còpia del centroid inicial.
      */
     @Test
-    public void testConstructoraKluster() {
-        Kluster k = new Kluster(3);
-        assertArrayEquals(new double[]{0.0, 0.0, 0.0}, k.getCentroid(), 0.000);
-        assertEquals(0,k.size());
-        assertNotNull(k.getMembers());
-    }
-
-    /**
-     * Test constructora per Vector.
-     */
-    @Test
-    public void testConstructoraPerVector() {
-        double[] seed = {1.0, 2.0, 3.0};
+    public void testConstructoraCentroidValid() {
+        String[] seed = {"1", "2"};
         Kluster k = new Kluster(seed);
-        assertArrayEquals(seed, k.getCentroid(), 0.000);
-        assertEquals(0,k.size());
-        assertNotNull(k.getMembers());
+
+        assertArrayEquals(seed, k.getCentroid());
+        assertEquals(0, k.size());
+        assertTrue(k.getMembers().isEmpty());
+
+        seed[0] = "99"; // el centroid intern no s'ha de modificar
+        assertEquals("1", k.getCentroid()[0]);
     }
 
     /**
-     * Test setters Centroid.
+     * No es permet crear un klúster sense centroid o amb dimensions zero.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructoraCentroidNull() {
+        new Kluster(null);
+    }
+
+    /**
+     * També s'ha de impedir crear un centroid buit perquè no hi ha dimensions a processar.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructoraCentroidBuit() {
+        new Kluster(new String[0]);
+    }
+
+    /**
+     * El setter de centroid també ha de validar dimensions i fer còpies.
      */
     @Test
     public void testSetCentroid() {
-        Kluster k = new Kluster(2);
-        double[] newCentroid = {4.0, 5.0};
-        k.setCentroid(newCentroid);
-        assertArrayEquals(newCentroid, k.getCentroid(), 0.000);
+        Kluster k = new Kluster(new String[]{"1", "2"});
+        String[] nouCentroid = {"5", "6"};
+        k.setCentroid(nouCentroid);
 
-        newCentroid[0] = 10.0;
-        assertNotEquals(newCentroid[0], k.getCentroid()[0], 0.000); // Comprovar que el centroid no ha canviat
-
-        // Provar amb un altre mida
-        k.setCentroid(new double[]{8.0});
-        assertEquals(1, k.getCentroid().length);
-        assertArrayEquals(new double[]{8.0}, k.getCentroid(), 0.000);
+        assertArrayEquals(nouCentroid, k.getCentroid());
+        nouCentroid[0] = "100";
+        assertEquals("5", k.getCentroid()[0]);
     }
 
     /**
-     * Test getters Centroid.
+     * El nou centroid ha de coincidir en dimensions; si no coincideix s'ha de llençar una excepció.
      */
-    @Test
-    public void testGetCentroid() {
-        double[] seed = {3.0, 4.0, 5.0};
-        Kluster k = new Kluster(seed);
-        double[] centroid = k.getCentroid();
-
-        centroid[0] = 12.0;
-        assertEquals(12.0, k.getCentroid()[0], 0.000);
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetCentroidDimensionsIncorrectes() {
+        Kluster k = new Kluster(new String[]{"1", "2"});
+        k.setCentroid(new String[]{"només una"});
     }
 
     /**
-     * Test afegir membre.
+     * Els membres s'han d'afegir copiats i la mida ha de coincidir.
      */
     @Test
-    public void testAddMember() {
-        Kluster k = new Kluster(2);
-        double[] member1 = {1.0, 2.0};
-        double[] member2 = {3.0, 4.0};
+    public void testAddMemberICopies() {
+        Kluster k = new Kluster(new String[]{"0"});
+        String[] membre = {"1"};
+        k.addMember(membre);
 
-        k.addMember(member1);
-        k.addMember(member2);
+        assertEquals(1, k.size());
+        assertEquals("1", k.getMembers().get(0)[0]);
 
-        assertEquals(2, k.size());
-        List<double[]> members = k.getMembers();
-        assertTrue(members.contains(member1));
-        assertTrue(members.contains(member2));
+        membre[0] = "99";
+        assertEquals("1", k.getMembers().get(0)[0]);
     }
 
     /**
-     * Test getters Members Kluster.
+     * getMembers ha de retornar una còpia per evitar modificacions externes.
      */
     @Test
-    public void testGetMembers() {
-        Kluster k = new Kluster(2);
-        double[] member = {5.0, 6.0};
-        k.addMember(member);
+    public void testGetMembersRetornaCopies() {
+        Kluster k = new Kluster(new String[]{"A"});
+        k.addMember(new String[]{"B"});
 
-        List<double[]> members = k.getMembers();
-        assertEquals(1, members.size());
+        List<String[]> members = k.getMembers();
+        members.get(0)[0] = "C";
 
-        members.add(new double[]{7.0, 8.0}); // Modificar la llista retornada
-        assertEquals(2, k.size()); 
-    
+        assertEquals("B", k.getMembers().get(0)[0]);
+        members.clear();
+        assertEquals(1, k.size());
+    }
+
+    /**
+     * clearMembers ha de deixar el klúster buit però mantenint el centroid.
+     */
+    @Test
+    public void testClearMembers() {
+        Kluster k = new Kluster(new String[]{"c"});
+        k.addMember(new String[]{"c"});
+        assertEquals(1, k.size());
+
         k.clearMembers();
-        assertEquals(0,k.size());
+        assertEquals(0, k.size());
         assertTrue(k.getMembers().isEmpty());
+        assertEquals("c", k.getCentroid()[0]);
     }
 
     /**
-     * Test recalcular centroid.
+     * Recompute en dimensions numèriques ha de calcular la mitjana i retornar true si canvia.
      */
     @Test
-    public void testRecomputeCentroid() {
-        Kluster k = new Kluster(2);
-        k.addMember(new double[]{0.0, 0.0});
-        k.addMember(new double[]{2.0, 0.0});
-        k.addMember(new double[]{0.0, 2.0});
-        k.addMember(new double[]{2.0, 2.0});
+    public void testRecomputeCentroidNumeric() {
+        Kluster k = new Kluster(new String[]{"0", "0"});
+        k.addMember(new String[]{"0", "2"});
+        k.addMember(new String[]{"2", "0"});
+        k.addMember(new String[]{"2", "2"});
 
-        // Recalcular centroid
-        boolean changed = k.recomputeCentroid(1e-12);
+        DistanceCalculator.FeatureSpec[] specs = specsNumeriques(2);
+        boolean changed = k.recomputeCentroid(specs);
+
         assertTrue(changed);
-        assertArrayEquals(new double[]{1.0, 1.0}, k.getCentroid(), 1e-12);
+        String[] centroid = k.getCentroid();
+        assertEquals(4.0 / 3.0, Double.parseDouble(centroid[0]), 1e-9);
+        assertEquals(4.0 / 3.0, Double.parseDouble(centroid[1]), 1e-9);
 
-        // Recalcular amb mateix centroid
-        boolean changed2 = k.recomputeCentroid(1e-12);
-        assertFalse(changed2);
-        assertArrayEquals(new double[]{1.0, 1.0}, k.getCentroid(), 1e-12);
-    }
-
-    /** 
-     * Test recalcular centroid amb tolerància.
-     */
-    @Test
-    public void testRecomputeCentroidTolerancia() {
-        Kluster k = new Kluster(1);
-        k.setCentroid((new double[]{0.99}));
-        k.addMember(new double[]{1.0});
-        k.addMember(new double[]{1.0});
-        k.addMember(new double[]{1.0});
-
-        boolean changed = k.recomputeCentroid((0.02));
-        assertFalse(changed);
-        assertArrayEquals(new double[]{1.0}, k.getCentroid(), 1e-12);
-
-        k.setCentroid((new double[]{0.98}));
-        k.addMember(new double[]{1.0});
-        boolean changed2 = k.recomputeCentroid((0.005));
-        assertTrue(changed2);
-        assertArrayEquals(new double[]{1.0}, k.getCentroid(), 1e-12);
+        assertFalse(k.recomputeCentroid(specs)); // sense nous membres no hauria de canviar
     }
 
     /**
-     * Test recalcular centroid amb Kluster buit.
+     * Recompute amb dimensions nominals ha d'agafar la moda.
      */
     @Test
-    public void testRecomputeCentroidEmpty() {
-        Kluster k = new Kluster(2);
-        boolean changed = k.recomputeCentroid(1e-12);
-        assertFalse(changed);
-        assertArrayEquals(new double[]{0.0, 0.0}, k.getCentroid(), 1e-12);
+    public void testRecomputeCentroidNominalMode() {
+        Kluster k = new Kluster(new String[]{"A"});
+        k.addMember(new String[]{"B"});
+        k.addMember(new String[]{"B"});
+        k.addMember(new String[]{"A"});
+
+        DistanceCalculator.FeatureSpec[] specs = {DistanceCalculator.FeatureSpec.nominalSingle()};
+        boolean changed = k.recomputeCentroid(specs);
+
+        assertTrue(changed);
+        assertArrayEquals(new String[]{"B"}, k.getCentroid());
     }
 
     /**
-     * Test toString Kluster.
+     * Sense membres el recompute no ha de modificar res ni fallar.
+     */
+    @Test
+    public void testRecomputeSenseMembres() {
+        Kluster k = new Kluster(new String[]{"0"});
+        assertFalse(k.recomputeCentroid(specsNumeriques(1)));
+        assertEquals("0", k.getCentroid()[0]);
+    }
+
+    /**
+     * Si les especificacions no coincideixen amb les dimensions cal llençar una excepció.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testRecomputeSpecsIncorrectes() {
+        Kluster k = new Kluster(new String[]{"0", "0"});
+        k.addMember(new String[]{"0", "0"});
+        k.recomputeCentroid(specsNumeriques(1));
+    }
+
+    /**
+     * El mètode toString ha de mostrar centroid i mida actual.
      */
     @Test
     public void testToString() {
-        double[] seed = {1.0, 2.0};
+        String[] seed = {"1", "2"};
         Kluster k = new Kluster(seed);
-        k.addMember(new double[]{3.0, 4.0});
-        k.addMember(new double[]{5.0, 6.0});
+        k.addMember(new String[]{"1", "2"});
+        k.addMember(new String[]{"3", "4"});
 
         String expected = "Kluster{centroid=" + Arrays.toString(seed) + ", size=2}";
         assertEquals(expected, k.toString());
     }
 
-    @AfterClass
-    public static void fiTestKluster() {
-        System.out.println("Finalitzats els tests de la classe Kluster.");
-    }
 }

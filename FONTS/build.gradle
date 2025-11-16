@@ -28,8 +28,6 @@ sourceSets {
         java {
             srcDirs = ['src/drivers/java']
 
-            exclude '**/CtrlPerfilDriver.java'
-            exclude '**/CtrlAnalisiDriver.java'
         }
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
@@ -37,7 +35,7 @@ sourceSets {
 }
 
 ext {
-    javaMainClass = 'edu.upc.prop.clusterxx.MainDriver'
+    javaMainClass = 'edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver'
 }
 
 application {
@@ -73,13 +71,6 @@ dependencies {
 // Tareas para ejecutar drivers
 
 
-task runCtrlDominiDriver(type: JavaExec) {
-    group = 'drivers'
-    description = 'Ejecuta el CtrlDominiDriver'
-    classpath = sourceSets.drivers.runtimeClasspath
-    mainClass = 'edu.upc.prop.clusterxx.controladors.CtrlDominiDriver'
-    standardInput = System.in
-}
 
 task runCtrlEnquestaDriver(type: JavaExec) {
     group = 'drivers'
@@ -105,30 +96,6 @@ task runCtrlRespostaDriver(type: JavaExec) {
     standardInput = System.in
 }
 
-task runCtrlPreguntaDriver(type: JavaExec) {
-    group = 'drivers'
-    description = 'Ejecuta el CtrlPreguntaDriver'
-    classpath = sourceSets.drivers.runtimeClasspath
-    mainClass = 'edu.upc.prop.clusterxx.controladors.CtrlPreguntaDriver'
-    standardInput = System.in
-}
-
-task runCtrlPersistenciaDriver(type: JavaExec) {
-    group = 'drivers'
-    description = 'Ejecuta el CtrlPersistenciaDriver'
-    classpath = sourceSets.drivers.runtimeClasspath
-    mainClass = 'edu.upc.prop.clusterxx.controladors.CtrlPersistenciaDriver'
-    standardInput = System.in
-}
-
-task runCtrlPerfilDriver(type: JavaExec) {
-    group = 'drivers'
-    description = 'Ejecuta el CtrlPerfilDriver'
-    classpath = sourceSets.drivers.runtimeClasspath
-    mainClass = 'edu.upc.prop.clusterxx.controladors.CtrlPerfilDriver'
-    standardInput = System.in
-}
-
 task runCtrlAnalisiDriver(type: JavaExec) {
     group = 'drivers'
     description = 'Ejecuta el CtrlAnalisiDriver'
@@ -138,10 +105,3 @@ task runCtrlAnalisiDriver(type: JavaExec) {
 }
 
 
-task runMainDriver(type: JavaExec) {
-    group = 'drivers'
-    description = 'Ejecuta el MainDriver - Sistema completo integrado'
-    classpath = sourceSets.drivers.runtimeClasspath
-    mainClass = 'edu.upc.prop.clusterxx.MainDriver'
-    standardInput = System.in
-}

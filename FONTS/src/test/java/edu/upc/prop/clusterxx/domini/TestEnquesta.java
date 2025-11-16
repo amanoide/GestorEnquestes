@@ -5,9 +5,7 @@ import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
 
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -40,16 +38,12 @@ public class TestEnquesta {
         return new Pregunta(id, text, tipus, maxSel);
     } */
 
-    /**
-     * Missatge en pantalla d'inici dels tests de la classe Enquesta.
-     */
-    @BeforeClass
-    public static void iniTestEnquesta() {
-        System.out.println("Iniciant els tests de la classe Enquesta.");
-    }
-
     Enquesta e;
     Usuari u;
+
+    /**
+     * Reutilitza la mateixa enquesta i creador abans de cada prova per simplificar les assertions.
+     */
     @Before
     public void abansDeCadaTestEnquesta() {
         u = creador();
@@ -76,14 +70,8 @@ public class TestEnquesta {
      */
     @Test
     public void testSetGetTitol() {
-        /*Usuari u = creador();
-        Enquesta e = new Enquesta("E1","Títol de l'enquesta", "Descripció de l'enquesta", u);*/
-
         e.setTitol("Nou títol");
         assertEquals("Nou títol", e.getTitol());
-
-        e.modificarTitol("Títol modificat");
-        assertEquals("Títol modificat", e.getTitol());
     }
 
     /**
@@ -91,14 +79,8 @@ public class TestEnquesta {
      */
     @Test
     public void testSetGetDescripcio() {
-        /*Usuari u = creador();
-        Enquesta e = new Enquesta("E1","Títol de l'enquesta", "Descripció de l'enquesta", u);*/
-
         e.setDescripcio("Nova descripció");
         assertEquals("Nova descripció", e.getDescripcio());
-
-        e.modificarDescripcio("Descripció modificada");
-        assertEquals("Descripció modificada", e.getDescripcio());
     }
 
     /*  ===========================================
@@ -109,7 +91,6 @@ public class TestEnquesta {
      */
     @Test
     public void testAfegirRecuperarPreguntes() {
-        // Enquesta e = new Enquesta("E1","Títol de l'enquesta", "Descripció de l'enquesta", creador());
         Pregunta p1 = pText("P1", "Quin és el teu nom?");
         Pregunta p2 = pNum("P2", "Quants anys tens?", 0, 120);
 
@@ -126,7 +107,6 @@ public class TestEnquesta {
      */
     @Test
     public void testEliminarPregunta() {
-        // Enquesta e = new Enquesta("E1","Títol de l'enquesta", "Descripció de l'enquesta", creador());
         Pregunta p1 = pText("P1", "Quin és el teu nom?");
         Pregunta p2 = pNum("P2", "Quants anys tens?", 0, 120);
 
@@ -145,7 +125,6 @@ public class TestEnquesta {
      */
     @Test
     public void testAfegirPreguntaMateixID() {
-        // Enquesta e = new Enquesta("E1","Títol de l'enquesta", "Descripció de l'enquesta", creador());
         Pregunta p1 = pText("P1", "Quin és el teu nom?");
         Pregunta p2 = pNum("P1", "Quants anys tens?", 0, 120); // Mateix ID que p1
 
@@ -162,7 +141,6 @@ public class TestEnquesta {
      */
     @Test
     public void testModificarPregunta() {
-        // Enquesta e = new Enquesta("E1","Títol de l'enquesta", "Descripció de l'enquesta", creador());
         Pregunta p1 = pText("P1", "Quin és el teu nom?");
         e.afegirPregunta(p1);
 
@@ -178,7 +156,6 @@ public class TestEnquesta {
      */
     @Test
     public void testModificarPreguntaNoExistent() {
-        // Enquesta e = new Enquesta("E1","Títol de l'enquesta", "Descripció de l'enquesta", creador());
         Pregunta pModificada = pText("P1", "Com et dius?");
         
         e.modificarPregunta("P1", pModificada);
@@ -202,6 +179,28 @@ public class TestEnquesta {
         assertEquals(1, e.getPreguntes().size());
         assertNotNull(e.getPreguntes());
     }
+
+    /**
+     * No es pot afegir una pregunta nul·la; ha de llençar NullPointerException.
+     */
+    @Test(expected = NullPointerException.class)
+    public void testAfegirPreguntaNullLlençaExcepcio() {
+        e.afegirPregunta(null);
+    }
+
+    /**
+     * Eliminar una pregunta inexistent no ha de modificar la col·lecció de preguntes.
+     */
+    @Test
+    public void testEliminarPreguntaInexistentNoAfecta() {
+        Pregunta p1 = pText("P1", "Pregunta de prova");
+        e.afegirPregunta(p1);
+
+        e.eliminarPregunta("INEXISTENT");
+
+        assertEquals(1, e.getPreguntes().size());
+        assertSame(p1, e.getPregunta("P1"));
+    }
     
     /*  ===========================================
             TESTS PARTICIPANTS CLASSE ENQUESTA
@@ -210,8 +209,8 @@ public class TestEnquesta {
     /**
      * Tests registrar participació d'un usuari en una enquesta.
      */
+    @Test
     public void testRegistrarParticipacio() {
-        // Enquesta e = new Enquesta("E1","Títol de l'enquesta", "Descripció de l'enquesta", creador());
         Usuari u1 = new Usuari("usuari1", "contrasenya1");
 
         assertFalse(e.haRespostUsuari("usuari1"));
@@ -228,8 +227,8 @@ public class TestEnquesta {
     /**
      * Tests obtenir llistat de participants d'una enquesta.
      */
+    @Test
     public void testGetParticipants() {
-        // Enquesta e = new Enquesta("E1","Títol de l'enquesta", "Descripció de l'enquesta", creador());
         Usuari u1 = new Usuari("usuari1", "contrasenya1");
         Usuari u2 = new Usuari("usuari2", "contrasenya2");
 
@@ -238,16 +237,10 @@ public class TestEnquesta {
 
         List<String> participants = e.getParticipants();
         participants.clear(); // No hauria de afectar a l'enquesta
-        assertEquals(2, participants.size());
-        assertTrue(participants.contains("usuari1"));
-        assertTrue(participants.contains("usuari2"));
+        List<String> participantsPost = e.getParticipants();
+        assertEquals(2, participantsPost.size());
+        assertTrue(participantsPost.contains("usuari1"));
+        assertTrue(participantsPost.contains("usuari2"));
     }
     
-    /**
-     * Missatge en pantalla de finalització dels tests de la classe Enquesta.
-     */
-    @AfterClass
-    public static void fiTestEnquesta() {
-        System.out.println("Finalitzant els tests de la classe Enquesta."); 
-    }
 }

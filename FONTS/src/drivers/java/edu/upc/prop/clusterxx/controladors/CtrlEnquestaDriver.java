@@ -17,22 +17,12 @@ import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 
 // Importacions del paquet de domini
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.CredencialsIncorrectesException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaJaExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.EnquestaNoExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.ErrorImportacioException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.ParametreInvalidException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.PermisDenegatException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.PreguntaJaExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.PreguntaNoExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.RespostaInvalidaException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariJaExisteixException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariNoAutenticatException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
+
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
-import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
 
 // Importacions de Java
 import java.util.Scanner;
@@ -141,9 +131,9 @@ public class CtrlEnquestaDriver {
             case "12":
                 testModificarPregunta();
                 break;
-            /*case "13":
+            case "13":
                 testAfegirOpcioAPregunta();
-                break;*/
+                break;
             case "14":
                 testEliminarOpcioDePregunta();
                 break;
@@ -195,8 +185,8 @@ public class CtrlEnquestaDriver {
         } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
             System.out.println("❌ Error: " + e.getMessage());
         }
-        System.out.println("Títol actual: " + enquesta.getTitol());
-        System.out.print("Nou títol: ");
+    System.out.println("Títol actual: " + enquesta.getTitol());
+    System.out.println("Nou títol: ");
         String nouTitol = in.nextLine();
         try {
             cd.modificarTitolEnquesta(id, nouTitol);
@@ -216,8 +206,8 @@ public class CtrlEnquestaDriver {
         } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
             System.out.println("❌ Error: " + e.getMessage());
         }
-        System.out.println("Descripció actual: " + enquesta.getDescripcio());
-        System.out.print("Nova descripció: ");
+    System.out.println("Descripció actual: " + enquesta.getDescripcio());
+    System.out.println("Nova descripció: ");
         String novaDesc = in.nextLine();
         try {
             cd.modificarDescripcioEnquesta(id, novaDesc);
@@ -244,14 +234,16 @@ public class CtrlEnquestaDriver {
  */
     private static void testAfegirPregunta() {
         System.out.println("\n─── AFEGIR PREGUNTA ───");
-        System.out.print("Introdueix ID enquesta a la qual afegir la pregunta: ");
+        System.out.println("Introdueix ID enquesta a la qual afegir la pregunta: ");
         String idEnquesta = in.nextLine();
         Enquesta enquesta = null;
         try{
         enquesta = cd.getEnquesta(idEnquesta);
         } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
             System.out.println("❌ Error: " + e.getMessage());
-        }        System.out.print("ID de la pregunta: ");
+        }        
+        
+        System.out.println("ID de la pregunta: ");
         String id = in.nextLine();
         
         // Verificar si ja existeix aquesta pregunta a l'enquesta
@@ -262,7 +254,7 @@ public class CtrlEnquestaDriver {
             }
         }
         
-        System.out.print("Text de la pregunta: ");
+        System.out.println("Text de la pregunta: ");
         String text = in.nextLine();
         
         System.out.println("\nTipus de pregunta:");
@@ -271,14 +263,14 @@ public class CtrlEnquestaDriver {
         System.out.println("  3. Qualitativa ordenada");
         System.out.println("  4. Qualitativa no ordenada simple");
         System.out.println("  5. Qualitativa no ordenada múltiple");
-        System.out.print("Escull (1-5): ");
+        System.out.println("Escull (1-5): ");
         
         String tipusOpcio = in.nextLine();
         Pregunta pregunta = null;
         
         switch (tipusOpcio) {
             case "1":
-                pregunta = new Pregunta(id, text, "TEXT_LLIURE");
+                pregunta = new Pregunta(id, text, "text");
                 break;
             case "2":
                 double min = 0, max = 0;
@@ -286,9 +278,9 @@ public class CtrlEnquestaDriver {
                 
                 while (!valorsValids) {
                     try {
-                        System.out.print("Valor mínim: ");
+                        System.out.println("Valor mínim: ");
                         min = Double.parseDouble(in.nextLine());
-                        System.out.print("Valor màxim: ");
+                        System.out.println("Valor màxim: ");
                         max = Double.parseDouble(in.nextLine());
                         
                         if (min >= max) {
@@ -304,18 +296,18 @@ public class CtrlEnquestaDriver {
                 pregunta = new Pregunta(id, text, min, max);
                 break;
             case "3":
-                pregunta = new Pregunta(id, text, "QUALITATIVA_ORDENADA");
+                pregunta = new Pregunta(id, text, "qualitativa_ordenada");
                 afegirOpcions(pregunta, true);
                 break;
             case "4":
-                pregunta = new Pregunta(id, text, "QUALITATIVA_NO_ORDENADA_SIMPLE");
+                pregunta = new Pregunta(id, text, "qualitativa_simple");
                 afegirOpcions(pregunta, false);
                 break;
             case "5":
                 int maxSel = -1;
                 while (maxSel < 1) {
                     try {
-                        System.out.print("Màxim de seleccions: ");
+                        System.out.println("Màxim de seleccions: ");
                         maxSel = Integer.parseInt(in.nextLine());
                         if (maxSel < 1) {
                             System.out.println("Ha de ser un número positiu");
@@ -333,7 +325,7 @@ public class CtrlEnquestaDriver {
         }
         
         try {
-            cd.afegirPregunta(id, pregunta);
+            cd.afegirPregunta(idEnquesta, pregunta);
             System.out.println("Pregunta afegida correctament!");
         } catch (ParametreInvalidException | UsuariNoAutenticatException | PreguntaJaExisteixException | RespostaInvalidaException | EnquestaNoExisteixException | PermisDenegatException e) {
             System.out.println("Error: " + e.getMessage());
@@ -344,13 +336,15 @@ public class CtrlEnquestaDriver {
         System.out.println("\n─── ELIMINAR PREGUNTA ───");
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
-Enquesta enquesta = null;
+        Enquesta enquesta = null;
         try{
         enquesta = cd.getEnquesta(idEnquesta);
         } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
             System.out.println("❌ Error: " + e.getMessage());
-        }        
+        }   
+
         Pregunta p = escollirPregunta(enquesta);
+        
         try {
             cd.eliminarPregunta(idEnquesta, p.getId());
             System.out.println("✓ Pregunta eliminada!");
@@ -364,7 +358,8 @@ Enquesta enquesta = null;
         System.out.println("\n─── MODIFICAR PREGUNTA ───");
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
-Enquesta enquesta = null;
+        Enquesta enquesta = null;
+        
         try{
         enquesta = cd.getEnquesta(idEnquesta);
         } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
@@ -380,13 +375,14 @@ Enquesta enquesta = null;
         System.out.println("\n¿Què vols modificar?");
         System.out.println("  1. Només el text");
         System.out.println("  2. Text i tipus (es crearà una nova pregunta)");
-        System.out.print("Escull (1-2): ");
+        System.out.println("Escull (1-2): ");
         
         String opcio = in.nextLine();
         
+        //CASE 1: MODIFICAR NOMÉS EL TEXT
         if (opcio.equals("1")) {
             // Modificar només el text
-            System.out.print("Nou text de la pregunta: ");
+            System.out.println("Nou text de la pregunta: ");
             String nouText = in.nextLine();
             
             try {
@@ -395,21 +391,21 @@ Enquesta enquesta = null;
                 
                 switch (preguntaActual.getTipus()) {
                     case TEXT_LLIURE:
-                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "TEXT_LLIURE");
+                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "text");
                         break;
                     case NUMERICA:
                         novaPregunta = new Pregunta(preguntaActual.getId(), nouText, 
                             preguntaActual.getValorMinim(), preguntaActual.getValorMaxim());
                         break;
                     case QUALITATIVA_ORDENADA:
-                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "QUALITATIVA_ORDENADA");
+                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "qualitativa_ordenada");
                         // Copiar les opcions
                         for (Opcio o : preguntaActual.getOpcions()) {
                             novaPregunta.afegirOpcio(o);
                         }
                         break;
                     case QUALITATIVA_NO_ORDENADA_SIMPLE:
-                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "QUALITATIVA_NO_ORDENADA_SIMPLE");
+                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "qualitativa_simple");
                         // Copiar les opcions
                         for (Opcio o : preguntaActual.getOpcions()) {
                             novaPregunta.afegirOpcio(o);
@@ -432,9 +428,12 @@ Enquesta enquesta = null;
                 System.out.println("❌ Error: " + e.getMessage());
             }
             
-        } else if (opcio.equals("2")) {
+        } 
+        
+        //CASE 2: MODIFICAR TEXT I TIPUS
+        else if (opcio.equals("2")) {
             // Crear una pregunta completament nova
-            System.out.print("Nou text de la pregunta: ");
+            System.out.println("Nou text de la pregunta: ");
             String nouText = in.nextLine();
             
             System.out.println("\nNou tipus de pregunta:");
@@ -443,7 +442,7 @@ Enquesta enquesta = null;
             System.out.println("  3. Qualitativa ordenada");
             System.out.println("  4. Qualitativa no ordenada simple");
             System.out.println("  5. Qualitativa no ordenada múltiple");
-            System.out.print("Escull (1-5): ");
+            System.out.println("Escull (1-5): ");
             
             String tipusOpcio = in.nextLine();
             Pregunta novaPregunta = null;
@@ -451,7 +450,7 @@ Enquesta enquesta = null;
             try {
                 switch (tipusOpcio) {
                     case "1":
-                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "TEXT_LLIURE");
+                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "text");
                         break;
                     case "2":
                         double min = 0, max = 0;
@@ -459,9 +458,9 @@ Enquesta enquesta = null;
                         
                         while (!valorsValids) {
                             try {
-                                System.out.print("Valor mínim: ");
+                                System.out.println("Valor mínim: ");
                                 min = Double.parseDouble(in.nextLine());
-                                System.out.print("Valor màxim: ");
+                                System.out.println("Valor màxim: ");
                                 max = Double.parseDouble(in.nextLine());
                                 
                                 if (min >= max) {
@@ -477,18 +476,18 @@ Enquesta enquesta = null;
                         novaPregunta = new Pregunta(preguntaActual.getId(), nouText, min, max);
                         break;
                     case "3":
-                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "QUALITATIVA_ORDENADA");
+                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "qualitativa_ordenada");
                         afegirOpcions(novaPregunta, true);
                         break;
                     case "4":
-                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "QUALITATIVA_NO_ORDENADA_SIMPLE");
+                        novaPregunta = new Pregunta(preguntaActual.getId(), nouText, "qualitativa_simple");
                         afegirOpcions(novaPregunta, false);
                         break;
                     case "5":
                         int maxSel = -1;
                         while (maxSel < 1) {
                             try {
-                                System.out.print("Màxim de seleccions: ");
+                                System.out.println("Màxim de seleccions: ");
                                 maxSel = Integer.parseInt(in.nextLine());
                                 if (maxSel < 1) {
                                     System.out.println("❌ Ha de ser un número positiu");
@@ -499,6 +498,7 @@ Enquesta enquesta = null;
                         }
                         novaPregunta = new Pregunta(preguntaActual.getId(), nouText, 
                             TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE, maxSel);
+                        
                         afegirOpcions(novaPregunta, false);
                         break;
                     default:
@@ -513,46 +513,94 @@ Enquesta enquesta = null;
                 System.out.println("❌ Error: " + e.getMessage());
             }
             
-        } else {
+        } 
+        
+        else {
             System.out.println("❌ Opció no vàlida");
         }
     }
 
-    //SI JA ES FA AL ODIFICAR FA FALTA? SUPOSO Q SI PERO ENCARA NO ESTA IMPLEMENTAT AL CONTROLADOR BÉ
-    /*private static void testAfegirOpcioAPregunta() {
+    private static void testAfegirOpcioAPregunta() {
         System.out.println("\n─── AFEGIR OPCIÓ A PREGUNTA ───");
         System.out.println("Introdueix ID enquesta: ");
         String idEnquesta = in.nextLine();
-        Enquesta enquesta = cd.getEnquesta(idEnquesta);
+        Enquesta enquesta = null;
         
-        Pregunta preguntaActual = escollirPregunta(enquesta);
-        
-        Opcio o = afegirOpcions();
-        try{
-        cd.afegirOpcioAPregunta(idEnquesta, preguntaActual.getId(), o);
-        System.out.println("Opció afegida");
-        } catch (EnquestaNoExisteixException | PreguntaNoExisteixException | PermisDenegatException e) {
-            System.out.println("❌ Error: " + e.getMessage());
-        }
-    }*/
-    //SUPOSO Q ES ASÍ
-    private static void testEliminarOpcioDePregunta() {
-        System.out.println("Introdueix ID enquesta: ");
-        String idEnquesta = in.nextLine();
-Enquesta enquesta = null;
         try{
         enquesta = cd.getEnquesta(idEnquesta);
         } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
             System.out.println("❌ Error: " + e.getMessage());
-        }                Pregunta preguntaActual = escollirPregunta(enquesta);
+        }                
+        
+        Pregunta preguntaActual = escollirPregunta(enquesta);
+        
+        // Calcular el següent ID disponible
+        int nextId = 0;
+        for (Opcio opcio : preguntaActual.getOpcions()) {
+            if (opcio.getId() >= nextId) {
+                nextId = opcio.getId() + 1;
+            }
+        }
+        
+        Opcio o = null;
+        //Fer una opció segons tipus de pregunta
+        switch (preguntaActual.getTipus()) {
+            case QUALITATIVA_ORDENADA:
+                System.out.println("Text de l'opció: ");
+                String textOrd = in.nextLine();
+                System.out.println("Ordre de l'opció (número enter): ");
+                int ordre = Integer.parseInt(in.nextLine());
+                
+                o = new Opcio(nextId, textOrd, ordre);
+                break;
+            
+            case QUALITATIVA_NO_ORDENADA_SIMPLE:
+            case QUALITATIVA_NO_ORDENADA_MULTIPLE:
+                
+                System.out.println("Text de l'opció: ");
+                String textNoOrd = in.nextLine();
+                o = new Opcio(nextId, textNoOrd);
+                break;
+            case TEXT_LLIURE:
+            case NUMERICA:
+                System.out.println("❌ No es poden afegir opcions a preguntes de tipus TEXT_LLIURE o NUMERICA.");
+                break;
+            default:
+                break;
+        }
+        
+
+        try{
+        cd.afegirOpcioAPregunta(idEnquesta, preguntaActual.getId(), o);
+        System.out.println("Opció afegida");
+        } catch (ParametreInvalidException | UsuariNoAutenticatException | EnquestaNoExisteixException | PreguntaNoExisteixException | PermisDenegatException | RespostaInvalidaException e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+    
+    //SUPOSO Q ES ASÍ
+    private static void testEliminarOpcioDePregunta() {
+        System.out.println("Introdueix ID enquesta: ");
+        String idEnquesta = in.nextLine();
+        Enquesta enquesta = null;
+        
+        try{
+        enquesta = cd.getEnquesta(idEnquesta);
+        } catch (UsuariNoAutenticatException | ParametreInvalidException | EnquestaNoExisteixException e){
+            System.out.println("❌ Error: " + e.getMessage());
+        }                
+        
+        Pregunta preguntaActual = escollirPregunta(enquesta);
 
         //mostrar opcions de la pregunta actuaal
         System.out.println("\n─── OPCIONS DE LA PREGUNTA ───");
         for (Opcio o : preguntaActual.getOpcions()) {
             System.out.println("ID: " + o.getId() + " - Text: " + o.getText());
         }
-        System.out.print("Introdueix ID de l'opció a eliminar: ");
+        
+        System.out.println("Introdueix ID de l'opció a eliminar: ");
         int idOpcio = Integer.parseInt(in.nextLine());
+        
         try{
         cd.eliminarOpcioDePregunta(idEnquesta, preguntaActual.getId(), idOpcio);
         System.out.println("Opció eliminada");
@@ -604,7 +652,7 @@ Enquesta enquesta = null;
         
         System.out.println("\n═══ IMPORTAR ENQUESTA DES DE JSON ═══");
         System.out.println("Fitxer d'exemple: exemple_enquesta.json");
-        System.out.print("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
+    System.out.println("Ruta del fitxer JSON (o només el nom si està en el directori actual): ");
         String path = in.nextLine().trim();
         
         // Si solo es un nombre de archivo, añadir la ruta completa
@@ -630,14 +678,13 @@ Enquesta enquesta = null;
     // --- Mètodes Auxiliars ---
     
 
-    //ESTO SE TIENE QUE HACER DE OTRA FORMA USANDO EL CONTROLADOR NO ASI A PELO
     private static void afegirOpcions(Pregunta pregunta, boolean ordenada) {
         System.out.println("\n─── AFEGIR OPCIONS ───");
         
         int n = -1;
         while (n < 1) {
             try {
-                System.out.print("Quantes opcions vols afegir? ");
+                System.out.println("Quantes opcions vols afegir? ");
                 n = Integer.parseInt(in.nextLine());
                 if (n < 1) {
                     System.out.println("❌ Ha de ser almenys 1 opció");
@@ -648,7 +695,7 @@ Enquesta enquesta = null;
         }
         
         for (int i = 0; i < n; i++) {
-            System.out.print("Text opció " + (i + 1) + ": ");
+            System.out.println("Text opció " + (i + 1) + ": ");
             String text = in.nextLine();
             
             if (ordenada) {
@@ -656,7 +703,7 @@ Enquesta enquesta = null;
                 boolean ordreValid = false;
                 while (!ordreValid) {
                     try {
-                        System.out.print("Ordre (número): ");
+                        System.out.println("Ordre (número): ");
                         ordre = Integer.parseInt(in.nextLine());
                         ordreValid = true;
                     } catch (NumberFormatException e) {
@@ -689,7 +736,7 @@ Enquesta enquesta = null;
         
         while (!numValid) {
             try {
-                System.out.print("Escull la pregunta: ");
+                System.out.println("Escull la pregunta: ");
                 num = Integer.parseInt(in.nextLine()) - 1;
                 
                 if (num < 0 || num >= preguntes.size()) {

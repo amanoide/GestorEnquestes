@@ -1,13 +1,11 @@
 package edu.upc.prop.clusterxx.domini.classes;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Fábrica para construir FeatureSpec[] a partir de Pregunta(s).
- * Mapea TipusPregunta y metadatos (orden, dominio, rangos, max selecciones) a DistanceCalculator.FeatureSpec.
+ * Mapea TipusPregunta y metadatos (orden, rangos, max selecciones) a DistanceCalculator.FeatureSpec.
  */
 public class FeatureSpecFactory {
 
@@ -34,21 +32,12 @@ public class FeatureSpecFactory {
                 Integer m = p.getOpcions() != null ? p.getOpcions().size() : null;
                 return DistanceCalculator.FeatureSpec.ordinal(orden, m);
             case QUALITATIVA_NO_ORDENADA_SIMPLE:
-                // Dominio: conjunto de opciones
-                return DistanceCalculator.FeatureSpec.nominalSingle(toDomain(p));
+                return DistanceCalculator.FeatureSpec.nominalSingle();
             case QUALITATIVA_NO_ORDENADA_MULTIPLE:
-                // Dominio + máximo de selecciones
-                return DistanceCalculator.FeatureSpec.nominalMulti(toDomain(p), p.getMaxSeleccions());
+                return DistanceCalculator.FeatureSpec.nominalMulti(p.getMaxSeleccions());
             case TEXT_LLIURE:
             default:
                 return DistanceCalculator.FeatureSpec.freeText();
         }
-    }
-
-    //Acabar de mirar que hace este método
-    private static Set<String> toDomain(Pregunta p) {
-        Set<String> domain = new HashSet<>();
-        for (Opcio o : p.getOpcions()) domain.add(o.getText());
-        return domain;
     }
 }

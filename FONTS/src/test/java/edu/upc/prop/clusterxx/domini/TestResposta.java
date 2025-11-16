@@ -3,9 +3,7 @@ package edu.upc.prop.clusterxx.domini;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -14,14 +12,6 @@ import org.junit.Test;
 public class TestResposta {
     Usuari u;
     Resposta r;
-
-    /**
-     * Missatge en pantalla d'inici dels tests de la classe Resposta.
-     */
-    @BeforeClass
-    public static void iniTestResposta() {
-        System.out.println("Iniciant tests de la classe Resposta\n");
-    }
 
     // Codi d'inicialització abans de cada test 
     @Before
@@ -84,11 +74,4 @@ public class TestResposta {
         assertEquals(" resposta amb espais ", r.getTextResposta());
     }
 
-    /**
-     * Missatge en pantalla de finalització dels tests de la classe Resposta.
-     */
-    @AfterClass
-    public static void fiTestResposta() {
-        System.out.println("\nFinalitzats tests de la classe Resposta");
-    }
 }
