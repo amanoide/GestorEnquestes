@@ -1766,6 +1766,16 @@ public class CtrlDomini {
     }
 
     /**
+     * Suggereix un rang recomanat de valors per a k basat en el nombre de participants.
+     * 
+     * @param numParticipants Nombre de participants de l'enquesta
+     * @return Array de dos elements [kMin, kMax] amb el rang recomanat
+     */
+    public int[] suggestKRange(int numParticipants) {
+        return ctrlAnalisi.suggestKRange(numParticipants);
+    }
+
+    /**
      * Realitza clustering sobre els usuaris que han respost una enquesta.
      * Els perfils generats s'assignen automàticament als usuaris i es persisten.
      * 

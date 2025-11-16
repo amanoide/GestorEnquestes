@@ -20,6 +20,7 @@ import edu.upc.prop.clusterxx.domini.classes.Resposta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
 // Importacions dels controladors
 import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
+import edu.upc.prop.clusterxx.domini.controladors.CtrlAnalisi;
 
 /**
  * Driver per provar la classe CtrlAnalisi.
@@ -263,9 +264,8 @@ public class CtrlAnalisiDriver {
             if (kOpcio.equals("3")) {
                 System.out.println("\n⏳ Avaluant diferents valors de k...");
                 
-                // Obtener rango sugerido usando CtrlAnalisi
-                CtrlAnalisi ctrlAnalisi = new CtrlAnalisi();
-                int[] range = ctrlAnalisi.suggestKRange(nParticipants);
+                // Obtener rango sugerido usando CtrlDomini
+                int[] range = cd.suggestKRange(nParticipants);
                 int kMin = range[0];
                 int kMax = range[1];
                 
