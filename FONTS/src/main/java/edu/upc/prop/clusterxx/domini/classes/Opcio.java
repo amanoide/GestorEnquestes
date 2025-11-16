@@ -14,10 +14,10 @@ public class Opcio {
         this.ordre = null; 
     }
 
-    public Opcio(int id, String text, int ordre) {
+    public Opcio(int id, String text, Integer ordre) {
         this.id = id;
         this.text = text;
-        this.ordre = ordre;
+        setOrdre(ordre);
     }
 
     public int getId() {
@@ -36,8 +36,12 @@ public class Opcio {
         this.text = text;
     }
 
-    public void setOrdre(int ordre) {
-        this.ordre = ordre;
+    public void setOrdre(Integer ordre) {
+        if (ordre == null || ordre <= 0) {
+            this.ordre = null;
+        } else {
+            this.ordre = ordre;
+        }
     }
 
     public boolean esOrdenada() {

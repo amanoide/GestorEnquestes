@@ -2,22 +2,12 @@ package edu.upc.prop.clusterxx.domini;
 
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import static org.junit.Assert.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * Tests de la classe Opció.
  */
 public class TestOpcio {
-    /**
-     * Missatge en pantalla d'inici dels tests de la classe Opcio.
-     */
-    @BeforeClass
-    public static void iniTestOpcio() {
-        System.out.println("Iniciant tests de la classe Opcio\n");
-    }
-    
     /**
      * Tests de la constructora de la classe Opcio.
      * Crea una instància de la classe Opció amb identificador i text i sense ordre. 
@@ -123,11 +113,4 @@ public class TestOpcio {
         assertFalse(o.esOrdenada()); 
     } 
 
-    /**
-     * Missatge en pantalla de finalització dels tests de la classe Opcio.
-     */
-    @AfterClass
-    public static void fiTestOpcio() {
-        System.out.println("Finalitzats tests de la classe Opcio\n");
-    }
 }

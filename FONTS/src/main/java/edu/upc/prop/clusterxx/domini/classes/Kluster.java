@@ -89,7 +89,13 @@ public class Kluster {
      * 
      * @return Nueva lista con copias de los vectores miembro
      */
-    public List<String[]> getMembers() { return new ArrayList<>(members); }
+    public List<String[]> getMembers() {
+        List<String[]> copy = new ArrayList<>(members.size());
+        for (String[] member : members) {
+            copy.add(Arrays.copyOf(member, member.length));
+        }
+        return copy;
+    }
 
     /**
      * Añade un nuevo miembro al cluster.
