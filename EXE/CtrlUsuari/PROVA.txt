@@ -1,81 +1,256 @@
-DOCUMENTACIÓ DE PROVA - CtrlUsuariDriver
-=========================================
+Ejecutando pruebas automatizadas contra CtrlUsuariDriver...
+Plan de pruebas (solo lectura):
 
-OBJECTE DE LA PROVA
--------------------
-Prova del controlador d'usuaris i gestió de sessions.
+CREAR Y REGISTRAR USUARIOS:
+1) Registrar usuario válido: auto1 / pwd1
+2) Intento de registrar duplicado: auto1 / pwd1
+3) Intento de registrar inválido (username vacío, pwd corta)
+4) Registrar usuario válido: auto2 / pwd1
 
-Casos d'ús provats:
-- Registrar nous usuaris
-- Fer login
-- Fer logout
-- Gestionar enquestes creades per usuari
-- Consultar respostes d'usuari
+LOGIN Y LOGOUT:
+5) Login correcto: auto1 / pwd1
+6) Consultar usuario actual (debería ser auto1)
+7) Logout de auto1
+8) Intento de logout sin estar logueado (error esperat)
 
-Classes provades:
-- CtrlUsuari: lògica de gestió d'usuaris
-- Usuari: classe de domini
+LOGIN CON ERRORES:
+9) Login con contraseña incorrecta (error esperat)
+10) Login con usuario inexistente (error esperat)
+11) Intento de registrar con username muy corto "a" (error esperat)
 
-ELEMENTS INTEGRATS
-------------------
-Classes reutilitzades:
-- Enquesta: enquestes creades per l'usuari
-- Resposta: respostes de l'usuari
-- CtrlPersistencia: guardar/carregar usuaris
+MÁS USUARIOS:
+12) Registrar otro usuario válido: auto3 / pwd1
+13) Login correcto con auto3
+14) Intento de borrar usuario sin estar logueado (debería fallar)
+15) Borrar auto3 mientras está logueado (debería funcionar)
+16) Consultar usuario actual final
 
-FITXERS DE DADES NECESSARIS
-----------------------------
-Opcionals:
-- usuaris.json: usuaris guardats
+FINALIZAR:
+0) Sortir
 
-VALORS ESTUDIATS (Caixa Negra)
--------------------------------
-1. Usernames vàlids:
-   - Alfanumèrics: "user1", "admin", "test_user"
-   - Mínim 3 caràcters
-   - Case sensitive: "User" ≠ "user"
+NOTA: El siguiente bloque heredoc contiene únicamente las entradas (inputs)
+que se enviarán al driver.
+Driver de testeig de CtrlUsuari
 
-2. Passwords:
-   - Qualsevol cadena no buida
-   - Mínim 4 caràcters
-   - Proves: "1234", "password", "P@ssw0rd!"
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
 
-3. Casos d'error:
-   - Username duplicat (error esperat)
-   - Login amb credencials incorrectes
-   - Password buida (error esperat)
-   - Username buit (error esperat)
+═══ REGISTRAR NOU USUARI ═══
+Introdueix nom d'usuari: 
+Introdueix contrasenya: 
+✓ Usuari registrat correctament!
+  Ara pots fer login amb aquest usuari.
 
-4. Sessions:
-   - Un sol usuari actiu alhora
-   - Canvi d'usuari (logout + login)
-   - Operacions sense login (error esperat)
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
 
-EFECTES ESTUDIATS
------------------
-- Autenticació d'usuaris
-- Gestió de sessió activa
-- Visualització de perfil d'usuari
-- Llista d'enquestes pròpies
+═══ REGISTRAR NOU USUARI ═══
+Introdueix nom d'usuari: 
+Introdueix contrasenya: 
+❌ Error: L'usuari amb nom 'auto1' ja existeix.
 
-OPERATIVA
----------
-Execució:
-```
-cd FONTS
-gradlew.bat runCtrlUsuariDriver
-```
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
 
-Opcions del menú:
-1. Registrar usuari nou
-2. Fer login
-3. Fer logout
-4. Consultar usuari actual
-5. Llistar enquestes pròpies
-0. Sortir
+═══ REGISTRAR NOU USUARI ═══
+Introdueix nom d'usuari: 
+Introdueix contrasenya: 
+❌ Error: El nom d'usuari no pot estar buit.
 
-Flux típic:
-1. Registrar usuari ("user1", "pass123")
-2. Fer login amb "user1"/"pass123"
-3. Consultar informació
-4. Logout
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ INICIAR SESSIÓ ═══
+Introdueix nom d'usuari: 
+Introdueix contrasenya: 
+✓ Login correcte!
+  Benvingut/da, auto1!
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+L'usuari actual és: auto1
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+✓ Logout correcte!
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ ESBORRAR USUARI ═══
+Introdueix nom d'usuari a eliminar: 
+Usuari 'auto1' eliminat correctament.
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ INICIAR SESSIÓ ═══
+Introdueix nom d'usuari: 
+Introdueix contrasenya: 
+❌ Error: Nom d'usuari o contrasenya incorrectes.
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ REGISTRAR NOU USUARI ═══
+Introdueix nom d'usuari: 
+Introdueix contrasenya: 
+❌ Error: El nom d'usuari ha de tenir almenys 3 caràcters.
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ REGISTRAR NOU USUARI ═══
+Introdueix nom d'usuari: 
+Introdueix contrasenya: 
+✓ Usuari registrat correctament!
+  Ara pots fer login amb aquest usuari.
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ INICIAR SESSIÓ ═══
+Introdueix nom d'usuari: 
+Introdueix contrasenya: 
+✓ Login correcte!
+  Benvingut/da, auto2!
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ ESBORRAR USUARI ═══
+Introdueix nom d'usuari a eliminar: 
+Usuari 'auto2' eliminat correctament.
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+No hi ha cap usuari actual autenticat.
+
+--- Menú CtrlUsuari ---
+--- Mètodes de Sessió ---
+(1) Registrar Usuari
+(2) Login
+(3) Logout
+(4) Esborrar Usuari
+(5) Consulta Usuari Actual
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Tancant el driver. Adéu!
+Pruebas completadas. Revisa la salida anterior para comprobar resultados.

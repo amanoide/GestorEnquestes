@@ -1,71 +1,1152 @@
-DOCUMENTACIÓ DE PROVA - CtrlEnquestaDriver
-===========================================
+Ejecutando pruebas automatizadas contra CtrlEnquestaDriver...
+Plan de proves (solo lectura):
 
-OBJECTE DE LA PROVA
--------------------
-Prova del controlador d'enquestes.
+ENQUESTES:
+0) Intentar esborrar una enquesta no existent (error esperat)
+1) Crear enquesta E1
+2) Intentar modificar títol d'una enquesta no existent (error esperat)
+3) Intentar modificar descripció d'una enquesta no existent (error esperat)
+4) Modificar títol de E1
+5) Modificar descripció de E1
+6) Intentar crear enquesta duplicada E1 (error esperat)
 
-Casos d'ús provats:
-- Crear enquestes noves
-- Modificar enquestes existents (títol, descripció)
-- Eliminar enquestes
-- Consultar enquestes
-- Gestionar preguntes associades a enquestes
+PREGUNTES - CREAR:
+7) Afegir pregunta TEXT a E1
+8) Afegir pregunta NUMÈRICA a E1 (amb bounds inválids primer, depois valids)
+9) Afegir pregunta QUALITATIVA ORDENADA a E1 (i opcions amb ordre, ordre no numèric primer)
+10) Afegir pregunta QUALITATIVA SIMPLE a E1 (opcions sense ordre)
+11) Afegir pregunta QUALITATIVA MÚLTIPLE a E1 (màxim seleccions + opcions)
+12) Intentar afegir pregunta duplicada a E1 (error esperat)
+13) Crear enquesta E2 per provar opcions amb títol/descripció vacies
 
-Classes provades:
-- CtrlEnquesta: lògica de gestió d'enquestes
-- Enquesta: classe de domini
+PREGUNTES - MODIFICAR I ELIMINAR:
+14) Intentar modificar pregunta d'una enquesta no existent (error esperat)
+15) Intentar modificar pregunta que no existeix a E1 (error esperat)
+16) Modificar pregunta existenta (canviar text de Q_text)
+17) Intentar eliminar pregunta que no existeix a E1 (error esperat)
 
-ELEMENTS INTEGRATS
-------------------
-Classes reutilitzades:
-- Usuari: creador de l'enquesta
-- Pregunta: preguntes de l'enquesta
-- CtrlPersistencia: guardar/carregar enquestes
+OPCIONS:
+18) Intentar afegir opcions a pregunta NUMÈRICA (error esperat)
+19) Afegir una opció manualment a pregunta QUALITATIVA ORDENADA (ordre numèric)
+20) Intentar afegir opció a pregunta TEXT (error esperat)
+21) Eliminar una opció existent
+22) Intentar eliminar una opció no existent (error esperat)
 
-FITXERS DE DADES NECESSARIS
-----------------------------
-Opcionals:
-- enquestes.json: enquestes guardades prèviament
+ACCIONS FINALS:
+23) Eliminar una pregunta (prova de selecció invàlida seguida d'una válida)
+24) Consultar enquestes (veure estat final)
+25) Intentar importar enquesta amb ruta no valida (error esperat)
+26) Esborrar enquesta E1
+27) Esborrar enquesta E2
+28) Intentar esborrar de nou E1 (error esperat)
+0) Sortir
 
-VALORS ESTUDIATS (Caixa Negra)
--------------------------------
-1. IDs d'enquesta:
-   - Vàlids: "E1", "ENQ001", "test_enquesta"
-   - Duplicats: mateix ID dues vegades (error esperat)
+NOTA: El següent bloc heredoc conté únicament les entrades (inputs)
+que es passaran al driver.
+Driver de testeig de CtrlEnquesta
 
-2. Títols:
-   - Cadenes normals: "Enquesta de satisfacció"
-   - Buides: "" (error esperat)
-   - Llargues: més de 100 caràcters
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
 
-3. Descripcions:
-   - Text normal, null, buides
+─── ESBORRAR ENQUESTA ───
+Introdueix ID enquesta a esborrar: 
+❌ Error: No existeix cap enquesta amb l'ID 'NOEX'.
 
-4. Operacions:
-   - Crear amb 0 preguntes
-   - Crear amb múltiples preguntes
-   - Modificar enquesta amb respostes
-   - Eliminar enquesta amb respostes
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
 
-EFECTES ESTUDIATS
------------------
-- Visualització de llista d'enquestes
-- Selecció d'enquesta per modificar
-- Missatges de confirmació/error
+═══ CREAR NOVA ENQUESTA ═══
+Introdueix ID enquesta: 
+Introdueix títol: 
+Introdueix descripció: 
+✓ Enquesta creada correctament!
+  ID: E1
+  Títol: Test Enquesta
 
-OPERATIVA
----------
-Execució:
-```
-cd FONTS
-gradlew.bat runCtrlEnquestaDriver
-```
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
 
-Opcions del menú:
-1. Crear enquesta
-2. Modificar enquesta
-3. Eliminar enquesta
-4. Llistar enquestes
-5. Consultar detalls d'enquesta
-0. Sortir
+─── MODIFICAR TÍTOL ───
+Introdueix ID enquesta a modificar: 
+❌ Error: No existeix cap enquesta amb l'ID 'NOEX'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── MODIFICAR DESCRIPCIÓ ───
+Introdueix ID enquesta a modificar: 
+❌ Error: No existeix cap enquesta amb l'ID 'NOEX'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── MODIFICAR TÍTOL ───
+Introdueix ID enquesta a modificar: 
+Títol actual: Test Enquesta
+Nou títol: 
+✓ Títol modificat!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── MODIFICAR DESCRIPCIÓ ───
+Introdueix ID enquesta a modificar: 
+Descripció actual: Descripcio inicial
+Nova descripció: 
+✓ Descripció modificada!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ CREAR NOVA ENQUESTA ═══
+Introdueix ID enquesta: 
+Introdueix títol: 
+Introdueix descripció: 
+❌ Error creant l'enquesta: Ja existeix una enquesta amb l'ID 'E1'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── AFEGIR PREGUNTA ───
+Introdueix ID enquesta a la qual afegir la pregunta: 
+ID de la pregunta: 
+Text de la pregunta: 
+
+Tipus de pregunta:
+  1. Text lliure
+  2. Numèrica
+  3. Qualitativa ordenada
+  4. Qualitativa no ordenada simple
+  5. Qualitativa no ordenada múltiple
+Escull (1-5): 
+Pregunta afegida correctament!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── AFEGIR PREGUNTA ───
+Introdueix ID enquesta a la qual afegir la pregunta: 
+ID de la pregunta: 
+Text de la pregunta: 
+
+Tipus de pregunta:
+  1. Text lliure
+  2. Numèrica
+  3. Qualitativa ordenada
+  4. Qualitativa no ordenada simple
+  5. Qualitativa no ordenada múltiple
+Escull (1-5): 
+Valor mínim: 
+Valor màxim: 
+El valor mínim ha de ser menor que el màxim
+Valor mínim: 
+Valor màxim: 
+Pregunta afegida correctament!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── AFEGIR PREGUNTA ───
+Introdueix ID enquesta a la qual afegir la pregunta: 
+ID de la pregunta: 
+Text de la pregunta: 
+
+Tipus de pregunta:
+  1. Text lliure
+  2. Numèrica
+  3. Qualitativa ordenada
+  4. Qualitativa no ordenada simple
+  5. Qualitativa no ordenada múltiple
+Escull (1-5): 
+
+─── AFEGIR OPCIONS ───
+Quantes opcions vols afegir? 
+Text opció 1: 
+Ordre (número): 
+Text opció 2: 
+Ordre (número): 
+Text opció 3: 
+Ordre (número): 
+✓ 3 opcions afegides!
+Pregunta afegida correctament!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── AFEGIR PREGUNTA ───
+Introdueix ID enquesta a la qual afegir la pregunta: 
+ID de la pregunta: 
+Text de la pregunta: 
+
+Tipus de pregunta:
+  1. Text lliure
+  2. Numèrica
+  3. Qualitativa ordenada
+  4. Qualitativa no ordenada simple
+  5. Qualitativa no ordenada múltiple
+Escull (1-5): 
+
+─── AFEGIR OPCIONS ───
+Quantes opcions vols afegir? 
+Text opció 1: 
+Text opció 2: 
+Text opció 3: 
+✓ 3 opcions afegides!
+Pregunta afegida correctament!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── AFEGIR PREGUNTA ───
+Introdueix ID enquesta a la qual afegir la pregunta: 
+ID de la pregunta: 
+Text de la pregunta: 
+
+Tipus de pregunta:
+  1. Text lliure
+  2. Numèrica
+  3. Qualitativa ordenada
+  4. Qualitativa no ordenada simple
+  5. Qualitativa no ordenada múltiple
+Escull (1-5): 
+Màxim de seleccions: 
+
+─── AFEGIR OPCIONS ───
+Quantes opcions vols afegir? 
+Text opció 1: 
+Text opció 2: 
+Text opció 3: 
+✓ 3 opcions afegides!
+Pregunta afegida correctament!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── AFEGIR PREGUNTA ───
+Introdueix ID enquesta a la qual afegir la pregunta: 
+ID de la pregunta: 
+Ja existeix una pregunta amb aquest ID a l'enquesta
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ CREAR NOVA ENQUESTA ═══
+Introdueix ID enquesta: 
+Introdueix títol: 
+Introdueix descripció: 
+✓ Enquesta creada correctament!
+  ID: 1
+  Títol: E2
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── MODIFICAR PREGUNTA ───
+Introdueix ID enquesta: 
+❌ Error: No existeix cap enquesta amb l'ID 'NOEX'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ CREAR NOVA ENQUESTA ═══
+Introdueix ID enquesta: 
+Introdueix títol: 
+Introdueix descripció: 
+✓ Enquesta creada correctament!
+  ID: 12
+  Títol: E1
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ CREAR NOVA ENQUESTA ═══
+Introdueix ID enquesta: 
+Introdueix títol: 
+Introdueix descripció: 
+❌ Error creant l'enquesta: Ja existeix una enquesta amb l'ID '12'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ CREAR NOVA ENQUESTA ═══
+Introdueix ID enquesta: 
+Introdueix títol: 
+Introdueix descripció: 
+✓ Enquesta creada correctament!
+  ID: 11
+  Títol: E1
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── AFEGIR OPCIÓ A PREGUNTA ───
+Introdueix ID enquesta: 
+
+─── PREGUNTES ───
+1. Fruites preferides
+2. Classificació general
+3. Què en penses?
+4. Color preferit
+5. Quants anys tens?
+Escull la pregunta: 
+Text de l'opció: 
+Ordre de l'opció (número enter): 
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── MODIFICAR DESCRIPCIÓ ───
+Introdueix ID enquesta a modificar: 
+❌ Error: No existeix cap enquesta amb l'ID 'abc'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── ESBORRAR ENQUESTA ───
+Introdueix ID enquesta a esborrar: 
+❌ Error: No existeix cap enquesta amb l'ID '2'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── AFEGIR OPCIÓ A PREGUNTA ───
+Introdueix ID enquesta: 
+
+─── PREGUNTES ───
+1. Fruites preferides
+2. Classificació general
+3. Què en penses?
+4. Color preferit
+5. Quants anys tens?
+Escull la pregunta: 
+Text de l'opció: 
+Opció afegida
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── MODIFICAR DESCRIPCIÓ ───
+Introdueix ID enquesta a modificar: 
+Descripció actual: Enquesta Buida
+Nova descripció: 
+✓ Descripció modificada!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Valor invàlid
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── MODIFICAR DESCRIPCIÓ ───
+Introdueix ID enquesta a modificar: 
+❌ Error: No existeix cap enquesta amb l'ID '99'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── ELIMINAR PREGUNTA ───
+Introdueix ID enquesta: 
+
+─── PREGUNTES ───
+1. Fruites preferides
+2. Classificació general
+3. Què en penses?
+4. Color preferit
+5. Quants anys tens?
+Escull la pregunta: 
+❌ Número no vàlid. Tria un número entre 1 i 5
+Escull la pregunta: 
+✓ Pregunta eliminada!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── LLISTAT D'ENQUESTES ───
+ID: E1 | Títol: Titol Actualitzat | Descripció: Descripcio actualitzada | Creat per: USER_MOCK
+  Pregunta ID: Q_multi | Text: Fruites preferides | Tipus: QUALITATIVA_NO_ORDENADA_MULTIPLE
+    Opcions:
+      ID: 0 | Text: Poma | Ordre: null
+      ID: 1 | Text: Plàtan | Ordre: null
+      ID: 2 | Text: Préssec | Ordre: null
+      ID: 3 | Text: 14 | Ordre: null
+  Pregunta ID: Q_ord | Text: Classificació general | Tipus: QUALITATIVA_ORDENADA
+    Opcions:
+      ID: 0 | Text: Bé | Ordre: 1
+      ID: 1 | Text: Regular | Ordre: 2
+      ID: 2 | Text: Mal | Ordre: 3
+  Pregunta ID: Q_text | Text: Què en penses? | Tipus: TEXT_LLIURE
+  Pregunta ID: Q_num | Text: Quants anys tens? | Tipus: NUMERICA
+ID: 1 | Títol: E2 | Descripció: 14 | Creat per: USER_MOCK
+  No hi ha preguntes a aquesta enquesta.
+ID: 12 | Títol: E1 | Descripció: Q_no_exist | Creat per: USER_MOCK
+  No hi ha preguntes a aquesta enquesta.
+ID: 11 | Títol: E1 | Descripció: Q_no_exist | Creat per: USER_MOCK
+  No hi ha preguntes a aquesta enquesta.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ IMPORTAR ENQUESTA DES DE JSON ═══
+Fitxer d'exemple: exemple_enquesta.json
+Ruta del fitxer JSON (o només el nom si està en el directori actual): 
+❌ Error important l'enquesta: Error en la importació: Error llegint el fitxer: /path/no/valida/enquesta.json (No such file or directory)
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── LLISTAT D'ENQUESTES ───
+ID: E1 | Títol: Titol Actualitzat | Descripció: Descripcio actualitzada | Creat per: USER_MOCK
+  Pregunta ID: Q_multi | Text: Fruites preferides | Tipus: QUALITATIVA_NO_ORDENADA_MULTIPLE
+    Opcions:
+      ID: 0 | Text: Poma | Ordre: null
+      ID: 1 | Text: Plàtan | Ordre: null
+      ID: 2 | Text: Préssec | Ordre: null
+      ID: 3 | Text: 14 | Ordre: null
+  Pregunta ID: Q_ord | Text: Classificació general | Tipus: QUALITATIVA_ORDENADA
+    Opcions:
+      ID: 0 | Text: Bé | Ordre: 1
+      ID: 1 | Text: Regular | Ordre: 2
+      ID: 2 | Text: Mal | Ordre: 3
+  Pregunta ID: Q_text | Text: Què en penses? | Tipus: TEXT_LLIURE
+  Pregunta ID: Q_num | Text: Quants anys tens? | Tipus: NUMERICA
+ID: 1 | Títol: E2 | Descripció: 14 | Creat per: USER_MOCK
+  No hi ha preguntes a aquesta enquesta.
+ID: 12 | Títol: E1 | Descripció: Q_no_exist | Creat per: USER_MOCK
+  No hi ha preguntes a aquesta enquesta.
+ID: 11 | Títol: E1 | Descripció: Q_no_exist | Creat per: USER_MOCK
+  No hi ha preguntes a aquesta enquesta.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── ESBORRAR ENQUESTA ───
+Introdueix ID enquesta a esborrar: 
+✓ Enquesta esborrada correctament!
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── ESBORRAR ENQUESTA ───
+Introdueix ID enquesta a esborrar: 
+❌ Error: No existeix cap enquesta amb l'ID 'E2'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+─── ESBORRAR ENQUESTA ───
+Introdueix ID enquesta a esborrar: 
+❌ Error: No existeix cap enquesta amb l'ID 'NOEX'.
+
+--- Menú CtrlEnquesta ---
+--- Enquestes ---
+(1) Crear Enquesta
+(2) Modificar Títol Enquesta
+(3) Modificar Descripció Enquesta
+(4) Esborrar Enquesta
+(5) Importar enquesta
+--- Preguntes i Opcions ---
+(10) Afegir Pregunta
+(11) Eliminar Pregunta
+(12) Modificar Pregunta
+(13) Afegir Opció a Pregunta
+(14) Eliminar Opció de Pregunta
+--- Consultores ---
+(20) Consultar Enquestes
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+Tancant el driver. Adéu!
+Proves completades. Revisa la sortida anterior per comprobar resultats.
