@@ -27,7 +27,8 @@ public class TestFeatureSpecFactory {
         Pregunta p = new Pregunta("Q2", "Ordenada", TipusPregunta.QUALITATIVA_ORDENADA, 1);
         int id = 0;
         for (String text : opcions) {
-            p.afegirOpcio(new Opcio(id++, text));
+            p.afegirOpcio(new Opcio(id, text, id)); // Añadir orden explícito
+            id++;
         }
         return p;
     }

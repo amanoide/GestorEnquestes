@@ -304,10 +304,10 @@ public class CtrlRespostaDriver {
                         
                     case QUALITATIVA_NO_ORDENADA_MULTIPLE:
                         List<Opcio> opcionsM = p.getOpcions();
-                        for (int j = 0; j < opcionsM.size(); j++) {
-                            System.out.println("  " + (j + 1) + ". " + opcionsM.get(j).getText());
+                        for (Opcio o : opcionsM) {
+                            System.out.println("  " + o.getId() + ". " + o.getText());
                         }
-                        System.out.print("  Escull opcions separades per comes (ex: opcio1,opcio2,opcio3): ");
+                        System.out.print("  Escull opcions separades per comes (IDs ex: 0,1,2): ");
                         String opcionsEsc = in.nextLine();
                         
                         respostes.put(p.getId(), opcionsEsc);
@@ -455,10 +455,10 @@ public class CtrlRespostaDriver {
                 case QUALITATIVA_NO_ORDENADA_MULTIPLE:
                     List<Opcio> opcionsM = preguntaSeleccionada.getOpcions();
                     System.out.println("Selecciona una o més opcions (separades per comes):");
-                    for (int j = 0; j < opcionsM.size(); j++) {
-                        System.out.println((j + 1) + ". " + opcionsM.get(j).getText());
+                    for (Opcio o : opcionsM) {
+                        System.out.println(o.getId() + ". " + o.getText());
                     }
-                    System.out.print("Escull opcions (ex: 1,3,4): ");
+                    System.out.print("Escull opcions (IDs ex: 1,2,3): ");
                     novaResposta = in.nextLine();
                     break;
             }

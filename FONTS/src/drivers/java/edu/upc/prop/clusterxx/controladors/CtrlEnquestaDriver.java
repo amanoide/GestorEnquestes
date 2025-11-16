@@ -534,6 +534,14 @@ public class CtrlEnquestaDriver {
         
         Pregunta preguntaActual = escollirPregunta(enquesta);
         
+        // Calcular el següent ID disponible
+        int nextId = 0;
+        for (Opcio opcio : preguntaActual.getOpcions()) {
+            if (opcio.getId() >= nextId) {
+                nextId = opcio.getId() + 1;
+            }
+        }
+        
         Opcio o = null;
         //Fer una opció segons tipus de pregunta
         switch (preguntaActual.getTipus()) {
@@ -543,7 +551,7 @@ public class CtrlEnquestaDriver {
                 System.out.println("Ordre de l'opció (número enter): ");
                 int ordre = Integer.parseInt(in.nextLine());
                 
-                o = new Opcio(preguntaActual.getOpcions().size(), textOrd, ordre);
+                o = new Opcio(nextId, textOrd, ordre);
                 break;
             
             case QUALITATIVA_NO_ORDENADA_SIMPLE:
@@ -551,7 +559,7 @@ public class CtrlEnquestaDriver {
                 
                 System.out.println("Text de l'opció: ");
                 String textNoOrd = in.nextLine();
-                o = new Opcio(preguntaActual.getOpcions().size(), textNoOrd);
+                o = new Opcio(nextId, textNoOrd);
                 break;
             case TEXT_LLIURE:
             case NUMERICA:

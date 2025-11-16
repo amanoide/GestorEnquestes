@@ -141,6 +141,14 @@ public class Pregunta {
     // Gestió d'opcions
     public void afegirOpcio(Opcio opcio) {
         if (tipusAdmetOpcions()) {
+            // Per preguntes ordenades, verificar que no hi hagi ordre duplicat
+            if (tipus == TipusPregunta.QUALITATIVA_ORDENADA) {
+                for (Opcio o : opcions) {
+                    if (o.getOrdre() == opcio.getOrdre()) {
+                        throw new IllegalArgumentException("Ja existeix una opció amb l'ordre " + opcio.getOrdre());
+                    }
+                }
+            }
             opcions.add(opcio);
         }
     }
@@ -195,18 +203,33 @@ public class Pregunta {
                 return false;
                 
             case QUALITATIVA_NO_ORDENADA_MULTIPLE:
-                // Format esperat: "opcio1,opcio2,opcio3"
+                // Format esperat: "id1,id2,id3" o "text1,text2,text3"
                 String[] seleccions = resposta.split(",");
                 if (seleccions.length > maxSeleccions) return false;
                 
                 for (String sel : seleccions) {
+                    String selTrimmed = sel.trim();
                     boolean trobada = false;
-                    for (Opcio o : opcions) {
-                        if (o.getText().equals(sel.trim())) {
-                            trobada = true;
-                            break;
+                    
+                    // Intentar primer com a ID numèric
+                    try {
+                        int id = Integer.parseInt(selTrimmed);
+                        for (Opcio o : opcions) {
+                            if (o.getId() == id) {
+                                trobada = true;
+                                break;
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        // No és un número, buscar per text
+                        for (Opcio o : opcions) {
+                            if (o.getText().equals(selTrimmed)) {
+                                trobada = true;
+                                break;
+                            }
                         }
                     }
+                    
                     if (!trobada) return false;
                 }
                 return true;
