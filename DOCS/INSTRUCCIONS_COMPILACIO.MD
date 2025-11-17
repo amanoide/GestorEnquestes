@@ -20,10 +20,8 @@ Hauria de mostrar algo com: `openjdk version "21.0.X"`
 
 El projecte es gestiona completament amb Gradle. Assegura't d'estar a la carpeta `ENTREGA/FONTS` per executar els següents comandes.
 
-### Comandes per a Windows
-Usa `gradlew.bat`.
 
-### Comandes per a Linux/macOS
+### Comandes
 Usa `./gradlew`.
 
 ---
