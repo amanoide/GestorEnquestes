@@ -9,6 +9,7 @@ Entrades:
 
 2) Carpeta CtrlAnalisi
     Conte arxius per provar els jocs de prova i una descripció d'aquests:
+        CtrlAnalisiDriver-1.0.jar: Executable del driver
         run_tests.sh:
             Descripcio: Script per linux per executar el joc de proves sobre CtrlAnalisiDriver
             Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
@@ -22,6 +23,7 @@ Entrades:
 
 3) Carpeta CtrlEnquesta
     Conte arxius per provar els jocs de prova i una descripció d'aquests:
+        CtrlEnquestaDriver-1.0.jar: Executable del driver
         run_tests.sh:
             Descripcio: Script per linux per executar el joc de proves sobre CtrlEnquestaDriver
             Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
@@ -35,6 +37,7 @@ Entrades:
 
 4) Carpeta CtrlResposta
     Conte arxius per provar els jocs de prova i una descripció d'aquests:
+        CtrlRespostaDriver-1.0.jar: Executable del driver
         run_tests.sh:
             Descripcio: Script per linux per executar el joc de proves sobre CtrlRespostaDriver
             Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
@@ -48,6 +51,7 @@ Entrades:
 
 5) Carpeta CtrlUsuari
     Conte arxius per provar els jocs de prova i una descripció d'aquests:
+        CtrlUsuariDriver-1.0.jar: Executable del driver
         run_tests.sh:
             Descripcio: Script per linux per executar el joc de proves sobre CtrlUsuariDriver
             Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)

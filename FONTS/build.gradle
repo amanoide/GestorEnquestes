@@ -104,4 +104,93 @@ task runCtrlAnalisiDriver(type: JavaExec) {
     standardInput = System.in
 }
 
+// Tareas para generar JARs de drivers
+
+task jarCtrlEnquestaDriver(type: Jar) {
+    group = 'drivers'
+    description = 'Genera JAR ejecutable para CtrlEnquestaDriver'
+    archiveBaseName = 'CtrlEnquestaDriver'
+    archiveVersion = '1.0'
+    
+    from sourceSets.main.output
+    from sourceSets.drivers.output
+    
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    manifest {
+        attributes 'Main-Class': 'edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver'
+    }
+    
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task jarCtrlUsuariDriver(type: Jar) {
+    group = 'drivers'
+    description = 'Genera JAR ejecutable para CtrlUsuariDriver'
+    archiveBaseName = 'CtrlUsuariDriver'
+    archiveVersion = '1.0'
+    
+    from sourceSets.main.output
+    from sourceSets.drivers.output
+    
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    manifest {
+        attributes 'Main-Class': 'edu.upc.prop.clusterxx.controladors.CtrlUsuariDriver'
+    }
+    
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task jarCtrlRespostaDriver(type: Jar) {
+    group = 'drivers'
+    description = 'Genera JAR ejecutable para CtrlRespostaDriver'
+    archiveBaseName = 'CtrlRespostaDriver'
+    archiveVersion = '1.0'
+    
+    from sourceSets.main.output
+    from sourceSets.drivers.output
+    
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    manifest {
+        attributes 'Main-Class': 'edu.upc.prop.clusterxx.controladors.CtrlRespostaDriver'
+    }
+    
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task jarCtrlAnalisiDriver(type: Jar) {
+    group = 'drivers'
+    description = 'Genera JAR ejecutable para CtrlAnalisiDriver'
+    archiveBaseName = 'CtrlAnalisiDriver'
+    archiveVersion = '1.0'
+    
+    from sourceSets.main.output
+    from sourceSets.drivers.output
+    
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    manifest {
+        attributes 'Main-Class': 'edu.upc.prop.clusterxx.controladors.CtrlAnalisiDriver'
+    }
+    
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+// Tarea para generar todos los JARs de drivers
+task jarAllDrivers {
+    group = 'drivers'
+    description = 'Genera todos los JARs ejecutables de drivers'
+    dependsOn jarCtrlEnquestaDriver, jarCtrlUsuariDriver, jarCtrlRespostaDriver, jarCtrlAnalisiDriver
+}
+
 
