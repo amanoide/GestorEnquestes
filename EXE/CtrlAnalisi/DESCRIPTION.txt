@@ -11,6 +11,7 @@ Fitxers de dades necessaris:
 - Opcional: `ENTREGA/DOCS/exemple_enquesta_clustering.json` i `ENTREGA/DOCS/exemple_resposta_clustering.json` per provar importacions reals; si no existeixen, el driver crea enquestes/respostes mock a init().
 
 Valors estudiats:
+- run_tests.sh o .bat
 - Paràmetres del clustering: k (manual: diversos valors entre 2 i nParticipants), selecció aleatòria de k, cerca automàtica mitjançant Silhouette en un rang suggerit.
 - Algoritmes: KMeans (baseline), KMeans++ (mètode d'inicialització) i KMedoids (robustesa a outliers).
 - Casos de test: diferents distribucions de respostes (mock definits: alice, bob, carla, dave), valoració de la qualitat via coeficient Silhouette, verificació de perfils generats.

@@ -10,6 +10,7 @@ Fitxers de dades necessaris:
 - No cal cap fitxer extern per executar aquest driver. Tots els usuaris es creen dinàmicament durant l'execució.
 
 Valors estudiats:
+- run_tests.sh o .bat
 - Entrades vàlides: noms d'usuari amb >=3 caràcters (ex. auto1, auto2) i contrasenyes amb >=4 caràcters (pwd1).
 - Entrades invàlides: username buit, username massa curt ("a"), password massa curta, intents de registre duplicat.
 - Estratègia: combinació caixa blanca (provar condicions de validació de domini) i caixa negra (inputs que provoquen errors observables).

@@ -13,6 +13,7 @@ Fitxers de dades necessaris:
 - Si no existeix, el script prova també la ruta no vàlida per validar errors d'import.
 
 Valors estudiats:
+- run_tests.sh o .bat
 - Respostes vàlides: text lliure, numèriques dins dels límits definits, selecció d'opcions per qualitatives (text o ids), seleccions múltiples (ids separats per coma).
 - Respostes invàlides: respostes fora de rang numèric, text buit quan no permès, identificadors d'opcions inexistents.
 - Estratègia: provar combinacions d'entrades per a cada tipus de pregunta i casos límit (valor mínim/màxim, no selecció, múltiples amb duplicats).

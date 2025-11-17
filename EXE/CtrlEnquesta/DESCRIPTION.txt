@@ -11,6 +11,7 @@ Fitxers de dades necessaris:
 - El fitxer conté la descripció estructurada de l'enquesta (id, títol, preguntes, opcions). El test d'import només llegeix i descarta si el format és invàlid.
 
 Valors estudiats:
+- run_tests.sh o .bat
 - Casos vàlids: crear enquesta amb id no existent,modificar títol d'enquetsa, modificar descripció d'enquesta, esborrar enquesta, afegir/modificar/esborrar preguntes de tots els tipus amb opcions correctes i importar enquesta.
 - Casos invàlids: intentar afegir enquestes duplicades, modificar/esborrar enquestes no existents, afegir preguntes duplicades, afegir opcions a preguntes numèriques, valors no numèrics on s'esperen números.
 - Estratègia: caixa blanca per validar rutes crítiques (existència d'IDs, rangs numèrics) i caixa negra per provar entrades mal formades (strings buits, ordres no numèrics).
