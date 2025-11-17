@@ -1,36 +1,143 @@
-Objecte de la prova:
-- Provar la gestió d'enquestes i preguntes: crear/modificar/esborrar enquestes, afegir/modificar/esborrar preguntes i opcions, importar enquestes des de JSON.
-- Classes provades: CtrlEnquesta a través de les invocacions de CtrlDomini; Pregunta, Opcio, Enquesta (estructura d'objectes) i validacions.
+joc de proves del Driver CtrlEnquesta
 
-Altres elements integrats a la prova:
-- Reutilització de CtrlDomini i CtrlPersistencia per emmagatzematge i validacions.
-- Parts del codi de Pregunta/Opcio s'executen i s'integren per comprovar interoperabilitat.
+---- JOC DE PROVA CAIXA GRISA ----
+Aquest joc de proves esta fet amb valors de la caixa grisa, es testeja tot el possible
 
-Fitxers de dades necessaris:
-- Exemple d'enquesta JSON: `exemple_enquesta_clustering.json` (ubicat a `ENTREGA/DOCS/`).
-- El fitxer conté la descripció estructurada de l'enquesta (id, títol, preguntes, opcions). El test d'import només llegeix i descarta si el format és invàlid.
+- Objecte de la prova:
+    Amb aquest joc de proves es proven els seguents casos d'us:
+      0: Tancar driver
+      1: Crear Enquesta
+      2: Modificar Enquesta
+      3: Esborrar Enquesta
+      4: Afegir Pregunta
+      5: Modificar Pregunta
+      6: Esborrar Pregunta
+      7: Afegir Opcio
+      8: Esborrar Opcio
+      9: Importar Enquesta
+  
+- Es comproven tant els fluxos correctes (happy paths) com multiples errors (duplicats, credencials incorrectes, parametres invalids).
 
-Valors estudiats:
-- run_tests.sh o .bat
-- Casos vàlids: crear enquesta amb id no existent,modificar títol d'enquetsa, modificar descripció d'enquesta, esborrar enquesta, afegir/modificar/esborrar preguntes de tots els tipus amb opcions correctes i importar enquesta.
-- Casos invàlids: intentar afegir enquestes duplicades, modificar/esborrar enquestes no existents, afegir preguntes duplicades, afegir opcions a preguntes numèriques, valors no numèrics on s'esperen números.
-- Estratègia: caixa blanca per validar rutes crítiques (existència d'IDs, rangs numèrics) i caixa negra per provar entrades mal formades (strings buits, ordres no numèrics).
+- Altres elements integrats a la prova:
+    - Reutilitzacio de CtrlDomini i CtrlPersistencia per emmagatzematge i validacions.
+    - Parts del codi de Pregunta/Opcio s'executen i s'integren per comprovar interoperabilitat.
 
-Efectes estudiats:
-- Comprovació de la interacció entre el driver i el model: llistats d'enquestes, visualització de preguntes i opcions, missatges d'error informatius.
-- Validacions en pantalla i reintents (p.ex. sol·licitar de nou un número si l'entrada no és vàlida).
+- Fitxers de dades necessaris:
+    - Exemple d'enquesta JSON: `exemple_enquesta_clustering.json` (ubicat a `ENTREGA/DOCS/`).
+    - El fitxer conte la descripcio estructurada de l'enquesta (id, titol, preguntes, opcions). El test d'import nomes llegeix i descarta si el format es invalid.
+    - Codi del driver Enquesta
+    - run_tests.sh / run_tests.bat (windows) per executar el joc de proves
 
-Operativa (ús ràpid):
-- Script d'execució: `ENTREGA/EXE/CtrlEnquesta/run_tests.sh`.
-- Execució des de la carpeta del script:
-  chmod +x run_tests.sh
-  ./run_tests.sh
-- El script crida la task Gradle `runCtrlEnquestaDriver` des de `ENTREGA/FONTS` i envia una seqüència d'inputs preparada. El fitxer `PROVA.txt` conté una execució d'exemple amb sortida capturada.
+- Valors estudiats:
+    - run_tests.sh o .bat (windows)
+    - La missio d'aquest arxiu es proporcionar valors per veure el bon funcionament del programa passant per totes les funcions
 
--Si desitjes executar el driver individualment:
- cd ENTREGA/FONTS
- ./gradlew runCtrlEnquestaDriver
+    - Comprova, en aquest ordre:
+        - Intentar esborrar una enquesta no existent (error esperat)
+            -Missio: Comprobar que fallara amb ids que no existeixen
+        
+        - Crear enquesta E1
+            -Missio: Comprobar que funciona la funcionalitat 
+        
+        - Intentar modificar titol d'una enquesta no existent (error esperat)
+            -Missio: Comprobar que falla si tenim un id no existent
+        
+        - Intentar modificar descripcio d'una enquesta no existent (error esperat)
+            -Missio: Comprobar que falla si tenim un id no existent
+        
+        - Modificar titol de E1
+            -Missio: Comprobar que funciona la funcionalitat modificar titol
+        
+        - Modificar descripcio de E1
+            -Missio: Comprobar que funciona la funcionalitat modificar descripcio
+        
+        - Intentar crear enquesta duplicada E1 (error esperat)
+            -Missio: Comprobar que no es poden crear dos enquestes amb mateix id
+        
+        - Afegir pregunta TEXT a E1
+            -Missio: Comprobar que funciona la relacio amb les preguntes de tipus TEXT
+        
+        - Afegir pregunta NUMERICA a E1 (amb bounds invalids primer, depois valids)
+            -Missio: Comprobar que funciona la relacio amb les preguntes de tipus NUMERICA
+        
+        - Afegir pregunta QUALITATIVA ORDENADA a E1 (i opcions amb ordre, ordre no numeric primer)
+            -Missio: Comprobar que funciona la relacio amb les preguntes de tipus QUALITATIVA_ORDENADA
+        
+        - Afegir pregunta QUALITATIVA SIMPLE a E1 (opcions sense ordre)
+            -Missio: Comprobar que funciona la relacio amb les preguntes de tipus QUALITATIVA_NO_ORDENADA_SIMPLE
+        
+        - Afegir pregunta QUALITATIVA MULTIPLE a E1 (maxim seleccions + opcions)
+            -Missio: Comprobar que funciona la relacio amb les preguntes de tipus QUALITATIVA_NO_ORDENADA_MULTIPLE
+        
+        - Intentar afegir pregunta duplicada a E1 (error esperat)
+            -Missio: Comprobar que no poden existir dos preguntes amb mateix id a una enquesta
+        
+        - Crear enquesta E2 per provar opcions amb titol/descripcio vacies
+            -Missio: La crearem per a probar una enquesta buida sense preguntes
+        
+        - Intentar modificar pregunta d'una enquesta no existent (error esperat)
+            -Missio: Comprobar que efectivament no deixa modificar preguntes si no existeix l'enquesta, i demana una enquesta valida
+        
+        - Intentar modificar pregunta que no existeix a E1 (error esperat)
+            -Missio: Comprobar que no deixa modificar preguntes no existents i demana per continuar una pregunta valida.
+        
+        - Modificar pregunta existenta (canviar text de Q_text)
+            -Missio: Comprobar que funciona la funcionalitat de modificar pregunta
+        
+        - Intentar eliminar pregunta que no existeix a E1 (error esperat)
+            -Missio: Comprobar que no deixa esborrar preguntes no existents i demana per continuar una pregunta valida.
+        
+        - Intentar afegir opcions a pregunta NUMERICA (error esperat)
+            -Missio: Comprobar que no deixa afegir opcions a tipus de preguntes que no n'accepten
+        
+        - Afegir una opcio manualment a pregunta QUALITATIVA ORDENADA (ordre numeric)
+            -Missio: Comprobar que funciona correctament la funcionalitat d'afegir opcions a preguntes concretes.
+        
+        - Intentar afegir opcio a pregunta TEXT (error esperat)
+            -Missio: Comprobar que no deixa afegir opcions a tipus de preguntes que no n'accepten
+        
+        - Eliminar una opcio existent
+            -Missio: Comprobar que funciona correctament la funcionalitat d'esborrar opcions de preguntes concretes
+        
+        - Intentar eliminar una opcio no existent (error esperat)
+            -Missio: Comprobar que no es pot eliminar una Opcio amb id no existent i que demanara un id valid per continuar.
+        
+        - Eliminar una pregunta (prova de seleccio invalida seguida d'una valida)
+            -Missio: Comprobar que funcionara eliminar pregunta nomes si la seleccio es valida. Demanara una seleccio valida per continuar
+        
+        - Consultar enquestes (veure estat final)
+            -Missio: Per veure que s'han aplicat les funcionalitats executades anteriorment.
+        
+        - Intentar importar enquesta amb ruta no valida (error esperat)
+            -Missio: Comprobar que fallara i imprimira el missatge d'error
+        
+        - Esborrar enquesta E1
+            -Missio: Comprobar que s'esborra correctament, i les seves preguntes i opcions tambe
+        
+        - Esborrar enquesta E2
+            -Missio: Comprobar que s'esborra correctament
+        
+        - Intentar esborrar de nou E1 (error esperat)
+            -Missio: Comprobar que efectivament s'ha esborrat, i no deixa esborrar una enquesta no existent.
+
+- Efectes estudiats:
+    - Comprovacio de la interaccio entre el driver i el model: llistats d'enquestes, visualitzacio de preguntes i opcions, missatges d'error informatius.
+    - Validacions en pantalla i reintents (p.ex. sol·licitar de nou un numero si l'entrada no es valida).
+    - Comprovacio d'interaccio entre enquesta i preguntes i opcions.
+
+- Operativa (us rapid):
+    - Script d'execucio: `ENTREGA/EXE/CtrlEnquesta/run_tests.sh`.
+    - Execucio des de la carpeta del script:
+      chmod +x run_tests.sh
+      ./run_tests.sh
+    - El script crida la task Gradle `runCtrlEnquestaDriver` des del directori `ENTREGA/FONTS` per llancar el driver automaticament. 
+    - La sortida mostra el pas a pas de les proves a l'arxiu PROVA.txt.
+
+
+    -Si desitges executar el driver individualment:
+    cd ENTREGA/FONTS
+    ./gradlew runCtrlEnquestaDriver
 
 Notes:
-- Per provar la importació, assegura't que `exemple_enquesta_clustering.json` està disponible en la ruta indicada (o canvia la ruta en el script a `ENTREGA/DOCS/exemple_enquesta_clustering.json`).
+- Per provar la importacio, assegura't que `exemple_enquesta_clustering.json` esta disponible en la ruta indicada (o canvia la ruta en el script a `ENTREGA/DOCS/exemple_enquesta_clustering.json`).
 - Pots executar el driver en mode interactiu amb `./gradlew runCtrlEnquestaDriver` i fer proves manuals.

@@ -1,0 +1,72 @@
+Index del directori: /migradlepoc/ENTREGA/EXE
+
+Resum:
+Aquest directori conte executables i fitxers relacionats amb la entrega.
+
+Entrades:
+1) index.txt
+    Descripcio: Fitxer de descripcio del directori i dels seus fitxers. Conté les instruccions d'ús i observacions.
+
+2) Carpeta CtrlAnalisi
+    Conte arxius per provar els jocs de prova i una descripció d'aquests:
+        run_tests.sh:
+            Descripcio: Script per linux per executar el joc de proves sobre CtrlAnalisiDriver
+            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
+            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
+        run_tests.bat:
+            Descripcio: Script per Windows per executar el joc de proves sobre CtrlEnquestaDriver
+            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.bat), i executar (./run_tests.bat)
+            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
+        PROVA.txt:
+            Descripcio: Fitxer amb la sortida del joc de proves
+            Com usar: Al executar el joc de proves, aquest fitxer capturarà la seva sortida
+        DESCRIPTION.txt:
+            Descripcio: Descripció sobre el driver i els jocs de prova testejats en ell
+
+3) Carpeta CtrlEnquesta
+    Conte arxius per provar els jocs de prova i una descripció d'aquests:
+        run_tests.sh:
+            Descripcio: Script per linux per executar el joc de proves sobre CtrlEnquestaDriver
+            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
+            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
+        run_tests.bat:
+            Descripcio: Script per Windows per executar el joc de proves sobre CtrlEnquestaDriver
+            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.bat), i executar (./run_tests.bat)
+            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
+        PROVA.txt:
+            Descripcio: Fitxer amb la sortida del joc de proves
+            Com usar: Al executar el joc de proves, aquest fitxer capturarà la seva sortida
+        DESCRIPTION.txt:
+            Descripcio: Descripció sobre el driver i els jocs de prova testejats en ell
+
+4) Carpeta CtrlResposta
+    Conte arxius per provar els jocs de prova i una descripció d'aquests:
+        run_tests.sh:
+            Descripcio: Script per linux per executar el joc de proves sobre CtrlRespostaDriver
+            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
+            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
+        run_tests.bat:
+            Descripcio: Script per Windows per executar el joc de proves sobre CtrlEnquestaDriver
+            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.bat), i executar (./run_tests.bat)
+            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
+        PROVA.txt:
+            Descripcio: Fitxer amb la sortida del joc de proves
+            Com usar: Al executar el joc de proves, aquest fitxer capturarà la seva sortida
+        DESCRIPTION.txt:
+            Descripcio: Descripció sobre el driver i els jocs de prova testejats en ell
+
+5) Carpeta CtrlUsuari
+    Conte arxius per provar els jocs de prova i una descripció d'aquests:
+        run_tests.sh:
+            Descripcio: Script per linux per executar el joc de proves sobre CtrlUsuariDriver
+            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
+            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
+        run_tests.bat:
+            Descripcio: Script per Windows per executar el joc de proves sobre CtrlEnquestaDriver
+            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.bat), i executar (./run_tests.bat)
+            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
+        PROVA.txt:
+            Descripcio: Fitxer amb la sortida del joc de proves
+            Com usar: Al executar el joc de proves, aquest fitxer capturarà la seva sortida
+        DESCRIPTION.txt:
+            Descripcio: Descripció sobre el driver i els jocs de prova testejats en ell

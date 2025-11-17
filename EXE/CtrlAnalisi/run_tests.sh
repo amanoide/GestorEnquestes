@@ -61,7 +61,7 @@ NOTA: El següent bloc heredoc conté únicament les entrades (inputs)
 que es passaran al driver.
 PLAN
 
-./gradlew runCtrlAnalisiDriver --no-daemon --quiet -q <<'EOF' > PROVA.txt 2>&1
+./gradlew runCtrlAnalisiDriver --no-daemon --quiet -q <<'EOF' > ../EXE/CtrlAnalisi/PROVA.txt 2>&1
 502
 noexist
 pwd1
