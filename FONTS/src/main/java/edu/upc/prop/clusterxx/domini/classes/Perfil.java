@@ -29,6 +29,8 @@ public class Perfil {
     private List<String> nomsPreguntes;
     /** Algoritme utilitzat per generar el perfil (KMeans, KMeans++, etc.) */
     private String algoritme;
+    /** Timestamp de quan es va crear el perfil */
+    private long timestamp;
 
     /**
      * Constructor bàsic de la classe Perfil (mantingut per compatibilitat)
@@ -39,6 +41,7 @@ public class Perfil {
         this.id = id;
         this.descripcion = descripcion;
         this.nomsPreguntes = new ArrayList<>();
+        this.timestamp = System.currentTimeMillis();
     }
     
     /**
@@ -67,6 +70,7 @@ public class Perfil {
         this.vectorCaracteristic = vectorCaracteristic;
         this.nomsPreguntes = new ArrayList<>(nomsPreguntes);
         this.algoritme = algoritme;
+        this.timestamp = System.currentTimeMillis();
     }
 
     // ========== Mètodes Útils ==========
