@@ -1,48 +1,3 @@
-Ejecutando pruebas automatizadas contra CtrlEnquestaDriver...
-Plan de proves (solo lectura):
-
-ENQUESTES:
-0) Intentar esborrar una enquesta no existent (error esperat)
-1) Crear enquesta E1
-2) Intentar modificar títol d'una enquesta no existent (error esperat)
-3) Intentar modificar descripció d'una enquesta no existent (error esperat)
-4) Modificar títol de E1
-5) Modificar descripció de E1
-6) Intentar crear enquesta duplicada E1 (error esperat)
-
-PREGUNTES - CREAR:
-7) Afegir pregunta TEXT a E1
-8) Afegir pregunta NUMÈRICA a E1 (amb bounds inválids primer, depois valids)
-9) Afegir pregunta QUALITATIVA ORDENADA a E1 (i opcions amb ordre, ordre no numèric primer)
-10) Afegir pregunta QUALITATIVA SIMPLE a E1 (opcions sense ordre)
-11) Afegir pregunta QUALITATIVA MÚLTIPLE a E1 (màxim seleccions + opcions)
-12) Intentar afegir pregunta duplicada a E1 (error esperat)
-13) Crear enquesta E2 per provar opcions amb títol/descripció vacies
-
-PREGUNTES - MODIFICAR I ELIMINAR:
-14) Intentar modificar pregunta d'una enquesta no existent (error esperat)
-15) Intentar modificar pregunta que no existeix a E1 (error esperat)
-16) Modificar pregunta existenta (canviar text de Q_text)
-17) Intentar eliminar pregunta que no existeix a E1 (error esperat)
-
-OPCIONS:
-18) Intentar afegir opcions a pregunta NUMÈRICA (error esperat)
-19) Afegir una opció manualment a pregunta QUALITATIVA ORDENADA (ordre numèric)
-20) Intentar afegir opció a pregunta TEXT (error esperat)
-21) Eliminar una opció existent
-22) Intentar eliminar una opció no existent (error esperat)
-
-ACCIONS FINALS:
-23) Eliminar una pregunta (prova de selecció invàlida seguida d'una válida)
-24) Consultar enquestes (veure estat final)
-25) Intentar importar enquesta amb ruta no valida (error esperat)
-26) Esborrar enquesta E1
-27) Esborrar enquesta E2
-28) Intentar esborrar de nou E1 (error esperat)
-0) Sortir
-
-NOTA: El següent bloc heredoc conté únicament les entrades (inputs)
-que es passaran al driver.
 Driver de testeig de CtrlEnquesta
 
 --- Menú CtrlEnquesta ---
@@ -79,8 +34,10 @@ Introdueix ID enquesta a esborrar:
 (10) Afegir Pregunta
 (11) Eliminar Pregunta
 (12) Modificar Pregunta
+S'HA PRODUÏT UN ERROR D'ENTRADA: Cannot invoke "edu.upc.prop.clusterxx.domini.classes.Enquesta.getTitol()" because "enquesta" is null
 (13) Afegir Opció a Pregunta
 (14) Eliminar Opció de Pregunta
+S'HA PRODUÏT UN ERROR D'ENTRADA: Cannot invoke "edu.upc.prop.clusterxx.domini.classes.Enquesta.getDescripcio()" because "enquesta" is null
 --- Consultores ---
 (20) Consultar Enquestes
 ------------------------
@@ -222,6 +179,7 @@ Introdueix descripció:
 (2) Modificar Títol Enquesta
 (3) Modificar Descripció Enquesta
 (4) Esborrar Enquesta
+S'HA PRODUÏT UN ERROR D'ENTRADA: Cannot invoke "edu.upc.prop.clusterxx.domini.classes.Enquesta.getPreguntes()" because "enquesta" is null
 (5) Importar enquesta
 --- Preguntes i Opcions ---
 (10) Afegir Pregunta
@@ -1051,4 +1009,3 @@ Introdueix ID enquesta a esborrar:
 (0|sortir) - Tancar driver
 Escull una opció: 
 Tancant el driver. Adéu!
-Proves completades. Revisa la sortida anterior per comprobar resultats.

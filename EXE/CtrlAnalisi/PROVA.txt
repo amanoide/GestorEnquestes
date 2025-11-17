@@ -1,49 +1,3 @@
-Ejecutando pruebas automatizadas contra CtrlAnalisiDriver...
-Plan de proves (solo lectura):
-
-SETUP INICIAL (realizado automàticament en init()):
-- Usuario admin mock: USER_MOCK / 1234
-- Encuesta mock creada con ID: 1 y todas las preguntes (text, numérica, cualitativa)
-- Usuaris mock con respostes: alice, bob, carla, dave (pwd1 tots)
-
-LOGIN Y MOCK SETUP:
-1) Intentar login con usuari inexistent (error esperat)
-2) Intentar login con password incorrect (error esperat)
-3) Login exitoso de alice / pwd1
-4) Cambiar a login de bob / pwd1
-5) Cambiar a login de carla / pwd1
-6) Cambiar a login de dave / pwd1
-7) Volver a login admin USER_MOCK / 1234
-
-ANÁLISIS SIN SUFICIENTES PARTICIPANTES:
-9) Consultar perfil sin haber sido analizado aun (error esperat)
-
-ANÁLISIS CON K MANUAL:
-10) Login alice / pwd1
-11) Veure meu perfil (vacio aun)
-12) Analizar enquesta 1 con k manual (seleccionar k=2, algoritmo KMeans)
-13) Volver a admin y veure perfil de alice (deberia tener perfil ahora)
-
-ANÁLISIS CON K ALEATORIO:
-14) Login bob / pwd1
-15) Analizar enquesta 1 con k aleatorio (algoritmo KMeans++)
-16) Veure meu perfil (deberia mostrar el resultado del clustering)
-
-ANÁLISIS CON K AUTOMÁTICO (SILHOUETTE):
-17) Login carla / pwd1
-18) Analizar enquesta 1 con k automático (buscar óptimo, algoritmo KMedoids)
-19) Veure meu perfil
-
-INTENTOS DE ERROR:
-20) Intentar analizar enquesta no existente (error esperat)
-21) Importar enquesta desde ruta no valida (error esperat)
-22) Importar respostes desde ruta no valida (error esperat)
-
-FINALIZAR:
-0) Sortir
-
-NOTA: El següent bloc heredoc conté únicament les entrades (inputs)
-que es passaran al driver.
 ✓ Login correcte!
 ✓ Enquesta mock registrada correctament en CtrlDomini
 ✓ Respostes mock registrades per usuari: alice
@@ -246,35 +200,35 @@ Escull (1-3):
 📊 Algoritme: KMeans
 📊 Nombre de clusters: 2
 📊 Participants analitzats: 4
-📊 Coeficient Silhouette global: 0.056
+📊 Coeficient Silhouette global: 0.012
    Qualitat: Pobra (clusters poc definits)
 
 ┌─ CLUSTER 1 ─┐
-│ Mida: 3 participants
-│ Silhouette: 0.075
+│ Mida: 2 participants
+│ Silhouette: 0.037
 │ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: no
-│   PREGUNTA NUMERICA: 36.666666666666664
+│   PREGUNTA DE TEXT LLIURE: interessant
+│   PREGUNTA NUMERICA: 33.5
 │   PREGUNTA QUALITATIVA: OPCIO2
 │   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
 │   PREGUNTA QUALITATIVA MULTIPLE: 0,1
 │ Membres:
 │   - alice
-│   - dave
-│   - bob
+│   - carla
 └──────────────────────────────────────────────────┘
 
 ┌─ CLUSTER 2 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
+│ Mida: 2 participants
+│ Silhouette: -0.013
 │ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: interessant
-│   PREGUNTA NUMERICA: 42.0
-│   PREGUNTA QUALITATIVA: OPCIO1
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
-│   PREGUNTA QUALITATIVA MULTIPLE: 2
+│   PREGUNTA DE TEXT LLIURE: no
+│   PREGUNTA NUMERICA: 42.5
+│   PREGUNTA QUALITATIVA: OPCIO3
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO3
+│   PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
 │ Membres:
-│   - carla
+│   - dave
+│   - bob
 └──────────────────────────────────────────────────┘
 
 ✓ Anàlisi completada i perfils assignats!
@@ -303,12 +257,12 @@ Tens 1 perfil(s) assignat(s):
 Perfil del Cluster 1: Grup Alt
 Enquesta: 1
 Algoritme: KMeans
-Mida del cluster: 3 membres
-Qualitat (Silhouette): 0.075
+Mida del cluster: 2 membres
+Qualitat (Silhouette): 0.037
 
 Característiques:
-  - PREGUNTA DE TEXT LLIURE: no
-  - PREGUNTA NUMERICA: 36.666666666666664
+  - PREGUNTA DE TEXT LLIURE: interessant
+  - PREGUNTA NUMERICA: 33.5
   - PREGUNTA QUALITATIVA: OPCIO2
   - PREGUNTA QUALITATIVA SIMPLE: OPCIO1
   - PREGUNTA QUALITATIVA MULTIPLE: 0,1
@@ -371,21 +325,6 @@ Escull (1-3):
    Qualitat: Pobra (clusters poc definits)
 
 ┌─ CLUSTER 1 ─┐
-│ Mida: 3 participants
-│ Silhouette: 0.133
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: interessant
-│   PREGUNTA NUMERICA: 24.0
-│   PREGUNTA QUALITATIVA: OPCIO2
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,1
-│ Membres:
-│   - alice
-│   - carla
-│   - dave
-└──────────────────────────────────────────────────┘
-
-┌─ CLUSTER 2 ─┐
 │ Mida: 1 participants
 │ Silhouette: 0.000
 │ Perfil característic:
@@ -396,6 +335,21 @@ Escull (1-3):
 │   PREGUNTA QUALITATIVA MULTIPLE: OPCIO1,OPCIO3
 │ Membres:
 │   - bob
+└──────────────────────────────────────────────────┘
+
+┌─ CLUSTER 2 ─┐
+│ Mida: 3 participants
+│ Silhouette: 0.133
+│ Perfil característic:
+│   PREGUNTA DE TEXT LLIURE: interessant
+│   PREGUNTA NUMERICA: 24.0
+│   PREGUNTA QUALITATIVA: OPCIO1
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
+│   PREGUNTA QUALITATIVA MULTIPLE: 2
+│ Membres:
+│   - alice
+│   - carla
+│   - dave
 └──────────────────────────────────────────────────┘
 
 ✓ Anàlisi completada i perfils assignats!
@@ -421,7 +375,7 @@ Escull una opció:
 Tens 1 perfil(s) assignat(s):
 
 ═══ PERFIL 1 ═══
-Perfil del Cluster 2: Grup Alt
+Perfil del Cluster 1: Grup Alt
 Enquesta: 1
 Algoritme: KMeans++
 Mida del cluster: 1 membres
@@ -602,34 +556,34 @@ Escull (1-3):
 📊 Algoritme: KMeans
 📊 Nombre de clusters: 2
 📊 Participants analitzats: 4
-📊 Coeficient Silhouette global: 0.012
+📊 Coeficient Silhouette global: 0.100
    Qualitat: Pobra (clusters poc definits)
 
 ┌─ CLUSTER 1 ─┐
-│ Mida: 2 participants
-│ Silhouette: 0.037
+│ Mida: 3 participants
+│ Silhouette: 0.133
 │ Perfil característic:
 │   PREGUNTA DE TEXT LLIURE: interessant
-│   PREGUNTA NUMERICA: 33.5
+│   PREGUNTA NUMERICA: 24.0
 │   PREGUNTA QUALITATIVA: OPCIO2
 │   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
 │   PREGUNTA QUALITATIVA MULTIPLE: 0,1
 │ Membres:
 │   - alice
 │   - carla
+│   - dave
 └──────────────────────────────────────────────────┘
 
 ┌─ CLUSTER 2 ─┐
-│ Mida: 2 participants
-│ Silhouette: -0.013
+│ Mida: 1 participants
+│ Silhouette: 0.000
 │ Perfil característic:
 │   PREGUNTA DE TEXT LLIURE: no
-│   PREGUNTA NUMERICA: 42.5
-│   PREGUNTA QUALITATIVA: OPCIO3
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO3
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
+│   PREGUNTA NUMERICA: 80.0
+│   PREGUNTA QUALITATIVA: OPCIO4
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO2
+│   PREGUNTA QUALITATIVA MULTIPLE: OPCIO1,OPCIO3
 │ Membres:
-│   - dave
 │   - bob
 └──────────────────────────────────────────────────┘
 
@@ -687,4 +641,3 @@ CREACIÓ DE MOCKS:
 (0|sortir) - Tancar driver
 Escull una opció: 
 Tancant el driver. Adéu!
-Proves completadas. Revisa la sortida anterior per comprobar resultats.

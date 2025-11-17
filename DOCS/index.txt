@@ -1,12 +1,30 @@
-Practica de prop...
+DIRECTORI: ENTREGA/DOCS
 
+Descripcio: Documentacio del projecte - Sistema de Gestio d'Enquestes amb Clustering
 
-fitxers i directoris del projecte:
-
-membres.txt
-
+Contingut:
 
 index.txt
+  Aquest fitxer. Index del directori DOCS amb diagrama d'arquitectura.
 
-docs(algorismes(Estructura triada i justificació,comentar alternativas, complejidad de la estructura), descripcio de casos d'us(actor,comportament,errors possibles i cursos alternatius))
-....
+membres.txt
+  Llista dels membres del grup amb informacio de contacte.
+
+autoria.txt
+  Documentacio detallada de l'autoria de cada fitxer del projecte.
+  Inclou classes del domini, controladors, drivers i tests amb els
+  seus respectius autors.
+
+INSTRUCCIONS_COMPILACIO.md
+  Instruccions detallades per compilar i executar el projecte.
+  Inclou requisits del sistema (Java 21, JUnit 4), opcions de compilacio
+  amb Gradle i solucio de problemes comuns.
+
+exemple_enquesta_clustering.json
+  Fitxer d'exemple en format JSON per importar una enquesta de prova.
+  Conté preguntes de diferents tipus (text, numerica, qualitativa ordenada,
+  qualitativa simple i qualitativa multiple) per testejar el sistema.
+
+exemple_resposta_clustering.json
+  Fitxer d'exemple en format JSON amb respostes d'usuaris per a l'enquesta.
+  Utilitzat per provar la funcionalitat de clustering i analisi de perfils.
