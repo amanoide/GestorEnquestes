@@ -73,7 +73,7 @@ echo /ruta/no/valida/enquesta.json
 echo 501
 echo /ruta/no/valida/resposta.json
 echo 0
-) | gradlew runCtrlAnalisiDriver --no-daemon --quiet -q > PROVA.txt 2>&1
+) | gradlew runCtrlAnalisiDriver --no-daemon --quiet -q > ..\EXE\CtrlAnalisi\PROVA.txt 2>&1
 
 echo.
 echo Pruebas completadas. Revisa la salida anterior para comprobar resultados.

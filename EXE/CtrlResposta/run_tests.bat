@@ -86,7 +86,7 @@ echo ../DOCS/exemple_resposta_clustering.json
 echo 5
 echo 2
 echo 0
-) | gradlew runCtrlRespostaDriver --no-daemon --quiet -q > PROVA.txt 2>&1
+) | gradlew runCtrlRespostaDriver --no-daemon --quiet -q > ..\EXE\CtrlResposta\PROVA.txt 2>&1
 
 echo.
 echo Pruebas completadas. Revisa la salida anterior para comprobar resultados.

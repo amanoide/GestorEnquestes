@@ -1,0 +1,80 @@
+joc de proves del Driver CtrlUsuari
+
+---- JOC DE PROVA CAIXA GRISA ----
+Aquest joc de proves esta fet amb valors de la caixa grisa, es testeja tot el possible
+
+- Objecte de la prova:
+    Amb aquest joc de proves es proven els seguents casos d'us:
+      0: Tancar driver
+      1: Registrar Usuari(creacio)
+      2: Loggin Usuari
+      3: Logout Usuari
+      4: Esborrar Usuari
+      5: Consulta Usuari actual
+
+    - Es comproven tant els fluxos correctes (happy paths) com multiples errors (duplicats, credencials incorrectes, parametres invalids).
+
+- Altres elements integrats a la prova:
+    - CtrlDomini: la capa de domini conte la logica real de validacions i persistencia; el driver de proves invoca CtrlDomini per exercitar-la.
+    - CtrlPersistencia (in-memory): s'usa per emmagatzemar temporalment els usuaris durant la prova.
+
+- Fitxers de dades necessaris:
+    - Codi del Driver
+    - run_tests.sh / run_tests.bat (windows) per executar el joc de proves
+
+- Valors estudiats:
+    - run_tests.sh o .bat (windows)
+    - La missio d'aquest arxiu es proporcionar valors per veure el bon funcionament del programa passant per totes les funcions
+
+    - Comprova, en aquest ordre:
+        - Registrar usuari valid: auto1 / pwd1
+            -Missio: comprovar la creacio de nous usuaris amb credencials valides
+        - Intent de registrar duplicat: auto1 / pwd1
+            -Missio: comprovar que no es poden crear dos usuaris amb mateix username
+        - Intent de registrar invalid (username vacio, pwd corta)
+            -Missio: comprovar la reaccio a valors buits
+        - Login correcte: auto1 / pwd1
+            -Missio: comprovar que l'usuari s'havia guardat i es pot registrar
+        - Consultar usuari actual (deberia ser auto1)
+            -Missio: per comprovar que efectivament, l'user anterior s'ha loggejat correctament
+        - Logout de auto1
+            -Missio: comprovar el correcte funcionament de la funcio
+        - Login amb contrasenya incorrecta (error esperat)
+            -Missio: comprovar que no es pot fer el login d'un usuari si no sabem la seva contrasenya
+        - Login amb usuari inexistent (error esperat)
+            -Missio: comprovar que no es pot fer login si l'usuari no ha estat registrat
+        - Intent de registrar amb username molt curt "a" (error esperat)
+            -Missio: comprovacio de limits a la creacio d'usuaris en aquest cas username
+        - Intent de registrar amb contrasenya molt curta "p" (error esperat)
+            -Missio: comprovacio de limits a la creacio d'usuaris en aquest cas password
+        - Registrar un altre usuari valid: auto2 / pwd1
+            -Missio: per a comprovar l'esborrat d'usuaris mentre loggejat
+        - Login correcte de auto2
+            -Missio: per a comprovar l'esborrat d'usuaris mentre loggejat
+        - Borrar auto2 mente esta loguejat
+            -Missio: comprovar que funciona la funcio d'esborrat
+        - Consultar usuari actual final
+            -Missio: comprovar que efectivament l'usuari que s'ha esborrat tambe ha fet logout
+    
+- Efectes estudiats:
+    - Missatges d'error i d'exit a la consola.
+    - Estat intern: usuari actual (login/logout) i efectes persistents d'operacions (registre, esborrat).
+    - Robustesa del flux interactiu davant d'entrades inesperades (text on s'espera numero, linies buides).
+    
+
+
+- Operativa (us rapid):
+    - Script d'execucio: `ENTREGA/EXE/CtrlUsuari/run_tests.sh`.
+    - Instruccions: des del directori `ENTREGA/EXE/CtrlUsuari`:
+      chmod +x run_tests.sh
+      ./run_tests.sh
+    - El script crida la task Gradle `runCtrlUsuariDriver` des del directori `ENTREGA/FONTS` per llancar el driver automaticament. 
+    - La sortida mostra el pas a pas de les proves a l'arxiu PROVA.txt.
+
+
+- Si desitjes executar el driver individualment:
+    cd ENTREGA/FONTS
+    ./gradlew runCtrlUsuariDriver
+
+- Notes:
+    - Si vols inputs diferents o escenaris nous, edita el heredoc dins de `run_tests.sh` o executa `./gradlew runCtrlUsuariDriver` manualment per fer proves interactives.

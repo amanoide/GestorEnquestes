@@ -60,7 +60,7 @@ NOTA: El següent bloc heredoc conté únicament les entrades (inputs)
 que es passaran al driver.
 PLAN
 
-./gradlew runCtrlEnquestaDriver --no-daemon --quiet -q <<'EOF' > PROVA.txt 2>&1
+./gradlew runCtrlEnquestaDriver --no-daemon --quiet -q <<'EOF' > ../EXE/CtrlEnquesta/PROVA.txt 2>&1
 4
 NOEX
 1

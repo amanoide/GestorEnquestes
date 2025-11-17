@@ -1,0 +1,103 @@
+joc de proves del Driver CtrlAnalisi
+
+---- JOC DE PROVA CAIXA GRISA ----
+Aquest joc de proves esta fet amb valors de la caixa grisa, es testeja tot el possible
+
+- Objecte de la prova:
+    Amb aquest joc de proves es proven els seguents casos d'us:
+      0: Tancar driver
+      1: Analisi clustering k manual
+      2: Analisi clustering aleatori
+      3: Analisi clustering automatic (Silhouette el proporciona)
+      4: Analisi cluster KMeans
+      5: Analisi cluster KMeans++
+      6: Analisi cluster KMedoids
+      4: visualitzacio de resultats
+      5: Generacio de perfils
+  
+    - Es comproven tant els fluxos correctes (happy paths) com multiples errors (duplicats, credencials incorrectes, parametres invalids).
+
+- Altres elements integrats a la prova:
+    - (CtrlResposta i CtrlEnquesta) a partir de CtrlDomini: respostes i estructures d'enquesta generades i reutilitzades per l'analisi.
+    - Algoritmes de clustering (KMeans, KMedoids, KMeans++) — el driver comprova la integracio i la correcta interpretacio de resultats.
+
+- Fitxers de dades necessaris:
+    - Opcional: `ENTREGA/DOCS/exemple_enquesta_clustering.json` i `ENTREGA/DOCS/exemple_resposta_clustering.json` per provar importacions reals; si no existeixen, el driver crea enquestes/respostes mock a init().
+    - run_tests.sh / run_tests.bat (windows) per executar el joc de proves
+
+- Valors estudiats:
+    - run_tests.sh o .bat (windows)
+    - La missio d'aquest arxiu es proporcionar valors per veure el bon funcionament del programa passant per totes les funcions
+
+    - Comprova, en aquest ordre:
+    
+        - Intents de login
+            -Missio: comprobar que s'han creat be els usuaris mock
+        ...
+        ...
+        ...
+        - Consultar perfil sense haber sigut analitzat encara (error esperat)
+            -Missio: Comprobar que un usuari no tindra un perfil i es llenca el missatge d'error si no s'ha analitzat cap resposta seva
+        
+        - Login alice / pwd1
+            -Missio: Servira per comprobar el perfil d'un usuari que ha contestat una enquesta per KMeans
+        
+        - Veure meu perfil (vacio aun)
+            -Missio: Comprobar que te resposta pero no te perfil perque no s'ha realitzat un analisi
+        
+        - Analitzar enquesta 1 amb k manual (seleccionar k=2, algoritme KMeans)
+            -Missio: Comprobar el bon funcionament de la k manual i de l'algoritme KMeans.
+        
+        - Veure perfil de alice
+            -Missio: Veure que l'alice ara si que te un perfil assignat
+
+        - Login bob / pwd1
+            -Missio: Servira per comprobar el perfil d'un usuari que ha contestat una enquesta per KMeans++
+        
+        - Analitzar enquesta 1 amb k aleatori (algoritme KMeans++)
+            -Missio: Comprobar el bon funcionament de la k aleatoria i de l'algoritme KMeans++.
+        
+        - Veure meu perfil
+            -Missio: Veure que al bob se li ha generat un perfil amb KMeans++
+        
+        - Login carla / pwd1
+            -Missio: Servira per comprobar el perfil d'un usuari que ha contestat una enquesta per KMedoids
+        
+        - Analitzar enquesta 1 amb k automatic (buscar optim, algoritmo KMedoids)
+            -Missio: Comprobar el bon funcionament de la k automatica i de l'algoritme KMedoids.
+        
+        - Veure meu perfil
+            -Missio: Veure que a la carla se li ha generat un perfil gracies a l'algoritme KMedoids.
+
+        - Intentar analizar enquesta no existent (error esperat)
+            -Missio: Comprobar que no es pot escollir una enquesta no existent per analitzar i que demanara un valor valid.
+        
+        - Importar enquesta desde ruta no valida (error esperat)
+            -Missio: Comprobar que fallara i imprimira el missatge d'error
+        
+        - Importar respostes desde ruta no valida (error esperat)
+            -Missio: Comprobar que fallara i imprimira el missatge d'error
+
+- Efectes estudiats:
+    - Resultats de clustering: nombre de clusters, mida, silhouette global i per cluster, centroides (perfil caracteristic) i llistat de membres.
+    - Efectes secundaris: perfils d'usuari assignats i persistencia temporal d'aquests perfils a l'usuari actual.
+    - Missatges d'error i d'exit a la consola.
+
+- Operativa (us rapid):
+    - Script d'execucio: `ENTREGA/EXE/CtrlAnalisi/run_tests.sh`.
+    - Execucio:
+      cd ENTREGA/EXE/CtrlAnalisi
+      chmod +x run_tests.sh
+      ./run_tests.sh
+    
+    
+    - El script crida la task Gradle `runCtrlAnalisiDriver` des del directori `ENTREGA/FONTS` per llancar el driver automaticament. 
+    - La sortida mostra el pas a pas de les proves a l'arxiu PROVA.txt.
+    - El driver creara usuaris i respostes mock; el script prova diversos modes d'eleccio de k i algorismes.
+
+    -Si desitjes executar el driver individualment:
+    cd ENTREGA/FONTS
+    ./gradlew runCtrlAnalisiDriver
+
+Notes:
+- Si vols provar amb dades reals, col·loca els fitxers JSON de mostra a `ENTREGA/DOCS/` i indica la ruta quan el driver ho demani.

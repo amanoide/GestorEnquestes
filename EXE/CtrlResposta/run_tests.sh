@@ -31,24 +31,25 @@ USUARIS I LOGIN:
 CONTESTAR ENCUESTA:
 7) Bob contesta enquesta 1 todas les preguntes (text, numérica, opcions)
 8) Bob contesta enquesta 1 todas les preguntes con respuestas distintas(error esperat - ya contestada)
-9) Alice intenta contestar de nuevo (modificar)
-10) Intento de contestar enquesta no existent (error esperat)
+9) Intento de contestar enquesta no existent (error esperat)
 
 MODIFICAR RESPOSTA:
-11) Modificar una resposta de Bob (cambiar valor)
-12) Intento de modificar resposta que no existeix (error esperat)
+10) Modificar una resposta de Bob (cambiar valor)
+11) Intento de modificar resposta que no existeix (error esperat)
 
 ESBORRAR RESPOSTA:
-13) Esborrar una resposta de bob
+12) Esborrar una resposta de bob
 
 CONSULTAR RESPOSTES:
-14) Consultar respostes de enquesta 1 (veure estat final)
-15) Consultar respostes de enquesta no existent (error esperat)
+13) Consultar respostes de enquesta 1 (veure estat final)
+14) Consultar respostes de enquesta no existent (error esperat)
 
 IMPORTAR RESPOSTES:
-16) Importar respostes desde fitxer a enquesta no existent(si existe DOCS/exemple_resposta_clustering.json)
-17) Intento de importar desde ruta no valida (error esperat)
+15) Importar respostes desde fitxer a enquesta no existent(si existe DOCS/exemple_resposta_clustering.json)
+16) Intento de importar desde ruta no valida (error esperat)
+17) Importar enquesta desde fitxer
 18) Importar respostes desde fitxer a enquesta existent (si existe DOCS/exemple_resposta_clustering.json)
+19) Llistar respostes importades
 
 FINALIZAR:
 0) Sortir
@@ -57,7 +58,7 @@ NOTA: El següent bloc heredoc conté únicament les entrades (inputs)
 que es passaran al driver.
 PLAN
 
-./gradlew runCtrlRespostaDriver --no-daemon --quiet -q <<'EOF' > PROVA.txt 2>&1
+./gradlew runCtrlRespostaDriver --no-daemon --quiet -q <<'EOF' > ../EXE/CtrlResposta/PROVA.txt 2>&1
 501
 alice
 pwd1

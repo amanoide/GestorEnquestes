@@ -1,50 +1,3 @@
-Ejecutando pruebas automatizadas contra CtrlRespostaDriver...
-Plan de proves (solo lectura):
-
-SETUP INICIAL (realizado automàticament en init()):
-- Usuario mock creado: USER_MOCK / 1234
-- Encuesta mock creada con ID: 1
-
-USUARIS I LOGIN:
-1) Crear usuario mock: alice / pwd1
-2) Crear usuario mock: bob / pwd1
-3) Login de alice / pwd1
-4) Logout i login como bob / pwd1
-5) Intento de login con credenciales incorrectas (error esperat)
-6) Intento de login de usuario no existente (error esperat)
-
-CONTESTAR ENCUESTA:
-7) Alice contesta enquesta 1 todas les preguntes (text, numérica, opcions)
-8) Bob contesta enquesta 1 todas les preguntes con respuestas distintas
-9) Alice intenta contestar de nuevo (modificar)
-10) Intento de contestar enquesta no existent (error esperat)
-11) Contestar con respuesta vacía a pregunta (error esperat si está validada)
-
-MODIFICAR RESPOSTA:
-12) Modificar una resposta de alice (cambiar valor)
-13) Intento de modificar resposta de usuario distinto (error esperat - permisos)
-14) Intento de modificar resposta que no existeix (error esperat)
-15) Intento de modificar resposta de enquesta no existent (error esperat)
-
-ESBORRAR RESPOSTA:
-16) Esborrar una resposta de bob
-17) Intento de esborrar resposta que no existeix (error esperat)
-18) Intento de esborrar resposta de usuario distinkt (error esperat)
-19) Intento de esborrar resposta de enquesta no existent (error esperat)
-
-CONSULTAR RESPOSTES:
-20) Consultar respostes de enquesta 1 (veure estat final)
-21) Consultar respostes de enquesta no existent (error esperat)
-
-IMPORTAR RESPOSTES:
-22) Importar respostes desde fitxer (si existe DOCS/exemple_resposta_clustering.json)
-23) Intento de importar desde ruta no valida (error esperat)
-
-FINALIZAR:
-0) Sortir
-
-NOTA: El següent bloc heredoc conté únicament les entrades (inputs)
-que es passaran al driver.
 ✓ Login correcte!
 ✓ Enquesta mock registrada correctament en CtrlDomini
 Driver de testeig de CtrlResposta
@@ -179,7 +132,7 @@ AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA
 
 ➤ PREGUNTA DE TEXT LLIURE
   Resposta: ➤ PREGUNTA NUMERICA
-  Valor (0.0-120.0):   ❌ Si us plau, introdueix un número vàlid: ➤ PREGUNTA QUALITATIVA
+  Valor (0.0-120.0): ➤ PREGUNTA QUALITATIVA
   1. OPCIO1
   2. OPCIO2
   3. OPCIO3
@@ -215,8 +168,6 @@ Escull una opció:
 Enquestes disponibles:
 1. ENQUESTA_MOCK (ID: 1)
 
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
-
 Escull enquesta (número): 
 ─── ENQUESTA_MOCK ───
 AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA
@@ -228,8 +179,6 @@ AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA
   2. OPCIO2
   3. OPCIO3
   4. OPCIO4
-  Escull opció (1-4):   ❌ Si us plau, introdueix un número vàlid
-  Escull opció (1-4):   ❌ Opció no vàlida. Tria entre 1 i 4
   Escull opció (1-4): ➤ PREGUNTA QUALITATIVA SIMPLE
   1. OPCIO0
   2. OPCIO1
@@ -260,6 +209,10 @@ Escull una opció:
 Enquestes disponibles:
 1. ENQUESTA_MOCK (ID: 1)
 
+Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
+
+Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
+
 Escull enquesta (número): 
 ─── ENQUESTA_MOCK ───
 AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA
@@ -276,8 +229,6 @@ AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA
   2. OPCIO1
   3. OPCIO2
   4. OPCIO3
-  Escull opció (1-4):   ❌ Opció no vàlida. Tria entre 1 i 4
-  Escull opció (1-4):   ❌ Si us plau, introdueix un número vàlid
   Escull opció (1-4): ➤ PREGUNTA QUALITATIVA MULTIPLE
   0. OPCIO0
   1. OPCIO1
@@ -298,36 +249,6 @@ CREACIÓ DE MOCKS:
 ------------------------
 (0|sortir) - Tancar driver
 Escull una opció: 
-Valor invàlid
-
---- Menú CtrlResposta ---
-(1) Contestar enquesta
-(2) Modificar Resposta
-(3) Esborrar Resposta
-(4) Importar Respostes des de Fitxer
-(5) Consultar Respostes
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Crear Usuari Mock (per provar respostes)
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-Valor invàlid
-
---- Menú CtrlResposta ---
-(1) Contestar enquesta
-(2) Modificar Resposta
-(3) Esborrar Resposta
-(4) Importar Respostes des de Fitxer
-(5) Consultar Respostes
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Crear Usuari Mock (per provar respostes)
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
 ----MODIFICAR RESPOSTA----
 Enquestes disponibles:
 1. ENQUESTA_MOCK (ID: 1)
@@ -356,42 +277,10 @@ SELECCIONA UNA PREGUNTA PER MODIFICAR LA SEVA RESPOSTA:
    3. OPCIO2
    4. OPCIO3
 
-Escull número de pregunta (1-5): ❌ Si us plau, introdueix un número vàlid.
-Torna a intentar: ❌ Si us plau, introdueix un número vàlid.
-Torna a intentar: 
-─── NOVA RESPOSTA PARA: PREGUNTA NUMERICA ───
+Escull número de pregunta (1-5): 
+─── NOVA RESPOSTA PARA: PREGUNTA DE TEXT LLIURE ───
 
-Introdueix nova resposta numèrica (0.0-120.0): ✓ Resposta modificada correctament!
-
---- Menú CtrlResposta ---
-(1) Contestar enquesta
-(2) Modificar Resposta
-(3) Esborrar Resposta
-(4) Importar Respostes des de Fitxer
-(5) Consultar Respostes
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Crear Usuari Mock (per provar respostes)
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-Valor invàlid
-
---- Menú CtrlResposta ---
-(1) Contestar enquesta
-(2) Modificar Resposta
-(3) Esborrar Resposta
-(4) Importar Respostes des de Fitxer
-(5) Consultar Respostes
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Crear Usuari Mock (per provar respostes)
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-Valor invàlid
+Introdueix la nova resposta: ✓ Resposta modificada correctament!
 
 --- Menú CtrlResposta ---
 (1) Contestar enquesta
@@ -409,10 +298,6 @@ Escull una opció:
 ----MODIFICAR RESPOSTA----
 Enquestes disponibles:
 1. ENQUESTA_MOCK (ID: 1)
-
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
-
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
 
 Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
 
@@ -442,19 +327,11 @@ SELECCIONA UNA PREGUNTA PER MODIFICAR LA SEVA RESPOSTA:
    3. OPCIO2
    4. OPCIO3
 
-Escull número de pregunta (1-5): ❌ Si us plau, introdueix un número vàlid.
-Torna a intentar: ❌ Selecció no vàlida. Tria entre 1 i 5
-Torna a intentar: ❌ Si us plau, introdueix un número vàlid.
-Torna a intentar: ❌ Si us plau, introdueix un número vàlid.
+Escull número de pregunta (1-5): ❌ Selecció no vàlida. Tria entre 1 i 5
 Torna a intentar: 
-─── NOVA RESPOSTA PARA: PREGUNTA QUALITATIVA ───
+─── NOVA RESPOSTA PARA: PREGUNTA DE TEXT LLIURE ───
 
-Selecciona una opció:
-1. OPCIO1
-2. OPCIO2
-3. OPCIO3
-4. OPCIO4
-Escull opció (1-4): ✓ Resposta modificada correctament!
+Introdueix la nova resposta: ✓ Resposta modificada correctament!
 
 --- Menú CtrlResposta ---
 (1) Contestar enquesta
@@ -469,7 +346,33 @@ CREACIÓ DE MOCKS:
 ------------------------
 (0|sortir) - Tancar driver
 Escull una opció: 
-Valor invàlid
+
+════ CONSULTAR RESPOSTES D'UNA ENQUESTA ════
+
+Enquestes disponibles:
+1. ENQUESTA_MOCK (ID: 1)
+
+Escull enquesta (número): 
+═══════════════════════════════════════
+RESPOSTES DE L'ENQUESTA: ENQUESTA_MOCK
+ID: 1
+═══════════════════════════════════════
+
+── Pregunta ID: 1 ──
+Usuari: bob | Resposta: text nou
+
+── Pregunta ID: 2 ──
+Usuari: bob | Resposta: 50
+
+── Pregunta ID: 3 ──
+Usuari: bob | Resposta: OPCIO1
+
+── Pregunta ID: 4 ──
+Usuari: bob | Resposta: OPCIO0
+
+── Pregunta ID: 5 ──
+Usuari: bob | Resposta: 1,2
+
 
 --- Menú CtrlResposta ---
 (1) Contestar enquesta
@@ -488,18 +391,6 @@ Escull una opció:
 EBORRARÀS LA RESPOSTADEL USUÀRI AMB EL QUE ESTAS LOGGEJAT
 Enquestes disponibles:
 1. ENQUESTA_MOCK (ID: 1)
-
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
-
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
-
-Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
-
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
-
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
-
-Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
 
 Escull enquesta (número): 
 ─── ENQUESTA_MOCK ───
@@ -525,7 +416,7 @@ AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA
 
 ⚠️ Estàs a punt d'esborrar la resposta d'aquesta pregunta.
 
-¿Estàs segur que vols esborrar aquesta resposta? (S/N): ℹ️ Acció cancel·lada.
+¿Estàs segur que vols esborrar aquesta resposta? (S/N): ✓ Resposta esborrada correctament!
 
 --- Menú CtrlResposta ---
 (1) Contestar enquesta
@@ -540,7 +431,66 @@ CREACIÓ DE MOCKS:
 ------------------------
 (0|sortir) - Tancar driver
 Escull una opció: 
-Valor invàlid
+
+════ CONSULTAR RESPOSTES D'UNA ENQUESTA ════
+
+Enquestes disponibles:
+1. ENQUESTA_MOCK (ID: 1)
+
+Escull enquesta (número): 
+═══════════════════════════════════════
+RESPOSTES DE L'ENQUESTA: ENQUESTA_MOCK
+ID: 1
+═══════════════════════════════════════
+
+── Pregunta ID: 1 ──
+
+── Pregunta ID: 2 ──
+
+── Pregunta ID: 3 ──
+
+── Pregunta ID: 4 ──
+
+── Pregunta ID: 5 ──
+
+
+--- Menú CtrlResposta ---
+(1) Contestar enquesta
+(2) Modificar Resposta
+(3) Esborrar Resposta
+(4) Importar Respostes des de Fitxer
+(5) Consultar Respostes
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Crear Usuari Mock (per provar respostes)
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+════ CONSULTAR RESPOSTES D'UNA ENQUESTA ════
+
+Enquestes disponibles:
+1. ENQUESTA_MOCK (ID: 1)
+
+Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
+
+Escull enquesta (número): 
+═══════════════════════════════════════
+RESPOSTES DE L'ENQUESTA: ENQUESTA_MOCK
+ID: 1
+═══════════════════════════════════════
+
+── Pregunta ID: 1 ──
+
+── Pregunta ID: 2 ──
+
+── Pregunta ID: 3 ──
+
+── Pregunta ID: 4 ──
+
+── Pregunta ID: 5 ──
+
 
 --- Menú CtrlResposta ---
 (1) Contestar enquesta
@@ -559,8 +509,17 @@ Escull una opció:
 TOTS ELS USUÀRIS QUE NO EXISTEIXIN PRÈVIAMENT ES CREARAN AMB PASSWORD 'pwd1'
 Fitxer d'exemple: exemple_resposta.json
 Ruta del fitxer JSON (o només el nom si està en el directori actual): 
-  ⚠ Error llegint el fitxer de respostes: DOCS/exemple_resposta_clustering.json
-❌ Error important la resposta: Error en la importació: Error llegint el fitxer: DOCS/exemple_resposta_clustering.json (No such file or directory)
+
+═══ PRE-REGISTRANT USUARIS DEL FITXER ═══
+  ✓ Usuari creat: laura
+  ✓ Usuari creat: joan
+  ✓ Usuari creat: marc
+  ✓ Usuari creat: sara
+  ✓ Usuari creat: maria
+  ✓ Usuari creat: david
+  ✓ Usuari creat: pere
+  ✓ Usuari creat: anna
+❌ Error important la resposta: Error en la importació: Error processant les respostes: Error en la importació: No existeix cap enquesta amb l'ID enc_prog
 
 --- Menú CtrlResposta ---
 (1) Contestar enquesta
@@ -595,5 +554,110 @@ CREACIÓ DE MOCKS:
 ------------------------
 (0|sortir) - Tancar driver
 Escull una opció: 
+
+═══ IMPORTAR ENQUESTA DES DE JSON ═══
+Fitxer d'exemple: exemple_enquesta.json
+Ruta del fitxer JSON (o només el nom si està en el directori actual): 
+✓ Enquesta importada correctament!
+
+--- Menú CtrlResposta ---
+(1) Contestar enquesta
+(2) Modificar Resposta
+(3) Esborrar Resposta
+(4) Importar Respostes des de Fitxer
+(5) Consultar Respostes
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Crear Usuari Mock (per provar respostes)
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+----IMPORTAR RESPOSTES DES DE FITXER----
+TOTS ELS USUÀRIS QUE NO EXISTEIXIN PRÈVIAMENT ES CREARAN AMB PASSWORD 'pwd1'
+Fitxer d'exemple: exemple_resposta.json
+Ruta del fitxer JSON (o només el nom si està en el directori actual): 
+
+═══ PRE-REGISTRANT USUARIS DEL FITXER ═══
+  ℹ Usuari ja existeix: laura
+  ℹ Usuari ja existeix: joan
+  ℹ Usuari ja existeix: marc
+  ℹ Usuari ja existeix: sara
+  ℹ Usuari ja existeix: maria
+  ℹ Usuari ja existeix: david
+  ℹ Usuari ja existeix: pere
+  ℹ Usuari ja existeix: anna
+✓ S'han importat respostes de 8 participants
+✓ Resposta importada correctament!
+
+--- Menú CtrlResposta ---
+(1) Contestar enquesta
+(2) Modificar Resposta
+(3) Esborrar Resposta
+(4) Importar Respostes des de Fitxer
+(5) Consultar Respostes
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Crear Usuari Mock (per provar respostes)
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+════ CONSULTAR RESPOSTES D'UNA ENQUESTA ════
+
+Enquestes disponibles:
+1. ENQUESTA_MOCK (ID: 1)
+2. Satisfaccio del Curs de Programacio (ID: enc_prog)
+
+Escull enquesta (número): 
+═══════════════════════════════════════
+RESPOSTES DE L'ENQUESTA: Satisfaccio del Curs de Programacio
+ID: enc_prog
+═══════════════════════════════════════
+
+── Pregunta ID: p1 ──
+Usuari: laura | Resposta: 18
+Usuari: joan | Resposta: 12
+Usuari: marc | Resposta: 10
+Usuari: sara | Resposta: 6
+Usuari: maria | Resposta: 15
+Usuari: david | Resposta: 22
+Usuari: pere | Resposta: 8
+Usuari: anna | Resposta: 20
+
+── Pregunta ID: p2 ──
+Usuari: laura | Resposta: Excelente
+Usuari: joan | Resposta: Bueno
+Usuari: marc | Resposta: Bueno
+Usuari: sara | Resposta: Regular
+Usuari: maria | Resposta: Excelente
+Usuari: david | Resposta: Excelente
+Usuari: pere | Resposta: Regular
+Usuari: anna | Resposta: Excelente
+
+── Pregunta ID: p3 ──
+Usuari: laura | Resposta: Java,Python
+Usuari: joan | Resposta: Python,C++
+Usuari: marc | Resposta: C++
+Usuari: sara | Resposta: Python
+Usuari: maria | Resposta: Java,Python
+Usuari: david | Resposta: Java,C++
+Usuari: pere | Resposta: Python
+Usuari: anna | Resposta: Java,Python,C++
+
+
+--- Menú CtrlResposta ---
+(1) Contestar enquesta
+(2) Modificar Resposta
+(3) Esborrar Resposta
+(4) Importar Respostes des de Fitxer
+(5) Consultar Respostes
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Crear Usuari Mock (per provar respostes)
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
 Tancant el driver. Adéu!
-Proves completadas. Revisa la sortida anterior per comprobar resultats.
