@@ -38,7 +38,6 @@ import org.json.JSONArray;
 
 public class CtrlDomini {
     private CtrlEnquesta ctrlEnquesta;
-    private CtrlPregunta ctrlPregunta;
     private CtrlResposta ctrlResposta;
     private CtrlUsuari ctrlUsuari;
     private CtrlPerfil ctrlPerfil;
@@ -47,7 +46,6 @@ public class CtrlDomini {
 
     public CtrlDomini() {
         this.ctrlEnquesta = new CtrlEnquesta();
-        this.ctrlPregunta = new CtrlPregunta();
         this.ctrlResposta = new CtrlResposta();
         this.ctrlUsuari = new CtrlUsuari(null); 
         this.ctrlPerfil = new CtrlPerfil();
