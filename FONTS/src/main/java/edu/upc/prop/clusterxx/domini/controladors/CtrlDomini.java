@@ -1776,6 +1776,70 @@ public class CtrlDomini {
     }
 
     /**
+     * Obté els representants (punts reals més propers als centroides) per a un clustering.
+     * 
+     * @param clusters Llista de clusters
+     * @param specs Especificacions de tipus per a cada dimensió
+     * @return Llista amb el vector representant de cada cluster
+     */
+    public List<String[]> obtenirRepresentants(List<Kluster> clusters, DistanceCalculator.FeatureSpec[] specs) {
+        if (clusters == null || specs == null) {
+            throw new IllegalArgumentException("clusters i specs no poden ser null");
+        }
+        
+        DistanceCalculator dc = new DistanceCalculator();
+        List<String[]> representants = new ArrayList<>();
+        
+        for (Kluster cluster : clusters) {
+            String[] representant = cluster.getRepresentant(specs, dc);
+            representants.add(representant);
+        }
+        
+        return representants;
+    }
+    
+    /**
+     * Obté informació llegible sobre els representants d'un clustering.
+     * 
+     * @param resultado Resultat del clustering
+     * @param preguntes Llista de preguntes de l'enquesta
+     * @return Llista de strings amb la informació formatejada de cada representant
+     */
+    public List<String> obtenirInfoRepresentants(ResultatClustering resultado, List<Pregunta> preguntes) {
+        if (resultado == null || preguntes == null) {
+            throw new IllegalArgumentException("resultado i preguntes no poden ser null");
+        }
+        
+        List<String> info = new ArrayList<>();
+        
+        for (int i = 0; i < resultado.representants.size(); i++) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Cluster ").append(i + 1).append(":\n");
+            
+            String username = resultado.getUsernameRepresentant(i);
+            if (username != null) {
+                sb.append("  Usuari representant: ").append(username).append("\n");
+            }
+            
+            String[] representant = resultado.representants.get(i);
+            sb.append("  Respostes:\n");
+            
+            for (int j = 0; j < Math.min(representant.length, preguntes.size()); j++) {
+                sb.append("    - ").append(preguntes.get(j).getText())
+                  .append(": ").append(representant[j]).append("\n");
+            }
+            
+            sb.append("  Mida del cluster: ").append(resultado.clusters.get(i).size()).append(" membres\n");
+            sb.append("  Qualitat (Silhouette): ")
+              .append(String.format("%.3f", resultado.silhouettePerCluster[i])).append("\n");
+            
+            info.add(sb.toString());
+        }
+        
+        return info;
+    }
+
+    /**
      * Realitza clustering sobre els usuaris que han respost una enquesta.
      * Els perfils generats s'assignen automàticament als usuaris i es persisten.
      * 
@@ -1860,6 +1924,14 @@ public class CtrlDomini {
         double silhouette = evaluator.silhouetteScore(clusters, specs);
         double[] silhouettePerCluster = evaluator.silhouettePerCluster(clusters, specs);
         
+        // 6.5. Calcular representants (punts reals més propers als centroides)
+        DistanceCalculator dc = new DistanceCalculator();
+        List<String[]> representants = new ArrayList<>();
+        for (Kluster cluster : clusters) {
+            String[] representant = cluster.getRepresentant(specs, dc);
+            representants.add(representant);
+        }
+        
         // 7. Crear i assignar perfils
         List<String> preguntesText = new ArrayList<>();
         for (Pregunta p : preguntes) {
@@ -1908,7 +1980,8 @@ public class CtrlDomini {
         }
         
         // 8. Retornar resultats
-        return new ResultatClustering(clusters, silhouette, silhouettePerCluster, usernames, dataVectors, vectorToIndex);
+        return new ResultatClustering(clusters, silhouette, silhouettePerCluster, 
+                                     usernames, dataVectors, vectorToIndex, representants);
     }
     
     /**
@@ -1964,16 +2037,50 @@ public class CtrlDomini {
         public final List<String> usernames;
         public final List<String[]> dataVectors;
         public final HashMap<String, Integer> vectorToIndex;
+        /** Representants (punts reals més propers al centroide) de cada cluster */
+        public final List<String[]> representants;
         
         public ResultatClustering(List<Kluster> clusters, double silhouetteGlobal, 
                                  double[] silhouettePerCluster, List<String> usernames, 
-                                 List<String[]> dataVectors, HashMap<String, Integer> vectorToIndex) {
+                                 List<String[]> dataVectors, HashMap<String, Integer> vectorToIndex,
+                                 List<String[]> representants) {
             this.clusters = clusters;
             this.silhouetteGlobal = silhouetteGlobal;
             this.silhouettePerCluster = silhouettePerCluster;
             this.usernames = usernames;
             this.dataVectors = dataVectors;
             this.vectorToIndex = vectorToIndex;
+            this.representants = representants;
+        }
+        
+        /**
+         * Obté el nom d'usuari del representant d'un cluster.
+         * 
+         * @param clusterIndex Índex del cluster (0-based)
+         * @return Nom d'usuari del representant, o null si no es troba
+         */
+        public String getUsernameRepresentant(int clusterIndex) {
+            if (clusterIndex < 0 || clusterIndex >= representants.size()) return null;
+            
+            String[] representant = representants.get(clusterIndex);
+            String vectorKey = String.join("|", representant);
+            Integer idx = vectorToIndex.get(vectorKey);
+            
+            if (idx != null && idx >= 0 && idx < usernames.size()) {
+                return usernames.get(idx);
+            }
+            return null;
+        }
+        
+        /**
+         * Obté el vector representant d'un cluster.
+         * 
+         * @param clusterIndex Índex del cluster (0-based)
+         * @return Vector representant, o null si índex invàlid
+         */
+        public String[] getRepresentant(int clusterIndex) {
+            if (clusterIndex < 0 || clusterIndex >= representants.size()) return null;
+            return representants.get(clusterIndex);
         }
     }
 }

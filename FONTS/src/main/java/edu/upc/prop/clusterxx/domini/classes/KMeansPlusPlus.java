@@ -7,37 +7,29 @@ import java.util.Random;
 /**
  * Implementación del algoritmo K-Means++ para clustering de vectores heterogéneos.
  * 
- * <p>K-Means++ es una mejora del algoritmo K-Means que usa una estrategia inteligente
+ * K-Means++ es una mejora del algoritmo K-Means que usa una estrategia inteligente
  * de inicialización de centroides para mejorar la calidad del clustering y acelerar
- * la convergencia.</p>
+ * la convergencia.
  * 
- * <p><b>Ventajas sobre K-Means estándar:</b></p>
- * <ul>
- *   <li>Mejor calidad: Tiende a encontrar mejores óptimos locales</li>
- *   <li>Convergencia más rápida: Reduce el número de iteraciones necesarias</li>
- *   <li>Garantía teórica: O(log k)-aproximación al óptimo en expectativa</li>
- *   <li>Mayor estabilidad: Menor varianza entre ejecuciones</li>
- * </ul>
+ * Ventajas sobre K-Means estándar:
+ *   - Mejor calidad: Tiende a encontrar mejores óptimos locales
+ *   - Convergencia más rápida: Reduce el número de iteraciones necesarias
+ *   - Garantía teórica: O(log k)-aproximación al óptimo en expectativa
+ *   - Mayor estabilidad: Menor varianza entre ejecuciones
  * 
- * <p><b>Algoritmo de inicialización K-Means++:</b></p>
- * <ol>
- *   <li>Seleccionar el primer centroide uniformemente al azar del dataset</li>
- *   <li>Para cada centroide adicional (hasta tener K):
- *     <ul>
- *       <li>Para cada punto x: calcular D(x)² = distancia² al centroide más cercano</li>
- *       <li>Seleccionar siguiente centroide con probabilidad proporcional a D(x)²</li>
- *     </ul>
- *   </li>
- *   <li>Ejecutar K-Means estándar con estos centroides iniciales</li>
- * </ol>
+ * Algoritmo de inicialización K-Means++:
+ *   1. Seleccionar el primer centroide uniformemente al azar del dataset
+ *   2. Para cada centroide adicional (hasta tener K):
+ *      - Para cada punto x: calcular D(x)² = distancia² al centroide más cercano
+ *      - Seleccionar siguiente centroide con probabilidad proporcional a D(x)²
+ *   3. Ejecutar K-Means estándar con estos centroides iniciales
  * 
- * <p><b>Intuición:</b> La probabilidad proporcional a D(x)² favorece puntos alejados
+ * Intuición: La probabilidad proporcional a D(x)² favorece puntos alejados
  * de centroides existentes, distribuyendo los centroides iniciales de forma más uniforme
- * por el espacio y evitando agrupaciones locales.</p>
+ * por el espacio y evitando agrupaciones locales.
  * 
- * <p><b>Métrica de distancia:</b> Usa distancia Euclidiana (L2) calculada por {@link DistanceCalculator}
- * con soporte para variables heterogéneas (NUMERIC, ORDINAL, NOMINAL_SINGLE, NOMINAL_MULTI, FREE_TEXT).</p>
- * 
+ * Métrica de distancia: Usa distancia Euclidiana (L2) calculada por DistanceCalculator
+ * con soporte para variables heterogéneas (NUMERIC, ORDINAL, NOMINAL_SINGLE, NOMINAL_MULTI, FREE_TEXT).
  * 
  * @see KMeans
  * @see Kluster
@@ -53,15 +45,15 @@ public class KMeansPlusPlus {
     /**
      * Crea una instancia de K-Means++ con generador aleatorio por defecto.
      * 
-     * <p>El generador aleatorio se usa para la selección probabilística de centroides
-     * en el algoritmo K-Means++.</p>
+     * El generador aleatorio se usa para la selección probabilística de centroides
+     * en el algoritmo K-Means++.
      */
     public KMeansPlusPlus() { this(new Random()); }
     
     /**
      * Crea una instancia de K-Means++ con generador aleatorio específico.
      * 
-     * <p>Útil para reproducibilidad en tests: usar {@code new Random(seed)} con semilla fija.</p>
+     * Útil para reproducibilidad en tests: usar new Random(seed) con semilla fija.
      * 
      * @param rnd Generador de números aleatorios (si es null, se crea uno nuevo)
      */
@@ -70,21 +62,15 @@ public class KMeansPlusPlus {
     /**
      * Entrena K-Means++ ejecutando inicialización inteligente seguida de K-Means estándar.
      * 
-     * <p><b>Proceso completo:</b></p>
-     * <ol>
-     *   <li>Inicialización K-Means++: {@link #initCentroids} - selección probabilística</li>
-     *   <li>Clustering K-Means: {@link KMeans#fitWithInitialCentroids} - iteraciones estándar</li>
-     * </ol>
+     * Proceso completo:
+     *   1. Inicialización K-Means++: initCentroids - selección probabilística
+     *   2. Clustering K-Means: KMeans.fitWithInitialCentroids - iteraciones estándar
      * 
-     * <p><b>Complejidad de inicialización:</b> O(N × K × D) donde:
-     * <ul>
-     *   <li>N = tamaño del dataset</li>
-     *   <li>K = número de clusters</li>
-     *   <li>D = dimensionalidad de los vectores</li>
-     * </ul>
+     * Complejidad de inicialización: O(N × K × D)
+     * Donde N = tamaño del dataset, K = número de clusters, D = dimensionalidad de los vectores.
      * 
-     * <p>La complejidad total es dominada por K-Means (O(I × N × K × D)), pero K-Means++
-     * típicamente requiere menos iteraciones (I) para converger.</p>
+     * La complejidad total es dominada por K-Means (O(I × N × K × D)), pero K-Means++
+     * típicamente requiere menos iteraciones (I) para converger.
      * 
      * @param data Dataset de vectores heterogéneos (cada elemento es String[])
      * @param k Número de clusters a formar (debe cumplir: 0 < k ≤ |data|)
@@ -102,11 +88,10 @@ public class KMeansPlusPlus {
     /**
      * Inicializa K centroides usando el algoritmo K-Means++.
      * 
-     * <p>Este es el núcleo del algoritmo K-Means++ que implementa la selección
-     * probabilística de centroides para mejorar la inicialización.</p>
+     * Este es el núcleo del algoritmo K-Means++ que implementa la selección
+     * probabilística de centroides para mejorar la inicialización.
      * 
-     * <p><b>Algoritmo detallado:</b></p>
-     * <pre>
+     * Algoritmo detallado:
      * 1. Seleccionar primer centroide c₁ uniformemente al azar
      * 2. Para i = 2 hasta K:
      *    a) Para cada punto x en data:
@@ -116,28 +101,21 @@ public class KMeansPlusPlus {
      *       P(x) = D(x)² / Σ D(y)²  (para todo y en data)
      *    c) Usar selección por ruleta (roulette wheel selection)
      * 3. Retornar lista de K centroides
-     * </pre>
      * 
-     * <p><b>Selección por ruleta:</b> Técnica para muestreo probabilístico:
-     * <ul>
-     *   <li>Generar número aleatorio r en [0, Σ D(x)²]</li>
-     *   <li>Recorrer puntos restando D(x)² hasta que r ≤ 0</li>
-     *   <li>El punto donde r cruza 0 es el seleccionado</li>
-     * </ul>
+     * Selección por ruleta: Técnica para muestreo probabilístico:
+     *   - Generar número aleatorio r en [0, Σ D(x)²]
+     *   - Recorrer puntos restando D(x)² hasta que r ≤ 0
+     *   - El punto donde r cruza 0 es el seleccionado
      * 
-     * <p><b>Propiedad clave:</b> Puntos alejados de centroides existentes tienen
+     * Propiedad clave: Puntos alejados de centroides existentes tienen
      * mayor probabilidad de ser seleccionados, distribuyendo los centroides de forma
-     * más uniforme por el espacio de datos.</p>
+     * más uniforme por el espacio de datos.
      * 
-     * <p><b>Manejo de borde:</b> Si el índice calculado supera el tamaño del dataset
-     * (por redondeo numérico), se usa el último punto del dataset.</p>
+     * Manejo de borde: Si el índice calculado supera el tamaño del dataset
+     * (por redondeo numérico), se usa el último punto del dataset.
      * 
-     * <p><b>Complejidad:</b> O(N × K × D) donde:
-     * <ul>
-     *   <li>N = tamaño del dataset</li>
-     *   <li>K = número de clusters (iteraciones externas)</li>
-     *   <li>D = dimensionalidad (para calcular distancias)</li>
-     * </ul>
+     * Complejidad: O(N × K × D)
+     * Donde N = tamaño del dataset, K = número de clusters, D = dimensionalidad.
      * 
      * @param data Dataset de vectores heterogéneos
      * @param k Número de centroides a seleccionar (debe cumplir: 0 < k ≤ |data|)

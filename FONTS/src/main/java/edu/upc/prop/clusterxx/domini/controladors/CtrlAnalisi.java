@@ -7,107 +7,43 @@ import java.util.List;
 /**
  * Controlador de análisis para algoritmos de clustering sobre datos heterogéneos.
  * 
- * <p>Esta clase proporciona una interfaz unificada para ejecutar diferentes algoritmos
- * de clustering sobre datos vectorizados como arrays de String, donde cada dimensión
- * puede representar diferentes tipos de variables (numéricas, ordinales, nominales, texto libre).</p>
+ * Proporciona interfaz unificada para ejecutar diferentes algoritmos de clustering
+ * sobre datos vectorizados como arrays de String, donde cada dimensión puede representar
+ * diferentes tipos de variables (numéricas, ordinales, nominales, texto libre).
  * 
- * <p><b>Algoritmos soportados:</b></p>
- * <ul>
- *   <li><b>KMeans:</b> Algoritmo clásico con inicialización aleatoria de centroides</li>
- *   <li><b>KMeans++:</b> Mejora de KMeans con inicialización inteligente (D² sampling)</li>
- *   <li><b>KMedoids (PAM):</b> Usa puntos reales como centros, robusto a outliers</li>
- * </ul>
+ * Algoritmos soportados:
+ *   - KMeans: Inicialización aleatoria de centroides
+ *   - KMeans++: Inicialización inteligente (D² sampling)
+ *   - KMedoids (PAM): Usa puntos reales como centros, robusto a outliers
  * 
- * <p><b>Características principales:</b></p>
- * <ul>
- *   <li>Manejo de datos heterogéneos mediante {@link DistanceCalculator.FeatureSpec}</li>
- *   <li>Selección automática y aleatoria del número de clusters (k)</li>
- *   <li>Optimización de k mediante evaluación con coeficiente de Silhouette</li>
- *   <li>Construcción automática de especificaciones desde objetos del dominio</li>
- * </ul>
- * 
- * <p><b>Flujo típico de uso:</b></p>
- * <pre>
- * // 1. Preparar datos
- * List&lt;String[]&gt; data = Arrays.asList(
- *     new String[]{"25", "Alto", "Soltero"},
- *     new String[]{"30", "Medio", "Casado"}
- * );
- * 
- * // 2. Definir tipos de variables
- * FeatureSpec[] specs = {
- *     FeatureSpec.numeric(0.0, 100.0),           // Edad
- *     FeatureSpec.ordinal(Arrays.asList("Bajo", "Medio", "Alto")), // Ingresos
- *     FeatureSpec.nominalSingle()                // Estado civil
- * };
- * 
- * // 3. Ejecutar clustering
- * CtrlAnalisi ctrl = new CtrlAnalisi();
- * List&lt;Kluster&gt; clusters = ctrl.clusterWithAlgorithm(data, 3, "KMeans++", 100, specs);
- * 
- * // 4. O encontrar k óptimo automáticamente
- * OptimalKResult result = ctrl.findOptimalK(data, 2, 8, "KMeans++", 100, specs);
- * int bestK = result.bestK;
- * </pre>
- * 
- * <p><b>Integración con el dominio:</b></p>
- * <p>La clase puede construir automáticamente las especificaciones de características
- * desde objetos {@link Pregunta} del dominio de la aplicación usando
- * {@link #buildSpecsFromPreguntas(List)}.</p>
- * 
- * <p><b>Selección de k:</b></p>
- * <ul>
- *   <li>{@link #selectRandomK(int)}: Selección aleatoria en rango [2, √n]</li>
- *   <li>{@link #findOptimalK}: Búsqueda exhaustiva maximizando Silhouette</li>
- *   <li>{@link #suggestKRange(int)}: Cálculo de rango recomendado</li>
- * </ul>
- * 
- * <p><b>Complejidad computacional:</b></p>
- * <ul>
- *   <li><b>KMeans/KMeans++:</b> O(I × N × K × D) donde I=iteraciones, N=puntos, K=clusters, D=dimensiones</li>
- *   <li><b>KMedoids:</b> O(I × N² × K × D) - más costoso pero más robusto</li>
- *   <li><b>findOptimalK:</b> O((kMax-kMin) × complejidad del algoritmo)</li>
- * </ul>
- * 
- * <p><b>Consideraciones de rendimiento:</b></p>
- * <ul>
- *   <li>Para datasets grandes (&gt;1000 puntos), preferir KMeans++ sobre KMedoids</li>
- *   <li>Limitar el rango de búsqueda de k óptimo (recomendado: máximo 10)</li>
- *   <li>El cálculo de Silhouette es O(N²), costoso para muchos puntos</li>
- * </ul>
+ * Funcionalidades:
+ *   - Ejecución de clustering con k especificado
+ *   - Búsqueda del k óptimo mediante coeficiente de Silhouette
+ *   - Selección aleatoria de k en rango heurístico [2, √n]
+ *   - Construcción automática de especificaciones desde objetos Pregunta
  * 
  * @author Sistema de Clustering
  * @version 1.0
- * @see KMeans
- * @see KMeansPlusPlus
- * @see KMedoids
- * @see ClusterEvaluator
- * @see DistanceCalculator.FeatureSpec
  */
 public class CtrlAnalisi {
 
     /**
      * Ejecuta clustering KMeans o KMeans++ sobre datos vectorizados.
      * 
-     * <p>Aplica el algoritmo de clustering especificado sobre los datos proporcionados.
-     * Cada punto debe ser un array de String con el mismo número de dimensiones,
-     * correspondiendo a las especificaciones proporcionadas.</p>
+     * Cada punto debe ser un array de String con el mismo número de dimensiones
+     * correspondiendo a las especificaciones proporcionadas.
      * 
-     * <p><b>KMeans vs KMeans++:</b></p>
-     * <ul>
-     *   <li><b>KMeans:</b> Inicialización aleatoria de centroides, más rápido</li>
-     *   <li><b>KMeans++:</b> Inicialización inteligente D² sampling, mejor calidad</li>
-     * </ul>
+     * KMeans vs KMeans++:
+     *   - KMeans: Inicialización aleatoria, más rápido
+     *   - KMeans++: Inicialización inteligente, mejor calidad (recomendado)
      * 
-     * @param data Lista de puntos, cada punto es un array de String de longitud igual a specs.length
-     * @param k Número de clusters a generar (debe ser ≥ 2 y ≤ data.size())
-     * @param usePlusPlus true para usar KMeans++ (recomendado), false para KMeans estándar
-     * @param maxIters Máximo número de iteraciones (típicamente 100-300)
-     * @param specs Especificación del tipo de variable por dimensión (longitud = data[0].length)
-     * @return Lista de k clusters, cada uno con su centroide y miembros asignados
-     * @throws IllegalArgumentException Si los parámetros son inválidos o incompatibles
-     * @see KMeans#fit(List, int, int, DistanceCalculator.FeatureSpec[])
-     * @see KMeansPlusPlus#fit(List, int, int, DistanceCalculator.FeatureSpec[])
+     * @param data Lista de puntos (arrays de String)
+     * @param k Número de clusters (2 ≤ k ≤ data.size())
+     * @param usePlusPlus true para KMeans++, false para KMeans
+     * @param maxIters Máximo de iteraciones (típicamente 100-300)
+     * @param specs Especificación de tipos por dimensión
+     * @return Lista de k clusters con centroides y miembros
+     * @throws IllegalArgumentException si los parámetros son inválidos
      */
     public List<Kluster> cluster(List<String[]> data, int k, boolean usePlusPlus, int maxIters, DistanceCalculator.FeatureSpec[] specs) {
         if (usePlusPlus) return new KMeansPlusPlus().fit(data, k, maxIters, specs);
@@ -117,31 +53,26 @@ public class CtrlAnalisi {
     /**
      * Ejecuta clustering con el algoritmo especificado por nombre.
      * 
-     * <p>Método de conveniencia que permite seleccionar el algoritmo mediante un string.
-     * Es especialmente útil cuando el algoritmo se determina dinámicamente (por ejemplo,
-     * desde entrada del usuario o configuración).</p>
+     * Permite seleccionar el algoritmo mediante string, útil cuando el algoritmo
+     * se determina dinámicamente (entrada de usuario o configuración).
      * 
-     * <p><b>Algoritmos disponibles:</b></p>
-     * <ul>
-     *   <li><b>"KMeans":</b> K-Means clásico con inicialización aleatoria</li>
-     *   <li><b>"KMeans++":</b> K-Means con inicialización inteligente (recomendado)</li>
-     *   <li><b>"KMedoids" o "K-Medoids":</b> PAM algorithm, usa puntos reales como centros</li>
-     * </ul>
+     * Algoritmos disponibles (case-insensitive):
+     *   - "KMeans": Clásico con inicialización aleatoria
+     *   - "KMeans++": Con inicialización inteligente (recomendado)
+     *   - "KMedoids" o "K-Medoids": PAM, usa puntos reales como centros
      * 
-     * <p><b>Recomendaciones de uso:</b></p>
-     * <ul>
-     *   <li><b>KMeans++:</b> Mejor opción general (buena calidad + velocidad)</li>
-     *   <li><b>KMedoids:</b> Para datos con outliers o cuando necesites centroides interpretables</li>
-     *   <li><b>KMeans:</b> Solo si necesitas máxima velocidad y los datos están bien distribuidos</li>
-     * </ul>
+     * Recomendaciones:
+     *   - KMeans++: Mejor opción general (calidad + velocidad)
+     *   - KMedoids: Para datos con outliers o centroides interpretables
+     *   - KMeans: Solo si necesitas máxima velocidad
      * 
-     * @param data Lista de puntos vectorizados como arrays de String
-     * @param k Número de clusters deseado
-     * @param algorithm Nombre del algoritmo (case-insensitive). Si es null o inválido, usa "KMeans"
-     * @param maxIters Máximo de iteraciones para convergencia
-     * @param specs Especificaciones de tipo por dimensión
-     * @return Lista de clusters con centroides (KMeans/KMeans++) o medoides (KMedoids)
-     * @throws IllegalArgumentException Si los parámetros numéricos son inválidos
+     * @param data Lista de puntos vectorizados
+     * @param k Número de clusters
+     * @param algorithm Nombre del algoritmo (null → "KMeans")
+     * @param maxIters Máximo de iteraciones
+     * @param specs Especificaciones de tipo
+     * @return Lista de clusters con centroides o medoides
+     * @throws IllegalArgumentException si parámetros inválidos
      */
     public List<Kluster> clusterWithAlgorithm(List<String[]> data, int k, String algorithm, int maxIters, DistanceCalculator.FeatureSpec[] specs) {
         if (algorithm == null) algorithm = "KMeans";
@@ -161,77 +92,51 @@ public class CtrlAnalisi {
     /**
      * Método de conveniencia para construir un punto de datos vectorizado.
      * 
-     * <p>Facilita la creación de puntos de datos para clustering sin necesidad
-     * de crear manualmente arrays de String. Especialmente útil en tests
-     * o construcción dinámica de datasets.</p>
+     * Facilita la creación de puntos sin crear manualmente arrays de String.
+     * Útil en tests o construcción dinámica de datasets.
      * 
-     * <p><b>Ejemplo de uso:</b></p>
-     * <pre>
-     * CtrlAnalisi ctrl = new CtrlAnalisi();
-     * String[] punto1 = ctrl.buildPoint("25", "Alto", "Barcelona");
-     * String[] punto2 = ctrl.buildPoint("30", "Medio", "Madrid");
-     * List&lt;String[]&gt; data = Arrays.asList(punto1, punto2);
-     * </pre>
-     * 
-     * @param values Valores del punto en orden de las dimensiones. Todos deben ser String
-     * @return Array de String representando el punto vectorizado
-     * @throws NullPointerException Si algún valor es null (usar "" para valores vacíos)
+     * @param values Valores del punto en orden de dimensiones
+     * @return Array de String representando el punto
      */
     public String[] buildPoint(String... values) {
         return values;
     }
 
     /**
-     * Construye las especificaciones de características desde preguntas del dominio.
+     * Construye especificaciones de características desde preguntas del dominio.
      * 
-     * <p>Convierte automáticamente objetos {@link Pregunta} del dominio de la aplicación
-     * en especificaciones que el algoritmo de clustering puede usar para calcular distancias.
-     * El orden de las especificaciones corresponde exactamente al orden de las preguntas.</p>
+     * Convierte automáticamente objetos Pregunta en especificaciones para calcular distancias.
+     * El orden de las especificaciones corresponde al orden de las preguntas.
      * 
-     * <p><b>Mapeo de tipos:</b></p>
-     * <ul>
-     *   <li><b>NUMERICA:</b> → FeatureSpec.numeric(min, max)</li>
-     *   <li><b>QUALITATIVA_ORDENADA:</b> → FeatureSpec.ordinal(orden)</li>
-     *   <li><b>QUALITATIVA_NO_ORDENADA_SIMPLE:</b> → FeatureSpec.nominalSingle()</li>
-     *   <li><b>QUALITATIVA_NO_ORDENADA_MULTIPLE:</b> → FeatureSpec.nominalMultiple()</li>
-     *   <li><b>TEXT:</b> → FeatureSpec.freeText()</li>
-     * </ul>
+     * Mapeo de tipos:
+     *   - NUMERICA → FeatureSpec.numeric(min, max)
+     *   - QUALITATIVA_ORDENADA → FeatureSpec.ordinal(orden)
+     *   - QUALITATIVA_NO_ORDENADA_SIMPLE → FeatureSpec.nominalSingle()
+     *   - QUALITATIVA_NO_ORDENADA_MULTIPLE → FeatureSpec.nominalMultiple()
+     *   - TEXT → FeatureSpec.freeText()
      * 
-     * @param preguntas Lista de preguntas del dominio en el orden deseado para vectorización
-     * @return Array de FeatureSpec en el mismo orden que las preguntas
-     * @throws IllegalArgumentException Si alguna pregunta tiene tipo no soportado
-     * @see FeatureSpecFactory#fromPreguntas(List)
+     * @param preguntas Lista de preguntas en orden deseado
+     * @return Array de FeatureSpec en el mismo orden
+     * @throws IllegalArgumentException si tipo no soportado
      */
     public DistanceCalculator.FeatureSpec[] buildSpecsFromPreguntas(List<Pregunta> preguntas) {
         return FeatureSpecFactory.fromPreguntas(preguntas);
     }
 
     /**
-     * Selecciona un valor de k aleatorio dentro de un rango heurísticamente razonable.
+     * Selecciona un valor de k aleatorio en un rango heurísticamente razonable.
      * 
-     * <p>Utiliza la regla heurística de que un número apropiado de clusters está
-     * en el rango [2, √n], donde n es el número de puntos de datos. Esta aproximación
-     * es útil cuando no se tiene conocimiento previo sobre la estructura de los datos.</p>
+     * Utiliza la regla heurística [2, √n] donde n es el número de puntos.
+     * Útil cuando no hay conocimiento previo sobre la estructura de los datos.
      * 
-     * <p><b>Fórmula:</b> k ∈ [2, √numParticipants]</p>
+     * Ejemplos:
+     *   - 10 participantes → k ∈ [2, 3]
+     *   - 100 participantes → k ∈ [2, 10]
+     *   - 400 participantes → k ∈ [2, 20]
      * 
-     * <p><b>Ejemplos:</b></p>
-     * <ul>
-     *   <li>10 participantes → k ∈ [2, 3]</li>
-     *   <li>100 participantes → k ∈ [2, 10]</li>
-     *   <li>400 participantes → k ∈ [2, 20]</li>
-     * </ul>
-     * 
-     * <p><b>Casos de uso:</b></p>
-     * <ul>
-     *   <li>Clustering exploratorio sin conocimiento previo</li>
-     *   <li>Algoritmos que requieren múltiples ejecuciones con k diferente</li>
-     *   <li>Benchmarking y comparación de algoritmos</li>
-     * </ul>
-     * 
-     * @param numParticipants Número total de participantes/puntos de datos (≥ 2)
-     * @return Valor de k seleccionado uniformemente al azar en el rango válido
-     * @throws IllegalArgumentException Si numParticipants < 2
+     * @param numParticipants Número de participantes (≥ 2)
+     * @return Valor de k seleccionado aleatoriamente en el rango
+     * @throws IllegalArgumentException si numParticipants < 2
      */
     public int selectRandomK(int numParticipants) {
         if (numParticipants < 2) {
@@ -246,17 +151,19 @@ public class CtrlAnalisi {
     }
 
     /**
-     * Encuentra el valor óptimo de k evaluando diferentes valores con el coeficiente de Silhouette.
-     * Prueba valores de k desde kMin hasta kMax y retorna el que maximiza el Silhouette.
+     * Encuentra el k óptimo evaluando con coeficiente de Silhouette.
+     * 
+     * Prueba todos los valores de k desde kMin hasta kMax y retorna el que
+     * maximiza el coeficiente de Silhouette.
      * 
      * @param data Lista de puntos vectorizados
-     * @param kMin Valor mínimo de k a evaluar (mínimo 2)
-     * @param kMax Valor máximo de k a evaluar
+     * @param kMin Valor mínimo de k a evaluar (≥ 2)
+     * @param kMax Valor máximo de k a evaluar (≤ data.size())
      * @param algorithm Nombre del algoritmo: "KMeans", "KMeans++", "KMedoids"
      * @param maxIters Máximo de iteraciones por ejecución
-     * @param specs Especificación de características por dimensión
-     * @return Resultado con el mejor k, mejor Silhouette y todos los scores evaluados
-     * @throws IllegalArgumentException Si los parámetros son inválidos
+     * @param specs Especificaciones de características
+     * @return Resultado con mejor k, mejor Silhouette y todos los scores
+     * @throws IllegalArgumentException si parámetros inválidos
      */
     public OptimalKResult findOptimalK(List<String[]> data, int kMin, int kMax, 
                                         String algorithm, int maxIters, 
@@ -298,32 +205,26 @@ public class CtrlAnalisi {
     }
 
     /**
-     * Calcula un rango recomendado de valores de k para evaluación sistemática.
+     * Calcula rango recomendado de valores de k para evaluación sistemática.
      * 
-     * <p>Proporciona un rango de valores de k que equilibra exhaustividad de búsqueda
-     * con eficiencia computacional. Se basa en heurísticas establecidas en la literatura
-     * de clustering y considera limitaciones prácticas de tiempo de cómputo.</p>
+     * Proporciona rango que equilibra exhaustividad con eficiencia computacional.
      * 
-     * <p><b>Lógica del rango:</b></p>
-     * <ul>
-     *   <li><b>kMin = 2:</b> Mínimo meaningful para clustering</li>
-     *   <li><b>kMax = min(10, max(3, √n)):</b> Balance entre exploración y eficiencia</li>
-     * </ul>
+     * Lógica del rango:
+     *   - kMin = 2 (mínimo para clustering)
+     *   - kMax = min(10, max(3, √n)) (balance exploración/eficiencia)
      * 
-     * <p><b>Límite de 10:</b> Por encima de 10 clusters, la evaluación manual se vuelve
-     * difícil y el coste computacional de Silhouette crece significativamente (O(n²)).</p>
+     * Límite de 10: Por encima, la evaluación manual es difícil y el coste
+     * computacional de Silhouette crece significativamente (O(n²)).
      * 
-     * <p><b>Ejemplos de rangos:</b></p>
-     * <ul>
-     *   <li>5 participantes → [2, 3]</li>
-     *   <li>25 participantes → [2, 5]</li>
-     *   <li>100 participantes → [2, 10]</li>
-     *   <li>500 participantes → [2, 10] (limitado)</li>
-     * </ul>
+     * Ejemplos:
+     *   - 5 participantes → [2, 3]
+     *   - 25 participantes → [2, 5]
+     *   - 100 participantes → [2, 10]
+     *   - 500 participantes → [2, 10] (limitado)
      * 
-     * @param numParticipants Número de puntos de datos disponibles (≥ 2)
-     * @return Array de dos elementos [kMin, kMax] representando el rango recomendado
-     * @throws IllegalArgumentException Si numParticipants < 2
+     * @param numParticipants Número de puntos disponibles (≥ 2)
+     * @return Array [kMin, kMax] con el rango recomendado
+     * @throws IllegalArgumentException si numParticipants < 2
      */
     public int[] suggestKRange(int numParticipants) {
         if (numParticipants < 2) {
@@ -337,63 +238,37 @@ public class CtrlAnalisi {
     }
 
     /**
-     * Resultado de la búsqueda del número óptimo de clusters (k).
+     * Resultado de la búsqueda del k óptimo.
      * 
-     * <p>Encapsula toda la información generada durante el proceso de optimización
-     * de k mediante evaluación sistemática con el coeficiente de Silhouette.
-     * Permite analizar no solo el mejor k encontrado, sino también examinar
-     * la calidad de todos los valores evaluados.</p>
+     * Encapsula toda la información generada durante la optimización de k
+     * mediante evaluación sistemática con Silhouette.
      * 
-     * <p><b>Información contenida:</b></p>
-     * <ul>
-     *   <li><b>bestK:</b> Valor de k que maximizó el coeficiente de Silhouette</li>
-     *   <li><b>bestSilhouette:</b> Mejor coeficiente de Silhouette alcanzado</li>
-     *   <li><b>kMin, kMax:</b> Rango de valores evaluados</li>
-     *   <li><b>silhouetteScores[]:</b> Todos los coeficientes calculados para análisis</li>
-     * </ul>
+     * Contenido:
+     *   - bestK: Valor de k que maximizó Silhouette
+     *   - bestSilhouette: Mejor coeficiente alcanzado
+     *   - kMin, kMax: Rango de valores evaluados
+     *   - silhouetteScores[]: Todos los coeficientes calculados
      * 
-     * <p><b>Ejemplo de uso:</b></p>
-     * <pre>
-     * OptimalKResult result = ctrl.findOptimalK(data, 2, 8, "KMeans++", 100, specs);
-     * 
-     * System.out.println("Mejor k: " + result.bestK);
-     * System.out.println("Silhouette: " + result.bestSilhouette);
-     * 
-     * // Analizar todos los valores
-     * for (int k = result.kMin; k &lt;= result.kMax; k++) {
-     *     double score = result.getSilhouetteForK(k);
-     *     System.out.printf("k=%d → Silhouette=%.3f%n", k, score);
-     * }
-     * </pre>
-     * 
-     * <p><b>Interpretación de Silhouette:</b></p>
-     * <ul>
-     *   <li><b>&gt; 0.7:</b> Clustering excelente</li>
-     *   <li><b>0.5-0.7:</b> Clustering bueno</li>
-     *   <li><b>0.25-0.5:</b> Clustering aceptable</li>
-     *   <li><b>&lt; 0.25:</b> Clustering pobre</li>
-     * </ul>
-     * 
-     * @see CtrlAnalisi#findOptimalK(List, int, int, String, int, DistanceCalculator.FeatureSpec[])
+     * Interpretación de Silhouette:
+     *   - > 0.7: Clustering excelente
+     *   - 0.5-0.7: Clustering bueno
+     *   - 0.25-0.5: Clustering aceptable
+     *   - < 0.25: Clustering pobre
      */
     public static class OptimalKResult {
-        /** Valor de k que produjo el mejor coeficiente de Silhouette. */
+        /** Valor de k que produjo el mejor Silhouette. */
         public final int bestK;
         
-        /** Mejor coeficiente de Silhouette encontrado (correspondiente a bestK). */
+        /** Mejor coeficiente de Silhouette encontrado. */
         public final double bestSilhouette;
         
-        /** Valor mínimo de k evaluado (inclusive). */
+        /** Valor mínimo de k evaluado. */
         public final int kMin;
         
-        /** Valor máximo de k evaluado (inclusive). */
+        /** Valor máximo de k evaluado. */
         public final int kMax;
         
-        /** 
-         * Array con todos los coeficientes de Silhouette calculados.
-         * El índice i corresponde a k = kMin + i.
-         * Longitud: kMax - kMin + 1
-         */
+        /** Array con todos los Silhouette calculados. */
         public final double[] silhouetteScores;
         
         public OptimalKResult(int bestK, double bestSilhouette, int kMin, int kMax, double[] silhouetteScores) {
@@ -405,15 +280,13 @@ public class CtrlAnalisi {
         }
         
         /**
-         * Obtiene el coeficiente de Silhouette para un valor específico de k.
+         * Obtiene el coeficiente de Silhouette para un k específico.
          * 
-         * <p>Permite consultar el resultado de cualquier valor de k que fue evaluado
-         * durante la búsqueda de optimización, facilitando el análisis comparativo
-         * y la generación de gráficos de calidad vs. número de clusters.</p>
+         * Permite consultar el resultado de cualquier k evaluado durante
+         * la búsqueda, facilitando análisis comparativo y generación de gráficos.
          * 
-         * @param k Valor de k del cual se quiere obtener el Silhouette
-         * @return Coeficiente de Silhouette para ese k, o -1.0 si k está fuera del rango [kMin, kMax]
-         * @see ClusterEvaluator#silhouetteScore(List, DistanceCalculator.FeatureSpec[])
+         * @param k Valor de k a consultar
+         * @return Coeficiente de Silhouette para ese k, o -1.0 si fuera de rango
          */
         public double getSilhouetteForK(int k) {
             if (k < kMin || k > kMax) return -1;
