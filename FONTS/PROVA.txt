@@ -1,45 +1,3 @@
-Ejecutando pruebas automatizadas contra CtrlRespostaDriver...
-Plan de proves (solo lectura):
-
-SETUP INICIAL (realizado automàticament en init()):
-- Usuario mock creado: USER_MOCK / 1234
-- Encuesta mock creada con ID: 1
-
-USUARIS I LOGIN:
-1) Crear usuario mock: alice / pwd1
-2) Crear usuario mock: bob / pwd1
-3) Login de alice / pwd1
-4) Logout i login como bob / pwd1
-5) Intento de login con credenciales incorrectas (error esperat)
-6) Intento de login de usuario no existente (error esperat)
-
-CONTESTAR ENCUESTA:
-7) Bob contesta enquesta 1 todas les preguntes (text, numérica, opcions)
-8) Bob contesta enquesta 1 todas les preguntes con respuestas distintas(error esperat - ya contestada)
-9) Alice intenta contestar de nuevo (modificar)
-10) Intento de contestar enquesta no existent (error esperat)
-
-MODIFICAR RESPOSTA:
-12) Modificar una resposta de Bob (cambiar valor)
-14) Intento de modificar resposta que no existeix (error esperat)
-
-ESBORRAR RESPOSTA:
-16) Esborrar una resposta de bob
-
-CONSULTAR RESPOSTES:
-20) Consultar respostes de enquesta 1 (veure estat final)
-21) Consultar respostes de enquesta no existent (error esperat)
-
-IMPORTAR RESPOSTES:
-22) Importar respostes desde fitxer a enquesta no existent(si existe DOCS/exemple_resposta_clustering.json)
-23) Intento de importar desde ruta no valida (error esperat)
-24) Importar respostes desde fitxer a enquesta existent (si existe DOCS/exemple_resposta_clustering.json)
-
-FINALIZAR:
-0) Sortir
-
-NOTA: El següent bloc heredoc conté únicament les entrades (inputs)
-que es passaran al driver.
 ✓ Login correcte!
 ✓ Enquesta mock registrada correctament en CtrlDomini
 Driver de testeig de CtrlResposta
@@ -703,4 +661,3 @@ CREACIÓ DE MOCKS:
 (0|sortir) - Tancar driver
 Escull una opció: 
 Tancant el driver. Adéu!
-Proves completadas. Revisa la sortida anterior per comprobar resultats.

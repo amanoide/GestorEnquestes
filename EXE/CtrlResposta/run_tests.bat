@@ -33,70 +33,60 @@ echo noexist
 echo pwd1
 echo 1
 echo 1
-echo 1
 echo Aquesta enquesta es molt bona
 echo 50
 echo 1
 echo 1
+echo 1,2
 echo 1
 echo 1
-echo Opció 1
-echo 1
-echo 1
-echo 2
 echo Aquesta enquesta es regular
 echo 25
 echo 2
 echo 2
 echo 3
 echo 1
-echo 1
-echo Opció 3
-echo 1
-echo 1
 echo 10
 echo inexistent
 echo 1
-echo 502
-echo alice
-echo pwd1
+echo 1
+echo 1
+echo 1
+echo 1
+echo 1
 echo 2
 echo 1
-echo 1_Q_text
-echo Resposta modificada alice
-echo 2
 echo 1
-echo 1_Q_text_noexist
-echo Text
+echo Resposta modificada Bob
 echo 2
 echo NOEX
-echo 1_Q_text
-echo Text
+echo 6
+echo 1
+echo 9
+echo 1
+echo text nou
+echo 5
+echo 1
 echo 3
 echo 1
-echo 1_Q_text
-echo 502
-echo bob
-echo pwd1
-echo 3
-echo 1
-echo 1_Q_text
-echo 3
-echo 1_noexist
-echo 1_Q_text
-echo 3
-echo NOEX
-echo 1_Q_text
+echo S
 echo 5
 echo 1
 echo 5
 echo NOEX
+echo 1
 echo 4
-echo DOCS/exemple_resposta_clustering.json
+echo ../DOCS/exemple_resposta_clustering.json
 echo 4
 echo /ruta/no/valida/resposta.json
+echo 500
+echo ../DOCS/exemple_enquesta_clustering.json
+echo 4
+echo ../DOCS/exemple_resposta_clustering.json
+echo 5
+echo 2
 echo 0
-) | gradlew runCtrlRespostaDriver --no-daemon --quiet -q
+) | gradlew runCtrlRespostaDriver --no-daemon --quiet -q > PROVA.txt 2>&1
 
 echo.
 echo Pruebas completadas. Revisa la salida anterior para comprobar resultados.

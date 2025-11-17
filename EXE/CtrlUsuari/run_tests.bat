@@ -49,7 +49,7 @@ echo 4
 echo auto2
 echo 5
 echo 0
-) | gradlew runCtrlUsuariDriver --no-daemon --quiet -q
+) | gradlew runCtrlUsuariDriver --no-daemon --quiet -q > PROVA.txt 2>&1
 
 echo.
 echo Pruebas completadas. Revisa la salida anterior para comprobar resultados.

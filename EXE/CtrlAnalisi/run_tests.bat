@@ -35,14 +35,6 @@ echo pwd1
 echo 502
 echo USER_MOCK
 echo 1234
-echo 1
-echo 1
-echo 1
-echo 2
-echo 1
-echo 1
-echo 1
-echo 2
 echo 2
 echo 502
 echo alice
@@ -50,15 +42,10 @@ echo pwd1
 echo 2
 echo 1
 echo 1
-echo 2
-echo 1
 echo 1
 echo 2
-echo 502
-echo USER_MOCK
-echo 1234
-echo 2
 echo 1
+echo 2
 echo 502
 echo bob
 echo pwd1
@@ -67,16 +54,17 @@ echo 1
 echo 2
 echo 2
 echo 2
-echo 1
-echo 2
 echo 502
 echo carla
 echo pwd1
 echo 1
 echo 1
 echo 3
-echo 2
 echo 3
+echo 2
+echo 1
+echo 99
+echo 1
 echo 1
 echo 2
 echo 1
@@ -85,7 +73,7 @@ echo /ruta/no/valida/enquesta.json
 echo 501
 echo /ruta/no/valida/resposta.json
 echo 0
-) | gradlew runCtrlAnalisiDriver --no-daemon --quiet -q
+) | gradlew runCtrlAnalisiDriver --no-daemon --quiet -q > PROVA.txt 2>&1
 
 echo.
 echo Pruebas completadas. Revisa la salida anterior para comprobar resultados.

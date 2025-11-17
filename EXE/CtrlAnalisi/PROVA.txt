@@ -16,7 +16,6 @@ LOGIN Y MOCK SETUP:
 7) Volver a login admin USER_MOCK / 1234
 
 ANÁLISIS SIN SUFICIENTES PARTICIPANTES:
-8) Analizar enquesta cuando solo hay 1 participant (error esperat - necesita >= 2)
 9) Consultar perfil sin haber sido analizado aun (error esperat)
 
 ANÁLISIS CON K MANUAL:
@@ -173,6 +172,55 @@ CREACIÓ DE MOCKS:
 (0|sortir) - Tancar driver
 Escull una opció: 
 
+═══ EL MEU PERFIL ═══
+⚠ Encara no tens cap perfil assignat.
+  Els perfils es generen quan s'analitza una enquesta que has respost.
+  Usa l'opció 11 per analitzar una enquesta.
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ LOGIN USUARIS MOCK ═══
+Nom d'usuari: Contrasenya: ✓ Login correcte!
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ EL MEU PERFIL ═══
+⚠ Encara no tens cap perfil assignat.
+  Els perfils es generen quan s'analitza una enquesta que has respost.
+  Usa l'opció 11 per analitzar una enquesta.
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
 ═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══
 Enquestes disponibles:
 1. ENQUESTA_MOCK (ID: 1) - Participants: 4
@@ -202,6 +250,21 @@ Escull (1-3):
    Qualitat: Pobra (clusters poc definits)
 
 ┌─ CLUSTER 1 ─┐
+│ Mida: 3 participants
+│ Silhouette: 0.075
+│ Perfil característic:
+│   PREGUNTA DE TEXT LLIURE: no
+│   PREGUNTA NUMERICA: 36.666666666666664
+│   PREGUNTA QUALITATIVA: OPCIO2
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
+│   PREGUNTA QUALITATIVA MULTIPLE: 0,1
+│ Membres:
+│   - alice
+│   - dave
+│   - bob
+└──────────────────────────────────────────────────┘
+
+┌─ CLUSTER 2 ─┐
 │ Mida: 1 participants
 │ Silhouette: 0.000
 │ Perfil característic:
@@ -214,27 +277,58 @@ Escull (1-3):
 │   - carla
 └──────────────────────────────────────────────────┘
 
-┌─ CLUSTER 2 ─┐
-│ Mida: 3 participants
-│ Silhouette: 0.075
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: no
-│   PREGUNTA NUMERICA: 36.666666666666664
-│   PREGUNTA QUALITATIVA: OPCIO3
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO3
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
-│ Membres:
-│   - alice
-│   - dave
-│   - bob
-└──────────────────────────────────────────────────┘
-
 ✓ Anàlisi completada i perfils assignats!
 
 💡 Interpretació:
    - Cada cluster representa un grup d'usuaris amb respostes similars
    - El 'Perfil característic' mostra la resposta típica del grup
    - Els perfils s'han guardat per a cada usuari
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ EL MEU PERFIL ═══
+Tens 1 perfil(s) assignat(s):
+
+═══ PERFIL 1 ═══
+Perfil del Cluster 1: Grup Alt
+Enquesta: 1
+Algoritme: KMeans
+Mida del cluster: 3 membres
+Qualitat (Silhouette): 0.075
+
+Característiques:
+  - PREGUNTA DE TEXT LLIURE: no
+  - PREGUNTA NUMERICA: 36.666666666666664
+  - PREGUNTA QUALITATIVA: OPCIO2
+  - PREGUNTA QUALITATIVA SIMPLE: OPCIO1
+  - PREGUNTA QUALITATIVA MULTIPLE: 0,1
+
+
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ LOGIN USUARIS MOCK ═══
+Nom d'usuari: Contrasenya: ✓ Login correcte!
 
 --- Menú CtrlAnalisi ---
 ------------------------
@@ -271,6 +365,241 @@ Escull (1-3):
 ╚══════════════════════════════════════════════╝
 
 📊 Algoritme: KMeans++
+📊 Nombre de clusters: 2
+📊 Participants analitzats: 4
+📊 Coeficient Silhouette global: 0.100
+   Qualitat: Pobra (clusters poc definits)
+
+┌─ CLUSTER 1 ─┐
+│ Mida: 3 participants
+│ Silhouette: 0.133
+│ Perfil característic:
+│   PREGUNTA DE TEXT LLIURE: interessant
+│   PREGUNTA NUMERICA: 24.0
+│   PREGUNTA QUALITATIVA: OPCIO2
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
+│   PREGUNTA QUALITATIVA MULTIPLE: 0,1
+│ Membres:
+│   - alice
+│   - carla
+│   - dave
+└──────────────────────────────────────────────────┘
+
+┌─ CLUSTER 2 ─┐
+│ Mida: 1 participants
+│ Silhouette: 0.000
+│ Perfil característic:
+│   PREGUNTA DE TEXT LLIURE: no
+│   PREGUNTA NUMERICA: 80.0
+│   PREGUNTA QUALITATIVA: OPCIO4
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO2
+│   PREGUNTA QUALITATIVA MULTIPLE: OPCIO1,OPCIO3
+│ Membres:
+│   - bob
+└──────────────────────────────────────────────────┘
+
+✓ Anàlisi completada i perfils assignats!
+
+💡 Interpretació:
+   - Cada cluster representa un grup d'usuaris amb respostes similars
+   - El 'Perfil característic' mostra la resposta típica del grup
+   - Els perfils s'han guardat per a cada usuari
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ EL MEU PERFIL ═══
+Tens 1 perfil(s) assignat(s):
+
+═══ PERFIL 1 ═══
+Perfil del Cluster 2: Grup Alt
+Enquesta: 1
+Algoritme: KMeans++
+Mida del cluster: 1 membres
+Qualitat (Silhouette): 0.000
+
+Característiques:
+  - PREGUNTA DE TEXT LLIURE: no
+  - PREGUNTA NUMERICA: 80.0
+  - PREGUNTA QUALITATIVA: OPCIO4
+  - PREGUNTA QUALITATIVA SIMPLE: OPCIO2
+  - PREGUNTA QUALITATIVA MULTIPLE: OPCIO1,OPCIO3
+
+
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ LOGIN USUARIS MOCK ═══
+Nom d'usuari: Contrasenya: ✓ Login correcte!
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══
+Enquestes disponibles:
+1. ENQUESTA_MOCK (ID: 1) - Participants: 4
+
+Escull enquesta (número): 
+¿Com vols escollir el nombre de clusters (k)?
+  1. Manual (tu esculls k)
+  2. Aleatori (k entre 2 i √n)
+  3. Automàtic (millor k segons Silhouette)
+Escull (1-3): ✓ S'avaluaran diferents valors de k per trobar l'òptim...
+
+Algoritme de clustering:
+  1. KMeans (inicialització aleatòria)
+  2. KMeans++ (inicialització intel·ligent - recomanat)
+  3. KMedoids (medoides reals - robust a outliers)
+Escull (1-3): 
+⏳ Avaluant diferents valors de k...
+  k=2 → Silhouette=0.100
+  k=3 → Silhouette=0.078
+
+✓ Millor k trobat: 2 (Silhouette=0.100)
+
+⏳ Analitzant respostes amb k=2...
+
+╔══════════════════════════════════════════════╗
+║      RESULTATS DEL CLUSTERING               ║
+╚══════════════════════════════════════════════╝
+
+📊 Algoritme: KMedoids
+📊 Nombre de clusters: 2
+📊 Participants analitzats: 4
+📊 Coeficient Silhouette global: 0.056
+   Qualitat: Pobra (clusters poc definits)
+
+┌─ CLUSTER 1 ─┐
+│ Mida: 1 participants
+│ Silhouette: 0.000
+│ Perfil característic:
+│   PREGUNTA DE TEXT LLIURE: Interessant i útil
+│   PREGUNTA NUMERICA: 42
+│   PREGUNTA QUALITATIVA: OPCIO1
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
+│   PREGUNTA QUALITATIVA MULTIPLE: 2
+│ Membres:
+│   - carla
+└──────────────────────────────────────────────────┘
+
+┌─ CLUSTER 2 ─┐
+│ Mida: 3 participants
+│ Silhouette: 0.075
+│ Perfil característic:
+│   PREGUNTA DE TEXT LLIURE: Pot millorar
+│   PREGUNTA NUMERICA: 5
+│   PREGUNTA QUALITATIVA: OPCIO3
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO3
+│   PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
+│ Membres:
+│   - alice
+│   - dave
+│   - bob
+└──────────────────────────────────────────────────┘
+
+✓ Anàlisi completada i perfils assignats!
+
+💡 Interpretació:
+   - Cada cluster representa un grup d'usuaris amb respostes similars
+   - El 'Perfil característic' mostra la resposta típica del grup
+   - Els perfils s'han guardat per a cada usuari
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ EL MEU PERFIL ═══
+Tens 1 perfil(s) assignat(s):
+
+═══ PERFIL 1 ═══
+Perfil del Cluster 1: Grup Alt
+Enquesta: 1
+Algoritme: KMedoids
+Mida del cluster: 1 membres
+Qualitat (Silhouette): 0.000
+
+Característiques:
+  - PREGUNTA DE TEXT LLIURE: Interessant i útil
+  - PREGUNTA NUMERICA: 42
+  - PREGUNTA QUALITATIVA: OPCIO1
+  - PREGUNTA QUALITATIVA SIMPLE: OPCIO0
+  - PREGUNTA QUALITATIVA MULTIPLE: 2
+
+
+
+--- Menú CtrlAnalisi ---
+------------------------
+(1) Analitzar enquesta
+(2) Veure el meu perfil
+CREACIÓ DE MOCKS:
+(500) Importar Enquesta
+(501) Importar Respostes
+(502) Loggin dels Usuaris Mocks
+------------------------
+(0|sortir) - Tancar driver
+Escull una opció: 
+
+═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══
+Enquestes disponibles:
+1. ENQUESTA_MOCK (ID: 1) - Participants: 4
+
+Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
+
+Escull enquesta (número): 
+¿Com vols escollir el nombre de clusters (k)?
+  1. Manual (tu esculls k)
+  2. Aleatori (k entre 2 i √n)
+  3. Automàtic (millor k segons Silhouette)
+Escull (1-3): 
+Quants grups (clusters) vols crear? (2-5): 
+Algoritme de clustering:
+  1. KMeans (inicialització aleatòria)
+  2. KMeans++ (inicialització intel·ligent - recomanat)
+  3. KMedoids (medoides reals - robust a outliers)
+Escull (1-3): 
+⏳ Analitzant respostes amb k=2...
+
+╔══════════════════════════════════════════════╗
+║      RESULTATS DEL CLUSTERING               ║
+╚══════════════════════════════════════════════╝
+
+📊 Algoritme: KMeans
 📊 Nombre de clusters: 2
 📊 Participants analitzats: 4
 📊 Coeficient Silhouette global: 0.012
@@ -323,527 +652,10 @@ CREACIÓ DE MOCKS:
 (0|sortir) - Tancar driver
 Escull una opció: 
 
-═══ LOGIN USUARIS MOCK ═══
-Nom d'usuari: Contrasenya: ✓ Login correcte!
-
---- Menú CtrlAnalisi ---
-------------------------
-(1) Analitzar enquesta
-(2) Veure el meu perfil
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Importar Respostes
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-
-═══ EL MEU PERFIL ═══
-Tens 1 perfil(s) assignat(s):
-
-═══ PERFIL 1 ═══
-Perfil del Cluster 1: Grup Alt
-Enquesta: 1
-Algoritme: KMeans++
-Mida del cluster: 2 membres
-Qualitat (Silhouette): 0.037
-
-Característiques:
-  - PREGUNTA DE TEXT LLIURE: interessant
-  - PREGUNTA NUMERICA: 33.5
-  - PREGUNTA QUALITATIVA: OPCIO2
-  - PREGUNTA QUALITATIVA SIMPLE: OPCIO1
-  - PREGUNTA QUALITATIVA MULTIPLE: 0,1
-
-
-
---- Menú CtrlAnalisi ---
-------------------------
-(1) Analitzar enquesta
-(2) Veure el meu perfil
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Importar Respostes
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-
-═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══
-Enquestes disponibles:
-1. ENQUESTA_MOCK (ID: 1) - Participants: 4
-
-Escull enquesta (número): 
-¿Com vols escollir el nombre de clusters (k)?
-  1. Manual (tu esculls k)
-  2. Aleatori (k entre 2 i √n)
-  3. Automàtic (millor k segons Silhouette)
-Escull (1-3): ✓ k escollit aleatòriament: 2
-
-Algoritme de clustering:
-  1. KMeans (inicialització aleatòria)
-  2. KMeans++ (inicialització intel·ligent - recomanat)
-  3. KMedoids (medoides reals - robust a outliers)
-Escull (1-3): 
-⏳ Analitzant respostes amb k=2...
-
-╔══════════════════════════════════════════════╗
-║      RESULTATS DEL CLUSTERING               ║
-╚══════════════════════════════════════════════╝
-
-📊 Algoritme: KMeans
-📊 Nombre de clusters: 2
-📊 Participants analitzats: 4
-📊 Coeficient Silhouette global: 0.056
-   Qualitat: Pobra (clusters poc definits)
-
-┌─ CLUSTER 1 ─┐
-│ Mida: 3 participants
-│ Silhouette: 0.075
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: no
-│   PREGUNTA NUMERICA: 36.666666666666664
-│   PREGUNTA QUALITATIVA: OPCIO2
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,1
-│ Membres:
-│   - alice
-│   - dave
-│   - bob
-└──────────────────────────────────────────────────┘
-
-┌─ CLUSTER 2 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: interessant
-│   PREGUNTA NUMERICA: 42.0
-│   PREGUNTA QUALITATIVA: OPCIO1
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
-│   PREGUNTA QUALITATIVA MULTIPLE: 2
-│ Membres:
-│   - carla
-└──────────────────────────────────────────────────┘
-
-✓ Anàlisi completada i perfils assignats!
-
-💡 Interpretació:
-   - Cada cluster representa un grup d'usuaris amb respostes similars
-   - El 'Perfil característic' mostra la resposta típica del grup
-   - Els perfils s'han guardat per a cada usuari
-
---- Menú CtrlAnalisi ---
-------------------------
-(1) Analitzar enquesta
-(2) Veure el meu perfil
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Importar Respostes
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-
-═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══
-Enquestes disponibles:
-1. ENQUESTA_MOCK (ID: 1) - Participants: 4
-
-Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
-
-Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
-
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
-
-Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
-
-Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
-
-Escull enquesta (número): 
-¿Com vols escollir el nombre de clusters (k)?
-  1. Manual (tu esculls k)
-  2. Aleatori (k entre 2 i √n)
-  3. Automàtic (millor k segons Silhouette)
-Escull (1-3): ⚠️ Opció no vàlida, s'usarà k=3 per defecte
-
-Algoritme de clustering:
-  1. KMeans (inicialització aleatòria)
-  2. KMeans++ (inicialització intel·ligent - recomanat)
-  3. KMedoids (medoides reals - robust a outliers)
-Escull (1-3): 
-⏳ Analitzant respostes amb k=3...
-
-╔══════════════════════════════════════════════╗
-║      RESULTATS DEL CLUSTERING               ║
-╚══════════════════════════════════════════════╝
-
-📊 Algoritme: KMeans
-📊 Nombre de clusters: 3
-📊 Participants analitzats: 4
-📊 Coeficient Silhouette global: -0.041
-   Qualitat: Molt pobra (molts punts mal assignats)
-
-┌─ CLUSTER 1 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: satisfet
-│   PREGUNTA NUMERICA: 25.0
-│   PREGUNTA QUALITATIVA: OPCIO2
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,1
-│ Membres:
-│   - alice
-└──────────────────────────────────────────────────┘
-
-┌─ CLUSTER 2 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: interessant
-│   PREGUNTA NUMERICA: 42.0
-│   PREGUNTA QUALITATIVA: OPCIO1
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
-│   PREGUNTA QUALITATIVA MULTIPLE: 2
-│ Membres:
-│   - carla
-└──────────────────────────────────────────────────┘
-
-┌─ CLUSTER 3 ─┐
-│ Mida: 2 participants
-│ Silhouette: -0.083
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: no
-│   PREGUNTA NUMERICA: 42.5
-│   PREGUNTA QUALITATIVA: OPCIO3
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO3
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
-│ Membres:
-│   - dave
-│   - bob
-└──────────────────────────────────────────────────┘
-
-✓ Anàlisi completada i perfils assignats!
-
-💡 Interpretació:
-   - Cada cluster representa un grup d'usuaris amb respostes similars
-   - El 'Perfil característic' mostra la resposta típica del grup
-   - Els perfils s'han guardat per a cada usuari
-
---- Menú CtrlAnalisi ---
-------------------------
-(1) Analitzar enquesta
-(2) Veure el meu perfil
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Importar Respostes
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-Valor invàlid
-
---- Menú CtrlAnalisi ---
-------------------------
-(1) Analitzar enquesta
-(2) Veure el meu perfil
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Importar Respostes
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-
-═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══
-Enquestes disponibles:
-1. ENQUESTA_MOCK (ID: 1) - Participants: 4
-
-Escull enquesta (número): 
-¿Com vols escollir el nombre de clusters (k)?
-  1. Manual (tu esculls k)
-  2. Aleatori (k entre 2 i √n)
-  3. Automàtic (millor k segons Silhouette)
-Escull (1-3): ✓ k escollit aleatòriament: 2
-
-Algoritme de clustering:
-  1. KMeans (inicialització aleatòria)
-  2. KMeans++ (inicialització intel·ligent - recomanat)
-  3. KMedoids (medoides reals - robust a outliers)
-Escull (1-3): 
-⏳ Analitzant respostes amb k=2...
-
-╔══════════════════════════════════════════════╗
-║      RESULTATS DEL CLUSTERING               ║
-╚══════════════════════════════════════════════╝
-
-📊 Algoritme: KMeans++
-📊 Nombre de clusters: 2
-📊 Participants analitzats: 4
-📊 Coeficient Silhouette global: 0.100
-   Qualitat: Pobra (clusters poc definits)
-
-┌─ CLUSTER 1 ─┐
-│ Mida: 3 participants
-│ Silhouette: 0.133
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: interessant
-│   PREGUNTA NUMERICA: 24.0
-│   PREGUNTA QUALITATIVA: OPCIO3
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO3
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
-│ Membres:
-│   - alice
-│   - carla
-│   - dave
-└──────────────────────────────────────────────────┘
-
-┌─ CLUSTER 2 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: no
-│   PREGUNTA NUMERICA: 80.0
-│   PREGUNTA QUALITATIVA: OPCIO4
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO2
-│   PREGUNTA QUALITATIVA MULTIPLE: OPCIO1,OPCIO3
-│ Membres:
-│   - bob
-└──────────────────────────────────────────────────┘
-
-✓ Anàlisi completada i perfils assignats!
-
-💡 Interpretació:
-   - Cada cluster representa un grup d'usuaris amb respostes similars
-   - El 'Perfil característic' mostra la resposta típica del grup
-   - Els perfils s'han guardat per a cada usuari
-
---- Menú CtrlAnalisi ---
-------------------------
-(1) Analitzar enquesta
-(2) Veure el meu perfil
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Importar Respostes
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-
-═══ EL MEU PERFIL ═══
-Tens 1 perfil(s) assignat(s):
-
-═══ PERFIL 1 ═══
-Perfil del Cluster 1: Grup Mitjà
-Enquesta: 1
-Algoritme: KMeans++
-Mida del cluster: 3 membres
-Qualitat (Silhouette): 0.133
-
-Característiques:
-  - PREGUNTA DE TEXT LLIURE: interessant
-  - PREGUNTA NUMERICA: 24.0
-  - PREGUNTA QUALITATIVA: OPCIO3
-  - PREGUNTA QUALITATIVA SIMPLE: OPCIO3
-  - PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
-
-
-
---- Menú CtrlAnalisi ---
-------------------------
-(1) Analitzar enquesta
-(2) Veure el meu perfil
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Importar Respostes
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-
-═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══
-Enquestes disponibles:
-1. ENQUESTA_MOCK (ID: 1) - Participants: 4
-
-Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
-
-Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
-
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
-
-Escull enquesta (número): ❌ Si us plau, introdueix un número vàlid
-
-Escull enquesta (número): 
-¿Com vols escollir el nombre de clusters (k)?
-  1. Manual (tu esculls k)
-  2. Aleatori (k entre 2 i √n)
-  3. Automàtic (millor k segons Silhouette)
-Escull (1-3): 
-Quants grups (clusters) vols crear? (2-5): 
-Algoritme de clustering:
-  1. KMeans (inicialització aleatòria)
-  2. KMeans++ (inicialització intel·ligent - recomanat)
-  3. KMedoids (medoides reals - robust a outliers)
-Escull (1-3): 
-⏳ Analitzant respostes amb k=3...
-
-╔══════════════════════════════════════════════╗
-║      RESULTATS DEL CLUSTERING               ║
-╚══════════════════════════════════════════════╝
-
-📊 Algoritme: KMeans++
-📊 Nombre de clusters: 3
-📊 Participants analitzats: 4
-📊 Coeficient Silhouette global: 0.078
-   Qualitat: Pobra (clusters poc definits)
-
-┌─ CLUSTER 1 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: interessant
-│   PREGUNTA NUMERICA: 42.0
-│   PREGUNTA QUALITATIVA: OPCIO1
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
-│   PREGUNTA QUALITATIVA MULTIPLE: 2
-│ Membres:
-│   - carla
-└──────────────────────────────────────────────────┘
-
-┌─ CLUSTER 2 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: no
-│   PREGUNTA NUMERICA: 80.0
-│   PREGUNTA QUALITATIVA: OPCIO4
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO2
-│   PREGUNTA QUALITATIVA MULTIPLE: OPCIO1,OPCIO3
-│ Membres:
-│   - bob
-└──────────────────────────────────────────────────┘
-
-┌─ CLUSTER 3 ─┐
-│ Mida: 2 participants
-│ Silhouette: 0.156
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: pot
-│   PREGUNTA NUMERICA: 15.0
-│   PREGUNTA QUALITATIVA: OPCIO2
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,1
-│ Membres:
-│   - alice
-│   - dave
-└──────────────────────────────────────────────────┘
-
-✓ Anàlisi completada i perfils assignats!
-
-💡 Interpretació:
-   - Cada cluster representa un grup d'usuaris amb respostes similars
-   - El 'Perfil característic' mostra la resposta típica del grup
-   - Els perfils s'han guardat per a cada usuari
-
---- Menú CtrlAnalisi ---
-------------------------
-(1) Analitzar enquesta
-(2) Veure el meu perfil
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Importar Respostes
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-Valor invàlid
-
---- Menú CtrlAnalisi ---
-------------------------
-(1) Analitzar enquesta
-(2) Veure el meu perfil
-CREACIÓ DE MOCKS:
-(500) Importar Enquesta
-(501) Importar Respostes
-(502) Loggin dels Usuaris Mocks
-------------------------
-(0|sortir) - Tancar driver
-Escull una opció: 
-
-═══ ANALITZAR ENQUESTA AMB CLUSTERING ═══
-Enquestes disponibles:
-1. ENQUESTA_MOCK (ID: 1) - Participants: 4
-
-Escull enquesta (número): ❌ Número no vàlid. Tria un número entre 1 i 1
-
-Escull enquesta (número): 
-¿Com vols escollir el nombre de clusters (k)?
-  1. Manual (tu esculls k)
-  2. Aleatori (k entre 2 i √n)
-  3. Automàtic (millor k segons Silhouette)
-Escull (1-3): ⚠️ Opció no vàlida, s'usarà k=3 per defecte
-
-Algoritme de clustering:
-  1. KMeans (inicialització aleatòria)
-  2. KMeans++ (inicialització intel·ligent - recomanat)
-  3. KMedoids (medoides reals - robust a outliers)
-Escull (1-3): 
-⏳ Analitzant respostes amb k=3...
-
-╔══════════════════════════════════════════════╗
-║      RESULTATS DEL CLUSTERING               ║
-╚══════════════════════════════════════════════╝
-
-📊 Algoritme: KMeans
-📊 Nombre de clusters: 3
-📊 Participants analitzats: 4
-📊 Coeficient Silhouette global: -0.041
-   Qualitat: Molt pobra (molts punts mal assignats)
-
-┌─ CLUSTER 1 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: satisfet
-│   PREGUNTA NUMERICA: 25.0
-│   PREGUNTA QUALITATIVA: OPCIO2
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,1
-│ Membres:
-│   - alice
-└──────────────────────────────────────────────────┘
-
-┌─ CLUSTER 2 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: interessant
-│   PREGUNTA NUMERICA: 42.0
-│   PREGUNTA QUALITATIVA: OPCIO1
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
-│   PREGUNTA QUALITATIVA MULTIPLE: 2
-│ Membres:
-│   - carla
-└──────────────────────────────────────────────────┘
-
-┌─ CLUSTER 3 ─┐
-│ Mida: 2 participants
-│ Silhouette: -0.083
-│ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: no
-│   PREGUNTA NUMERICA: 42.5
-│   PREGUNTA QUALITATIVA: OPCIO3
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO3
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
-│ Membres:
-│   - dave
-│   - bob
-└──────────────────────────────────────────────────┘
-
-✓ Anàlisi completada i perfils assignats!
-
-💡 Interpretació:
-   - Cada cluster representa un grup d'usuaris amb respostes similars
-   - El 'Perfil característic' mostra la resposta típica del grup
-   - Els perfils s'han guardat per a cada usuari
+═══ IMPORTAR ENQUESTA DES DE JSON ═══
+Fitxer d'exemple: exemple_enquesta.json
+Ruta del fitxer JSON (o només el nom si està en el directori actual): 
+❌ Error important l'enquesta: Error en la importació: Error llegint el fitxer: /ruta/no/valida/enquesta.json (No such file or directory)
 
 --- Menú CtrlAnalisi ---
 ------------------------
