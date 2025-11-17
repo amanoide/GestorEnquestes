@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class Pregunta {
     private String id;
     private String text;
-    private TipusPregunta tipus; // (jairo) Tipus de pregunta
+    private TipusPregunta tipus; // Tipus de pregunta
     private ArrayList<Opcio> opcions; // Per a preguntes qualitatives
     private int maxSeleccions; // Per a preguntes qualitatives múltiples (q)
     private Double valorMinim; // Per a preguntes numèriques (rang permès)

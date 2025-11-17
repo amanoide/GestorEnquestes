@@ -5,10 +5,15 @@ Descripcio: Documentacio del projecte - Sistema de Gestio d'Enquestes amb Cluste
 Contingut:
 
 index.txt
-  Aquest fitxer. Index del directori DOCS.
+  Aquest fitxer. Index del directori DOCS amb diagrama d'arquitectura.
 
 membres.txt
   Llista dels membres del grup amb informacio de contacte.
+
+autoria.txt
+  Documentacio detallada de l'autoria de cada fitxer del projecte.
+  Inclou classes del domini, controladors, drivers i tests amb els
+  seus respectius autors.
 
 INSTRUCCIONS_COMPILACIO.md
   Instruccions detallades per compilar i executar el projecte.

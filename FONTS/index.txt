@@ -1,16 +1,22 @@
 DIRECTORI: ENTREGA/FONTS
-=========================
 
 Descripcio: Codi font del projecte - Sistema de Gestio d'Enquestes amb Clustering
 
+
+Observacions:
+-------------
+- Compilar amb: gradlew.bat build
+- Compilar drivers: gradlew.bat compileDriversJava
+- Netejar i recompilar: gradlew.bat clean build
+- Executar tests: gradlew.bat test
+- Arquitectura: Patron Facade amb CtrlDomini com a punt d'entrada
+
 Contingut:
-----------
 
 build.gradle
   Configuracio del projecte Gradle. Defineix dependències (Gson, JSON),
   sourcesets (main, test, drivers), i configuracio de compilacio.
-  Main class: edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver
-
+ 
 settings.gradle
   Configuracio basica del projecte Gradle. Defineix el nom del projecte.
 
@@ -91,13 +97,4 @@ src/
       - CtrlRespostaDriver.java: Driver per provar respostes
       - CtrlAnalisiDriver.java: Driver per provar clustering
 
-Observacions:
--------------
-- Compilar amb: gradlew.bat build
-- Compilar drivers: gradlew.bat compileDriversJava
-- Netejar i recompilar: gradlew.bat clean build
-- Executar tests: gradlew.bat test
-- Generar distribucio: gradlew.bat installDist
-- Requisits: Java 21+, JUnit 4.13.1
-- Arquitectura: Patron Facade amb CtrlDomini com a punt d'entrada
-- Persistencia: In-memory amb exportacio/importacio JSON
+
