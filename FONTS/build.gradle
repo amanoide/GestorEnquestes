@@ -68,6 +68,11 @@ dependencies {
     driversImplementation 'org.json:json:20231013'
 }
 
+tasks.named('run', JavaExec) {
+    classpath = sourceSets.drivers.runtimeClasspath
+    standardInput = System.in
+}
+
 // Tareas para ejecutar drivers
 
 
