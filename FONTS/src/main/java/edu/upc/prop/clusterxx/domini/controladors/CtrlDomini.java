@@ -31,7 +31,6 @@ import edu.upc.prop.clusterxx.domini.classes.Usuari;
 import edu.upc.prop.clusterxx.domini.classes.Kluster;
 import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator;
 import edu.upc.prop.clusterxx.domini.classes.ClusterEvaluator;
-import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
 
 import org.json.JSONArray;
 

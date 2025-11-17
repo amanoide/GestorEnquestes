@@ -11,7 +11,9 @@ cd ..\..\FONTS
 echo Ejecutando pruebas automatizadas contra CtrlEnquestaDriver...
 echo.
 
-REM Crear fichero temporal con las entradas
+
+REM Crear fichero temporal con las entradas en UTF-8 y saltos de línea LF
+set INPUT_FILE=run_tests_input.txt
 (
 echo 4
 echo NOEX
@@ -139,7 +141,18 @@ echo E2
 echo 4
 echo NOEX
 echo 0
-) | gradlew runCtrlEnquestaDriver --no-daemon --quiet -q > ..\EXE\CtrlEnquesta\PROVA.txt 2>&1
+) > %INPUT_FILE%
+
+REM Esperar a que el archivo se cierre
+ping 127.0.0.1 -n 2 > nul
+
+REM Convertir a UTF-8 y saltos de línea LF usando powershell
+powershell -Command "Get-Content %INPUT_FILE% | Set-Content %INPUT_FILE% -Encoding UTF8"
+powershell -Command "(Get-Content %INPUT_FILE%) -replace '\r', '' | Set-Content %INPUT_FILE% -Encoding UTF8"
+
+gradlew runCtrlEnquestaDriver --no-daemon --quiet -q < %INPUT_FILE% > ..\EXE\CtrlEnquesta\PROVA.txt 2>&1
+
+del %INPUT_FILE%
 
 echo.
 echo Pruebas completadas. Revisa la salida anterior para comprobar resultados.

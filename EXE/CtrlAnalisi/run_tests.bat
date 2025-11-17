@@ -12,69 +12,144 @@ echo Ejecutando pruebas automatizadas contra CtrlAnalisiDriver...
 echo.
 
 REM Pasar las entradas al driver mediante stdin (usa more para simular heredoc)
-REM Crear fichero temporal con las entradas (identicas al bash)
-(
-echo 502
-echo noexist
-echo pwd1
-echo 502
-echo USER_MOCK
-echo wrongpwd
-echo 502
-echo alice
-echo pwd1
-echo 502
-echo bob
-echo pwd1
-echo 502
-echo carla
-echo pwd1
-echo 502
-echo dave
-echo pwd1
-echo 502
-echo USER_MOCK
-echo 1234
-echo 2
-echo 502
-echo alice
-echo pwd1
-echo 2
-echo 1
-echo 1
-echo 1
-echo 2
-echo 1
-echo 2
-echo 502
-echo bob
-echo pwd1
-echo 1
-echo 1
-echo 2
-echo 2
-echo 2
-echo 502
-echo carla
-echo pwd1
-echo 1
-echo 1
-echo 3
-echo 3
-echo 2
-echo 1
-echo 99
-echo 1
-echo 1
-echo 2
-echo 1
-echo 500
-echo /ruta/no/valida/enquesta.json
-echo 501
-echo /ruta/no/valida/resposta.json
-echo 0
-) | gradlew runCtrlAnalisiDriver --no-daemon --quiet -q > ..\EXE\CtrlAnalisi\PROVA.txt 2>&1
+set INPUT_FILE=run_tests_input_%RANDOM%.txt
 
-echo.
-echo Pruebas completadas. Revisa la salida anterior para comprobar resultados.
-endlocal
+REM Crear fichero temporal único con las entradas
+(
+echo 4
+echo NOEX
+echo 1
+echo E1
+echo Test Enquesta
+echo Descripcio inicial
+echo 2
+echo NOEX
+echo 3
+echo NOEX
+echo 2
+echo E1
+echo Titol Actualitzat
+echo 3
+echo E1
+echo Descripcio actualitzada
+echo 1
+echo E1
+echo Test Enquesta
+echo Descripcio inicial
+echo 10
+echo E1
+echo Q_text
+echo Què en penses?
+echo 1
+echo 10
+echo E1
+echo Q_num
+echo Quants anys tens?
+echo 2
+echo 10
+echo 5
+echo 5
+echo 120
+echo 10
+echo E1
+echo Q_ord
+echo Classificació general
+echo 3
+echo 3
+echo Bé
+echo 1
+echo Regular
+echo 2
+echo Mal
+echo 3
+echo 10
+echo E1
+echo Q_simple
+echo Color preferit
+echo 4
+echo 3
+echo Vermell
+echo Verd
+echo Blau
+echo 10
+echo E1
+echo Q_multi
+echo Fruites preferides
+echo 5
+echo 2
+echo 3
+echo Poma
+echo Plàtan
+echo Préssec
+echo 10
+echo E1
+echo Q_text
+echo 1
+echo E2
+echo Enquesta Buida
+echo Sense preguntes
+echo 12
+echo NOEX
+echo 12
+echo E1
+echo Q_no_exist
+echo 1
+echo 3
+echo 12
+echo E1
+echo 1
+echo 1
+echo Text modificat TEXT
+echo 11
+echo E1
+echo Q_no_exist
+echo 14
+echo 1
+echo 13
+echo E1
+echo 4
+echo 20
+echo 13
+echo E1
+echo 1
+echo abc
+echo 4
+echo 13
+echo E1
+echo 2
+echo 14
+echo E1
+echo 3
+echo 1
+echo 14
+echo E1
+echo 3
+echo 99
+echo 11
+echo E1
+echo 99
+echo 4
+echo 20
+echo 5
+echo /path/no/valida/enquesta.json
+echo 5
+echo ../DOCS/exemple_enquesta_clustering.json
+echo 20
+echo 4
+echo E1
+echo 4
+echo E2
+echo 4
+echo NOEX
+echo 0
+) > %INPUT_FILE%
+
+
+
+REM Convertir a UTF-8 y saltos de línea LF usando powershell
+powershell -Command "Get-Content %INPUT_FILE% | Set-Content %INPUT_FILE% -Encoding UTF8"
+powershell -Command "(Get-Content %INPUT_FILE%) -replace '\\r', '' | Set-Content %INPUT_FILE% -Encoding UTF8"
+
+gradlew runCtrlEnquestaDriver --no-daemon --quiet -q < %INPUT_FILE% > ..\EXE\CtrlEnquesta\PROVA.txt 2>&1
+
+del %INPUT_FILE%

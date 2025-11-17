@@ -3,7 +3,6 @@ package edu.upc.prop.clusterxx.domini;
 import edu.upc.prop.clusterxx.domini.classes.DistanceCalculator;
 import edu.upc.prop.clusterxx.domini.classes.KMeans;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -2,8 +2,6 @@ package edu.upc.prop.clusterxx.domini;
 
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
-import static edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariJaExisteixException;
-import static edu.upc.prop.clusterxx.domini.classes.Exceptions.CredencialsIncorrectesException;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

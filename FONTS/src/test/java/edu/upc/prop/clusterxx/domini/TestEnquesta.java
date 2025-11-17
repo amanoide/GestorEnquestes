@@ -2,7 +2,6 @@ package edu.upc.prop.clusterxx.domini;
 
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
-import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
 
 import org.junit.Before;
@@ -211,7 +210,6 @@ public class TestEnquesta {
      */
     @Test
     public void testRegistrarParticipacio() {
-        Usuari u1 = new Usuari("usuari1", "contrasenya1");
 
         assertFalse(e.haRespostUsuari("usuari1"));
         e.registrarParticipacio("usuari1");
@@ -229,8 +227,7 @@ public class TestEnquesta {
      */
     @Test
     public void testGetParticipants() {
-        Usuari u1 = new Usuari("usuari1", "contrasenya1");
-        Usuari u2 = new Usuari("usuari2", "contrasenya2");
+ 
 
         e.registrarParticipacio("usuari1");
         e.registrarParticipacio("usuari2");

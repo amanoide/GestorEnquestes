@@ -343,9 +343,9 @@ Escull (1-3):
 │ Perfil característic:
 │   PREGUNTA DE TEXT LLIURE: interessant
 │   PREGUNTA NUMERICA: 24.0
-│   PREGUNTA QUALITATIVA: OPCIO1
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
-│   PREGUNTA QUALITATIVA MULTIPLE: 2
+│   PREGUNTA QUALITATIVA: OPCIO3
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO3
+│   PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
 │ Membres:
 │   - alice
 │   - carla
@@ -434,39 +434,40 @@ Algoritme de clustering:
   3. KMedoids (medoides reals - robust a outliers)
 Escull (1-3): 
 ⏳ Avaluant diferents valors de k...
-  k=2 → Silhouette=0.100
+  k=2 → Silhouette=0.056
   k=3 → Silhouette=0.078
 
-✓ Millor k trobat: 2 (Silhouette=0.100)
+✓ Millor k trobat: 3 (Silhouette=0.078)
 
-⏳ Analitzant respostes amb k=2...
+⏳ Analitzant respostes amb k=3...
 
 ╔══════════════════════════════════════════════╗
 ║      RESULTATS DEL CLUSTERING               ║
 ╚══════════════════════════════════════════════╝
 
 📊 Algoritme: KMedoids
-📊 Nombre de clusters: 2
+📊 Nombre de clusters: 3
 📊 Participants analitzats: 4
-📊 Coeficient Silhouette global: 0.056
-   Qualitat: Pobra (clusters poc definits)
+📊 Coeficient Silhouette global: -0.028
+   Qualitat: Molt pobra (molts punts mal assignats)
 
 ┌─ CLUSTER 1 ─┐
-│ Mida: 1 participants
-│ Silhouette: 0.000
+│ Mida: 2 participants
+│ Silhouette: -0.056
 │ Perfil característic:
-│   PREGUNTA DE TEXT LLIURE: Interessant i útil
-│   PREGUNTA NUMERICA: 42
-│   PREGUNTA QUALITATIVA: OPCIO1
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
-│   PREGUNTA QUALITATIVA MULTIPLE: 2
+│   PREGUNTA DE TEXT LLIURE: Molt satisfet amb el servei
+│   PREGUNTA NUMERICA: 25
+│   PREGUNTA QUALITATIVA: OPCIO2
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
+│   PREGUNTA QUALITATIVA MULTIPLE: 0,1
 │ Membres:
+│   - alice
 │   - carla
 └──────────────────────────────────────────────────┘
 
 ┌─ CLUSTER 2 ─┐
-│ Mida: 3 participants
-│ Silhouette: 0.075
+│ Mida: 1 participants
+│ Silhouette: 0.000
 │ Perfil característic:
 │   PREGUNTA DE TEXT LLIURE: Pot millorar
 │   PREGUNTA NUMERICA: 5
@@ -474,8 +475,19 @@ Escull (1-3):
 │   PREGUNTA QUALITATIVA SIMPLE: OPCIO3
 │   PREGUNTA QUALITATIVA MULTIPLE: 0,2,3
 │ Membres:
-│   - alice
 │   - dave
+└──────────────────────────────────────────────────┘
+
+┌─ CLUSTER 3 ─┐
+│ Mida: 1 participants
+│ Silhouette: 0.000
+│ Perfil característic:
+│   PREGUNTA DE TEXT LLIURE: No m'agrada gaire
+│   PREGUNTA NUMERICA: 80
+│   PREGUNTA QUALITATIVA: OPCIO4
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO2
+│   PREGUNTA QUALITATIVA MULTIPLE: OPCIO1,OPCIO3
+│ Membres:
 │   - bob
 └──────────────────────────────────────────────────┘
 
@@ -502,18 +514,18 @@ Escull una opció:
 Tens 1 perfil(s) assignat(s):
 
 ═══ PERFIL 1 ═══
-Perfil del Cluster 1: Grup Alt
+Perfil del Cluster 1: Grup Mitjà
 Enquesta: 1
 Algoritme: KMedoids
-Mida del cluster: 1 membres
-Qualitat (Silhouette): 0.000
+Mida del cluster: 2 membres
+Qualitat (Silhouette): -0.056
 
 Característiques:
-  - PREGUNTA DE TEXT LLIURE: Interessant i útil
-  - PREGUNTA NUMERICA: 42
-  - PREGUNTA QUALITATIVA: OPCIO1
-  - PREGUNTA QUALITATIVA SIMPLE: OPCIO0
-  - PREGUNTA QUALITATIVA MULTIPLE: 2
+  - PREGUNTA DE TEXT LLIURE: Molt satisfet amb el servei
+  - PREGUNTA NUMERICA: 25
+  - PREGUNTA QUALITATIVA: OPCIO2
+  - PREGUNTA QUALITATIVA SIMPLE: OPCIO1
+  - PREGUNTA QUALITATIVA MULTIPLE: 0,1
 
 
 
@@ -565,9 +577,9 @@ Escull (1-3):
 │ Perfil característic:
 │   PREGUNTA DE TEXT LLIURE: interessant
 │   PREGUNTA NUMERICA: 24.0
-│   PREGUNTA QUALITATIVA: OPCIO2
-│   PREGUNTA QUALITATIVA SIMPLE: OPCIO1
-│   PREGUNTA QUALITATIVA MULTIPLE: 0,1
+│   PREGUNTA QUALITATIVA: OPCIO1
+│   PREGUNTA QUALITATIVA SIMPLE: OPCIO0
+│   PREGUNTA QUALITATIVA MULTIPLE: 2
 │ Membres:
 │   - alice
 │   - carla

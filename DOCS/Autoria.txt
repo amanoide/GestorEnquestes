@@ -1,0 +1,67 @@
+AUTORIA DEL CODI 
+
+
+NOTES
+
+- Les funcions de cada classe han estat desenvolupades principalment
+  pel membre indicat, amb revisions i contribucions dels altres membres.
+- El CtrlDomini integra funcionalitats de tots els controladors i ha
+  estat realitzat per Jairo i Marc amb alguna aportació d'altres membres.
+- Les excepcions són compartides per tot l'equip segons necessitats.
+
+
+CLASSES DEL DOMINI
+
+ClusterEvaluator.java -> Aman
+DistanceCalculator.java -> Aman
+Enquesta.java -> Jairo
+Exceptions.java -> Jairo
+FeatureSpecFactory.java -> Aman
+Kluster.java -> Aman
+KMeans.java -> Aman
+KMeansPlusPlus.java -> Aman
+KMedoids.java -> Aman
+Opcio.java -> Mohamed i Marc
+Perfil.java -> Jairo
+Pregunta.java -> Marc
+Resposta.java -> Joan i Jairo
+Usuari.java -> Marc
+
+
+CONTROLADORS
+
+CtrlAnalisi.java -> Aman
+CtrlDomini.java -> Jairo i Marc
+CtrlEnquesta.java -> Marc
+CtrlPerfil.java -> Jairo
+CtrlPersistencia.java -> Marc i Jairo
+CtrlResposta.java -> Jairo i Marc
+CtrlUsuari.java -> Jairo i Marc
+
+
+DRIVERS
+
+CtrlAnalisiDriver.java -> Joan
+CtrlEnquestaDriver.java -> Joan
+CtrlRespostaDriver.java -> Joan
+CtrlUsuariDriver.java -> Joan
+
+TESTS UNITARIS
+
+TestClusterEvaluator.java -> Mohamed
+TestDistanceCalculator.java -> Mohamed
+TestEnquesta.java -> Mohamed
+TestFeatureSpecFactory.java -> Mohamed
+TestKluster.java -> Mohamed
+TestKMeans.java -> Mohamed
+TestKMeansPlusPlus.java -> Mohamed
+TestKMedoids.java -> Mohamed
+TestOpcio.java -> Mohamed
+TestPerfil.java -> Mohamed
+TestPregunta.java -> Mohamed
+TestResposta.java -> Mohamed
+TestUsuari.java -> Mohamed
+
+
+
+

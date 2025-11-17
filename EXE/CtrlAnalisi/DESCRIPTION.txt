@@ -89,6 +89,8 @@ Aquest joc de proves esta fet amb valors de la caixa grisa, es testeja tot el po
       cd ENTREGA/EXE/CtrlAnalisi
       chmod +x run_tests.sh
       ./run_tests.sh
+
+      En cas que no funcioni, executa per solucionar els salts de línia: sed -i 's/\r$//' run_tests.sh
     
     
     - El script crida la task Gradle `runCtrlAnalisiDriver` des del directori `ENTREGA/FONTS` per llancar el driver automaticament. 
