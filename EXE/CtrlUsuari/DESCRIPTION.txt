@@ -70,6 +70,8 @@ Aquest joc de proves esta fet amb valors de la caixa grisa, es testeja tot el po
       ./run_tests.sh
     - El script crida la task Gradle `runCtrlUsuariDriver` des del directori `ENTREGA/FONTS` per llancar el driver automaticament. 
     - La sortida mostra el pas a pas de les proves a l'arxiu PROVA.txt.
+     En cas que no funcioni, executa per solucionar els salts de línia: sed -i 's/\r$//' run_tests.sh
+
 
 
 - Si desitjes executar el driver individualment:
