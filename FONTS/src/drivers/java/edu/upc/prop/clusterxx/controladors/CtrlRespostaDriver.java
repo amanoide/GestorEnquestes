@@ -81,7 +81,48 @@ public class CtrlRespostaDriver {
         admin = cd.getUsuariActual();
         
         //CREACIÓ D'UNA ENQUESTA MOCK AMB TOTS ELS TIPUS DE PREGUNTES PER PROVAR LES RESPOSTES
-        crearEnquestaMock();
+
+        //crear preguntes mock hi ha d'haver una de cada tipus amb una opcio les d'opció
+        Pregunta preguntaText = new Pregunta("1", "PREGUNTA DE TEXT LLIURE", "text");
+
+        Pregunta preguntaNum = new Pregunta("2", "PREGUNTA NUMERICA", 0.0, 120.0);
+
+        Pregunta preguntaOrd = new Pregunta("3", "PREGUNTA QUALITATIVA", "qualitativa_ordenada");
+        preguntaOrd.afegirOpcio(new Opcio(1, "OPCIO1", 1));
+        preguntaOrd.afegirOpcio(new Opcio(2, "OPCIO2", 2));
+        preguntaOrd.afegirOpcio(new Opcio(3, "OPCIO3", 3));
+        preguntaOrd.afegirOpcio(new Opcio(4, "OPCIO4", 4));
+
+        Pregunta preguntaQS = new Pregunta("4", "PREGUNTA QUALITATIVA SIMPLE", "qualitativa_simple");
+        preguntaQS.afegirOpcio(new Opcio(0, "OPCIO0"));
+        preguntaQS.afegirOpcio(new Opcio(1, "OPCIO1"));
+        preguntaQS.afegirOpcio(new Opcio(2, "OPCIO2"));
+        preguntaQS.afegirOpcio(new Opcio(3, "OPCIO3"));
+
+        Pregunta preguntaQM = new Pregunta("5", "PREGUNTA QUALITATIVA MULTIPLE", "qualitativa_multiple");
+        preguntaQM.afegirOpcio(new Opcio(0, "OPCIO0"));
+        preguntaQM.afegirOpcio(new Opcio(1, "OPCIO1"));
+        preguntaQM.afegirOpcio(new Opcio(2, "OPCIO2"));
+        preguntaQM.afegirOpcio(new Opcio(3, "OPCIO3"));
+
+         
+        // ✓ REGISTRAR L'ENQUESTA EN EL CONTROLADOR
+        try {
+            cd.crearEnquesta(admin,"1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
+            
+            // Afegir les preguntes a través del controlador
+            cd.afegirPregunta("1", preguntaText);
+            cd.afegirPregunta("1", preguntaNum);
+            cd.afegirPregunta("1", preguntaOrd);
+            cd.afegirPregunta("1", preguntaQS);
+            cd.afegirPregunta("1", preguntaQM);
+
+            
+            System.out.println("✓ Enquesta mock registrada correctament en CtrlDomini");
+        } catch (Exception e) {
+            System.out.println("⚠️ Error registrant enquesta mock: " + e.getMessage());
+            // Continuar igualment amb la enquesta local si falla
+        }
     }
 
     /**
