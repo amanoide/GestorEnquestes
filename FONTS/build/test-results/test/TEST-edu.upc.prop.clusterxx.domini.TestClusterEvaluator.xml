@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-11-17T19:12:00" hostname="LAPTOP-LVPJG8BN" time="0.011">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-11-17T21:32:05" hostname="LAPTOP-LVPJG8BN" time="0.013">
   <properties/>
-  <testcase name="testSilhouetteScoreUnSolCluster" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.006"/>
+  <testcase name="testSilhouetteScoreUnSolCluster" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.007"/>
   <testcase name="testSilhouettePerClusterValors" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
   <testcase name="testSilhouettePerClusterBuit" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
   <testcase name="testSilhouettePerClusterNull" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
   <testcase name="testSilhouetteScoreClustersBuits" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
   <testcase name="testSilhouetteScoreClustersNull" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
-  <testcase name="testSilhouettePerClusterSenseSpecs" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.001"/>
+  <testcase name="testSilhouettePerClusterSenseSpecs" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
   <testcase name="testSilhouetteScoreSenseSpecs" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
-  <testcase name="testSilhouetteScoreClustersSeparats" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.001"/>
-  <testcase name="testSilhouetteScoreClustersSolapats" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
+  <testcase name="testSilhouetteScoreClustersSeparats" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.002"/>
+  <testcase name="testSilhouetteScoreClustersSolapats" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
