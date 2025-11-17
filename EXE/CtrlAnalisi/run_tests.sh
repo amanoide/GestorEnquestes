@@ -48,11 +48,12 @@ ANÁLISIS CON K AUTOMÁTICO (SILHOUETTE):
 17) Login carla / pwd1
 18) Analizar enquesta 1 con k automático (buscar óptimo, algoritmo KMedoids)
 19) Veure meu perfil
+20) Veure perfils associats als analisis realitzats 
 
 INTENTOS DE ERROR:
-20) Intentar analizar enquesta no existente (error esperat)
-21) Importar enquesta desde ruta no valida (error esperat)
-22) Importar respostes desde ruta no valida (error esperat)
+21) Intentar analizar enquesta no existente (error esperat)
+22) Importar enquesta desde ruta no valida (error esperat)
+23) Importar respostes desde ruta no valida (error esperat)
 
 FINALIZAR:
 0) Sortir
@@ -110,6 +111,8 @@ pwd1
 3
 3
 2
+3
+1
 1
 99
 1

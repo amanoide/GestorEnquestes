@@ -122,13 +122,13 @@ S
 NOEX
 1
 4
-../DOCS/exemple_resposta_clustering.json
+../EXE/exemple_resposta_clustering.json
 4
 /ruta/no/valida/resposta.json
 500
-../DOCS/exemple_enquesta_clustering.json
+../EXE/exemple_enquesta_clustering.json
 4
-../DOCS/exemple_resposta_clustering.json
+../EXE/exemple_resposta_clustering.json
 5
 2
 0

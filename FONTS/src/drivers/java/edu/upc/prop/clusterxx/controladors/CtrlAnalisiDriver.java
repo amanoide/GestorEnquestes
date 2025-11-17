@@ -38,6 +38,8 @@ public class CtrlAnalisiDriver {
     private static Scanner in;
     private static CtrlDomini cd;
     private static Usuari admin;
+    // Guardar resultats d'anàlisi per evitar re-analitzar
+    private static HashMap<String, CtrlDomini.ResultatClustering> resultatsAnalisi = new HashMap<>();
 
 
     public static void main(String[] args) {
@@ -97,6 +99,7 @@ public class CtrlAnalisiDriver {
         
         System.out.println("(1) Analitzar enquesta");
         System.out.println("(2) Veure el meu perfil");
+        System.out.println("(3) Veure perfils associats als analisis realitzats");
 
         System.out.println("CREACIÓ DE MOCKS:");
         System.out.println("(500) Importar Enquesta");
@@ -123,6 +126,9 @@ public class CtrlAnalisiDriver {
                 break;
             case "2":
                 veureMeuPerfil();
+                break;
+            case "3":
+                veureUsuarisRepresentants();
                 break;
 
             case "0":
@@ -535,6 +541,9 @@ public class CtrlAnalisiDriver {
                 algoritmeNom
             );
             
+            // Guardar el resultat per consultar-lo després
+            resultatsAnalisi.put(enquesta.getId(), resultat);
+            
             // Mostrar resultados
             System.out.println("\n╔══════════════════════════════════════════════╗");
             System.out.println("║      RESULTATS DEL CLUSTERING               ║");
@@ -570,6 +579,12 @@ public class CtrlAnalisiDriver {
                 System.out.println("│ Mida: " + members.size() + " participants");
                 System.out.printf("│ Silhouette: %.3f%n", resultat.silhouettePerCluster[i]);
                 
+                // Obtener usuario representante usando el método del domini
+                String usuariRepresentant = resultat.getUsernameRepresentant(i);
+                if (usuariRepresentant != null) {
+                    System.out.println("│ Usuari representant: " + usuariRepresentant + " ⭐");
+                }
+                
                 // Mostrar centroide (perfil característic del cluster)
                 System.out.println("│ Perfil característic:");
                 for (int j = 0; j < preguntes.size(); j++) {
@@ -585,13 +600,17 @@ public class CtrlAnalisiDriver {
                     Integer memberIdx = resultat.vectorToIndex.get(vectorKey);
                     
                     if (memberIdx != null && memberIdx < resultat.usernames.size()) {
-                        System.out.println("│   - " + resultat.usernames.get(memberIdx));
+                        String username = resultat.usernames.get(memberIdx);
+                        // Marcar el representante con una estrella
+                        if (username.equals(usuariRepresentant)) {
+                            System.out.println("│   - " + username + " ⭐ (representant)");
+                        } else {
+                            System.out.println("│   - " + username);
+                        }
                     }
                 }
                 System.out.println("└" + "─".repeat(50) + "┘");
-            }
-            
-            System.out.println("\n✓ Anàlisi completada i perfils assignats!");
+            }            System.out.println("\n✓ Anàlisi completada i perfils assignats!");
             System.out.println("\n💡 Interpretació:");
             System.out.println("   - Cada cluster representa un grup d'usuaris amb respostes similars");
             System.out.println("   - El 'Perfil característic' mostra la resposta típica del grup");
@@ -611,12 +630,13 @@ public class CtrlAnalisiDriver {
     private static void veureMeuPerfil() {
         System.out.println("\n═══ EL MEU PERFIL ═══");
         
-        HashMap<String, Perfil> perfils = cd.getUsuariActual().getPerfils();
+        Usuari usuariActual = cd.getUsuariActual();
+        HashMap<String, Perfil> perfils = usuariActual.getPerfils();
         
         if (perfils.isEmpty()) {
             System.out.println("⚠ Encara no tens cap perfil assignat.");
             System.out.println("  Els perfils es generen quan s'analitza una enquesta que has respost.");
-            System.out.println("  Usa l'opció 11 per analitzar una enquesta.");
+            System.out.println("  Usa l'opció 1 per analitzar una enquesta.");
             return;
         }
         
@@ -624,12 +644,154 @@ public class CtrlAnalisiDriver {
         
         int i = 1;
         for (Map.Entry<String, Perfil> entry : perfils.entrySet()) {
+            String idEnquesta = entry.getKey();
             Perfil perfil = entry.getValue();
             
             System.out.println("═══ PERFIL " + i + " ═══");
             System.out.println(perfil.getPerfilLlegible());
+            
+            // Comprovar si aquest usuari és el representant del seu cluster
+            if (perfil.teClustering() && resultatsAnalisi.containsKey(idEnquesta)) {
+                try {
+                    CtrlDomini.ResultatClustering resultat = resultatsAnalisi.get(idEnquesta);
+                    
+                    // Buscar en quin cluster està l'usuari actual
+                    String usernameActual = usuariActual.getUsername();
+                    
+                    for (int clusterIdx = 0; clusterIdx < resultat.clusters.size(); clusterIdx++) {
+                        String representant = resultat.getUsernameRepresentant(clusterIdx);
+                        
+                        // Verificar si l'usuari pertany a aquest cluster
+                        boolean pertanyAlCluster = false;
+                        for (String[] memberVector : resultat.clusters.get(clusterIdx).getMembers()) {
+                            String vectorKey = String.join("|", memberVector);
+                            Integer memberIdx = resultat.vectorToIndex.get(vectorKey);
+                            if (memberIdx != null && memberIdx < resultat.usernames.size()) {
+                                if (resultat.usernames.get(memberIdx).equals(usernameActual)) {
+                                    pertanyAlCluster = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // Si pertany a aquest cluster i és el representant
+                        if (pertanyAlCluster && usernameActual.equals(representant)) {
+                            System.out.println("\n⭐ ETS EL REPRESENTANT D'AQUEST CLUSTER ⭐");
+                            System.out.println("   (Les teves respostes són les més properes al perfil típic del grup)");
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    // Si falla, simplement no mostrem la informació de representant
+                }
+            }
+            
             System.out.println();
             i++;
+        }
+    }
+
+    private static void veureUsuarisRepresentants() {
+        System.out.println("\n═══ USUARIS REPRESENTANTS DELS ANÀLISIS ═══");
+        
+        if (resultatsAnalisi.isEmpty()) {
+            System.out.println("⚠ No s'ha realitzat cap anàlisi encara.");
+            System.out.println("  Utilitza l'opció 1 per analitzar una enquesta.");
+            return;
+        }
+        
+        System.out.println("Anàlisis disponibles:\n");
+        
+        int num = 1;
+        for (Map.Entry<String, CtrlDomini.ResultatClustering> entry : resultatsAnalisi.entrySet()) {
+            String idEnquesta = entry.getKey();
+            
+            try {
+                Enquesta enquesta = cd.getEnquesta(idEnquesta);
+                String titol = (enquesta != null) ? enquesta.getTitol() : idEnquesta;
+                
+                System.out.println("[" + num + "] Enquesta: " + titol + " (ID: " + idEnquesta + ")");
+                num++;
+            } catch (Exception e) {
+                System.out.println("[" + num + "] Enquesta ID: " + idEnquesta);
+                num++;
+            }
+        }
+        
+        System.out.print("\nEscull una enquesta (número) o 0 per tornar: ");
+        String input = in.nextLine().trim();
+        
+        if (input.equals("0")) {
+            return;
+        }
+        
+        try {
+            int seleccio = Integer.parseInt(input);
+            if (seleccio < 1 || seleccio > resultatsAnalisi.size()) {
+                System.out.println("❌ Número no vàlid.");
+                return;
+            }
+            
+            // Obtenir l'enquesta seleccionada
+            String idEnquestaSeleccionada = null;
+            int idx = 1;
+            for (String idEnq : resultatsAnalisi.keySet()) {
+                if (idx == seleccio) {
+                    idEnquestaSeleccionada = idEnq;
+                    break;
+                }
+                idx++;
+            }
+            
+            if (idEnquestaSeleccionada == null) {
+                System.out.println("❌ Error obtenint l'enquesta.");
+                return;
+            }
+            
+            CtrlDomini.ResultatClustering resultat = resultatsAnalisi.get(idEnquestaSeleccionada);
+            Enquesta enquesta = cd.getEnquesta(idEnquestaSeleccionada);
+            String titol = (enquesta != null) ? enquesta.getTitol() : idEnquestaSeleccionada;
+            
+            // Mostrar representants
+            System.out.println("\n╔══════════════════════════════════════════════╗");
+            System.out.println("║  USUARIS REPRESENTANTS - " + titol);
+            System.out.println("╚══════════════════════════════════════════════╝");
+            System.out.println("\nNombre de clusters: " + resultat.clusters.size());
+            System.out.printf("Qualitat global (Silhouette): %.3f%n%n", resultat.silhouetteGlobal);
+            
+            for (int i = 0; i < resultat.clusters.size(); i++) {
+                String representant = resultat.getUsernameRepresentant(i);
+                
+                System.out.println("Cluster " + (i + 1) + ":");
+                System.out.println("  ⭐ Usuari representant: " + (representant != null ? representant : "(no trobat)"));
+                System.out.println("  Mida: " + resultat.clusters.get(i).getMembers().size() + " participants");
+                System.out.printf("  Silhouette: %.3f%n", resultat.silhouettePerCluster[i]);
+                
+                // Mostrar membres del cluster
+                System.out.println("  Membres:");
+                for (String[] memberVector : resultat.clusters.get(i).getMembers()) {
+                    String vectorKey = String.join("|", memberVector);
+                    Integer memberIdx = resultat.vectorToIndex.get(vectorKey);
+                    if (memberIdx != null && memberIdx < resultat.usernames.size()) {
+                        String username = resultat.usernames.get(memberIdx);
+                        if (username.equals(representant)) {
+                            System.out.println("    - " + username + " ⭐ (representant)");
+                        } else {
+                            System.out.println("    - " + username);
+                        }
+                    }
+                }
+                System.out.println();
+            }
+            
+            System.out.println("💡 L'usuari representant és el participant les respostes");
+            System.out.println("   del qual són més properes al perfil típic del cluster.");
+            
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Si us plau, introdueix un número vàlid.");
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

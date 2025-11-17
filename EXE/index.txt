@@ -12,10 +12,7 @@ Entrades:
         run_tests.sh:
             Descripcio: Script per linux per executar el joc de proves sobre CtrlAnalisiDriver
             Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
-            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
-        run_tests.bat:
-            Descripcio: Script per Windows per executar el joc de proves sobre CtrlEnquestaDriver
-            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.bat), i executar (./run_tests.bat)
+            Com usar wsl(Windows): Es poden executar entrant a la carpeta i executant ./run_tests.sh (ha de tenir permisos de execució)
             Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
         PROVA.txt:
             Descripcio: Fitxer amb la sortida del joc de proves
@@ -28,10 +25,7 @@ Entrades:
         run_tests.sh:
             Descripcio: Script per linux per executar el joc de proves sobre CtrlEnquestaDriver
             Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
-            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
-        run_tests.bat:
-            Descripcio: Script per Windows per executar el joc de proves sobre CtrlEnquestaDriver
-            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.bat), i executar (./run_tests.bat)
+            Com usar wsl(Windows): Es poden executar entrant a la carpeta i executant ./run_tests.sh (ha de tenir permisos de execució)
             Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
         PROVA.txt:
             Descripcio: Fitxer amb la sortida del joc de proves
@@ -44,10 +38,7 @@ Entrades:
         run_tests.sh:
             Descripcio: Script per linux per executar el joc de proves sobre CtrlRespostaDriver
             Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
-            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
-        run_tests.bat:
-            Descripcio: Script per Windows per executar el joc de proves sobre CtrlEnquestaDriver
-            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.bat), i executar (./run_tests.bat)
+            Com usar wsl(Windows): Es poden executar entrant a la carpeta i executant ./run_tests.sh (ha de tenir permisos de execució)
             Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
         PROVA.txt:
             Descripcio: Fitxer amb la sortida del joc de proves
@@ -60,10 +51,7 @@ Entrades:
         run_tests.sh:
             Descripcio: Script per linux per executar el joc de proves sobre CtrlUsuariDriver
             Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
-            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
-        run_tests.bat:
-            Descripcio: Script per Windows per executar el joc de proves sobre CtrlEnquestaDriver
-            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.bat), i executar (./run_tests.bat)
+            Com usar wsl(Windows): Es poden executar entrant a la carpeta i executant ./run_tests.sh (ha de tenir permisos de execució)
             Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
         PROVA.txt:
             Descripcio: Fitxer amb la sortida del joc de proves

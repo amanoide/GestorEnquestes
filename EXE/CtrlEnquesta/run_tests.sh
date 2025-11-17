@@ -178,7 +178,7 @@ E1
 5
 /path/no/valida/enquesta.json
 5
-../DOCS/exemple_enquesta_clustering.json
+../EXE/exemple_enquesta_clustering.json
 20
 4
 E1
