@@ -197,7 +197,7 @@ public class MainDriver {
         String descripcio = in.nextLine();
         
         try {
-            ctrlDomini.crearEnquesta(id, titol, descripcio);
+            ctrlDomini.crearEnquesta(usuariActual, id, titol, descripcio);
             System.out.println("✓ Enquesta creada correctament!");
             System.out.println("  ID: " + id);
             System.out.println("  Títol: " + titol);
