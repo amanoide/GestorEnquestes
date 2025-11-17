@@ -1,0 +1,103 @@
+DIRECTORI: ENTREGA/FONTS
+=========================
+
+Descripcio: Codi font del projecte - Sistema de Gestio d'Enquestes amb Clustering
+
+Contingut:
+----------
+
+build.gradle
+  Configuracio del projecte Gradle. Defineix dependències (Gson, JSON),
+  sourcesets (main, test, drivers), i configuracio de compilacio.
+  Main class: edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver
+
+settings.gradle
+  Configuracio basica del projecte Gradle. Defineix el nom del projecte.
+
+gradle.properties
+  Propietats de configuracio de Gradle.
+
+gradlew / gradlew.bat
+  Scripts wrapper de Gradle per compilar sense instal·lacio global.
+  Utilitzar gradlew.bat en Windows, gradlew en Unix/Linux/Mac.
+
+gradle/
+  Directori amb fitxers de configuracio del Gradle wrapper.
+  wrapper/gradle-wrapper.properties: versio de Gradle i URL de descarga.
+
+.gradle/
+  Directori temporal de Gradle (generat automaticament, no s'ha de versionar).
+
+build/
+  Directori amb resultats de compilacio (generat per Gradle):
+  - classes/java/main: Classes compilades del codi principal
+  - classes/java/test: Classes compilades dels tests
+  - classes/java/drivers: Classes compilades dels drivers
+  - libs/: Fitxers JAR generats
+  - distributions/: Distribucions del projecte
+
+bin/
+  Directori amb classes compilades per Eclipse/IntelliJ (si s'utilitza IDE).
+
+lib/
+  Llibreries externes (JSON, Gson) copiades manualment si es necessari.
+
+src/
+  Codi font del projecte organitzat en tres sourcesets:
+
+  src/main/java/edu/upc/prop/clusterxx/
+    Codi principal del sistema:
+    
+    domini/classes/
+      - Enquesta.java: Classe que representa una enquesta
+      - Pregunta.java: Classe que representa una pregunta
+      - Opcio.java: Classe que representa una opcio de resposta
+      - Resposta.java: Classe que representa una resposta d'usuari
+      - Usuari.java: Classe que representa un usuari del sistema
+      - Perfil.java: Classe que representa un perfil generat per clustering
+      - TipusPregunta.java: Enumeracio dels tipus de preguntes
+      - Exceptions.java: Excepcions personalitzades del domini
+      - KMedoids.java: Implementacio de l'algorisme K-Medoids
+      - KMeans.java: Implementacio de l'algorisme K-Means
+      - KMeansPlusPlus.java: Implementacio de K-Means++ per inicialitzacio
+      - Kluster.java: Classe que representa un cluster
+      - ClusterEvaluator.java: Avaluacio de qualitat dels clusters (Silhouette)
+      - DistanceCalculator.java: Calcul de distancies entre punts
+      - FeatureSpecFactory.java: Generacio d'especificacions per clustering
+    
+    domini/controladors/
+      - CtrlDomini.java: Controlador facade principal del sistema
+      - CtrlEnquesta.java: Controlador de gestio d'enquestes
+      - CtrlUsuari.java: Controlador de gestio d'usuaris
+      - CtrlResposta.java: Controlador de gestio de respostes
+      - CtrlPerfil.java: Controlador de gestio de perfils
+      - CtrlAnalisi.java: Controlador d'analisi i clustering
+      - CtrlPersistencia.java: Controlador de persistencia (JSON)
+
+  src/test/java/edu/upc/prop/clusterxx/
+    Tests unitaris amb JUnit 4:
+    
+    domini/
+      - TestDivisionShould.java: Tests de proves basiques
+      - Tests per cadascuna de les classes del domini
+      - Tests dels algorismes de clustering
+
+  src/drivers/java/edu/upc/prop/clusterxx/
+    Drivers interactius per provar funcionalitats:
+    
+    controladors/
+      - CtrlEnquestaDriver.java: Driver per provar enquestes
+      - CtrlUsuariDriver.java: Driver per provar usuaris
+      - CtrlRespostaDriver.java: Driver per provar respostes
+      - CtrlAnalisiDriver.java: Driver per provar clustering
+
+Observacions:
+-------------
+- Compilar amb: gradlew.bat build
+- Compilar drivers: gradlew.bat compileDriversJava
+- Netejar i recompilar: gradlew.bat clean build
+- Executar tests: gradlew.bat test
+- Generar distribucio: gradlew.bat installDist
+- Requisits: Java 21+, JUnit 4.13.1
+- Arquitectura: Patron Facade amb CtrlDomini com a punt d'entrada
+- Persistencia: In-memory amb exportacio/importacio JSON

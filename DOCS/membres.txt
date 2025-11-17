@@ -1,7 +1,14 @@
 Membres del grup:
 
-Jairo Gómez Arias jairo.gomez@estudiantat.upc.edu
-Marc Fiori Porta - marc.fiori@estudiantat.upc.edu
-Aman
-Joan Garvin Cardona - joan.garvin@estudiantat.upc.edu
+Fiori Porta, marc
+Garvin Cardona, Joan
+Gomez Arias, Jairo
+Kumar Aswani, Aman
+Mohammed
+
+
+marc.fiori@estudiantat.upc.edu
+joan.garvin@estudiantat.upc.edu
+jairo.gomez@estudiantat.upc.edu
+aman.kumar@estudiantat.upc.edu
 Mohammed

@@ -1,0 +1,59 @@
+DIRECTORI: ENTREGA/EXE
+======================
+
+Descripcio: Executables i scripts de prova del projecte
+
+Contingut:
+
+CtrlAnalisi/
+  Scripts i recursos per provar el controlador d'analisi de clustering.
+
+CtrlEnquesta/
+  Scripts i recursos per provar el controlador d'enquestes.
+
+CtrlResposta/
+  Scripts i recursos per provar el controlador de respostes.
+
+CtrlUsuari/
+  Scripts i recursos per provar el controlador d'usuaris.
+
+
+README.md
+  Instruccions generals per executar els drivers de prova.
+
+Observacions:
+-------------
+- Aquesta carpeta conte els scripts de prova (PROVA.txt) amb entrades simulades
+  per testejar cada funcionalitat de forma interactiva.
+- Per compilar el projecte i els drivers:
+  cd ENTREGA/FONTS
+  gradlew.bat build -x test
+  gradlew.bat compileDriversJava
+- Per executar els drivers utilitzar les tasques Gradle definides:
+  cd ENTREGA/FONTS
+  gradlew.bat runCtrlEnquestaDriver
+  gradlew.bat runCtrlUsuariDriver
+  gradlew.bat runCtrlRespostaDriver
+  gradlew.bat runCtrlAnalisiDriver
+- Els scripts bash (run_tests.sh) estan dissenyats per a entorns Unix/Linux.
+
+Scripts Windows (.bat):
+    run_tests_windows.bat
+        Script per executar els scripts de prova en un entorn Windows.
+
+    run_ctrl_enquesta_windows.bat
+        Driver per iniciar les proves del controlador d'enquestes.
+
+    run_ctrl_usuari_windows.bat
+        Driver per iniciar les proves del controlador d'usuaris.
+
+    run_ctrl_resposta_windows.bat
+        Driver per iniciar les proves del controlador de respostes.
+
+    run_ctrl_analisi_windows.bat
+        Driver per iniciar les proves del controlador d'anàlisi.
+
+Notes:
+    - Executar des del directori ENTREGA/FONTS o ajustar rutes segons la instal·lació.
+    - Aquests .bat invoquen el wrapper de build i les tasques de drivers configurades al projecte.
+    - Per entorns Unix/Linux, continuar utilitzant els scripts bash (run_tests.sh).

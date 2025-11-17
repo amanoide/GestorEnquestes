@@ -1,0 +1,138 @@
+DIRECTORI: ENTREGA/EXE/CtrlUsuari
+==================================
+
+Descripcio: Scripts i recursos per provar el controlador d'usuaris
+
+Contingut:
+----------
+
+DESCRIPTION.txt
+  Descripcio detallada de l'objecte de la prova, valors i efectes estudiats.
+
+PROVA.txt
+  Script de prova automatitzada per CtrlUsuariDriver.
+  Conte casos de prova per testejar totes les funcionalitats
+  del controlador de gestio d'usuaris i sessions.
+
+run_tests.sh
+  Script bash per executar les proves automaticament (Linux/Mac).
+
+run_tests.bat
+  Script batch per executar les proves automaticament (Windows).
+
+================================================================================
+OBJECTE DE LA PROVA
+================================================================================
+
+- S'executen i validen els casos d'us del subsistema d'usuari: registre
+  (creacio), autenticacio (login/logout), consulta d'usuari actual i esborrat
+  d'usuari.
+- Es comproven tant els fluxos correctes (happy paths) com multiples errors
+  (duplicats, credencials incorrectes, parametres invalids).
+
+Altres elements integrats a la prova:
+-------------------------------------
+- CtrlDomini: la capa de domini conte la logica real de validacions i
+  persistencia; el driver de proves invoca CtrlDomini per exercitar-la.
+- CtrlPersistencia (in-memory): s'usa per emmagatzemar temporalment els
+  usuaris durant la prova.
+
+Fitxers de dades necessaris:
+----------------------------
+- No cal cap fitxer extern per executar aquest driver. Tots els usuaris es
+  creen dinamicament durant l'execucio.
+
+================================================================================
+VALORS ESTUDIATS
+================================================================================
+
+- Entrades valides: noms d'usuari amb >=3 caracters (ex. auto1, auto2) i
+  contrasenyes amb >=4 caracters (pwd1).
+- Entrades invalides: username buit, username massa curt ("a"), password
+  massa curta, intents de registre duplicat.
+- Estrategia: combinacio caixa blanca (provar condicions de validacio de
+  domini) i caixa negra (inputs que provoquen errors observables).
+
+================================================================================
+EFECTES ESTUDIATS
+================================================================================
+
+- Missatges d'error i d'exit a la consola.
+- Estat intern: usuari actual (login/logout) i efectes persistents d'operacions
+  (registre, esborrat).
+- Robustesa del flux interactiu davant d'entrades inesperades (text on s'espera
+  numero, linies buides).
+
+================================================================================
+CASOS DE PROVA IMPLEMENTATS (segons PROVA.txt)
+================================================================================
+
+CREAR I REGISTRAR USUARIS (casos 1-3):
+1. Registrar usuari valid: auto1 / pwd1
+2. Error: registrar usuari duplicat
+3. Error: dades invalides (username buit, password curta)
+
+LOGIN I LOGOUT (casos 4-6):
+4. Login correcte amb auto1
+5. Consultar usuari actual (hauria de ser auto1)
+6. Logout exitos
+
+LOGIN AMB ERRORS (casos 7-10):
+7. Error: contrasenya incorrecta
+8. Error: usuari inexistent
+9. Error: username massa curt (menys de 3 caracters)
+10. Error: contrasenya massa curta (menys de 4 caracters)
+
+MES USUARIS (casos 11-14):
+11. Registrar segon usuari valid: auto2 / pwd1
+12. Login correcte amb auto2
+13. Esborrar auto2 mentre esta logueado
+14. Consultar usuari actual final (hauria de ser null)
+
+================================================================================
+VALIDACIONS IMPLEMENTADES
+================================================================================
+
+- Username: minim 3 caracters, no pot estar buit, ha de ser unic
+- Contrasenya: minim 4 caracters, no pot estar buida
+- Login: verificacio de credencials correctes
+- Eliminacio: permet esborrar l'usuari actual (auto-logout)
+- Sessio: controla estat d'autenticacio correctament
+
+================================================================================
+OPERATIVA (US RAPID)
+================================================================================
+
+Script d'execucio:
+  Linux/Mac: ENTREGA/EXE/CtrlUsuari/run_tests.sh
+  Windows: ENTREGA\EXE\CtrlUsuari\run_tests.bat
+
+Execucio en Linux/Mac:
+  cd ENTREGA/EXE/CtrlUsuari
+  chmod +x run_tests.sh
+  ./run_tests.sh
+
+Execucio en Windows:
+  cd ENTREGA\EXE\CtrlUsuari
+  run_tests.bat
+
+El script crida la task Gradle runCtrlUsuariDriver des del directori
+ENTREGA/FONTS per llancar el driver automaticament. La sortida mostra el
+pas a pas de les proves.
+
+Si desitges executar el driver individualment:
+  cd ENTREGA/FONTS
+  ./gradlew runCtrlUsuariDriver
+
+================================================================================
+NOTES
+================================================================================
+
+- Si vols inputs diferents o escenaris nous, edita el heredoc dins de
+  run_tests.sh o executa ./gradlew runCtrlUsuariDriver manualment per fer
+  proves interactives.
+- El script PROVA.txt esta dissenyat per executar-se automaticament.
+- Prova totes les branques del controlador (exits i errors).
+- Valida correctament els requisits de seguretat.
+- Les contrasenyes en mode test son simples per facilitar proves.
+- El driver ofereix menu interactiu complet.
