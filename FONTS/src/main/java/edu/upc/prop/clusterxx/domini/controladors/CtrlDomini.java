@@ -35,7 +35,12 @@ import static edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
 
 import org.json.JSONArray;
 
-
+/**
+ * Controlador principal del domini que coordina totes les operacions del sistema.
+ * Actua com a façana entre la capa de presentació i els controladors específics,
+ * delegant les peticions als controladors corresponents (enquestes, respostes, usuaris, perfils i anàlisi).
+ * Gestiona la lògica de negoci complexa que implica múltiples controladors.
+ */
 public class CtrlDomini {
     private CtrlEnquesta ctrlEnquesta;
     private CtrlResposta ctrlResposta;
@@ -817,51 +822,65 @@ public class CtrlDomini {
 
     /**
      * Importa una enquesta des d'un fitxer JSON.
-     * Format esperat amb nous tipus de preguntes:
+     * 
+     * Aquest mètode permet carregar enquestes completes des de fitxers JSON externs,
+     * facilitant la creació massiva d'enquestes o la reutilització de plantilles.
+     * El fitxer JSON ha de contenir tota l'estructura de l'enquesta: metadades,
+     * preguntes amb els seus tipus específics, i opcions de resposta quan sigui necessari.
+     * 
+     * Format JSON esperat:
      * {
-     *   "id": "e1",
-     *   "titol": "Enquesta exemple",
-     *   "descripcio": "Descripció de l'enquesta",
+     *   "id": "ID_ENQUESTA",
+     *   "titol": "Títol de l'enquesta",
+     *   "descripcio": "Descripció detallada opcional",
      *   "preguntes": [
      *     {
-     *       "id": "p1",
-     *       "text": "Quina és la teva edat?",
-     *       "tipus": "numerica",
+     *       "id": "ID_PREGUNTA",
+     *       "text": "Text descriptiu de la pregunta",
+     *       "tipus": "numerica|text|qualitativa_ordenada|qualitativa_simple|qualitativa_multiple",
      *       "min": 0,
-     *       "max": 120
-     *     },
-     *     {
-     *       "id": "p2",
-     *       "text": "Com valores el servei?",
-     *       "tipus": "qualitativa_ordenada",
-     *       "opcions": [
-     *         {"id": 1, "text": "Molt poc", "ordre": 1},
-     *         {"id": 2, "text": "Poc", "ordre": 2},
-     *         {"id": 3, "text": "Normal", "ordre": 3},
-     *         {"id": 4, "text": "Força", "ordre": 4},
-     *         {"id": 5, "text": "Molt", "ordre": 5}
-     *       ]
-     *     },
-     *     {
-     *       "id": "p3",
-     *       "text": "Quins idiomes parles?",
-     *       "tipus": "qualitativa_multiple",
+     *       "max": 100,
      *       "max_seleccions": 3,
      *       "opcions": [
-     *         {"id": 1, "text": "Català"},
-     *         {"id": 2, "text": "Castellà"},
-     *         {"id": 3, "text": "Anglès"}
+     *         {"id": 1, "text": "Opció 1", "ordre": 1},
+     *         {"id": 2, "text": "Opció 2", "ordre": 2}
      *       ]
-     *     },
-     *     {
-     *       "id": "p4",
-     *       "text": "Comentaris",
-     *       "tipus": "text"
      *     }
      *   ]
      * }
+     * 
+     * Tipus de preguntes suportats:
+     * - "text": Pregunta de resposta lliure en format text
+     * - "numerica": Pregunta amb resposta numèrica dins d'un rang (min-max)
+     * - "qualitativa_ordenada" o "ordenada": Opcions amb ordre de preferència
+     * - "qualitativa_simple" o "simple": Selecció d'una única opció
+     * - "qualitativa_multiple" o "multiple": Selecció de múltiples opcions (fins a max_seleccions)
+     * 
+     * 
+     * Validacions realitzades:
+     * - Ha d'haver-hi un usuari autenticat al sistema
+     * - El fitxer ha de ser accessible i llegible
+     * - El contingut ha de ser JSON vàlid i ben format
+     * - L'ID de l'enquesta no pot existir prèviament
+     * - Cada pregunta ha de tenir ID i text obligatoris
+     * - Les preguntes qualitatives han de tenir opcions definides
+     * - Els IDs de preguntes i opcions han de ser únics
+     * 
+     * Comportament de creació:
+     * 1. Llegeix i parseja el fitxer JSON
+     * 2. Valida l'estructura i camps obligatoris
+     * 3. Crea l'enquesta amb les metadades
+     * 4. Crea cada pregunta segons el seu tipus
+     * 5. Afegeix les opcions a les preguntes qualitatives
+     * 6. Registra l'enquesta completa al sistema
+     * 
+     * Exemple d'ús:
+     * importarEnquesta("/ruta/enquesta_satisfaccio.json");
+     * 
+     * @param path Ruta absoluta al fitxer JSON que conté la definició de l'enquesta
+     * @throws ErrorImportacioException Si el fitxer no existeix, no es pot llegir, el JSON és invàlid,
+     *         l'enquesta ja existeix, no hi ha usuari autenticat o el format és incorrecte
      */
-    //(jairo)
     public void importarEnquesta(String path) throws ErrorImportacioException {
         try {
             // Leer el archivo
@@ -937,14 +956,52 @@ public class CtrlDomini {
     }
 
     /**
-     * Crea una pregunta segons el seu tipus.
-     * @param json Objecte JSON amb la informació de la pregunta
-     * @param id ID de la pregunta
-     * @param text Text de la pregunta
-     * @param tipusStr Tipus de pregunta com a string
-     * @return Objecte Pregunta creat
+     * Crea una pregunta segons el seu tipus a partir de dades JSON.
+     * 
+     * Aquest mètode privat auxiliar és utilitzat durant la importació d'enquestes
+     * per interpretar el tipus de pregunta especificat en el JSON i crear l'objecte
+     * Pregunta adequat amb tots els seus paràmetres específics. Cada tipus de pregunta
+     * pot requerir paràmetres diferents que s'extrauen del JSON.
+     * 
+     * Tipus de preguntes suportats i els seus constructors:
+     * 
+     * 1. "numerica":
+     *    - Crea: new Pregunta(id, text, min, max)
+     *    - Paràmetres JSON: "min" (Double, per defecte 0.0), "max" (Double, per defecte 100.0)
+     *    - Exemple: Pregunta "Quina és la teva edat?" amb min=0, max=120
+     * 
+     * 2. "qualitativa_ordenada" o "ordenada":
+     *    - Crea: new Pregunta(id, text, TipusPregunta.QUALITATIVA_ORDENADA, 1)
+     *    - Les opcions s'afegeixen després amb ordre de preferència
+     *    - Exemple: Pregunta "Ordena les teves preferències" amb opcions ordenades
+     * 
+     * 3. "qualitativa_simple" o "simple":
+     *    - Crea: new Pregunta(id, text, TipusPregunta.QUALITATIVA_NO_ORDENADA_SIMPLE, 1)
+     *    - Permet seleccionar només una opció de les disponibles
+     *    - Exemple: Pregunta "Quin és el teu color favorit?" amb opcions múltiples però selecció única
+     * 
+     * 4. "qualitativa_multiple" o "multiple":
+     *    - Crea: new Pregunta(id, text, TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE, maxSeleccions)
+     *    - Paràmetres JSON: "max_seleccions" (int, per defecte 3)
+     *    - Permet seleccionar múltiples opcions fins al màxim especificat
+     *    - Exemple: Pregunta "Quins idiomes parles?" amb max_seleccions=5
+     * 
+     * 5. "text" o qualsevol altre:
+     *    - Crea: new Pregunta(id, text)
+     *    - Resposta de text lliure sense validacions específiques
+     *    - Per defecte si el tipus no coincideix amb cap dels anteriors
+     *    - Exemple: Pregunta "Comentaris addicionals?"
+     * 
+     * El mètode és case-insensitive per facilitar la compatibilitat amb
+     * diferents formats de fitxers JSON. Si el tipus no es reconeix, es crea
+     * per defecte una pregunta de text lliure.
+     * 
+     * @param json Objecte JSON amb tota la informació de la pregunta (tipus, min, max, max_seleccions, etc.)
+     * @param id Identificador únic de la pregunta dins de l'enquesta
+     * @param text Text descriptiu de la pregunta que veuran els usuaris
+     * @param tipusStr Tipus de pregunta en format string (case-insensitive)
+     * @return Objecte Pregunta completament configurat segons el tipus especificat
      */
-    //(jairo)
     private Pregunta crearPreguntaPerTipus(JSONObject json, String id, String text, String tipusStr) {
         switch (tipusStr.toLowerCase()) {
             case "numerica":
@@ -973,19 +1030,80 @@ public class CtrlDomini {
 
     /**
      * Importa respostes d'usuaris des d'un fitxer JSON.
-     * Format esperat:
+     * 
+     * Aquest mètode permet carregar respostes massives d'usuaris a una enquesta existent,
+     * facilitant la importació de dades recollides externament o la càrrega de dades de prova.
+     * El procés inclou validacions exhaustives per garantir la integritat de les dades abans
+     * de modificar l'estat del sistema.
+     * 
+     * Format JSON esperat:
      * {
      *   "enquesta_id": "ID_ENQUESTA",
      *   "respostes": [
      *     {
      *       "username": "usuari1",
      *       "respostes": [
-     *         {"pregunta_id": "P1", "resposta": "Text resposta"},
-     *         {"pregunta_id": "P2", "resposta": "25"}
+     *         {"pregunta_id": "P1", "resposta": "Resposta en text lliure"},
+     *         {"pregunta_id": "P2", "resposta": "42"},
+     *         {"pregunta_id": "P3", "resposta": "Opció1,Opció2"}
+     *       ]
+     *     },
+     *     {
+     *       "username": "usuari2",
+     *       "respostes": [
+     *         {"pregunta_id": "P1", "resposta": "Una altra resposta"},
+     *         {"pregunta_id": "P2", "resposta": "38"}
      *       ]
      *     }
      *   ]
      * }
+     * 
+     * Validacions i comportament:
+     * 
+     * 1. Validació prèvia (abans d'importar res):
+     *    - Verifica que l'enquesta especificada existeix al sistema
+     *    - Comprova que TOTES les preguntes referenciades al JSON existeixen a l'enquesta
+     *    - Si alguna pregunta no existeix, llança excepció sense importar cap dada
+     * 
+     * 2. Validació per usuari:
+     *    - Si un usuari no existeix al sistema, s'omet amb un avís per consola però continua
+     *    - Si un usuari ja ha contestat l'enquesta, les noves respostes s'ignoren per aquest usuari
+     *    - Només es registren respostes per usuaris vàlids i registrats
+     * 
+     * 3. Validació per resposta:
+     *    - Cada resposta es valida segons el tipus de pregunta
+     *    - Si una resposta individual falla, s'omet amb avís però continua amb les altres
+     *    - Preguntes numèriques: valida que sigui un número dins del rang
+     *    - Preguntes qualitatives: valida que les opcions existeixin
+     *    - Preguntes text: accepta qualsevol text
+     * 
+     * 4. Registre de participació:
+     *    - Un usuari es marca com a participant només si ha respost almenys una pregunta vàlidament
+     *    - La participació s'afegeix a la llista de participants de l'enquesta
+     *    - Si l'usuari ja era participant, no es duplica
+     * 
+     * Flux d'execució:
+     * 1. Llegeix i parseja el fitxer JSON
+     * 2. Obté l'enquesta especificada
+     * 3. Valida que totes les preguntes del JSON existeixen
+     * 4. Per cada usuari:
+     *    a. Verifica que l'usuari existeix
+     *    b. Per cada resposta de l'usuari:
+     *       - Valida el format de la resposta
+     *       - Registra la resposta si és vàlida
+     *    c. Si l'usuari ha respost almenys una pregunta, registra la participació
+     * 5. Mostra missatge de confirmació amb nombre de participants importats
+     * 
+     * 
+     * Exemple d'ús:
+     * importarRespostes("/ruta/respostes_enquesta_1.json");
+     * // Sortida: ✓ S'han importat respostes de 47 participants
+     * 
+     * @param path Ruta absoluta al fitxer JSON que conté les respostes dels usuaris
+     * @throws ErrorImportacioException Si el fitxer no existeix o no es pot llegir,
+     *         si el JSON és invàlid, si l'enquesta no existeix, si alguna pregunta del JSON
+     *         no existeix a l'enquesta, o si no s'ha pogut importar cap resposta vàlida
+     * @see Pregunta#validarResposta(String)
      */
     public void importarRespostes(String path) throws ErrorImportacioException {
         try {
@@ -1115,16 +1233,38 @@ public class CtrlDomini {
 
    
     /**
-     * Processa la contestació d'una enquesta per part d'un usuari.
-     * Guarda totes les respostes a les preguntes i registra la participació.
-     * @param idEnquesta ID de l'enquesta a contestar
-     * @param respostes HashMap amb idResposta -> textResposta
-     * @param idsPreguntaPerResposta HashMap amb idResposta -> idPregunta
-     * @throws UsuariNoAutenticatException Si no hi ha usuari autenticat
+     * Processa la contestació completa d'una enquesta per part d'un usuari autenticat.
+     * 
+     * Aquest mètode permet respondre totes les preguntes d'una enquesta d'una sola vegada.
+     * Valida exhaustivament totes les respostes abans de guardar-ne cap per garantir
+     * l'atomicitat (tot o res): si alguna resposta és invàlida, no es guarda cap.
+     * 
+     * Flux d'execució:
+     * 1. Valida paràmetres i comprova que hi ha un usuari autenticat
+     * 2. Verifica que l'enquesta existeix i l'usuari NO l'ha contestat prèviament
+     * 3. Valida totes les respostes segons el tipus de cada pregunta
+     * 4. Si totes les validacions passen, guarda totes les respostes
+     * 5. Registra la participació de l'usuari a l'enquesta
+     * 
+
+     * 
+     * Validacions segons tipus de pregunta:
+     * - Numèrica: comprova que sigui un número dins del rang [min, max]
+     * - Qualitativa simple: valida que l'opció existeixi
+     * - Qualitativa múltiple: valida opcions i nombre màxim de seleccions
+     * - Text lliure: accepta qualsevol text
+     * 
+     * @param idEnquesta Identificador únic de l'enquesta a contestar
+     * @param respostes HashMap que mapeja identificadors de resposta a text de resposta
+     * @param idsPreguntaPerResposta HashMap que mapeja identificadors de resposta a identificadors de pregunta
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat
      * @throws EnquestaNoExisteixException Si l'enquesta no existeix
-     * @throws PreguntaNoExisteixException Si alguna pregunta no existeix
+     * @throws EnquestaJaContestadaException Si l'usuari ja ha contestat aquesta enquesta
+     * @throws PreguntaNoExisteixException Si alguna pregunta referenciada no existeix
      * @throws RespostaInvalidaException Si alguna resposta no és vàlida pel tipus de pregunta
-     * @throws ParametreInvalidException Si algun paràmetre és null
+     * @throws ParametreInvalidException Si algun paràmetre és null o buit
+     * @see modificarResposta(String, String, String)
+     * @see esborrarResposta(String)
      */
     public void contestarEnquesta(String idEnquesta, HashMap<String, String> respostes, HashMap<String, String> idsPreguntaPerResposta) 
             throws UsuariNoAutenticatException, EnquestaNoExisteixException, EnquestaJaContestadaException, 
@@ -1204,19 +1344,30 @@ public class CtrlDomini {
     }
     
     /**
-     * Modifica una resposta de l'usuari autenticat a una pregunta concreta.
-     * Valida el format de la nova resposta segons el tipus de pregunta abans de modificar-la.
-     * @param idEnquesta L'ID de l'enquesta.
-     * @param idPregunta L'ID de la pregunta.
-     * @param novaResposta La nova resposta.
-     * @throws EnquestaNoExisteixException Si l'enquesta no existeix.
-     * @throws PreguntaNoExisteixException Si la pregunta no existeix.
-     * @throws RespostaNoExisteixException Si l'usuari no ha respost aquesta pregunta.
-     * @throws RespostaInvalidaException Si la nova resposta no és vàlida pel tipus de pregunta.
-     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
-     * @throws ParametreInvalidException Si algun paràmetre és invàlid.
+     * Modifica una resposta prèvia de l'usuari autenticat a una pregunta d'una enquesta.
+     * 
+     * Aquest mètode permet actualitzar el contingut d'una resposta que l'usuari ja havia
+     * donat anteriorment. Valida que la nova resposta compleix els requisits del tipus de
+     * pregunta abans d'aplicar la modificació.
+     * 
+     * Validacions realitzades:
+     * - Ha d'haver-hi un usuari autenticat
+     * - L'enquesta i la pregunta han d'existir
+     * - L'usuari ha d'haver respost prèviament aquesta pregunta
+     * - La nova resposta ha de ser vàlida segons el tipus de pregunta
+     * 
+     * Les modificacions es persisteixen automàticament al sistema.
+     * 
+     * @param idEnquesta Identificador de l'enquesta
+     * @param idPregunta Identificador de la pregunta
+     * @param novaResposta Nou text de la resposta
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix
+     * @throws PreguntaNoExisteixException Si la pregunta no existeix
+     * @throws RespostaNoExisteixException Si l'usuari no ha respost aquesta pregunta prèviament
+     * @throws RespostaInvalidaException Si la nova resposta no és vàlida pel tipus de pregunta
+     * @throws ParametreInvalidException Si algun paràmetre és null o buit
      */
-    //(jairo)
     public void modificarResposta(String idEnquesta, String idPregunta, String novaResposta) 
             throws EnquestaNoExisteixException, PreguntaNoExisteixException, RespostaNoExisteixException, 
                    RespostaInvalidaException, UsuariNoAutenticatException, ParametreInvalidException {
@@ -1269,16 +1420,26 @@ public class CtrlDomini {
     }
 
     /**
-     * Esborra totes les respostes de l'usuari autenticat a una enquesta.
-     * Elimina totes les respostes associades a cada pregunta de l'enquesta i elimina
-     * l'usuari de la llista de participants.
-     * @param idEnquesta L'ID de l'enquesta.
-     * @throws EnquestaNoExisteixException Si l'enquesta no existeix.
-     * @throws RespostaNoExisteixException Si l'usuari no ha contestat aquesta enquesta.
-     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
-     * @throws ParametreInvalidException Si l'ID de l'enquesta és invàlid.
+     * Esborra totes les respostes de l'usuari autenticat a una enquesta específica.
+     * 
+     * Aquest mètode elimina completament la participació de l'usuari actual en una enquesta:
+     * elimina totes les respostes donades a cada pregunta de l'enquesta i retira l'usuari
+     * de la llista de participants.
+     * 
+     * Després d'executar aquest mètode, és com si l'usuari mai hagués contestat l'enquesta,
+     * permetent-li tornar-la a respondre completament si ho desitja.
+     * 
+     * Validacions:
+     * - Ha d'haver-hi un usuari autenticat
+     * - L'enquesta ha d'existir
+     * - L'usuari ha d'haver contestat prèviament aquesta enquesta
+     * 
+     * @param idEnquesta Identificador de l'enquesta
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix
+     * @throws RespostaNoExisteixException Si l'usuari no ha contestat aquesta enquesta
+     * @throws ParametreInvalidException Si l'ID de l'enquesta és null o buit
      */
-    //(jairo)
     public void esborrarResposta(String idEnquesta) 
             throws EnquestaNoExisteixException, RespostaNoExisteixException, UsuariNoAutenticatException, ParametreInvalidException {
         
@@ -1511,42 +1672,35 @@ public class CtrlDomini {
         ctrlResposta.registrarResposta(idPregunta, textResposta, usuari, pregunta);
     }
 
-    /**
-     * Obté les estadístiques del sistema.
-     * @return Un HashMap amb les estadístiques del sistema:
-     *         - "totalEnquestes": nombre total d'enquestes
-     *         - "totalUsuaris": nombre total d'usuaris
-     *         - "totalPreguntes": nombre total de preguntes
-     *         - "totalParticipants": nombre total de participacions
-     */
-    public HashMap<String, Integer> getEstadistiques() {
-        HashMap<String, Integer> stats = new HashMap<>();
-        
-        ArrayList<Enquesta> totes = ctrlEnquesta.llistarEnquestes();
-        stats.put("totalEnquestes", totes.size());
-        stats.put("totalUsuaris", ctrlUsuari.getNumUsuaris());
-        
-        int totalPreguntes = 0;
-        int totalParticipants = 0;
-        for (Enquesta e : totes) {
-            totalPreguntes += e.getPreguntes().size();
-            totalParticipants += e.getParticipants().size();
-        }
-        
-        stats.put("totalPreguntes", totalPreguntes);
-        stats.put("totalParticipants", totalParticipants);
-        
-        return stats;
-    }
+   
 
     // --- Anàlisi i Clustering ---
 
-    public void analitzarRespostes(String idEnquesta) {
-        // Lógica para analizar las respuestas y realizar el clustering
-    }
+
 
     // --- Gestió d'Usuaris i Perfils (mètodes existents) ---
 
+    /**
+     * Registra un nou usuari al sistema amb el nom d'usuari i contrasenya especificats.
+     * 
+     * Aquest mètode crea un compte d'usuari nou al sistema. Valida que el nom d'usuari
+     * no estigui ja registrat i que tant el username com la contrasenya compleixin els
+     * requisits mínims de longitud i format.
+     * 
+     * Validacions:
+     * - El nom d'usuari ha de tenir almenys 3 caràcters
+     * - La contrasenya ha de tenir almenys 4 caràcters
+     * - El nom d'usuari no pot estar ja registrat al sistema
+     * - Ni el username ni la contrasenya poden ser null o buits
+     * 
+     * El nom d'usuari es normalitza eliminant espais als extrems.
+     * 
+     * @param username Nom d'usuari desitjat (mínim 3 caràcters)
+     * @param password Contrasenya de l'usuari (mínim 4 caràcters)
+     * @throws UsuariJaExisteixException Si ja existeix un usuari amb aquest nom
+     * @throws ParametreInvalidException Si els paràmetres són invàlids o no compleixen els requisits
+     * @see login(String, String)
+     */
     public void registrarUsuari(String username, String password) throws UsuariJaExisteixException, ParametreInvalidException {
         // Validar que els paràmetres no siguin nuls o buits
         if (username == null || username.trim().isEmpty()) {
@@ -1575,6 +1729,30 @@ public class CtrlDomini {
         ctrlUsuari.registrarUsuari(normalizedUsername, password);
     }
 
+    /**
+     * Autentica un usuari al sistema i inicia una nova sessió.
+     * 
+     * Aquest mètode verifica les credencials de l'usuari (nom d'usuari i contrasenya)
+     * i, si són correctes, estableix l'usuari com a usuari autenticat del sistema,
+     * permetent-li accedir a totes les funcionalitats que requereixen autenticació.
+     * 
+     * El procés de login:
+     * 1. Valida que els paràmetres no siguin null o buits
+     * 2. Normalitza el nom d'usuari (elimina espais)
+     * 3. Comprova que l'usuari existeix al sistema
+     * 4. Verifica que la contrasenya és correcta
+     * 5. Estableix l'usuari com a usuari actual del sistema
+     * 
+     * Si les credencials són incorrectes (usuari no existeix o contrasenya incorrecta),
+     * es llança una excepció i no s'inicia cap sessió.
+     * 
+     * @param username Nom d'usuari registrat al sistema
+     * @param password Contrasenya de l'usuari
+     * @throws CredencialsIncorrectesException Si l'usuari no existeix o la contrasenya és incorrecta
+     * @throws ParametreInvalidException Si el username o password són null o buits
+     * @see logout()
+     * @see registrarUsuari(String, String)
+     */
     public void login(String username, String password) throws CredencialsIncorrectesException, ParametreInvalidException {
         // Validar que els paràmetres no siguin nuls o buits
         if (username == null || username.trim().isEmpty()) {
@@ -1604,17 +1782,50 @@ public class CtrlDomini {
     }
     
     /**
-     * Tanca la sessió de l'usuari actual.
-     * Estableix l'usuari actual a null.
+     * Tanca la sessió de l'usuari actualment autenticat.
+     * 
+     * Aquest mètode finalitza la sessió activa de l'usuari, establint l'usuari actual
+     * a null. Després d'executar logout, les operacions que requereixen autenticació
+     * llançaran UsuariNoAutenticatException fins que es torni a fer login.
+     * 
+     * És segur cridar aquest mètode encara que no hi hagi cap usuari autenticat.
+     * 
+     * @see login(String, String)
      */
     public void logout() {
         ctrlUsuari.logout();
     }
     
+    /**
+     * Verifica si una contrasenya proporcionada coincideix amb la de l'usuari autenticat.
+     * 
+     * Aquest mètode comprova si la contrasenya donada correspon a l'usuari que té
+     * la sessió activa actualment. És útil per confirmar la identitat de l'usuari
+     * abans d'executar operacions sensibles (com eliminar el compte o modificar dades).
+     * 
+     * @param password Contrasenya a verificar
+     * @return true si la contrasenya coincideix amb la de l'usuari actual, false altrament
+     */
     public boolean checkPassword(String password) {
         return ctrlUsuari.checkPassword(password);
     }
 
+    /**
+     * Elimina un usuari del sistema de forma permanent.
+     * 
+     * Aquest mètode esborra completament un compte d'usuari del sistema, incloent
+     * totes les seves dades associades. Si l'usuari a eliminar és l'usuari actualment
+     * autenticat, es tanca automàticament la seva sessió abans de l'eliminació.
+     * 
+     * Advertència: Aquesta operació és irreversible i comporta la pèrdua de totes
+     * les dades de l'usuari (respostes, perfils assignats, etc.).
+     * 
+     * El nom d'usuari es normalitza (elimina espais) abans de processar l'eliminació.
+     * 
+     * @param username Nom de l'usuari a eliminar
+     * @throws ParametreInvalidException Si el username és null o buit
+     * @see registrarUsuari(String, String)
+     */
     public void eliminarUsuari(String username) throws ParametreInvalidException {
         // Validar que el paràmetre no sigui nul o buit
         if (username == null || username.trim().isEmpty()) {
@@ -1633,6 +1844,17 @@ public class CtrlDomini {
         ctrlUsuari.eliminarUsuari(normalizedUsername);
     }
 
+    /**
+     * Crea un nou perfil al sistema amb un identificador i descripció especificats.
+     * 
+     * Aquest mètode permet crear perfils manualment, que poden ser assignats posteriorment
+     * a usuaris. Normalment els perfils es generen automàticament durant el procés de
+     * clustering, però aquest mètode permet crear-ne de personalitzats.
+     * 
+     * @param id Identificador únic del perfil
+     * @param descripcio Descripció del perfil
+     * @see getPerfil(String)
+     */
     public void crearPerfil(String id, String descripcio) {
         ctrlPerfil.crearPerfil(id, descripcio);
     }
@@ -1653,8 +1875,27 @@ public class CtrlDomini {
 
     /**
      * Verifica si existeix una enquesta amb l'ID especificat.
-     * @param idEnquesta L'ID de l'enquesta
-     * @return true si existeix, false altrament
+     * 
+     * Aquest mètode comprova si una enquesta amb l'identificador donat està
+     * registrada al sistema de persistència. És una operació ràpida i segura que
+     * no modifica l'estat del sistema i pot ser cridada múltiples vegades sense
+     * efectes secundaris.
+     * 
+     * 
+     * Validacions realitzades:
+     * - Si l'ID és null, retorna false
+     * - Si l'ID està buit (després de trim), retorna false
+     * - Si l'enquesta no està al sistema de persistència, retorna false
+     * - Si l'enquesta existeix, retorna true
+     * 
+     * Nota: Aquest mètode NO requereix autenticació. És una consulta
+     * de només lectura que pot ser utilitzada en qualsevol moment.
+     * 
+     * 
+     * @param idEnquesta L'identificador únic de l'enquesta a verificar
+     * @return true si existeix una enquesta amb aquest ID, false si no existeix,
+     *         si l'ID és null o si l'ID està buit
+     * @see CtrlEnquesta#getEnquesta(String)
      */
     public boolean existeixEnquesta(String idEnquesta) {
         if (idEnquesta == null || idEnquesta.trim().isEmpty()) {
@@ -1665,8 +1906,33 @@ public class CtrlDomini {
 
     /**
      * Registra la participació d'un usuari en una enquesta.
-     * @param idEnquesta L'ID de l'enquesta
-     * @param username El nom d'usuari
+     * 
+     * Aquest mètode afegeix un usuari a la llista de participants d'una enquesta,
+     * marcant-lo com a persona que ha contestat o està contestant l'enquesta.
+     * La participació és un registre essencial per a posteriors anàlisis de clustering
+     * i per controlar quins usuaris han interactuat amb cada enquesta.
+     * 
+     * 
+     * Requisits per registrar participació:
+     * - L'enquesta ha d'existir al sistema
+     * - L'usuari ha d'estar registrat al sistema
+     *       
+     * Importància per al clustering:
+     * Aquest registre és fonamental perquè:
+     * - Determina quins usuaris s'inclouran en l'anàlisi de clustering
+     * - Permet calcular el nombre mínim de participants necessaris per analitzar
+     * - Facilita l'obtenció ràpida de tots els participants d'una enquesta
+     * - Manté la coherència entre respostes i usuaris analitzats
+     * 
+     * Comportament amb duplicats:
+     * Si es crida múltiples vegades amb el mateix username i idEnquesta,
+     * només es registra una vegada. No es llança excepció per duplicats.
+     * 
+     * 
+     * @param idEnquesta L'identificador únic de l'enquesta on l'usuari ha participat
+     * @param username El nom d'usuari del participant a registrar
+     * @see CtrlEnquesta#registrarParticipacio(String, String)
+     * @see contestarEnquesta(String, HashMap, HashMap)
      */
     public void registrarParticipacio(String idEnquesta, String username) {
         ctrlEnquesta.registrarParticipacio(idEnquesta, username);
@@ -1675,16 +1941,35 @@ public class CtrlDomini {
     // --- Anàlisi i Clustering ---
 
     /**
-     * Encuentra el valor óptimo de k para clustering de una encuesta.
-     * Vectoriza las respuestas y evalúa diferentes valores de k con Silhouette.
+     * Troba el valor òptim de k per al clustering d'una enquesta.
      * 
-     * @param idEnquesta ID de la encuesta
-     * @param kMin Valor mínimo de k a evaluar
-     * @param kMax Valor máximo de k a evaluar
-     * @param algoritmeNom Algoritmo a usar: "KMeans", "KMeans++", "KMedoids"
-     * @param maxIters Máximo de iteraciones
-     * @return Resultado con el mejor k y scores de Silhouette
-     * @throws EnquestaNoExisteixException Si la encuesta no existe
+     * Aquest mètode determina automàticament el nombre ideal de clusters avaluant múltiples
+     * valors de k dins d'un rang especificat. Utilitza el coeficient de Silhouette per
+     * identificar quin valor produeix la millor separació i cohesió dels clusters.
+     * 
+     * El procés vectoritza les respostes dels participants, executa l'algoritme de clustering
+     * per cada valor de k entre kMin i kMax, calcula el coeficient de Silhouette de cada
+     * resultat, i retorna el k que ha obtingut la millor puntuació.
+     * 
+     * Validacions:
+     * - L'enquesta ha d'existir i tenir preguntes
+     * - Han d'haver-hi almenys kMax participants amb respostes
+     * - kMin ha de ser mínim 2 i kMax no pot superar el nombre de participants
+     * 
+     * Per obtenir un rang recomanat de valors kMin/kMax, podeu utilitzar suggestKRange().
+     * Per una selecció ràpida sense anàlisi exhaustiva, considereu escollirKAleatori().
+     * 
+     * @param idEnquesta Identificador únic de l'enquesta a analitzar
+     * @param kMin Valor mínim de k a avaluar (mínim 2)
+     * @param kMax Valor màxim de k a avaluar (màxim = nombre de participants)
+     * @param algoritmeNom Algoritme a utilitzar: "KMeans", "KMeans++" o "KMedoids"
+     * @param maxIters Màxim nombre d'iteracions per cada execució de clustering
+     * @return OptimalKResult amb bestK (òptim), bestScore (Silhouette) i allScores (tots els k avaluats)
+     * @throws EnquestaNoExisteixException Si l'enquesta especificada no existeix al sistema
+     * @throws IllegalStateException Si l'enquesta no té preguntes o no hi ha prou participants
+     * @see suggestKRange(int)
+     * @see analitzarEnquesta(String, int, boolean, int, String)
+     * @see CtrlAnalisi#findOptimalK(List, int, int, String, int, DistanceCalculator.FeatureSpec[])
      */
     public CtrlAnalisi.OptimalKResult trobarMillorK(String idEnquesta, int kMin, int kMax,
                                                      String algoritmeNom, int maxIters)
@@ -1741,11 +2026,25 @@ public class CtrlDomini {
     }
 
     /**
-     * Selecciona un valor de k aleatorio para una encuesta.
+     * Selecciona un valor de k aleatori adequat per a una enquesta.
      * 
-     * @param idEnquesta ID de la encuesta
-     * @return Valor de k aleatorio
-     * @throws EnquestaNoExisteixException Si la encuesta no existe
+     * Aquest mètode proporciona una manera ràpida d'obtenir un nombre de clusters sense
+     * necessitat de fer una anàlisi exhaustiva. El valor retornat està basat en el nombre
+     * total de participants de l'enquesta i segueix heurístiques generals de clustering.
+     * 
+     * És útil per fer exploracions ràpides o quan no es requereix trobar el k òptim.
+     * Per obtenir el millor valor de k, utilitzeu trobarMillorK() que avalua múltiples
+     * valors i utilitza el coeficient de Silhouette.
+     * 
+     * Validacions:
+     * - L'enquesta ha d'existir al sistema
+     * - El nombre de participants determina el rang possible de k
+     * 
+     * @param idEnquesta Identificador únic de l'enquesta
+     * @return Valor de k aleatori adequat segons el nombre de participants
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix al sistema
+     * @see trobarMillorK(String, int, int, String, int)
+     * @see CtrlAnalisi#selectRandomK(int)
      */
     public int escollirKAleatori(String idEnquesta) throws EnquestaNoExisteixException {
         // Obtenir nombre de participants
@@ -1769,18 +2068,42 @@ public class CtrlDomini {
     }
 
     /**
-     * Realitza clustering sobre els usuaris que han respost una enquesta.
-     * Els perfils generats s'assignen automàticament als usuaris i es persisten.
+     * Realitza l'anàlisi de clustering sobre els usuaris que han respost una enquesta.
      * 
-     * @param idEnquesta ID de l'enquesta a analitzar
-     * @param k Nombre de clusters
-     * @param usePlusPlus true per usar KMeans++, false per KMeans estàndard (ignorat si algoritmeNom és especificat)
-     * @param maxIters Màxim d'iteracions
-     * @param algoritmeNom Nom de l'algoritme: "KMeans", "KMeans++", "KMedoids"
-     * @return Resultats del clustering amb clusters, silhouette i perfils assignats
-     * @throws EnquestaNoExisteixException Si l'enquesta no existeix
+     * Aquest mètode és el punt central per executar el procés complet de clustering:
+     * vectoritza les respostes dels participants, aplica l'algoritme de clustering
+     * especificat, calcula les mètriques de qualitat (Silhouette), genera perfils
+     * descriptius per cada cluster i els assigna automàticament als usuaris corresponents.
+     * 
+     * Flux d'execució:
+     * 1. Valida que l'enquesta existeix i té preguntes
+     * 2. Recull i vectoritza les respostes de tots els participants
+     * 3. Executa l'algoritme de clustering (KMeans, KMeans++ o KMedoids)
+     * 4. Calcula el coeficient de Silhouette global i per cluster
+     * 5. Genera un perfil descriptiu per cada cluster identificat
+     * 6. Assigna cada perfil als usuaris del cluster corresponent
+     * 7. Persisteix automàticament els perfils als usuaris
+     * 
+     * Els perfils generats contenen informació detallada sobre les característiques
+     * del cluster, el seu centroide, la mida, la qualitat (Silhouette) i un nom
+     * descriptiu basat en les respostes més representatives.
+     * 
+     * Validacions:
+     * - L'enquesta ha d'existir i tenir preguntes
+     * - Hi ha d'haver almenys k participants amb respostes
+     * - Els usuaris han de tenir respostes vàlides per vectoritzar
+     * 
+     * @param idEnquesta Identificador únic de l'enquesta a analitzar
+     * @param k Nombre de clusters a crear (ha de ser ≤ nombre de participants)
+     * @param usePlusPlus true per usar KMeans++, false per KMeans estàndard (ignorat si s'especifica algoritmeNom)
+     * @param maxIters Màxim nombre d'iteracions de l'algoritme
+     * @param algoritmeNom Algoritme específic: "KMeans", "KMeans++" o "KMedoids"
+     * @return ResultatClustering amb clusters generats, coeficients Silhouette, usuaris i vectors
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix al sistema
+     * @throws IllegalStateException Si no hi ha preguntes o no hi ha prou participants
+     * @see trobarMillorK(String, int, int, String, int)
+     * @see ResultatClustering
      */
-    //(jairo)
     public ResultatClustering analitzarEnquesta(String idEnquesta, int k, boolean usePlusPlus, 
                                                  int maxIters, String algoritmeNom) 
             throws EnquestaNoExisteixException {
@@ -1905,7 +2228,23 @@ public class CtrlDomini {
     }
     
     /**
-     * Genera un nom descriptiu per a un cluster basat en el seu centroide.
+     * Genera un nom descriptiu per a un cluster basat en les seves característiques.
+     * 
+     * Aquest mètode analitza el centroide del cluster (valor representatiu de cada pregunta)
+     * i genera un nom intel·ligible que descriu el perfil del grup. La lògica d'assignació
+     * de noms depèn del tipus de pregunta i dels valors centrals del cluster:
+     * 
+     * - Per preguntes numèriques: classifica en rangs (Baix, Mitjà, Alt)
+     * - Per preguntes qualitatives ordenades: utilitza el valor central directament
+     * - Per preguntes de selecció múltiple: agafa l'opció més representativa
+     * 
+     * Si no es pot generar un nom descriptiu (per manca de dades significatives), retorna
+     * un nom genèric "Cluster N" on N és l'índex del cluster.
+     * 
+     * @param index Índex del cluster (utilitzat per generar noms per defecte)
+     * @param centroid Vector amb els valors centrals de cada pregunta del cluster
+     * @param preguntes Llista de preguntes de l'enquesta per interpretar els valors
+     * @return Nom descriptiu del cluster basat en les seves característiques
      */
     private String generarNomCluster(int index, String[] centroid, List<Pregunta> preguntes) {
         if (preguntes.isEmpty() || centroid.length == 0) {
@@ -1948,7 +2287,27 @@ public class CtrlDomini {
     }
     
     /**
-     * Classe auxiliar per retornar els resultats del clustering.
+     * Classe auxiliar que encapsula els resultats complets d'un procés de clustering.
+     * 
+     * Aquesta classe actua com a contenidor immutable per a tota la informació generada
+     * durant l'anàlisi de clustering d'una enquesta. Facilita el retorn de múltiples
+     * dades relacionades en una única estructura organitzada.
+     * 
+     * Camps inclosos:
+     * - clusters: Llista de Kluster amb les agrupacions identificades i els seus centroides
+     * - silhouetteGlobal: Coeficient de Silhouette global que mesura la qualitat general del clustering
+     * - silhouettePerCluster: Array amb el coeficient de Silhouette específic de cada cluster
+     * - usernames: Llista ordenada dels noms d'usuari dels participants analitzats
+     * - dataVectors: Vectors de respostes corresponents a cada usuari (mateix ordre que usernames)
+     * - vectorToIndex: Mapa que permet localitzar l'índex d'un vector a partir del seu contingut
+     * 
+     * Aquesta informació és útil per:
+     * - Avaluar la qualitat del clustering realitzat
+     * - Identificar quins usuaris pertanyen a cada cluster
+     * - Analitzar les característiques de cada agrupació
+     * - Depurar i validar els resultats de l'algoritme
+     * 
+     * Tots els camps són finals (immutables) per garantir la consistència de les dades.
      */
     public static class ResultatClustering {
         public final List<Kluster> clusters;

@@ -139,7 +139,7 @@ echo E2
 echo 4
 echo NOEX
 echo 0
-) | gradlew runCtrlEnquestaDriver --no-daemon --quiet -q
+) | gradlew runCtrlEnquestaDriver --no-daemon --quiet -q > PROVA.txt 2>&1
 
 echo.
 echo Pruebas completadas. Revisa la salida anterior para comprobar resultados.

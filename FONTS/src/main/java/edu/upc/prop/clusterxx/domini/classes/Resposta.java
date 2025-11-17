@@ -10,7 +10,7 @@ public class Resposta {
     private String textResposta;
     private String usernameUsuari;
 
-    //(jairo)
+    
     public Resposta(String id, String idPregunta, String textResposta, Usuari usuari) {
         this.id = id;
         this.idPregunta = idPregunta;
@@ -33,7 +33,7 @@ public class Resposta {
     public String getUsernameUsuari() {
         return usernameUsuari;
     }
-    //(jairo)
+    
     public void modificarResposta(String nouText) {
         this.textResposta = nouText;
     }

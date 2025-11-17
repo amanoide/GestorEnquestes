@@ -7,7 +7,8 @@ import edu.upc.prop.clusterxx.domini.classes.Resposta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
 
 /**
- * Controlador de respostes que delega totes les operacions de dades a CtrlPersistencia.
+ * Controlador de respostes que delega totes les operacions de dades a
+ * CtrlPersistencia.
  * No manté dades pròpies, només coordina la lògica de negoci.
  */
 public class CtrlResposta {
@@ -16,31 +17,34 @@ public class CtrlResposta {
     public CtrlResposta() {
         this.persistencia = CtrlPersistencia.getInstance();
     }
-    
+
     /**
      * Registra una resposta individual.
      * Genera automàticament l'ID de la resposta com: idPregunta + "_" + username
-     * @param idPregunta ID de la pregunta
+     * 
+     * @param idPregunta   ID de la pregunta
      * @param textResposta Text de la resposta
-     * @param usuari Usuari que respon
-     * @param pregunta Pregunta a la qual es respon
+     * @param usuari       Usuari que respon
+     * @param pregunta     Pregunta a la qual es respon
      */
     public void registrarResposta(String idPregunta, String textResposta, Usuari usuari, Pregunta pregunta) {
         // Generar ID únic per la resposta
         String idResposta = idPregunta + "_" + usuari.getUsername();
-        
+
         Resposta resposta = new Resposta(idResposta, idPregunta, textResposta, usuari);
         persistencia.afegirResposta(idResposta, resposta, pregunta);
     }
 
     /**
      * Modifica una resposta específica d'un usuari.
-     * @param usuari L'usuari que modifica.
-     * @param pregunta La pregunta on està la resposta.
+     * 
+     * @param usuari       L'usuari que modifica.
+     * @param pregunta     La pregunta on està la resposta.
      * @param novaResposta El nou text de la resposta.
-     * @return 0 si s'ha modificat correctament, 1 si no existia la resposta, 2 si no té permisos.
+     * @return 0 si s'ha modificat correctament, 1 si no existia la resposta, 2 si
+     *         no té permisos.
      */
-    //(jairo)
+
     public void modificarResposta(Resposta resposta, String novaResposta) {
         resposta.modificarResposta(novaResposta);
     }
@@ -48,48 +52,22 @@ public class CtrlResposta {
     /**
      * Esborra una resposta específica.
      * Delega les operacions d'eliminació de persistència i de la pregunta.
+     * 
      * @param resposta La resposta a esborrar.
      * @param pregunta La pregunta on està la resposta.
      */
-    //(jairo)
+
     public void esborrarResposta(Resposta resposta, Pregunta pregunta) {
         // Eliminar de persistència
         persistencia.eliminarResposta(resposta.getId());
-        
+
         // Eliminar de la pregunta
         pregunta.eliminarResposta(resposta.getUsernameUsuari());
     }
 
     /**
-     * Esborra una resposta específica d'un usuari.
-     * @param usuari L'usuari que esborra.
-     * @param pregunta La pregunta on està la resposta.
-     * @return 0 si s'ha esborrat correctament, 1 si no existia la resposta, 2 si no té permisos.
-     */
-    //(jairo)
-    public int esborrarResposta(Usuari usuari, Pregunta pregunta) {
-        String username = usuari.getUsername();
-        
-        // Buscar la resposta en la pregunta
-        Resposta resposta = pregunta.getResposta(username);
-        
-        if (resposta != null) {
-            // Verificar que el usuario que intenta esborrar es el propietario
-            if (!resposta.getUsernameUsuari().equals(username)) {
-                return 2; // No tiene permisos
-            }
-            
-            // Eliminar de persistència i de la pregunta
-            persistencia.eliminarResposta(resposta.getId());
-            pregunta.eliminarResposta(username);
-            return 0; // Esborrada correctamente
-        }
-        
-        return 1; // No existe la resposta
-    }
-
-    /**
      * Obté la resposta d'un usuari a una pregunta específica.
+     * 
      * @param pregunta La pregunta.
      * @param username El nom d'usuari.
      * @return La resposta de l'usuari o null si no existeix.
@@ -104,37 +82,21 @@ public class CtrlResposta {
 
     /**
      * Obté tota l'estructura de respostes per a persistència.
-     * @return HashMap complet amb totes les respostes del sistema (idResposta -> Resposta)
+     * 
+     * @return HashMap complet amb totes les respostes del sistema (idResposta ->
+     *         Resposta)
      */
-    //(jairo)
+
     public HashMap<String, Resposta> getTotesRespostes() {
         return persistencia.getAllRespostes();
     }
 
     /**
-     * Estableix tota l'estructura de respostes des de persistència.
-     * @param respostes HashMap complet amb totes les respostes a carregar (idResposta -> Resposta)
-     */
-    //(jairo)
-    public void setTotesRespostes(HashMap<String, Resposta> respostes) {
-        if (respostes != null) {
-            persistencia.saveRespostes(respostes);
-        }
-    }
-
-    /**
-     * Neteja totes les respostes (útil per a reinicialització).
-     */
-    //(jairo)
-    public void netejarRespostes() {
-        persistencia.saveRespostes(new HashMap<>());
-    }
-
-    /**
      * Obté el nombre total de respostes.
+     * 
      * @return Nombre total de respostes al sistema
      */
-    //(jairo)
+
     public int getNumRespostes() {
         return persistencia.getAllRespostes().size();
     }

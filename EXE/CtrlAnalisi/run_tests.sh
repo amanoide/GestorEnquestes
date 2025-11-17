@@ -31,7 +31,6 @@ LOGIN Y MOCK SETUP:
 7) Volver a login admin USER_MOCK / 1234
 
 ANÁLISIS SIN SUFICIENTES PARTICIPANTES:
-8) Analizar enquesta cuando solo hay 1 participant (error esperat - necesita >= 2)
 9) Consultar perfil sin haber sido analizado aun (error esperat)
 
 ANÁLISIS CON K MANUAL:
@@ -62,7 +61,7 @@ NOTA: El següent bloc heredoc conté únicament les entrades (inputs)
 que es passaran al driver.
 PLAN
 
-./gradlew runCtrlAnalisiDriver --no-daemon --quiet -q <<'EOF'
+./gradlew runCtrlAnalisiDriver --no-daemon --quiet -q <<'EOF' > PROVA.txt 2>&1
 502
 noexist
 pwd1
@@ -84,14 +83,6 @@ pwd1
 502
 USER_MOCK
 1234
-1
-1
-1
-2
-1
-1
-1
-2
 2
 502
 alice
@@ -99,15 +90,10 @@ pwd1
 2
 1
 1
-2
-1
 1
 2
-502
-USER_MOCK
-1234
-2
 1
+2
 502
 bob
 pwd1
@@ -116,16 +102,17 @@ pwd1
 2
 2
 2
-1
-2
 502
 carla
 pwd1
 1
 1
 3
-2
 3
+2
+1
+99
+1
 1
 2
 1

@@ -27,6 +27,10 @@ public class CtrlPersistencia {
     private HashMap<String, Perfil> perfils;
     private HashMap<String, Pregunta> preguntes; // Totes les preguntes del sistema
 
+    /**
+     * Constructor privat per implementar el patró Singleton.
+     * Inicialitza tots els repositoris de dades en memòria.
+     */
     private CtrlPersistencia() {
         this.enquestes = new ArrayList<>();
         this.respostes = new HashMap<>();
@@ -35,6 +39,12 @@ public class CtrlPersistencia {
         this.preguntes = new HashMap<>();
     }
 
+    /**
+     * Obté la instància única de CtrlPersistencia.
+     * Crea la instància si encara no existeix.
+     * 
+     * @return La instància única de CtrlPersistencia
+     */
     public static CtrlPersistencia getInstance() {
         if (instance == null) instance = new CtrlPersistencia();
         return instance;
@@ -45,25 +55,8 @@ public class CtrlPersistencia {
     // ===========================================
     
     /**
-     * Guarda/actualitza les enquestes (substitueix totes).
-     * @param enquestes ArrayList d'enquestes
-     */
-    public void saveEnquestes(ArrayList<Enquesta> enquestes) {
-        this.enquestes = new ArrayList<>(enquestes);
-        System.out.println("✓ Guardades " + enquestes.size() + " enquestes a CtrlPersistencia");
-    }
-
-    /**
-     * Carrega totes les enquestes.
-     * @return ArrayList d'enquestes
-     */
-    public ArrayList<Enquesta> loadEnquestes() {
-        System.out.println("ℹ Carregant " + enquestes.size() + " enquestes des de CtrlPersistencia");
-        return new ArrayList<>(enquestes);
-    }
-    
-    /**
-     * Afegeix una enquesta.
+     * Afegeix una nova enquesta al repositori del sistema.
+     * 
      * @param enquesta L'enquesta a afegir
      */
     public void afegirEnquesta(Enquesta enquesta) {
@@ -71,18 +64,20 @@ public class CtrlPersistencia {
     }
     
     /**
-     * Elimina una enquesta per ID.
-     * @param id ID de l'enquesta
-     * @return true si s'ha eliminat, false si no existeix
+     * Elimina una enquesta del sistema pel seu identificador.
+     * 
+     * @param id Identificador de l'enquesta a eliminar
+     * @return true si l'enquesta s'ha eliminat, false si no existeix
      */
     public boolean eliminarEnquesta(String id) {
         return enquestes.removeIf(e -> e.getId().equals(id));
     }
     
     /**
-     * Obté una enquesta per ID.
-     * @param id ID de l'enquesta
-     * @return L'enquesta o null si no existeix
+     * Obté una enquesta específica pel seu identificador.
+     * 
+     * @param id Identificador de l'enquesta
+     * @return L'enquesta trobada o null si no existeix
      */
     public Enquesta getEnquesta(String id) {
         return enquestes.stream()
@@ -92,16 +87,18 @@ public class CtrlPersistencia {
     }
     
     /**
-     * Obté totes les enquestes.
-     * @return ArrayList d'enquestes
+     * Obté una còpia de totes les enquestes del sistema.
+     * 
+     * @return ArrayList amb totes les enquestes registrades
      */
     public ArrayList<Enquesta> getAllEnquestes() {
         return new ArrayList<>(enquestes);
     }
     
     /**
-     * Obté el nombre d'enquestes.
-     * @return Nombre d'enquestes
+     * Obté el nombre total d'enquestes registrades.
+     * 
+     * @return Nombre d'enquestes al sistema
      */
     public int getNumEnquestes() {
         return enquestes.size();
@@ -110,30 +107,14 @@ public class CtrlPersistencia {
     // ===========================================
     // RESPOSTES - Mètodes d'accés i modificació
     // ===========================================
-    
-    /**
-     * Guarda/actualitza totes les respostes (substitueix totes).
-     * Les respostes també es guarden a les Preguntes corresponents.
-     * @param respostes HashMap de respostes (id únic -> Resposta)
-     */
-    public void saveRespostes(HashMap<String, Resposta> respostes) {
-        this.respostes = new HashMap<>(respostes);
-        System.out.println("✓ Guardades " + respostes.size() + " respostes a CtrlPersistencia");
-    }
 
-    /**
-     * Carrega totes les respostes.
-     * @return HashMap de respostes (id únic -> Resposta)
-     */
-    public HashMap<String, Resposta> loadRespostes() {
-        System.out.println("ℹ Carregant " + respostes.size() + " respostes des de CtrlPersistencia");
-        return new HashMap<>(respostes);
-    }
     
     /**
-     * Afegeix una resposta. També l'afegeix a la Pregunta corresponent.
-     * @param idResposta ID únic de la resposta (p.ex. "idPregunta_username")
-     * @param resposta La resposta
+     * Afegeix una resposta al sistema mantenint la consistència bidireccional.
+     * La resposta s'afegeix al repositori global, a la pregunta i a l'usuari.
+     * 
+     * @param idResposta Identificador únic de la resposta (format: "idPregunta_username")
+     * @param resposta La resposta a afegir
      * @param pregunta La pregunta a la qual pertany la resposta
      */
     public void afegirResposta(String idResposta, Resposta resposta, Pregunta pregunta) {
@@ -148,8 +129,10 @@ public class CtrlPersistencia {
     }
     
     /**
-     * Elimina una resposta específica.
-     * @param idResposta ID de la resposta
+     * Elimina una resposta del sistema mantenint la consistència.
+     * La resposta s'elimina del repositori global i de l'usuari.
+     * 
+     * @param idResposta Identificador de la resposta a eliminar
      * @return La resposta eliminada o null si no existeix
      */
     public Resposta eliminarResposta(String idResposta) {
@@ -165,17 +148,19 @@ public class CtrlPersistencia {
     }
     
     /**
-     * Obté una resposta per ID.
-     * @param idResposta ID de la resposta
-     * @return La resposta o null si no existeix
+     * Obté una resposta específica pel seu identificador.
+     * 
+     * @param idResposta Identificador de la resposta
+     * @return La resposta trobada o null si no existeix
      */
     public Resposta getResposta(String idResposta) {
         return respostes.get(idResposta);
     }
     
     /**
-     * Obté totes les respostes.
-     * @return HashMap amb totes les respostes
+     * Obté una còpia de totes les respostes del sistema.
+     * 
+     * @return HashMap amb totes les respostes (clau: idResposta, valor: Resposta)
      */
     public HashMap<String, Resposta> getAllRespostes() {
         return new HashMap<>(respostes);
@@ -186,35 +171,29 @@ public class CtrlPersistencia {
     // ===========================================
     
     /**
-     * Guarda/actualitza tots els usuaris (substitueix tots).
-     * @param usuaris HashMap d'usuaris
+     * Guarda o actualitza tots els usuaris del sistema, substituint els existents.
+     * 
+     * @param usuaris HashMap amb tots els usuaris (clau: username, valor: Usuari)
      */
     public void saveUsuaris(HashMap<String, Usuari> usuaris) {
         this.usuaris = new HashMap<>(usuaris);
         System.out.println("✓ Guardats " + usuaris.size() + " usuaris a CtrlPersistencia");
     }
-
-    /**
-     * Carrega tots els usuaris.
-     * @return HashMap d'usuaris
-     */
-    public HashMap<String, Usuari> loadUsuaris() {
-        System.out.println("ℹ Carregant " + usuaris.size() + " usuaris des de CtrlPersistencia");
-        return new HashMap<>(usuaris);
-    }
     
     /**
-     * Afegeix un usuari.
-     * @param username Username de l'usuari
-     * @param usuari L'usuari
+     * Afegeix o actualitza un usuari al sistema.
+     * 
+     * @param username Nom d'usuari (clau única)
+     * @param usuari L'usuari a afegir
      */
     public void afegirUsuari(String username, Usuari usuari) {
         usuaris.put(username, usuari);
     }
     
     /**
-     * Elimina un usuari.
-     * @param username Username de l'usuari
+     * Elimina un usuari del sistema pel seu nom d'usuari.
+     * 
+     * @param username Nom d'usuari a eliminar
      * @return L'usuari eliminat o null si no existeix
      */
     public Usuari eliminarUsuari(String username) {
@@ -222,33 +201,37 @@ public class CtrlPersistencia {
     }
     
     /**
-     * Obté un usuari per username.
-     * @param username Username de l'usuari
-     * @return L'usuari o null si no existeix
+     * Obté un usuari específic pel seu nom d'usuari.
+     * 
+     * @param username Nom d'usuari a buscar
+     * @return L'usuari trobat o null si no existeix
      */
     public Usuari getUsuari(String username) {
         return usuaris.get(username);
     }
     
     /**
-     * Verifica si un usuari existeix.
-     * @param username Username de l'usuari
-     * @return true si existeix, false si no
+     * Verifica si existeix un usuari amb el nom especificat.
+     * 
+     * @param username Nom d'usuari a verificar
+     * @return true si l'usuari existeix, false altrament
      */
     public boolean existeixUsuari(String username) {
         return usuaris.containsKey(username);
     }
     
     /**
-     * Obté tots els usuaris.
-     * @return HashMap d'usuaris
+     * Obté una còpia de tots els usuaris del sistema.
+     * 
+     * @return HashMap amb tots els usuaris (clau: username, valor: Usuari)
      */
     public HashMap<String, Usuari> getAllUsuaris() {
         return new HashMap<>(usuaris);
     }
     
     /**
-     * Obté el nombre d'usuaris.
+     * Obté el nombre total d'usuaris registrats al sistema.
+     * 
      * @return Nombre d'usuaris
      */
     public int getNumUsuaris() {
@@ -260,35 +243,29 @@ public class CtrlPersistencia {
     // ===========================================
     
     /**
-     * Guarda/actualitza tots els perfils (substitueix tots).
-     * @param perfils HashMap de perfils
+     * Guarda o actualitza tots els perfils del sistema, substituint els existents.
+     * 
+     * @param perfils HashMap amb tots els perfils (clau: id, valor: Perfil)
      */
     public void savePerfils(HashMap<String, Perfil> perfils) {
         this.perfils = new HashMap<>(perfils);
         System.out.println("✓ Guardats " + perfils.size() + " perfils a CtrlPersistencia");
     }
-
-    /**
-     * Carrega tots els perfils.
-     * @return HashMap de perfils
-     */
-    public HashMap<String, Perfil> loadPerfils() {
-        System.out.println("ℹ Carregant " + perfils.size() + " perfils des de CtrlPersistencia");
-        return new HashMap<>(perfils);
-    }
     
     /**
-     * Afegeix un perfil.
-     * @param id ID del perfil
-     * @param perfil El perfil
+     * Afegeix o actualitza un perfil al sistema.
+     * 
+     * @param id Identificador únic del perfil
+     * @param perfil El perfil a afegir
      */
     public void afegirPerfil(String id, Perfil perfil) {
         perfils.put(id, perfil);
     }
     
     /**
-     * Elimina un perfil.
-     * @param id ID del perfil
+     * Elimina un perfil del sistema pel seu identificador.
+     * 
+     * @param id Identificador del perfil a eliminar
      * @return El perfil eliminat o null si no existeix
      */
     public Perfil eliminarPerfil(String id) {
@@ -296,17 +273,19 @@ public class CtrlPersistencia {
     }
     
     /**
-     * Obté un perfil per ID.
-     * @param id ID del perfil
-     * @return El perfil o null si no existeix
+     * Obté un perfil específic pel seu identificador.
+     * 
+     * @param id Identificador del perfil
+     * @return El perfil trobat o null si no existeix
      */
     public Perfil getPerfil(String id) {
         return perfils.get(id);
     }
     
     /**
-     * Obté tots els perfils.
-     * @return HashMap de perfils
+     * Obté una còpia de tots els perfils del sistema.
+     * 
+     * @return HashMap amb tots els perfils (clau: id, valor: Perfil)
      */
     public HashMap<String, Perfil> getAllPerfils() {
         return new HashMap<>(perfils);
@@ -317,17 +296,19 @@ public class CtrlPersistencia {
     // ===========================================
     
     /**
-     * Afegeix una pregunta al sistema.
-     * @param id ID de la pregunta
-     * @param pregunta La pregunta
+     * Afegeix o actualitza una pregunta al repositori global del sistema.
+     * 
+     * @param id Identificador únic de la pregunta
+     * @param pregunta La pregunta a afegir
      */
     public void afegirPregunta(String id, Pregunta pregunta) {
         preguntes.put(id, pregunta);
     }
     
     /**
-     * Elimina una pregunta del sistema.
-     * @param id ID de la pregunta
+     * Elimina una pregunta del repositori global del sistema.
+     * 
+     * @param id Identificador de la pregunta a eliminar
      * @return La pregunta eliminada o null si no existeix
      */
     public Pregunta eliminarPregunta(String id) {
@@ -335,19 +316,12 @@ public class CtrlPersistencia {
     }
     
     /**
-     * Obté una pregunta per ID.
-     * @param id ID de la pregunta
-     * @return La pregunta o null si no existeix
+     * Obté una pregunta específica pel seu identificador.
+     * 
+     * @param id Identificador de la pregunta
+     * @return La pregunta trobada o null si no existeix
      */
     public Pregunta getPregunta(String id) {
         return preguntes.get(id);
-    }
-    
-    /**
-     * Obté totes les preguntes del sistema.
-     * @return HashMap de preguntes
-     */
-    public HashMap<String, Pregunta> getAllPreguntes() {
-        return new HashMap<>(preguntes);
     }
 }

@@ -20,7 +20,7 @@ public class Enquesta {
         this.preguntes = new HashMap<>();
         this.participants = new ArrayList<>(); // ← NUEVO
     }
-    //(jairo)
+    
     public String getId() {
         return id;
     }
@@ -40,7 +40,7 @@ public class Enquesta {
     public void setDescripcio(String descripcio) {
         this.descripcio = descripcio;
     }
-    // (jairo)
+    
     public String getIdCreador() {
         return idCreador;
     }
@@ -48,15 +48,15 @@ public class Enquesta {
     public void setIdCreador(String idCreador) {
         this.idCreador = idCreador;
     }
-    //...(jairo)
+    
     public void afegirPregunta(Pregunta pregunta) {
         this.preguntes.put(pregunta.getId(), pregunta);
     }
-    // (jairo)
+    
     public void eliminarPregunta(String idPregunta) {
         this.preguntes.remove(idPregunta);
     }
-    //(jairo)
+    
     public Pregunta getPregunta(String idPregunta) {
         return this.preguntes.get(idPregunta);
     }
@@ -67,21 +67,21 @@ public class Enquesta {
     
     
 
-    //(jairo)
+    
     public void modificarPregunta(String idPregunta, Pregunta nova) {
         if (this.preguntes.containsKey(idPregunta)) {
             this.preguntes.put(idPregunta, nova);
         }
     }
 
-    //(jairo)
+    
     public void registrarParticipacio(String username) {
         if (!participants.contains(username)) {
             participants.add(username);
         }
     }
 
-    //(jairo)
+    
     public void eliminarParticipacio(String username) {
         participants.remove(username);
     }

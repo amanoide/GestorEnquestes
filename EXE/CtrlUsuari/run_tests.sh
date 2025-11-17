@@ -45,7 +45,7 @@ NOTA: El siguiente bloque heredoc contiene únicamente las entradas (inputs)
 que se enviarán al driver.
 PLAN
 
-./gradlew runCtrlUsuariDriver --no-daemon --quiet -q <<'EOF'
+./gradlew runCtrlUsuariDriver --no-daemon --quiet -q <<'EOF' > PROVA.txt 2>&1
 1
 auto1
 pwd1
