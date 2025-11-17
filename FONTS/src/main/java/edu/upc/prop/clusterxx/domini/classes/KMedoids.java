@@ -10,48 +10,38 @@ import java.util.Set;
 /**
  * Implementación del algoritmo K-Medoids (PAM - Partitioning Around Medoids) para clustering de vectores heterogéneos.
  * 
- * <p>K-Medoids es una variante de K-Means que usa <b>medoides</b> (puntos reales del dataset)
- * como centros de clusters en lugar de centroides calculados (medias).</p>
+ * K-Medoids es una variante de K-Means que usa medoides (puntos reales del dataset)
+ * como centros de clusters en lugar de centroides calculados (medias).
  * 
- * <p><b>Diferencias clave con K-Means:</b></p>
- * <ul>
- *   <li><b>Centros:</b> K-Medoids usa puntos del dataset; K-Means usa centroides calculados</li>
- *   <li><b>Actualización:</b> K-Medoids busca el mejor punto existente; K-Means calcula media</li>
- *   <li><b>Distancia:</b> K-Medoids usa Manhattan (L1); K-Means usa Euclidiana (L2)</li>
- *   <li><b>Robustez:</b> K-Medoids es más robusto a outliers</li>
- *   <li><b>Interpretabilidad:</b> Medoides son puntos reales (más interpretables)</li>
- * </ul>
+ * Diferencias clave con K-Means:
+ *   - Centros: K-Medoids usa puntos del dataset; K-Means usa centroides calculados
+ *   - Actualización: K-Medoids busca el mejor punto existente; K-Means calcula media
+ *   - Distancia: K-Medoids usa Manhattan (L1); K-Means usa Euclidiana (L2)
+ *   - Robustez: K-Medoids es más robusto a outliers
+ *   - Interpretabilidad: Medoides son puntos reales (más interpretables)
  * 
- * <p><b>Algoritmo PAM (Partitioning Around Medoids):</b></p>
- * <ol>
- *   <li>Inicialización: Seleccionar K puntos del dataset como medoides iniciales</li>
- *   <li>Asignación: Asignar cada punto al medoide más cercano (distancia Manhattan)</li>
- *   <li>Actualización: Para cada cluster, encontrar el punto que minimiza la suma de distancias
- *       a todos los miembros del cluster (nuevo medoide)</li>
- *   <li>Repetir pasos 2-3 hasta convergencia o máximo de iteraciones</li>
- * </ol>
+ * Algoritmo PAM (Partitioning Around Medoids):
+ *   1. Inicialización: Seleccionar K puntos del dataset como medoides iniciales
+ *   2. Asignación: Asignar cada punto al medoide más cercano (distancia Manhattan)
+ *   3. Actualización: Para cada cluster, encontrar el punto que minimiza la suma de distancias
+ *      a todos los miembros del cluster (nuevo medoide)
+ *   4. Repetir pasos 2-3 hasta convergencia o máximo de iteraciones
  * 
- * <p><b>Convergencia:</b> El algoritmo converge cuando ni los medoides ni las asignaciones cambian.</p>
+ * Convergencia: El algoritmo converge cuando ni los medoides ni las asignaciones cambian.
  * 
- * <p><b>Métrica de distancia - ¿Por qué Manhattan (L1)?</b></p>
- * <ul>
- *   <li>Más robusta a outliers: No eleva las diferencias al cuadrado</li>
- *   <li>Más eficiente: No requiere raíz cuadrada</li>
- *   <li>Coherente con la filosofía de K-Medoids de priorizar robustez</li>
- *   <li>Funciona bien con variables heterogéneas (categóricas y numéricas)</li>
- * </ul>
+ * Métrica de distancia - ¿Por qué Manhattan (L1)?
+ *   - Más robusta a outliers: No eleva las diferencias al cuadrado
+ *   - Más eficiente: No requiere raíz cuadrada
+ *   - Coherente con la filosofía de K-Medoids de priorizar robustez
+ *   - Funciona bien con variables heterogéneas (categóricas y numéricas)
  * 
- * <p><b>Complejidad:</b> O(I × N² × K × D) donde:
- * <ul>
- *   <li>I = número de iteraciones (≤ maxIters)</li>
- *   <li>N = tamaño del dataset (N² por búsqueda de mejor medoide)</li>
- *   <li>K = número de clusters</li>
- *   <li>D = dimensionalidad de los vectores</li>
- * </ul>
+ * Complejidad: O(I × N² × K × D)
+ * Donde I = iteraciones, N = tamaño del dataset (N² por búsqueda de mejor medoide),
+ * K = clusters, D = dimensionalidad.
  * Nota: K-Medoids es más costoso que K-Means (O(I × N × K × D)) debido a la búsqueda del mejor medoide.
  * 
- * <p><b>Manejo de clusters vacíos:</b> Si un cluster queda sin miembros, se reasigna un punto
- * aleatorio del dataset como nuevo medoide.</p>
+ * Manejo de clusters vacíos: Si un cluster queda sin miembros, se reasigna un punto
+ * aleatorio del dataset como nuevo medoide.
  * 
  * @see KMeans
  * @see Kluster
@@ -67,11 +57,9 @@ public class KMedoids {
     /**
      * Crea una instancia de K-Medoids con generador aleatorio por defecto.
      * 
-     * <p>El generador aleatorio se usa para:
-     * <ul>
-     *   <li>Selección de medoides iniciales aleatorios en {@link #fit}</li>
-     *   <li>Reasignación de clusters vacíos durante el entrenamiento</li>
-     * </ul>
+     * El generador aleatorio se usa para:
+     *   - Selección de medoides iniciales aleatorios en fit
+     *   - Reasignación de clusters vacíos durante el entrenamiento
      */
     public KMedoids() { 
         this(new Random()); 
@@ -80,7 +68,7 @@ public class KMedoids {
     /**
      * Crea una instancia de K-Medoids con generador aleatorio específico.
      * 
-     * <p>Útil para reproducibilidad en tests: usar {@code new Random(seed)} con semilla fija.</p>
+     * Útil para reproducibilidad en tests: usar new Random(seed) con semilla fija.
      * 
      * @param rnd Generador de números aleatorios (si es null, se crea uno nuevo)
      */
@@ -91,15 +79,13 @@ public class KMedoids {
     /**
      * Entrena K-Medoids con inicialización aleatoria de medoides.
      * 
-     * <p><b>Proceso:</b></p>
-     * <ol>
-     *   <li>Selecciona K puntos distintos aleatorios del dataset como medoides iniciales</li>
-     *   <li>Ejecuta el algoritmo PAM usando {@link #fitWithInitialMedoids}</li>
-     * </ol>
+     * Proceso:
+     *   1. Selecciona K puntos distintos aleatorios del dataset como medoides iniciales
+     *   2. Ejecuta el algoritmo PAM usando fitWithInitialMedoids
      * 
-     * <p><b>Nota sobre inicialización:</b> A diferencia de K-Means++, K-Medoids no tiene
+     * Nota sobre inicialización: A diferencia de K-Means++, K-Medoids no tiene
      * una estrategia de inicialización estándar ampliamente aceptada. Esta implementación
-     * usa selección aleatoria uniforme.</p>
+     * usa selección aleatoria uniforme.
      * 
      * @param data Dataset de vectores heterogéneos (cada elemento es String[])
      * @param k Número de clusters a formar (debe cumplir: 0 < k ≤ |data|)
@@ -125,39 +111,34 @@ public class KMedoids {
     /**
      * Entrena K-Medoids (PAM) con medoides iniciales proporcionados.
      * 
-     * <p>Este es el método principal que implementa el algoritmo PAM completo:</p>
+     * Este es el método principal que implementa el algoritmo PAM completo.
      * 
-     * <p><b>Algoritmo iterativo:</b></p>
-     * <pre>
+     * Algoritmo iterativo:
      * Para cada iteración (hasta maxIters):
      *   1. ASIGNACIÓN: Para cada punto x en data:
      *      - Calcular distancia Manhattan a cada medoide
      *      - Asignar x al cluster con medoide más cercano
      *   2. ACTUALIZACIÓN: Para cada cluster c:
      *      - Encontrar todos los puntos asignados a c
-     *      - Para cada punto p en c:
-     *        * Calcular costo = Σ distancia(p, miembro) para todos los miembros de c
+     *      - Para cada punto p en c: calcular costo = Σ distancia(p, miembro) para todos los miembros de c
      *      - Seleccionar como nuevo medoide el punto con menor costo
      *   3. MANEJO DE VACÍOS: Si un cluster quedó vacío → asignar punto aleatorio como medoide
      *   4. CONVERGENCIA: Si ni medoides ni asignaciones cambiaron → terminar
-     * </pre>
      * 
-     * <p><b>Criterio de selección de medoide:</b> El medoide óptimo de un cluster es el punto
+     * Criterio de selección de medoide: El medoide óptimo de un cluster es el punto
      * que minimiza la suma de distancias a todos los demás puntos del cluster. Esto garantiza
-     * que el medoide sea representativo y central.</p>
+     * que el medoide sea representativo y central.
      * 
-     * <p><b>Criterios de parada:</b></p>
-     * <ul>
-     *   <li>Convergencia dual: Ni medoides ni asignaciones cambiaron entre iteraciones</li>
-     *   <li>Máximo de iteraciones alcanzado (maxIters)</li>
-     * </ul>
+     * Criterios de parada:
+     *   - Convergencia dual: Ni medoides ni asignaciones cambiaron entre iteraciones
+     *   - Máximo de iteraciones alcanzado (maxIters)
      * 
-     * <p><b>Diferencia con K-Means:</b> En K-Means, el centroide se calcula como media;
+     * Diferencia con K-Means: En K-Means, el centroide se calcula como media;
      * en K-Medoids, el medoide se busca entre los puntos existentes evaluando todos los
-     * candidatos del cluster.</p>
+     * candidatos del cluster.
      * 
-     * <p><b>Complejidad por iteración:</b> O(N × K × D) para asignación + O(K × N² × D)
-     * para actualización de medoides = O(K × N² × D) dominante.</p>
+     * Complejidad por iteración: O(N × K × D) para asignación + O(K × N² × D)
+     * para actualización de medoides = O(K × N² × D) dominante.
      * 
      * @param data Dataset de vectores heterogéneos
      * @param initialMedoidIndices Índices de los puntos del dataset que serán medoides iniciales
@@ -259,14 +240,14 @@ public class KMedoids {
     /**
      * Calcula el costo de un cluster dado un medoide candidato.
      * 
-     * <p>El <b>costo</b> de un medoide es la suma de distancias Manhattan de todos los
+     * El costo de un medoide es la suma de distancias Manhattan de todos los
      * miembros del cluster a ese medoide. Un costo menor indica un medoide más central
-     * y representativo.</p>
+     * y representativo.
      * 
-     * <p><b>Fórmula:</b> costo(m) = Σ d_Manhattan(xᵢ, m) para todo xᵢ en el cluster</p>
+     * Fórmula: costo(m) = Σ d_Manhattan(xᵢ, m) para todo xᵢ en el cluster
      * 
-     * <p>Este método se usa para evaluar todos los puntos candidatos de un cluster
-     * y seleccionar el que minimiza el costo total.</p>
+     * Este método se usa para evaluar todos los puntos candidatos de un cluster
+     * y seleccionar el que minimiza el costo total.
      * 
      * @param data Dataset completo
      * @param memberIndices Índices de los puntos que pertenecen al cluster
@@ -287,17 +268,15 @@ public class KMedoids {
     /**
      * Construye la estructura final de clusters a partir de medoides y asignaciones.
      * 
-     * <p>Este método crea objetos {@link Kluster} usando los medoides finales seleccionados
-     * y asigna cada punto del dataset al cluster correspondiente según el array de asignaciones.</p>
+     * Este método crea objetos Kluster usando los medoides finales seleccionados
+     * y asigna cada punto del dataset al cluster correspondiente según el array de asignaciones.
      * 
-     * <p><b>Proceso:</b></p>
-     * <ol>
-     *   <li>Crear K clusters vacíos, cada uno con su medoide (copia del punto real)</li>
-     *   <li>Recorrer todos los puntos del dataset y añadirlos a su cluster asignado</li>
-     * </ol>
+     * Proceso:
+     *   1. Crear K clusters vacíos, cada uno con su medoide (copia del punto real)
+     *   2. Recorrer todos los puntos del dataset y añadirlos a su cluster asignado
      * 
-     * <p><b>Nota:</b> Los medoides se copian (no se usan referencias) para evitar
-     * modificaciones accidentales del dataset original.</p>
+     * Nota: Los medoides se copian (no se usan referencias) para evitar
+     * modificaciones accidentales del dataset original.
      * 
      * @param data Dataset completo
      * @param medoidIdx Array con los índices de los K medoides finales
@@ -328,16 +307,14 @@ public class KMedoids {
     /**
      * Selecciona K índices distintos aleatorios del rango [0, n).
      * 
-     * <p>Usa un {@link HashSet} para garantizar que los índices sean únicos,
-     * evitando seleccionar el mismo punto múltiples veces como medoide inicial.</p>
+     * Usa un HashSet para garantizar que los índices sean únicos,
+     * evitando seleccionar el mismo punto múltiples veces como medoide inicial.
      * 
-     * <p><b>Proceso:</b></p>
-     * <ol>
-     *   <li>Generar K índices aleatorios únicos en [0, n)</li>
-     *   <li>Convertir el conjunto a lista</li>
-     * </ol>
+     * Proceso:
+     *   1. Generar K índices aleatorios únicos en [0, n)
+     *   2. Convertir el conjunto a lista
      * 
-     * <p><b>Complejidad esperada:</b> O(K) cuando K << n.</p>
+     * Complejidad esperada: O(K) cuando K << n.
      * 
      * @param n Tamaño del rango (número de puntos en el dataset)
      * @param k Número de índices distintos a seleccionar

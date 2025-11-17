@@ -7,17 +7,15 @@ import java.util.Set;
 /**
  * Calculadora de distancias entre vectores heterogéneos.
  * 
- * <p>Esta clase permite calcular distancias entre vectores que contienen diferentes tipos
- * de variables (numéricas, ordinales, nominales, texto libre). Soporta dos métricas
- * de distancia principales:</p>
+ * Permite calcular distancias entre vectores que contienen diferentes tipos
+ * de variables (numéricas, ordinales, nominales, texto libre).
  * 
- * <ul>
- *   <li><b>Distancia Euclidiana (L2):</b> √(Σd²ᵢ) / N - Recomendada para K-Means y K-Means++</li>
- *   <li><b>Distancia Manhattan (L1):</b> Σ(dᵢ/N) - Recomendada para K-Medoids (más robusta a outliers)</li>
- * </ul>
+ * Métricas soportadas:
+ *   - Distancia Euclidiana (L2): √(Σd²ᵢ) / N - Recomendada para K-Means y K-Means++
+ *   - Distancia Manhattan (L1): Σ(dᵢ/N) - Recomendada para K-Medoids (más robusta a outliers)
  * 
- * <p>La distancia se calcula combinando distancias locales específicas para cada tipo de
- * variable, permitiendo el análisis de datos heterogéneos de forma consistente.</p>
+ * La distancia se calcula combinando distancias locales específicas para cada tipo de
+ * variable, permitiendo el análisis de datos heterogéneos de forma consistente.
  * 
  * @author ClusterXX Team
  * @version 2.0
@@ -27,8 +25,8 @@ public class DistanceCalculator {
     /**
      * Tipos de variables soportadas para el cálculo de distancia local.
      * 
-     * <p>Cada tipo de variable tiene asociada una función de distancia específica
-     * que normaliza adecuadamente las diferencias entre valores.</p>
+     * Cada tipo de variable tiene asociada una función de distancia específica
+     * que normaliza adecuadamente las diferencias entre valores.
      */
     public enum VariableKind {
         /** Variable cuantitativa: representa un valor numérico continuo o discreto */
@@ -50,16 +48,14 @@ public class DistanceCalculator {
     /**
      * Especificación de características para una dimensión del vector.
      * 
-     * <p>Define los metadatos necesarios para calcular la distancia local en una dimensión
+     * Define los metadatos necesarios para calcular la distancia local en una dimensión
      * específica del vector de datos. Dependiendo del tipo de variable (kind), se utilizan
-     * diferentes campos opcionales:</p>
+     * diferentes campos opcionales:
      * 
-     * <ul>
-     *   <li><b>NUMERIC:</b> Usa numericMin y numericMax para normalizar</li>
-     *   <li><b>ORDINAL:</b> Usa ordinalOrder y ordinalCardinality para calcular posiciones</li>
-     *   <li><b>NOMINAL_SINGLE/MULTI:</b> No requiere metadatos adicionales</li>
-     *   <li><b>FREE_TEXT:</b> No requiere metadatos adicionales</li>
-     * </ul>
+     *   - NUMERIC: Usa numericMin y numericMax para normalizar
+     *   - ORDINAL: Usa ordinalOrder y ordinalCardinality para calcular posiciones
+     *   - NOMINAL_SINGLE/MULTI: No requiere metadatos adicionales
+     *   - FREE_TEXT: No requiere metadatos adicionales
      * 
      * @see VariableKind
      */
@@ -157,16 +153,15 @@ public class DistanceCalculator {
     /**
      * Calcula la distancia Euclidiana (L2) entre dos vectores heterogéneos.
      * 
-     * <p>Fórmula: d(a,b) = √(Σdᵢ²) / N, donde:</p>
-     * <ul>
-     *   <li>dᵢ = distancia local en la dimensión i (según el tipo de variable)</li>
-     *   <li>N = número de dimensiones (longitud de los vectores)</li>
-     * </ul>
+     * Fórmula: d(a,b) = √(Σdᵢ²) / N
+     * Donde:
+     *   - dᵢ = distancia local en la dimensión i (según el tipo de variable)
+     *   - N = número de dimensiones (longitud de los vectores)
      * 
-     * <p>La normalización por N asegura que la distancia esté acotada y sea comparable
-     * independientemente del número de dimensiones.</p>
+     * La normalización por N asegura que la distancia esté acotada y sea comparable
+     * independientemente del número de dimensiones.
      * 
-     * <p><b>Uso recomendado:</b> Algoritmos K-Means y K-Means++</p>
+     * Uso recomendado: Algoritmos K-Means y K-Means++
      * 
      * @param a Primer vector de valores (como Strings)
      * @param b Segundo vector de valores (como Strings)
@@ -194,23 +189,20 @@ public class DistanceCalculator {
     /**
      * Calcula la distancia Manhattan (L1) entre dos vectores heterogéneos.
      * 
-     * <p>Fórmula: d(a,b) = Σ(dᵢ/N), donde:</p>
-     * <ul>
-     *   <li>dᵢ = distancia local en la dimensión i (según el tipo de variable)</li>
-     *   <li>N = número de dimensiones (longitud de los vectores)</li>
-     * </ul>
+     * Fórmula: d(a,b) = Σ(dᵢ/N)
+     * Donde:
+     *   - dᵢ = distancia local en la dimensión i (según el tipo de variable)
+     *   - N = número de dimensiones (longitud de los vectores)
      * 
-     * <p>La normalización se aplica a cada distancia local antes de sumar, lo que
-     * asegura que todas las dimensiones contribuyan equitativamente al resultado final.</p>
+     * La normalización se aplica a cada distancia local antes de sumar, lo que
+     * asegura que todas las dimensiones contribuyan equitativamente al resultado final.
      * 
-     * <p><b>Ventajas sobre la distancia Euclidiana:</b></p>
-     * <ul>
-     *   <li>Más robusta a valores atípicos (outliers)</li>
-     *   <li>Menos sensible a dimensiones con valores extremos</li>
-     *   <li>Comportamiento más estable en espacios de alta dimensionalidad</li>
-     * </ul>
+     * Ventajas sobre la distancia Euclidiana:
+     *   - Más robusta a valores atípicos (outliers)
+     *   - Menos sensible a dimensiones con valores extremos
+     *   - Comportamiento más estable en espacios de alta dimensionalidad
      * 
-     * <p><b>Uso recomendado:</b> Algoritmo K-Medoids (PAM)</p>
+     * Uso recomendado: Algoritmo K-Medoids (PAM)
      * 
      * @param a Primer vector de valores (como Strings)
      * @param b Segundo vector de valores (como Strings)
@@ -236,8 +228,8 @@ public class DistanceCalculator {
     /**
      * Calcula la distancia local en una dimensión según el tipo de variable.
      * 
-     * <p>Delega el cálculo a funciones específicas según el tipo de variable
-     * definido en la especificación (FeatureSpec).</p>
+     * Delega el cálculo a funciones específicas según el tipo de variable
+     * definido en la especificación (FeatureSpec).
      * 
      * @param ai Valor del primer vector en la dimensión i
      * @param bi Valor del segundo vector en la dimensión i
@@ -267,13 +259,12 @@ public class DistanceCalculator {
     /**
      * Calcula la distancia entre dos valores numéricos.
      * 
-     * <p>Fórmula: d = |a - b| / (max - min)</p>
+     * Fórmula: d = |a - b| / (max - min)
      * 
-     * <p>La normalización por el rango [min, max] asegura que el resultado esté en [0,1],
-     * donde 0 indica valores idénticos y 1 indica la máxima diferencia posible en el rango.</p>
+     * La normalización por el rango [min, max] asegura que el resultado esté en [0,1],
+     * donde 0 indica valores idénticos y 1 indica la máxima diferencia posible en el rango.
      * 
-     * <p><b>Precondición:</b> min y max deben estar definidos y max > min.
-     * Si no se cumplen estas condiciones, se lanzará IllegalArgumentException.</p>
+     * Precondición: min y max deben estar definidos y max > min.
      * 
      * @param a Primer valor numérico (como String)
      * @param b Segundo valor numérico (como String)
@@ -305,18 +296,17 @@ public class DistanceCalculator {
     /**
      * Calcula la distancia entre dos valores ordinales.
      * 
-     * <p>Utiliza las posiciones de los valores en el orden predefinido para calcular
-     * la distancia. Fórmula: d = |pos(a) - pos(b)| / (m-1), donde m es el número de
-     * modalidades.</p>
+     * Utiliza las posiciones de los valores en el orden predefinido para calcular
+     * la distancia.
      * 
-     * <p>Ejemplos:</p>
-     * <ul>
-     *   <li>order = ["bajo", "medio", "alto"], a="bajo", b="alto" → d = 2/2 = 1.0</li>
-     *   <li>order = ["bajo", "medio", "alto"], a="bajo", b="medio" → d = 1/2 = 0.5</li>
-     * </ul>
+     * Fórmula: d = |pos(a) - pos(b)| / (m-1)
+     * Donde m es el número de modalidades.
      * 
-     * <p><b>Precondición:</b> order debe estar definido y no puede ser vacío.
-     * Si no se cumple, se lanzará IllegalArgumentException.</p>
+     * Ejemplos:
+     *   - order = ["bajo", "medio", "alto"], a="bajo", b="alto" → d = 2/2 = 1.0
+     *   - order = ["bajo", "medio", "alto"], a="bajo", b="medio" → d = 1/2 = 0.5
+     * 
+     * Precondición: order debe estar definido y no puede ser vacío.
      * 
      * @param a Primer valor ordinal
      * @param b Segundo valor ordinal
@@ -344,13 +334,11 @@ public class DistanceCalculator {
     /**
      * Calcula la distancia entre dos valores nominales simples.
      * 
-     * <p>Implementa una métrica binaria simple:</p>
-     * <ul>
-     *   <li>d = 0 si a == b (mismo valor)</li>
-     *   <li>d = 1 si a ≠ b (valores diferentes)</li>
-     * </ul>
+     * Métrica binaria simple:
+     *   - d = 0 si a == b (mismo valor)
+     *   - d = 1 si a ≠ b (valores diferentes)
      * 
-     * <p>Ejemplo: Si a="rojo" y b="rojo" → d=0; si a="rojo" y b="azul" → d=1</p>
+     * Ejemplo: Si a="rojo" y b="rojo" → d=0; si a="rojo" y b="azul" → d=1
      * 
      * @param a Primer valor nominal
      * @param b Segundo valor nominal
@@ -364,19 +352,17 @@ public class DistanceCalculator {
     /**
      * Calcula la distancia entre dos conjuntos de valores nominales múltiples.
      * 
-     * <p>Utiliza la distancia de Jaccard: d = 1 - J(A,B), donde J(A,B) es el
-     * coeficiente de Jaccard (intersección dividida por unión).</p>
+     * Utiliza la distancia de Jaccard: d = 1 - J(A,B)
+     * Donde J(A,B) es el coeficiente de Jaccard (intersección dividida por unión).
      * 
-     * <p>Fórmula: d = 1 - |A ∩ B| / |A ∪ B|</p>
+     * Fórmula: d = 1 - |A ∩ B| / |A ∪ B|
      * 
-     * <p>Ejemplo:</p>
-     * <ul>
-     *   <li>A = {rojo, azul}, B = {azul, verde} → J = 1/3, d = 2/3</li>
-     *   <li>A = {rojo, azul}, B = {rojo, azul} → J = 1, d = 0</li>
-     *   <li>A = {rojo}, B = {verde} → J = 0, d = 1</li>
-     * </ul>
+     * Ejemplos:
+     *   - A = {rojo, azul}, B = {azul, verde} → J = 1/3, d = 2/3
+     *   - A = {rojo, azul}, B = {rojo, azul} → J = 1, d = 0
+     *   - A = {rojo}, B = {verde} → J = 0, d = 1
      * 
-     * <p>Los valores deben estar separados por comas: "opcion1,opcion2,opcion3"</p>
+     * Los valores deben estar separados por comas: "opcion1,opcion2,opcion3"
      * 
      * @param a Primer conjunto de valores (formato: "valor1,valor2,...")
      * @param b Segundo conjunto de valores (formato: "valor1,valor2,...")
@@ -403,8 +389,8 @@ public class DistanceCalculator {
     /**
      * Parsea un string con valores separados por comas a un conjunto (Set).
      * 
-     * <p>Formato esperado: "opcion1,opcion2,opcion3"</p>
-     * <p>Espacios en blanco alrededor de cada valor son eliminados.</p>
+     * Formato esperado: "opcion1,opcion2,opcion3"
+     * Espacios en blanco alrededor de cada valor son eliminados.
      * 
      * @param value String con valores separados por comas
      * @return Set con los valores parseados (vacío si value es null o vacío)
@@ -422,30 +408,24 @@ public class DistanceCalculator {
     /**
      * Calcula la distancia entre dos textos libres usando una fórmula basada en Levenshtein.
      * 
-     * <p>La distancia de Levenshtein mide el número mínimo de operaciones
-     * (inserción, eliminación, sustitución) necesarias para transformar un string en otro.</p>
+     * La distancia de Levenshtein mide el número mínimo de operaciones
+     * (inserción, eliminación, sustitución) necesarias para transformar un string en otro.
      * 
-     * <p><b>Fórmula:</b></p>
-     * <pre>
+     * Fórmula:
      * d = (lev(a,b) - |len(a) - len(b)|) / (max(len(a), len(b)) - |len(a) - len(b)|)
-     * </pre>
      * 
-     * <p>Donde:</p>
-     * <ul>
-     *   <li>lev(a,b) = distancia de Levenshtein entre a y b</li>
-     *   <li>len(a), len(b) = longitudes de los strings a y b</li>
-     *   <li>|len(a) - len(b)| = diferencia absoluta de longitudes</li>
-     * </ul>
+     * Donde:
+     *   - lev(a,b) = distancia de Levenshtein entre a y b
+     *   - len(a), len(b) = longitudes de los strings a y b
+     *   - |len(a) - len(b)| = diferencia absoluta de longitudes
      * 
-     * <p>Esta fórmula penaliza más las diferencias en caracteres cuando los strings
-     * tienen longitudes similares, normalizando por la longitud común efectiva.</p>
+     * Esta fórmula penaliza más las diferencias en caracteres cuando los strings
+     * tienen longitudes similares, normalizando por la longitud común efectiva.
      * 
-     * <p><b>Casos especiales:</b></p>
-     * <ul>
-     *   <li>Si ambos strings están vacíos → d = 0.0</li>
-     *   <li>Si tienen la misma longitud → d = lev / len</li>
-     *   <li>Si el denominador es 0 (uno vacío, otro no) → d = 1.0</li>
-     * </ul>
+     * Casos especiales:
+     *   - Si ambos strings están vacíos → d = 0.0
+     *   - Si tienen la misma longitud → d = lev / len
+     *   - Si el denominador es 0 (uno vacío, otro no) → d = 1.0
      * 
      * @param a Primer texto
      * @param b Segundo texto
@@ -480,17 +460,15 @@ public class DistanceCalculator {
     /**
      * Calcula la distancia de Levenshtein entre dos strings usando programación dinámica.
      * 
-     * <p>Representa el número mínimo de operaciones de edición (inserción, eliminación,
-     * sustitución) necesarias para transformar el string s en el string t.</p>
+     * Representa el número mínimo de operaciones de edición (inserción, eliminación,
+     * sustitución) necesarias para transformar el string s en el string t.
      * 
-     * <p><b>Algoritmo:</b> Programación dinámica con optimización de espacio O(n)
-     * en lugar de O(m×n), usando solo dos arrays en lugar de una matriz completa.</p>
+     * Algoritmo: Programación dinámica con optimización de espacio O(n)
+     * en lugar de O(m×n), usando solo dos arrays en lugar de una matriz completa.
      * 
-     * <p><b>Complejidad:</b></p>
-     * <ul>
-     *   <li>Tiempo: O(m × n), donde m = |s|, n = |t|</li>
-     *   <li>Espacio: O(n) - solo almacena dos filas en lugar de la matriz completa</li>
-     * </ul>
+     * Complejidad:
+     *   - Tiempo: O(m × n), donde m = |s|, n = |t|
+     *   - Espacio: O(n) - solo almacena dos filas en lugar de la matriz completa
      * 
      * @param s String origen
      * @param t String destino

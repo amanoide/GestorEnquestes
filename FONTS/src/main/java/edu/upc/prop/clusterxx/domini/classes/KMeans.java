@@ -9,28 +9,26 @@ import java.util.Set;
 /**
  * Implementación del algoritmo K-Means para clustering de vectores heterogéneos.
  * 
- * <p>K-Means es un algoritmo de clustering particional que divide N puntos en K grupos
- * minimizando la suma de distancias de cada punto a su centroide más cercano.</p>
+ * K-Means es un algoritmo de clustering particional que divide N puntos en K grupos
+ * minimizando la suma de distancias de cada punto a su centroide más cercano.
  * 
- * <p><b>Algoritmo:</b></p>
- * <ol>
- *   <li>Inicialización: Seleccionar K centroides iniciales (aleatorios o proporcionados)</li>
- *   <li>Asignación: Asignar cada punto al cluster con centroide más cercano</li>
- *   <li>Actualización: Recalcular centroides como agregación de puntos en cada cluster</li>
- *   <li>Repetir pasos 2-3 hasta convergencia o máximo de iteraciones</li>
- * </ol>
+ * Algoritmo:
+ *   1. Inicialización: Seleccionar K centroides iniciales (aleatorios o proporcionados)
+ *   2. Asignación: Asignar cada punto al cluster con centroide más cercano
+ *   3. Actualización: Recalcular centroides como agregación de puntos en cada cluster
+ *   4. Repetir pasos 2-3 hasta convergencia o máximo de iteraciones
  * 
- * <p><b>Convergencia:</b> El algoritmo converge cuando los centroides no cambian entre iteraciones.</p>
+ * Convergencia: El algoritmo converge cuando los centroides no cambian entre iteraciones.
  * 
- * <p><b>Manejo de clusters vacíos:</b> Si un cluster queda sin miembros tras la asignación,
- * se resembrará con un punto aleatorio del dataset para evitar divisiones por cero.</p>
+ * Manejo de clusters vacíos: Si un cluster queda sin miembros tras la asignación,
+ * se resembrará con un punto aleatorio del dataset para evitar divisiones por cero.
  * 
- * <p><b>Métrica de distancia:</b> Usa distancia Euclidiana (L2) calculada por {@link DistanceCalculator}
- * con soporte para variables heterogéneas (NUMERIC, ORDINAL, NOMINAL_SINGLE, NOMINAL_MULTI, FREE_TEXT).</p>
+ * Métrica de distancia: Usa distancia Euclidiana (L2) calculada por DistanceCalculator
+ * con soporte para variables heterogéneas (NUMERIC, ORDINAL, NOMINAL_SINGLE, NOMINAL_MULTI, FREE_TEXT).
  * 
- * <p><b>Nota:</b> K-Means NO garantiza encontrar el óptimo global. El resultado depende de la
- * inicialización. Para mejores resultados, considerar usar {@link KMeansPlusPlus} que implementa
- * una estrategia de inicialización más inteligente (K-Means++).</p>
+ * Nota: K-Means NO garantiza encontrar el óptimo global. El resultado depende de la
+ * inicialización. Para mejores resultados, considerar usar KMeansPlusPlus que implementa
+ * una estrategia de inicialización más inteligente (K-Means++).
  * 
  * @see Kluster
  * @see DistanceCalculator
@@ -46,18 +44,16 @@ public class KMeans {
     /**
      * Crea una instancia de K-Means con generador aleatorio por defecto.
      * 
-     * <p>El generador aleatorio se usa para:
-     * <ul>
-     *   <li>Selección de centroides iniciales aleatorios en {@link #fit}</li>
-     *   <li>Resembrado de clusters vacíos durante el entrenamiento</li>
-     * </ul>
+     * El generador aleatorio se usa para:
+     *   - Selección de centroides iniciales aleatorios en fit
+     *   - Resembrado de clusters vacíos durante el entrenamiento
      */
     public KMeans() { this(new Random()); }
     
     /**
      * Crea una instancia de K-Means con generador aleatorio específico.
      * 
-     * <p>Útil para reproducibilidad en tests: usar {@code new Random(seed)} con semilla fija.</p>
+     * Útil para reproducibilidad en tests: usar new Random(seed) con semilla fija.
      * 
      * @param rnd Generador de números aleatorios (si es null, se crea uno nuevo)
      */
@@ -66,18 +62,14 @@ public class KMeans {
     /**
      * Entrena K-Means con inicialización aleatoria de centroides.
      * 
-     * <p><b>Proceso:</b></p>
-     * <ol>
-     *   <li>Selecciona K puntos distintos aleatorios como centroides iniciales</li>
-     *   <li>Ejecuta el algoritmo K-Means estándar usando {@link #fitWithInitialCentroids}</li>
-     * </ol>
+     * Proceso:
+     *   1. Selecciona K puntos distintos aleatorios como centroides iniciales
+     *   2. Ejecuta el algoritmo K-Means estándar usando fitWithInitialCentroids
      * 
-     * <p><b>Limitaciones de inicialización aleatoria:</b></p>
-     * <ul>
-     *   <li>Puede converger a óptimos locales dependiendo de la inicialización</li>
-     *   <li>No tiene en cuenta la distribución de los datos</li>
-     *   <li>Para mejores resultados, considerar usar {@link KMeansPlusPlus}</li>
-     * </ul>
+     * Limitaciones de inicialización aleatoria:
+     *   - Puede converger a óptimos locales dependiendo de la inicialización
+     *   - No tiene en cuenta la distribución de los datos
+     *   - Para mejores resultados, considerar usar KMeansPlusPlus
      * 
      * @param data Dataset de vectores heterogéneos (cada elemento es String[])
      * @param k Número de clusters a formar (debe cumplir: 0 < k ≤ |data|)
@@ -100,10 +92,9 @@ public class KMeans {
     /**
      * Entrena K-Means con centroides iniciales proporcionados.
      * 
-     * <p>Este es el método principal que implementa el algoritmo K-Means estándar:</p>
+     * Este es el método principal que implementa el algoritmo K-Means estándar.
      * 
-     * <p><b>Algoritmo iterativo:</b></p>
-     * <pre>
+     * Algoritmo iterativo:
      * Para cada iteración (hasta maxIters):
      *   1. Limpiar miembros de todos los clusters
      *   2. ASIGNACIÓN: Para cada punto x en data:
@@ -112,27 +103,19 @@ public class KMeans {
      *   3. MANEJO DE VACÍOS: Para cada cluster:
      *      - Si quedó sin miembros → resembrar con punto aleatorio
      *   4. ACTUALIZACIÓN: Para cada cluster:
-     *      - Recalcular centroide según tipo de variables (ver {@link Kluster#recomputeCentroid})
+     *      - Recalcular centroide según tipo de variables (ver Kluster.recomputeCentroid)
      *   5. CONVERGENCIA: Si ningún centroide cambió → terminar
-     * </pre>
      * 
-     * <p><b>Criterios de parada:</b></p>
-     * <ul>
-     *   <li>Convergencia: Los centroides no cambian entre iteraciones</li>
-     *   <li>Máximo de iteraciones alcanzado (maxIters)</li>
-     * </ul>
+     * Criterios de parada:
+     *   - Convergencia: Los centroides no cambian entre iteraciones
+     *   - Máximo de iteraciones alcanzado (maxIters)
      * 
-     * <p><b>Manejo de clusters vacíos:</b> Si tras la asignación un cluster queda sin miembros
+     * Manejo de clusters vacíos: Si tras la asignación un cluster queda sin miembros
      * (puede ocurrir si su centroide está muy alejado), se resembrará con un punto aleatorio
-     * del dataset para evitar problemas numéricos y mantener exactamente K clusters.</p>
+     * del dataset para evitar problemas numéricos y mantener exactamente K clusters.
      * 
-     * <p><b>Complejidad:</b> O(I × N × K × D) donde:
-     * <ul>
-     *   <li>I = número de iteraciones (≤ maxIters)</li>
-     *   <li>N = tamaño del dataset</li>
-     *   <li>K = número de clusters</li>
-     *   <li>D = dimensionalidad de los vectores</li>
-     * </ul>
+     * Complejidad: O(I × N × K × D) donde I = iteraciones, N = tamaño del dataset,
+     * K = número de clusters, D = dimensionalidad de los vectores.
      * 
      * @param data Dataset de vectores heterogéneos (cada elemento es String[])
      * @param initialCentroids Centroides iniciales (K vectores String[])
@@ -180,16 +163,14 @@ public class KMeans {
     /**
      * Selecciona K puntos distintos aleatorios del dataset.
      * 
-     * <p>Usa un {@link HashSet} para garantizar que los índices sean únicos,
-     * evitando seleccionar el mismo punto múltiples veces como centroide inicial.</p>
+     * Usa un HashSet para garantizar que los índices sean únicos,
+     * evitando seleccionar el mismo punto múltiples veces como centroide inicial.
      * 
-     * <p><b>Proceso:</b></p>
-     * <ol>
-     *   <li>Generar K índices aleatorios únicos en [0, data.size())</li>
-     *   <li>Extraer los puntos correspondientes del dataset</li>
-     * </ol>
+     * Proceso:
+     *   1. Generar K índices aleatorios únicos en [0, data.size())
+     *   2. Extraer los puntos correspondientes del dataset
      * 
-     * <p><b>Complejidad esperada:</b> O(K) cuando K << N, puede ser O(K log K) en peor caso.</p>
+     * Complejidad esperada: O(K) cuando K << N, puede ser O(K log K) en peor caso.
      * 
      * @param data Dataset del cual seleccionar puntos
      * @param k Número de puntos distintos a seleccionar
