@@ -14,6 +14,7 @@ Aquest joc de proves esta fet amb valors de la caixa grisa, es testeja tot el po
       6: Analisi cluster KMedoids
       4: visualitzacio de resultats
       5: Generacio de perfils
+      6: Visualitzacio de perfils per enquesta
   
     - Es comproven tant els fluxos correctes (happy paths) com multiples errors (duplicats, credencials incorrectes, parametres invalids).
 

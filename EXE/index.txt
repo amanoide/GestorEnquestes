@@ -11,7 +11,7 @@ Entrades:
     Conte arxius per provar els jocs de prova i una descripció d'aquests:
         CtrlAnalisiDriver-1.0.jar: Executable del driver
         run_tests.sh:
-            Descripcio: Script per linux per executar el joc de proves sobre CtrlAnalisiDriver
+            Descripcio: Script per linux per executar el joc de proves sobre CtrlAnalisiDriver tens usuaris ja creats que pots usar amb password pwd1
             Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
             Com usar wsl(Windows): Es poden executar entrant a la carpeta i executant ./run_tests.sh (ha de tenir permisos de execució)
             Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
