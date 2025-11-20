@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestResposta" tests="6" skipped="0" failures="0" errors="0" timestamp="2025-11-17T21:32:05" hostname="LAPTOP-LVPJG8BN" time="0.001">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestResposta" tests="6" skipped="0" failures="0" errors="0" timestamp="2025-11-18T07:35:41" hostname="LAPTOP-LVPJG8BN" time="0.001">
   <properties/>
   <testcase name="testTextAmbEspais" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
   <testcase name="testModificarResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
-  <testcase name="testConstructoraResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
+  <testcase name="testConstructoraResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.001"/>
   <testcase name="testTextRespostaBuit" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
   <testcase name="testToStringAmbTextNull" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
   <testcase name="testToStringResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
