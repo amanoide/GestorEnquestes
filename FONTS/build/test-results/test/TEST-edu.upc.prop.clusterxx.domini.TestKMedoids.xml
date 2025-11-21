@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestKMedoids" tests="12" skipped="0" failures="0" errors="0" timestamp="2025-11-18T07:35:41" hostname="LAPTOP-LVPJG8BN" time="0.005">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestKMedoids" tests="12" skipped="0" failures="0" errors="0" timestamp="2025-11-20T09:54:19" hostname="joan-Aspire-A515-57" time="0.018">
   <properties/>
-  <testcase name="testDataNull" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.001"/>
-  <testcase name="testConvergence" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.001"/>
-  <testcase name="testNominalMultiData" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.0"/>
-  <testcase name="testEmptyData" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.0"/>
+  <testcase name="testDataNull" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.002"/>
+  <testcase name="testConvergence" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.003"/>
+  <testcase name="testNominalMultiData" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.004"/>
+  <testcase name="testEmptyData" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.001"/>
   <testcase name="testConstructoraKMedoids" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.0"/>
   <testcase name="testKGreaterThanDataSize" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.0"/>
-  <testcase name="testSingleCluster" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.0"/>
+  <testcase name="testSingleCluster" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.001"/>
   <testcase name="testClusteringMultidimensional" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.001"/>
   <testcase name="testInvalidK" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.0"/>
-  <testcase name="testMaxIterZeroUtilitzaPerDefecte" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.001"/>
-  <testcase name="testClusteringNumeric" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.0"/>
-  <testcase name="testNullSpecs" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.0"/>
+  <testcase name="testMaxIterZeroUtilitzaPerDefecte" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.002"/>
+  <testcase name="testClusteringNumeric" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.001"/>
+  <testcase name="testNullSpecs" classname="edu.upc.prop.clusterxx.domini.TestKMedoids" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

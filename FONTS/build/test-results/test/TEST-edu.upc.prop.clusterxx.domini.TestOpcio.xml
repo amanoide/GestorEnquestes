@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestOpcio" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-11-18T07:35:41" hostname="LAPTOP-LVPJG8BN" time="0.01">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestOpcio" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-11-20T09:54:20" hostname="joan-Aspire-A515-57" time="0.032">
   <properties/>
-  <testcase name="testConstructora" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.0"/>
-  <testcase name="teststoStringAmbOrdre" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.006"/>
-  <testcase name="teststoStringSenseOrdre" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.002"/>
-  <testcase name="testOpcioTextBuit" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.0"/>
-  <testcase name="testOpcioTextNull" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.0"/>
-  <testcase name="testOrdreNegatiu" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.001"/>
+  <testcase name="testConstructora" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.001"/>
+  <testcase name="teststoStringAmbOrdre" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.017"/>
+  <testcase name="teststoStringSenseOrdre" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.008"/>
+  <testcase name="testOpcioTextBuit" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.001"/>
+  <testcase name="testOpcioTextNull" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.001"/>
+  <testcase name="testOrdreNegatiu" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.0"/>
   <testcase name="testConstructoraAmbOrdre" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.0"/>
   <testcase name="testSetText" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.0"/>
   <testcase name="testOrdreNul" classname="edu.upc.prop.clusterxx.domini.TestOpcio" time="0.0"/>
