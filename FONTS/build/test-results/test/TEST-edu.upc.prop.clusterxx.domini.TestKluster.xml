@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestKluster" tests="13" skipped="0" failures="0" errors="0" timestamp="2025-11-26T16:40:04" hostname="LAPTOP-LVPJG8BN" time="0.01">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestKluster" tests="13" skipped="0" failures="0" errors="0" timestamp="2025-11-27T09:48:32" hostname="LAPTOP-LVPJG8BN" time="0.02">
   <properties/>
   <testcase name="testRecomputeCentroidNominalMode" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.0"/>
-  <testcase name="testAddMemberICopies" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.0"/>
+  <testcase name="testAddMemberICopies" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.001"/>
   <testcase name="testConstructoraCentroidBuit" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.0"/>
   <testcase name="testConstructoraCentroidNull" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.0"/>
   <testcase name="testRecomputeSenseMembres" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.0"/>
-  <testcase name="testToString" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.006"/>
+  <testcase name="testToString" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.013"/>
   <testcase name="testConstructoraCentroidValid" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.0"/>
-  <testcase name="testRecomputeCentroidNumeric" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.001"/>
+  <testcase name="testRecomputeCentroidNumeric" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.002"/>
   <testcase name="testRecomputeSpecsIncorrectes" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.0"/>
   <testcase name="testSetCentroid" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.0"/>
   <testcase name="testSetCentroidDimensionsIncorrectes" classname="edu.upc.prop.clusterxx.domini.TestKluster" time="0.0"/>

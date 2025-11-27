@@ -1490,6 +1490,16 @@ public class CtrlDomini {
      * @return ArrayList amb totes les enquestes existents (mai null, pot estar buida)
      * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat
      */
+    /**
+     * Consulta la llista de totes les enquestes disponibles al sistema.
+     * 
+     * Aquest mètode retorna un ArrayList amb totes les enquestes registrades.
+     * Requereix que hi hagi un usuari autenticat al sistema.
+     * 
+     * @return ArrayList amb totes les enquestes del sistema. Mai retorna null;
+     *         si no hi ha enquestes, retorna una llista buida.
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat al sistema
+     */
     public ArrayList<Enquesta> consultarEnquestes() throws UsuariNoAutenticatException {
         // Validar que hi ha un usuari autenticat
         Usuari usuariActual = ctrlUsuari.getUsuariActual();
@@ -1874,6 +1884,13 @@ public class CtrlDomini {
      * Advertència: Aquesta operació és irreversible i comporta la pèrdua de totes
      * les dades de l'usuari (respostes, perfils assignats, etc.).
      * 
+     * Comportament idempotent: Si l'usuari no existeix, l'operació no fa res
+     * però no genera cap error. Això permet cridar aquesta funció de forma segura
+     * sense necessitat de comprovar prèviament l'existència de l'usuari.
+     * 
+     * Validacions realitzades:
+     * - El nom d'usuari no pot ser null o buit
+     * 
      * El nom d'usuari es normalitza (elimina espais) abans de processar l'eliminació.
      * 
      * @param username Nom de l'usuari a eliminar
@@ -1889,12 +1906,13 @@ public class CtrlDomini {
         // Normalitzar el username (eliminar espais)
         String normalizedUsername = username.trim();
 
+        // Si l'usuari a eliminar és l'usuari actual, tancar sessió primer
         Usuari usuariact = ctrlUsuari.getUsuariActual();
-
-        if(usuariact != null && normalizedUsername.equals(usuariact.getUsername())) {
+        if (usuariact != null && normalizedUsername.equals(usuariact.getUsername())) {
             ctrlUsuari.logout();
         }
 
+        // Eliminar l'usuari del sistema (operació idempotent)
         ctrlUsuari.eliminarUsuari(normalizedUsername);
     }
 
