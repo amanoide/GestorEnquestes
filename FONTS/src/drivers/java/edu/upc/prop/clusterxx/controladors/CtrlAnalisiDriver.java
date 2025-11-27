@@ -37,7 +37,6 @@ public class CtrlAnalisiDriver {
 
     private static Scanner in;
     private static CtrlDomini cd;
-    private static Usuari admin;
     // Guardar resultats d'anàlisi per evitar re-analitzar
     private static HashMap<String, CtrlDomini.ResultatClustering> resultatsAnalisi = new HashMap<>();
 
@@ -82,7 +81,6 @@ public class CtrlAnalisiDriver {
         } catch (CredencialsIncorrectesException | ParametreInvalidException e) {
             System.out.println("❌ Error en el login: " + e.getMessage());
         }
-        admin = cd.getUsuariActual();
         
         //CREACIÓ D'UNA ENQUESTA MOCK AMB TOTS ELS TIPUS DE PREGUNTES PER PROVAR LES RESPOSTES
         crearEnquestaMock();
@@ -290,7 +288,7 @@ public class CtrlAnalisiDriver {
          
         // ✓ REGISTRAR L'ENQUESTA EN EL CONTROLADOR
         try {
-            cd.crearEnquesta(admin, "1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
+            cd.crearEnquesta("1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
             
             // Afegir les preguntes a través del controlador
             cd.afegirPregunta("1", preguntaText);

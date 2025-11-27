@@ -82,13 +82,10 @@ public class CtrlDomini {
      * @see CtrlEnquesta#crearEnquesta(String, String, String, Usuari)
      */
 
-    public void crearEnquesta(Usuari usuari, String id, String titol, String descripcio)
+    public void crearEnquesta(String id, String titol, String descripcio)
             throws ParametreInvalidException, EnquestaJaExisteixException, UsuariNoAutenticatException {
 
-        // Validació 1: Comprovar que l'usuari existeix i no és null
-        if (usuari == null) {
-            throw new UsuariNoAutenticatException("Cal estar autenticat per crear una enquesta.");
-        }
+        Usuari usuari = ctrlUsuari.getUsuariActual();
 
         // Validació 2: Comprovar que l'ID no està buit
         if (id == null || id.trim().isEmpty()) {
@@ -106,7 +103,7 @@ public class CtrlDomini {
         }
 
         // Validació 5: Comprovar que l'usuari està registrat al sistema
-        if (ctrlUsuari.getUsuariActual() == null) {
+        if (usuari == null) {
             throw new UsuariNoAutenticatException("Cal estar autenticat per crear una enquesta.");
         }
 
@@ -1660,11 +1657,69 @@ public class CtrlDomini {
      * @param idPregunta L'ID de la pregunta.
      * @param textResposta El text de la resposta.
      */
-    public void registrarResposta(String idEnquesta, Usuari usuari, String idPregunta, String textResposta) {
+    /**
+     * Registra una resposta individual d'un usuari a una pregunta específica d'una enquesta.
+     * 
+     * Aquest mètode s'utilitza principalment durant la importació de respostes des de fitxers JSON.
+     * Valida que tots els paràmetres siguin vàlids i que la resposta compleixi els requisits
+     * del tipus de pregunta abans de registrar-la al sistema.
+     * 
+     * Validacions realitzades:
+     * - Tots els paràmetres han de ser no nuls
+     * - La resposta no pot ser buida
+     * - L'enquesta ha d'existir
+     * - La pregunta ha d'existir dins l'enquesta
+     * - La resposta ha de ser vàlida segons el tipus de pregunta
+     * 
+     * @param idEnquesta Identificador de l'enquesta
+     * @param usuari L'usuari que registra la resposta
+     * @param idPregunta Identificador de la pregunta
+     * @param textResposta Text de la resposta
+     * @throws ParametreInvalidException Si algun paràmetre és nul o la resposta és buida
+     * @throws EnquestaNoExisteixException Si l'enquesta no existeix
+     * @throws PreguntaNoExisteixException Si la pregunta no existeix a l'enquesta
+     * @throws RespostaInvalidaException Si la resposta no és vàlida pel tipus de pregunta
+     */
+    public void registrarResposta(String idEnquesta, Usuari usuari, String idPregunta, String textResposta) 
+            throws ParametreInvalidException, 
+                   EnquestaNoExisteixException,
+                   PreguntaNoExisteixException,
+                   RespostaInvalidaException {
+        
+        // Validar paràmetres
+        if (idEnquesta == null || idEnquesta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'identificador de l'enquesta no pot ser nul o buit");
+        }
+        if (usuari == null) {
+            throw new ParametreInvalidException("L'usuari no pot ser nul");
+        }
+        if (idPregunta == null || idPregunta.trim().isEmpty()) {
+            throw new ParametreInvalidException("L'identificador de la pregunta no pot ser nul o buit");
+        }
+        if (textResposta == null || textResposta.trim().isEmpty()) {
+            throw new ParametreInvalidException("La resposta no pot ser nul·la o buida");
+        }
+        
+        // Verificar que l'enquesta existeix
+        Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+        if (enquesta == null) {
+            throw new EnquestaNoExisteixException(idEnquesta);
+        }
+        
         // Obtenir la pregunta
         Pregunta pregunta = ctrlEnquesta.getPregunta(idEnquesta, idPregunta);
         if (pregunta == null) {
-            return; // No es pot registrar si la pregunta no existeix
+            throw new PreguntaNoExisteixException(
+                "La pregunta amb ID '" + idPregunta + "' no existeix a l'enquesta '" + idEnquesta + "'"
+            );
+        }
+        
+        // Validar que la resposta és vàlida segons el tipus de pregunta
+        if (!pregunta.validarResposta(textResposta)) {
+            throw new RespostaInvalidaException(
+                "La resposta '" + textResposta + "' no és vàlida per la pregunta '" + 
+                pregunta.getText() + "' de tipus " + pregunta.getTipus()
+            );
         }
         
         // Registrar la resposta (l'ID es genera automàticament dins de CtrlResposta)

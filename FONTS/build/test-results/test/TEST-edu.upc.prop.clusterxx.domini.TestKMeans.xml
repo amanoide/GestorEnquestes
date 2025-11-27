@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeans" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-11-20T09:54:58" hostname="LAPTOP-LVPJG8BN" time="0.002">
-=======
-<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeans" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-11-20T09:54:19" hostname="joan-Aspire-A515-57" time="0.001">
->>>>>>> origin/joan
+<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeans" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-11-26T16:40:04" hostname="LAPTOP-LVPJG8BN" time="0.002">
   <properties/>
   <testcase name="testFitRebutjaKZero" classname="edu.upc.prop.clusterxx.domini.TestKMeans" time="0.002"/>
   <system-out><![CDATA[]]></system-out>

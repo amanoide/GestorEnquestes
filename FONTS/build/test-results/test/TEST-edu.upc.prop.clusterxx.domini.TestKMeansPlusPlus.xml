@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" tests="7" skipped="0" failures="0" errors="0" timestamp="2025-11-20T09:54:58" hostname="LAPTOP-LVPJG8BN" time="0.011">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" tests="7" skipped="0" failures="0" errors="0" timestamp="2025-11-26T16:40:04" hostname="LAPTOP-LVPJG8BN" time="0.006">
   <properties/>
-  <testcase name="testFitAmbClustersSeparats" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.004"/>
+  <testcase name="testFitAmbClustersSeparats" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.002"/>
   <testcase name="testInitCentroidsSenseSpecs" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
   <testcase name="testInitCentroidsDataBuida" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
-  <testcase name="testInitCentroidsDeterminista" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.003"/>
+  <testcase name="testInitCentroidsDeterminista" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.002"/>
   <testcase name="testInitCentroidsDataNull" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
-=======
-<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" tests="7" skipped="0" failures="0" errors="0" timestamp="2025-11-20T09:54:19" hostname="joan-Aspire-A515-57" time="0.011">
-  <properties/>
-  <testcase name="testFitAmbClustersSeparats" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.003"/>
-  <testcase name="testInitCentroidsSenseSpecs" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.001"/>
-  <testcase name="testInitCentroidsDataBuida" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.001"/>
-  <testcase name="testInitCentroidsDeterminista" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.004"/>
-  <testcase name="testInitCentroidsDataNull" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.001"/>
->>>>>>> origin/joan
-  <testcase name="testInitCentroidsKMassaGran" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.001"/>
-  <testcase name="testInitCentroidsKAmbZero" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
+  <testcase name="testInitCentroidsKMassaGran" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
+  <testcase name="testInitCentroidsKAmbZero" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
