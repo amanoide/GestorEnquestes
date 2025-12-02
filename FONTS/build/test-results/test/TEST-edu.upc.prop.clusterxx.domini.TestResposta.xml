@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<testsuite name="edu.upc.prop.clusterxx.domini.TestResposta" tests="6" skipped="0" failures="0" errors="0" timestamp="2025-11-20T09:54:58" hostname="LAPTOP-LVPJG8BN" time="0.003">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestResposta" tests="6" skipped="0" failures="0" errors="0" timestamp="2025-11-27T09:48:32" hostname="LAPTOP-LVPJG8BN" time="0.004">
   <properties/>
-  <testcase name="testTextAmbEspais" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
+  <testcase name="testTextAmbEspais" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.001"/>
   <testcase name="testModificarResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.001"/>
-=======
-<testsuite name="edu.upc.prop.clusterxx.domini.TestResposta" tests="6" skipped="0" failures="0" errors="0" timestamp="2025-11-20T09:54:20" hostname="joan-Aspire-A515-57" time="0.003">
-  <properties/>
-  <testcase name="testTextAmbEspais" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
-  <testcase name="testModificarResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
->>>>>>> origin/joan
   <testcase name="testConstructoraResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
   <testcase name="testTextRespostaBuit" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.001"/>
   <testcase name="testToStringAmbTextNull" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.001"/>

@@ -8,7 +8,6 @@ import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
-import edu.upc.prop.clusterxx.domini.classes.Usuari;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.*;
 
 import java.nio.file.Files;
@@ -33,7 +32,6 @@ public class CtrlRespostaDriver {
 
     private static Scanner in;
     private static CtrlDomini cd;
-    private static Usuari admin;
     /**
      * Mètode principal que executa el driver.
      */
@@ -78,7 +76,6 @@ public class CtrlRespostaDriver {
         } catch (CredencialsIncorrectesException | ParametreInvalidException e) {
             System.out.println("❌ Error en el login: " + e.getMessage());
         }
-        admin = cd.getUsuariActual();
         
         //CREACIÓ D'UNA ENQUESTA MOCK AMB TOTS ELS TIPUS DE PREGUNTES PER PROVAR LES RESPOSTES
 
@@ -239,7 +236,7 @@ public class CtrlRespostaDriver {
          
         // ✓ REGISTRAR L'ENQUESTA EN EL CONTROLADOR
         try {
-            cd.crearEnquesta(admin, "1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
+            cd.crearEnquesta("1", "ENQUESTA_MOCK", "AQUESTA ENQUESTA ÉS UNA ENQUESTA DE PROVA");
             
             // Afegir les preguntes a través del controlador
             cd.afegirPregunta("1", preguntaText);
