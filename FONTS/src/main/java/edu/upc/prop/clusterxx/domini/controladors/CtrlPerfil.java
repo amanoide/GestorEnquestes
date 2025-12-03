@@ -3,9 +3,11 @@ package edu.upc.prop.clusterxx.domini.controladors;
 import java.util.ArrayList;
 
 import edu.upc.prop.clusterxx.domini.classes.Perfil;
+import edu.upc.prop.clusterxx.persistencia.CtrlPersistencia;
 
 /**
- * Controlador de perfils que delega totes les operacions de dades a CtrlPersistencia.
+ * Controlador de perfils que delega totes les operacions de dades a
+ * CtrlPersistencia.
  * No manté dades pròpies, només coordina la lògica de negoci.
  */
 public class CtrlPerfil {
@@ -22,12 +24,12 @@ public class CtrlPerfil {
     /**
      * Crea un nou perfil i l'afegeix al sistema.
      * 
-     * @param id Identificador únic del perfil (numèric en format String)
+     * @param id         Identificador únic del perfil (numèric en format String)
      * @param descripcio Descripció del perfil
      */
     public void crearPerfil(String id, String descripcio) {
         Perfil nouPerfil = new Perfil(Integer.parseInt(id), descripcio);
-        persistencia.afegirPerfil(id, nouPerfil);
+        persistencia.afegirPerfil(nouPerfil);
     }
 
     /**
@@ -44,7 +46,7 @@ public class CtrlPerfil {
      * Modifica la descripció d'un perfil existent.
      * Crea un nou perfil amb la nova descripció i substitueix l'anterior.
      * 
-     * @param id Identificador del perfil a modificar
+     * @param id             Identificador del perfil a modificar
      * @param novaDescripcio Nova descripció del perfil
      */
     public void modificarPerfil(String id, String novaDescripcio) {
@@ -52,7 +54,7 @@ public class CtrlPerfil {
         if (p != null) {
             // Crear un nou perfil amb la nova descripció
             Perfil nouPerfil = new Perfil(Integer.parseInt(id), novaDescripcio);
-            persistencia.afegirPerfil(id, nouPerfil);
+            persistencia.afegirPerfil(nouPerfil);
         }
     }
 

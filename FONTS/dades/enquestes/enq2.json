@@ -1,0 +1,13 @@
+{
+    "descripcio": "Amb preguntes",
+    "preguntes": [{
+        "respostes": [],
+        "id": "preg1",
+        "text": "Com valores el servei?",
+        "tipus": "TEXT_LLIURE"
+    }],
+    "titol": "Enquesta Completa",
+    "id": "enq2",
+    "idCreador": "creador2",
+    "participants": []
+}

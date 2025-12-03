@@ -3,10 +3,12 @@ package edu.upc.prop.clusterxx.domini.controladors;
 import java.util.HashMap;
 
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
+import edu.upc.prop.clusterxx.persistencia.CtrlPersistencia;
 import static edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariJaExisteixException;
 
 /**
- * Controlador d'usuaris que delega totes les operacions de dades a CtrlPersistencia.
+ * Controlador d'usuaris que delega totes les operacions de dades a
+ * CtrlPersistencia.
  * No manté dades pròpies, només coordina la lògica de negoci amb el domini.
  */
 public class CtrlUsuari {
@@ -16,7 +18,8 @@ public class CtrlUsuari {
      * Constructor que inicialitza el controlador d'usuaris.
      * Obté la instància de CtrlPersistencia per gestionar les dades.
      * 
-     * @param ctrlPresentacio Referència al controlador de presentació (no utilitzat actualment)
+     * @param ctrlPresentacio Referència al controlador de presentació (no utilitzat
+     *                        actualment)
      */
     public CtrlUsuari(Object ctrlPresentacio) {
         this.persistencia = CtrlPersistencia.getInstance();
@@ -42,7 +45,8 @@ public class CtrlUsuari {
 
     /**
      * Registra un nou usuari al sistema.
-     * Crea un nou usuari amb les credencials proporcionades i el guarda a la persistència.
+     * Crea un nou usuari amb les credencials proporcionades i el guarda a la
+     * persistència.
      * 
      * @param username Nom d'usuari únic
      * @param password Contrasenya de l'usuari
@@ -51,16 +55,17 @@ public class CtrlUsuari {
     public void registrarUsuari(String username, String password) throws UsuariJaExisteixException {
         // Crear el nou usuari directament
         Usuari nouUsuari = new Usuari(username, password);
-        
+
         // Guardar a persistència
-        persistencia.afegirUsuari(username, nouUsuari);
+        persistencia.afegirUsuari(nouUsuari);
     }
 
     /**
      * Verifica si una contrasenya coincideix amb la de l'usuari actual.
      * 
      * @param password Contrasenya a verificar
-     * @return true si la contrasenya és correcta, false altrament o si no hi ha usuari autenticat
+     * @return true si la contrasenya és correcta, false altrament o si no hi ha
+     *         usuari autenticat
      */
     public boolean checkPassword(String password) {
         Usuari usuariActual = Usuari.getUsuariActual();
@@ -96,7 +101,8 @@ public class CtrlUsuari {
     /**
      * Estableix tots els usuaris des de persistència, substituint els existents.
      * 
-     * @param usuaris HashMap amb els usuaris a carregar (clau: username, valor: Usuari)
+     * @param usuaris HashMap amb els usuaris a carregar (clau: username, valor:
+     *                Usuari)
      */
     public void setTotsUsuaris(HashMap<String, Usuari> usuaris) {
         if (usuaris != null) {
@@ -111,7 +117,7 @@ public class CtrlUsuari {
      */
     public void afegirUsuari(Usuari usuari) {
         if (usuari != null) {
-            persistencia.afegirUsuari(usuari.getUsername(), usuari);
+            persistencia.afegirUsuari(usuari);
         }
     }
 

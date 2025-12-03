@@ -7,12 +7,16 @@ import java.util.List;
 /**
  * Representa un usuari del sistema.
  * <p>
- * Aquesta classe emmagatzema les dades d'un usuari, incloent-hi les seves credencials,
- * les enquestes que ha creat, les respostes que ha donat i els perfils de personalitat
- * que se li han assignat després d'analitzar les seves respostes a una enquesta.
+ * Aquesta classe emmagatzema les dades d'un usuari, incloent-hi les seves
+ * credencials,
+ * les enquestes que ha creat, les respostes que ha donat i els perfils de
+ * personalitat
+ * que se li han assignat després d'analitzar les seves respostes a una
+ * enquesta.
  * </p>
  * <p>
- * També gestiona la sessió de l'usuari actual mitjançant mètodes estàtics, actuant
+ * També gestiona la sessió de l'usuari actual mitjançant mètodes estàtics,
+ * actuant
  * com un punt d'accés global a l'usuari autenticat.
  * </p>
  *
@@ -22,7 +26,8 @@ import java.util.List;
  */
 public class Usuari {
     /**
-     * Emmagatzema l'usuari que ha iniciat sessió actualment. És {@code null} si no hi ha cap sessió activa.
+     * Emmagatzema l'usuari que ha iniciat sessió actualment. És {@code null} si no
+     * hi ha cap sessió activa.
      */
     private static Usuari usuariActual = null;
 
@@ -52,7 +57,8 @@ public class Usuari {
      * Comprova si la contrasenya proporcionada coincideix amb la de l'usuari.
      *
      * @param password La contrasenya a verificar.
-     * @return {@code true} si la contrasenya és correcta, {@code false} en cas contrari.
+     * @return {@code true} si la contrasenya és correcta, {@code false} en cas
+     *         contrari.
      */
     public boolean checkPassword(String password) {
         return this.password.equals(password);
@@ -80,7 +86,7 @@ public class Usuari {
      * Afegeix una resposta a la col·lecció de respostes de l'usuari.
      *
      * @param idResposta L'identificador de la resposta.
-     * @param resposta L'objecte {@link Resposta}.
+     * @param resposta   L'objecte {@link Resposta}.
      */
     public void afegirResposta(String idResposta, Resposta resposta) {
         this.respostesUsuari.put(idResposta, resposta);
@@ -108,23 +114,24 @@ public class Usuari {
     /**
      * Retorna una còpia del mapa de totes les respostes donades per l'usuari.
      *
-     * @return Un {@code HashMap} que mapeja ID de resposta a objectes {@link Resposta}.
+     * @return Un {@code HashMap} que mapeja ID de resposta a objectes
+     *         {@link Resposta}.
      */
     public HashMap<String, Resposta> getRespostesUsuari() {
         return new HashMap<>(respostesUsuari);
     }
-    
+
     // Mètodes per a gestió de perfils
     /**
      * Assigna un perfil de personalitat a l'usuari per a una enquesta específica.
      *
      * @param idEnquesta L'ID de l'enquesta analitzada.
-     * @param perfil El {@link Perfil} resultant de l'anàlisi.
+     * @param perfil     El {@link Perfil} resultant de l'anàlisi.
      */
     public void assignarPerfil(String idEnquesta, Perfil perfil) {
         this.perfils.put(idEnquesta, perfil);
     }
-    
+
     /**
      * Obté el perfil de l'usuari per a una enquesta específica.
      *
@@ -134,16 +141,17 @@ public class Usuari {
     public Perfil getPerfil(String idEnquesta) {
         return this.perfils.get(idEnquesta);
     }
-    
+
     /**
      * Retorna una còpia del mapa de tots els perfils de l'usuari.
      *
-     * @return Un {@code HashMap} que mapeja ID d'enquesta a objectes {@link Perfil}.
+     * @return Un {@code HashMap} que mapeja ID d'enquesta a objectes
+     *         {@link Perfil}.
      */
     public HashMap<String, Perfil> getPerfils() {
         return new HashMap<>(perfils);
     }
-    
+
     /**
      * Comprova si l'usuari té un perfil assignat per a una enquesta específica.
      *
@@ -153,7 +161,7 @@ public class Usuari {
     public boolean tePerfil(String idEnquesta) {
         return this.perfils.containsKey(idEnquesta);
     }
-    
+
     /**
      * Elimina el perfil de l'usuari per a una enquesta específica.
      *
@@ -166,6 +174,7 @@ public class Usuari {
     // Getters
     /**
      * Retorna el nom d'usuari.
+     * 
      * @return El nom d'usuari.
      */
     public String getUsername() {
@@ -173,7 +182,18 @@ public class Usuari {
     }
 
     /**
+     * Retorna la contrasenya de l'usuari.
+     * Necessari per a la persistència.
+     * 
+     * @return La contrasenya.
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
      * Retorna una còpia de la llista d'enquestes creades per l'usuari.
+     * 
      * @return Una {@code List} d'objectes {@link Enquesta}.
      */
     public List<Enquesta> getEnquestesCreades() {
@@ -193,7 +213,8 @@ public class Usuari {
     /**
      * Retorna l'usuari que té la sessió iniciada actualment.
      *
-     * @return L'objecte {@link Usuari} actual, o {@code null} si no hi ha cap sessió activa.
+     * @return L'objecte {@link Usuari} actual, o {@code null} si no hi ha cap
+     *         sessió activa.
      */
     public static Usuari getUsuariActual() {
         return usuariActual;
@@ -206,4 +227,3 @@ public class Usuari {
         usuariActual = null;
     }
 }
-

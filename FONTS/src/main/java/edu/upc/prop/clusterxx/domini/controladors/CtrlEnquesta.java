@@ -6,9 +6,11 @@ import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
+import edu.upc.prop.clusterxx.persistencia.CtrlPersistencia;
 
 /**
- * Controlador d'enquestes que delega totes les operacions de dades a CtrlPersistencia.
+ * Controlador d'enquestes que delega totes les operacions de dades a
+ * CtrlPersistencia.
  * No manté dades pròpies, només coordina la lògica de negoci.
  */
 public class CtrlEnquesta {
@@ -25,18 +27,18 @@ public class CtrlEnquesta {
      * L'enquesta es guarda a la capa de persistència i s'afegeix automàticament
      * a la llista d'enquestes creades per l'usuari.
      * 
-     * @param id Identificador únic de l'enquesta
-     * @param titol Títol de l'enquesta
+     * @param id         Identificador únic de l'enquesta
+     * @param titol      Títol de l'enquesta
      * @param descripcio Descripció de l'enquesta
-     * @param creador Usuari que crea l'enquesta
+     * @param creador    Usuari que crea l'enquesta
      */
     public void crearEnquesta(String id, String titol, String descripcio, Usuari creador) {
         // Crear la nova enquesta
         Enquesta novaEnquesta = new Enquesta(id, titol, descripcio, creador);
-        
+
         // Guardar l'enquesta a la capa de persistència
         persistencia.afegirEnquesta(novaEnquesta);
-        
+
         // Registrar l'enquesta al perfil de l'usuari creador
         creador.addEnquestaCreada(novaEnquesta);
     }
@@ -44,7 +46,7 @@ public class CtrlEnquesta {
     /**
      * Modifica el títol d'una enquesta existent.
      * 
-     * @param id Identificador de l'enquesta
+     * @param id       Identificador de l'enquesta
      * @param nouTitol Nou títol a assignar
      */
     public void modificarTitolEnquesta(String id, String nouTitol) {
@@ -57,7 +59,7 @@ public class CtrlEnquesta {
     /**
      * Modifica la descripció d'una enquesta existent.
      * 
-     * @param id Identificador de l'enquesta
+     * @param id             Identificador de l'enquesta
      * @param novaDescripcio Nova descripció a assignar
      */
     public void modificarDescripcioEnquesta(String id, String novaDescripcio) {
@@ -83,14 +85,14 @@ public class CtrlEnquesta {
      * La pregunta es registra tant a l'enquesta com a la persistència global.
      * 
      * @param idEnquesta Identificador de l'enquesta
-     * @param pregunta Pregunta a afegir
+     * @param pregunta   Pregunta a afegir
      */
     public void afegirPregunta(String idEnquesta, Pregunta pregunta) {
         Enquesta e = persistencia.getEnquesta(idEnquesta);
         if (e != null) {
             e.afegirPregunta(pregunta);
-            // També afegir la pregunta a persistència global
-            persistencia.afegirPregunta(pregunta.getId(), pregunta);
+            // Guardar l'enquesta actualitzada
+            persistencia.guardarEnquesta(e);
         }
     }
 
@@ -116,7 +118,7 @@ public class CtrlEnquesta {
      * 
      * @param idEnquesta Identificador de l'enquesta
      * @param idPregunta Identificador de la pregunta a modificar
-     * @param nova Nova pregunta amb les dades actualitzades
+     * @param nova       Nova pregunta amb les dades actualitzades
      */
     public void modificarPregunta(String idEnquesta, String idPregunta, Pregunta nova) {
         Enquesta e = persistencia.getEnquesta(idEnquesta);
@@ -130,7 +132,7 @@ public class CtrlEnquesta {
      * 
      * @param idEnquesta Identificador de l'enquesta
      * @param idPregunta Identificador de la pregunta
-     * @param o Opció a afegir
+     * @param o          Opció a afegir
      */
     public void afegirOpcioAPregunta(String idEnquesta, String idPregunta, Opcio o) {
         Enquesta e = persistencia.getEnquesta(idEnquesta);
@@ -147,7 +149,7 @@ public class CtrlEnquesta {
      * 
      * @param idEnquesta Identificador de l'enquesta
      * @param idPregunta Identificador de la pregunta
-     * @param idOpcio Identificador de l'opció a eliminar
+     * @param idOpcio    Identificador de l'opció a eliminar
      */
     public void eliminarOpcioDepregunta(String idEnquesta, String idPregunta, int idOpcio) {
         Enquesta e = persistencia.getEnquesta(idEnquesta);
@@ -224,7 +226,7 @@ public class CtrlEnquesta {
      * Afegeix l'usuari a la llista de participants de l'enquesta.
      * 
      * @param idEnquesta Identificador de l'enquesta
-     * @param username Nom d'usuari del participant
+     * @param username   Nom d'usuari del participant
      */
     public void registrarParticipacio(String idEnquesta, String username) {
         Enquesta e = persistencia.getEnquesta(idEnquesta);
@@ -237,14 +239,13 @@ public class CtrlEnquesta {
      * Verifica si un usuari ha respost una enquesta.
      * 
      * @param idEnquesta Identificador de l'enquesta
-     * @param username Nom d'usuari a verificar
+     * @param username   Nom d'usuari a verificar
      * @return true si l'usuari ha contestat l'enquesta, false altrament
      */
     public boolean haRespostUsuari(String idEnquesta, String username) {
         Enquesta e = persistencia.getEnquesta(idEnquesta);
         return e != null && e.haRespostUsuari(username);
     }
-
 
     /**
      * Obté el nombre total d'enquestes registrades al sistema.

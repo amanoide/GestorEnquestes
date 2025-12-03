@@ -1,0 +1,26 @@
+[
+    {
+        "descripcio": "Amb preguntes",
+        "titol": "Enquesta Completa",
+        "numPreguntes": 1,
+        "id": "enq2",
+        "idCreador": "creador2",
+        "numParticipants": 0
+    },
+    {
+        "descripcio": "Prova",
+        "titol": "Test Ctrl",
+        "numPreguntes": 0,
+        "id": "ctrl_enq_test",
+        "idCreador": "ctrl_creador",
+        "numParticipants": 0
+    },
+    {
+        "descripcio": "Descripció de prova",
+        "titol": "Enquesta Test",
+        "numPreguntes": 0,
+        "id": "enq1",
+        "idCreador": "creador",
+        "numParticipants": 0
+    }
+]

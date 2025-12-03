@@ -5,6 +5,7 @@ import java.util.HashMap;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
 import edu.upc.prop.clusterxx.domini.classes.Usuari;
+import edu.upc.prop.clusterxx.persistencia.CtrlPersistencia;
 
 /**
  * Controlador de respostes que delega totes les operacions de dades a
@@ -25,14 +26,13 @@ public class CtrlResposta {
      * @param idPregunta   ID de la pregunta
      * @param textResposta Text de la resposta
      * @param usuari       Usuari que respon
-     * @param pregunta     Pregunta a la qual es respon
      */
-    public void registrarResposta(String idPregunta, String textResposta, Usuari usuari, Pregunta pregunta) {
+    public void registrarResposta(String idPregunta, String textResposta, Usuari usuari) {
         // Generar ID únic per la resposta
         String idResposta = idPregunta + "_" + usuari.getUsername();
 
         Resposta resposta = new Resposta(idResposta, idPregunta, textResposta, usuari);
-        persistencia.afegirResposta(idResposta, resposta, pregunta);
+        persistencia.afegirResposta(resposta);
     }
 
     /**
