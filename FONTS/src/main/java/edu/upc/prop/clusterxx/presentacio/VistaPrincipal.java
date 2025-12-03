@@ -2,8 +2,6 @@ package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class VistaPrincipal {
     private CtrlPresentacio iCtrlPresentacio;
@@ -15,23 +13,15 @@ public class VistaPrincipal {
 
     private JMenuBar menubarVista = new JMenuBar();
     private JMenu menuFile = new JMenu("File");
+    private JMenuItem menuitemLogout = new JMenuItem("Logout");
+    private JMenuItem menuitemDeleteAccount = new JMenuItem("Esborrar compte"); // Nuevo item
     private JMenuItem menuitemQuit = new JMenuItem("Quit");
 
-    // --- Componentes Pantalla Login ---
-    private JPanel panelLogin = new JPanel(new GridLayout(3, 2, 10, 10));
-    private JTextField textUser = new JTextField();
-    private JPasswordField textPass = new JPasswordField();
-    private JButton btnLogin = new JButton("Login");
-    private JLabel labelStatusLogin = new JLabel("");
-
-    // --- Componentes Pantalla Crear Enquesta ---
-    private JPanel panelCrearEnquesta = new JPanel(new BorderLayout());
-    private JPanel formEnquesta = new JPanel(new GridLayout(4, 2, 10, 10));
-    private JTextField textIdEnquesta = new JTextField();
-    private JTextField textTitolEnquesta = new JTextField();
-    private JTextArea textDescEnquesta = new JTextArea(5, 20);
-    private JButton btnCrear = new JButton("Crear Enquesta");
-    private JLabel labelStatusEnquesta = new JLabel("Usuario autenticado");
+    // Vistas secundarias
+    private VistaLogin vistaLogin;
+    private VistaRegistro vistaRegistro;
+    private VistaMenuPrincipal vistaMenuPrincipal;
+    private VistaGestionEnquestes vistaGestionEnquestes;
 
     public VistaPrincipal(CtrlPresentacio pCtrlPresentacio) {
         iCtrlPresentacio = pCtrlPresentacio;
@@ -40,8 +30,8 @@ public class VistaPrincipal {
 
     public void hacerVisible() {
         frameVista.pack();
-        frameVista.setSize(500, 400); // Tamaño razonable inicial
-        frameVista.setLocationRelativeTo(null); // Centrar en pantalla
+        frameVista.setSize(900, 600);
+        frameVista.setLocationRelativeTo(null);
         frameVista.setVisible(true);
     }
 
@@ -52,84 +42,71 @@ public class VistaPrincipal {
         // Configuración del CardLayout
         cardLayout = (CardLayout) panelContenidos.getLayout();
 
-        // --- 1. Configurar Panel Login ---
-        panelLogin.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
-        panelLogin.add(new JLabel("Usuario:"));
-        panelLogin.add(textUser);
-        panelLogin.add(new JLabel("Contraseña:"));
-        panelLogin.add(textPass);
-        panelLogin.add(labelStatusLogin);
-        panelLogin.add(btnLogin);
-
-        // --- 2. Configurar Panel Crear Enquesta ---
-        formEnquesta.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        formEnquesta.add(new JLabel("ID Enquesta:"));
-        formEnquesta.add(textIdEnquesta);
-        formEnquesta.add(new JLabel("Títol:"));
-        formEnquesta.add(textTitolEnquesta);
-        formEnquesta.add(new JLabel("Descripció:"));
-        formEnquesta.add(new JScrollPane(textDescEnquesta));
-        formEnquesta.add(new JLabel("")); // Espacio vacío
-        formEnquesta.add(btnCrear);
-
-        panelCrearEnquesta.add(labelStatusEnquesta, BorderLayout.NORTH);
-        panelCrearEnquesta.add(formEnquesta, BorderLayout.CENTER);
+        // Inicializar Vistas
+        vistaLogin = new VistaLogin(iCtrlPresentacio, this);
+        vistaRegistro = new VistaRegistro(iCtrlPresentacio, this);
+        vistaMenuPrincipal = new VistaMenuPrincipal(iCtrlPresentacio, this);
+        vistaGestionEnquestes = new VistaGestionEnquestes(iCtrlPresentacio, this);
 
         // Añadir paneles al CardLayout
-        panelContenidos.add(panelLogin, "LOGIN");
-        panelContenidos.add(panelCrearEnquesta, "MAIN");
+        panelContenidos.add(vistaLogin, "LOGIN");
+        panelContenidos.add(vistaRegistro, "REGISTER");
+        panelContenidos.add(vistaMenuPrincipal, "MENU");
+        panelContenidos.add(vistaGestionEnquestes, "GESTION");
 
         frameVista.setContentPane(panelContenidos);
 
         // Configuración del Menú
+        menuFile.add(menuitemLogout);
+        menuFile.add(menuitemDeleteAccount); // Añadir al menú
+        menuFile.addSeparator();
         menuFile.add(menuitemQuit);
         menubarVista.add(menuFile);
         frameVista.setJMenuBar(menubarVista);
 
         // --- Listeners ---
+        menuitemLogout.addActionListener(e -> cerrarSesion());
+        menuitemDeleteAccount.addActionListener(e -> eliminarCuenta());
         menuitemQuit.addActionListener(e -> System.exit(0));
-
-        // Listener Login
-        btnLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                actionPerformed_btnLogin(e);
-            }
-        });
-
-        // Listener Crear Enquesta
-        btnCrear.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                actionPerformed_btnCrear(e);
-            }
-        });
     }
 
-    // --- Métodos de Acción ---
+    /**
+     * Cierra la sesión actual y vuelve a la pantalla de login.
+     */
+    private void cerrarSesion() {
+        iCtrlPresentacio.logout();
+        // Limpiar la vista de gestión (opcional, pero recomendable)
+        // vistaGestionEnquestes.limpiar(); // Si tuviéramos un método limpiar
+        mostrarVista("LOGIN");
+    }
 
-    public void actionPerformed_btnLogin(ActionEvent event) {
-        String user = textUser.getText();
-        String pass = new String(textPass.getPassword());
+    /**
+     * Elimina la cuenta del usuario actual.
+     */
+    private void eliminarCuenta() {
+        int confirm = JOptionPane.showConfirmDialog(frameVista,
+                "¿Estàs segur de que vols esborrar el teu compte? Aquesta acció és irreversible.",
+                "Eliminar compte", JOptionPane.YES_NO_OPTION);
 
-        boolean loginOk = iCtrlPresentacio.login(user, pass);
-
-        if (loginOk) {
-            labelStatusEnquesta.setText("Bienvenido, " + user);
-            cardLayout.show(panelContenidos, "MAIN");
-        } else {
-            labelStatusLogin.setText("Error: Credenciales incorrectas");
-            labelStatusLogin.setForeground(Color.RED);
+        if (confirm == JOptionPane.YES_OPTION) {
+            String resultado = iCtrlPresentacio.esborrarUsuariActual();
+            JOptionPane.showMessageDialog(frameVista, resultado);
+            if (resultado.contains("correctament")) {
+                mostrarVista("LOGIN");
+            }
         }
     }
 
-    public void actionPerformed_btnCrear(ActionEvent event) {
-        String id = textIdEnquesta.getText();
-        String titol = textTitolEnquesta.getText();
-        String desc = textDescEnquesta.getText();
-
-        String resultado = iCtrlPresentacio.crearEnquesta(id, titol, desc);
-
-        JOptionPane.showMessageDialog(frameVista, resultado);
+    /**
+     * Método para cambiar de vista desde las sub-vistas.
+     * 
+     * @param nombreVista Nombre de la vista ("LOGIN", "REGISTER", "MENU",
+     *                    "GESTION")
+     */
+    public void mostrarVista(String nombreVista) {
+        cardLayout.show(panelContenidos, nombreVista);
+        if ("GESTION".equals(nombreVista)) {
+            vistaGestionEnquestes.actualizarLista();
+        }
     }
 }
