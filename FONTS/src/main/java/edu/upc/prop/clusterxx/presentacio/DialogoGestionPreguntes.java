@@ -50,9 +50,10 @@ public class DialogoGestionPreguntes extends JDialog {
 
     private void cargarPreguntes() {
         listModel.clear();
-        ArrayList<String> preguntes = iCtrlPresentacio.getPreguntesEnquesta(idEnquesta);
-        for (String p : preguntes) {
-            listModel.addElement(p);
+        ArrayList<edu.upc.prop.clusterxx.domini.classes.Pregunta> preguntas = iCtrlPresentacio
+                .getPreguntesEnquestaObjects(idEnquesta);
+        for (edu.upc.prop.clusterxx.domini.classes.Pregunta p : preguntas) {
+            listModel.addElement(p.getId() + ": " + p.getText() + " [" + p.getTipus() + "]");
         }
     }
 

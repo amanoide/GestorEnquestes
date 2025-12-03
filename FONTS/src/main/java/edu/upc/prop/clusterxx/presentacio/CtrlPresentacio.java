@@ -44,16 +44,6 @@ public class CtrlPresentacio {
         }
     }
 
-    // ... (rest of methods)
-
-    /**
-     * Crea una nueva encuesta.
-     * 
-     * @param id    Identificador
-     * @param titol Título
-     * @param desc  Descripció
-     * @return Mensaje de éxito o error
-     */
     /**
      * Crea una nova enquesta al sistema.
      * 
@@ -182,29 +172,6 @@ public class CtrlPresentacio {
         } catch (Exception e) {
             return "Error al eliminar usuari: " + e.getMessage();
         }
-    }
-
-    /**
-     * Obté una llista de strings que representen les preguntes d'una enquesta.
-     * Cada string conté l'ID i el text de la pregunta.
-     *
-     * @param idEnquesta L'ID de l'enquesta.
-     * @return Una llista de strings amb la informació de les preguntes.
-     */
-    public ArrayList<String> getPreguntesEnquesta(String idEnquesta) {
-        ArrayList<String> result = new ArrayList<>();
-        try {
-            Enquesta enquesta = ctrlDomini.getEnquesta(idEnquesta);
-            if (enquesta != null) {
-                ArrayList<Pregunta> preguntes = enquesta.getPreguntes();
-                for (Pregunta p : preguntes) {
-                    result.add(p.getId() + ": " + p.getText() + " [" + p.getTipus() + "]");
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error al recuperar preguntes: " + e.getMessage());
-        }
-        return result;
     }
 
     /**
@@ -461,5 +428,27 @@ public class CtrlPresentacio {
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
+    }
+
+    /**
+     * Obté la llista d'enquestes que l'usuari actual ha contestat.
+     * 
+     * @return Llista d'enquestes contestades.
+     */
+    public java.util.ArrayList<Enquesta> getEnquestesContestades() {
+        java.util.ArrayList<Enquesta> contestades = new java.util.ArrayList<>();
+        try {
+            java.util.ArrayList<Enquesta> totes = ctrlDomini.consultarEnquestes();
+            if (currentUsername != null) {
+                for (Enquesta e : totes) {
+                    if (e.haRespostUsuari(currentUsername)) {
+                        contestades.add(e);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error filtrant enquestes contestades: " + e.getMessage());
+        }
+        return contestades;
     }
 }

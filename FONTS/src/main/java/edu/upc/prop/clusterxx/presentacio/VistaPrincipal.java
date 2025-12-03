@@ -22,6 +22,7 @@ public class VistaPrincipal {
     private VistaRegistro vistaRegistro;
     private VistaMenuPrincipal vistaMenuPrincipal;
     private VistaGestionEnquestes vistaGestionEnquestes;
+    private VistaGestionarRespostes vistaGestionarRespostes; // Nueva vista
 
     public VistaPrincipal(CtrlPresentacio pCtrlPresentacio) {
         iCtrlPresentacio = pCtrlPresentacio;
@@ -47,12 +48,14 @@ public class VistaPrincipal {
         vistaRegistro = new VistaRegistro(iCtrlPresentacio, this);
         vistaMenuPrincipal = new VistaMenuPrincipal(iCtrlPresentacio, this);
         vistaGestionEnquestes = new VistaGestionEnquestes(iCtrlPresentacio, this);
+        vistaGestionarRespostes = new VistaGestionarRespostes(iCtrlPresentacio, this); // Nueva vista
 
         // Añadir paneles al CardLayout
         panelContenidos.add(vistaLogin, "LOGIN");
         panelContenidos.add(vistaRegistro, "REGISTER");
         panelContenidos.add(vistaMenuPrincipal, "MENU");
         panelContenidos.add(vistaGestionEnquestes, "GESTION");
+        panelContenidos.add(vistaGestionarRespostes, "GESTION_RESPOSTES"); // Añadir al layout
 
         frameVista.setContentPane(panelContenidos);
 
@@ -107,6 +110,8 @@ public class VistaPrincipal {
         cardLayout.show(panelContenidos, nombreVista);
         if ("GESTION".equals(nombreVista)) {
             vistaGestionEnquestes.actualizarLista();
+        } else if ("GESTION_RESPOSTES".equals(nombreVista)) {
+            vistaGestionarRespostes.actualizarLista();
         }
     }
 }

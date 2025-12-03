@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 
 public class DialogoGestionarRespostes extends JDialog {

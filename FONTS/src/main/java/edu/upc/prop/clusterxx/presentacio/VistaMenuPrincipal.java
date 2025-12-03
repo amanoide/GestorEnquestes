@@ -2,7 +2,6 @@ package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 public class VistaMenuPrincipal extends JPanel {
     private CtrlPresentacio iCtrlPresentacio;
@@ -99,15 +98,6 @@ public class VistaMenuPrincipal extends JPanel {
     }
 
     private void mostrarDialogoGestionarRespostes() {
-        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-        DialogoSeleccionarEnquesta dialogoSel = new DialogoSeleccionarEnquesta(parentFrame, iCtrlPresentacio);
-        dialogoSel.setVisible(true);
-
-        if (dialogoSel.isConfirmado()) {
-            String idEnquesta = dialogoSel.getSelectedId();
-            DialogoGestionarRespostes dialogoGest = new DialogoGestionarRespostes(parentFrame, iCtrlPresentacio,
-                    idEnquesta);
-            dialogoGest.setVisible(true);
-        }
+        vistaPrincipal.mostrarVista("GESTION_RESPOSTES");
     }
 }
