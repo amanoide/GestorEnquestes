@@ -19,13 +19,13 @@ public class TestPersistencia {
     private static final String DATA_DIR = "dades";
     private static final String ENQUESTES_DIR = DATA_DIR + "/enquestes";
 
-    private static void limpiarDirectorio(File dir) {
+    private static void netejarDirectori(File dir) {
         if (dir.exists() && dir.isDirectory()) {
             File[] files = dir.listFiles();
             if (files != null) {
                 for (File f : files) {
                     if (f.isDirectory()) {
-                        limpiarDirectorio(f);
+                        netejarDirectori(f);
                     }
                     f.delete();
                 }
@@ -38,7 +38,7 @@ public class TestPersistencia {
     // ===========================================
 
     @Test
-    public void test01_GuardarICarregarUsuari() throws Exception {
+    public void testGuardarICarregarUsuari() throws Exception {
         GestorUsuaris gestor = new GestorUsuaris();
         
         // Crear usuari
@@ -62,7 +62,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test02_GuardarMultiplesUsuaris() throws Exception {
+    public void testGuardarMultiplesUsuaris() throws Exception {
         GestorUsuaris gestor = new GestorUsuaris();
         
         HashMap<String, Usuari> usuaris = new HashMap<>();
@@ -81,7 +81,7 @@ public class TestPersistencia {
     // ===========================================
 
     @Test
-    public void test03_GuardarEnquestaBuida() throws Exception {
+    public void testGuardarEnquestaBuida() throws Exception {
         GestorEnquestes gestor = new GestorEnquestes();
         
         // Crear usuari creador
@@ -99,7 +99,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test04_GuardarEnquestaAmbPreguntes() throws Exception {
+    public void testGuardarEnquestaAmbPreguntes() throws Exception {
         GestorEnquestes gestor = new GestorEnquestes();
         GestorUsuaris gestorUsuaris = new GestorUsuaris();
         
@@ -132,7 +132,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test05_EliminarEnquesta() throws Exception {
+    public void testEliminarEnquesta() throws Exception {
         GestorEnquestes gestor = new GestorEnquestes();
         Usuari creador = new Usuari("creador3", "pass");
         
@@ -154,7 +154,7 @@ public class TestPersistencia {
     // ===========================================
 
     @Test
-    public void test06_GuardarICarregarPerfils() throws Exception {
+    public void testGuardarICarregarPerfils() throws Exception {
         GestorPerfils gestor = new GestorPerfils();
         
         HashMap<String, Perfil> perfils = new HashMap<>();
@@ -175,7 +175,7 @@ public class TestPersistencia {
     // ===========================================
 
     @Test
-    public void test07_CtrlPersistenciaSingleton() {
+    public void testCtrlPersistenciaSingleton() {
         CtrlPersistencia ctrl1 = CtrlPersistencia.getInstance();
         CtrlPersistencia ctrl2 = CtrlPersistencia.getInstance();
         
@@ -183,7 +183,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test08_CtrlPersistenciaAfegirUsuari() {
+    public void testCtrlPersistenciaAfegirUsuari() {
         CtrlPersistencia ctrl = CtrlPersistencia.getInstance();
         
         Usuari usuari = new Usuari("ctrl_test_user", "mypass");
@@ -194,7 +194,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test09_CtrlPersistenciaAfegirEnquesta() {
+    public void testCtrlPersistenciaAfegirEnquesta() {
         CtrlPersistencia ctrl = CtrlPersistencia.getInstance();
         
         Usuari creador = new Usuari("ctrl_creador", "pass");
@@ -209,7 +209,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test10_PersistenciaSobreviuReinicio() throws Exception {
+    public void testPersistenciaSobreviuReinicio() throws Exception {
         // Primer: guardar dades
         GestorUsuaris gestor = new GestorUsuaris();
         HashMap<String, Usuari> usuaris = new HashMap<>();
