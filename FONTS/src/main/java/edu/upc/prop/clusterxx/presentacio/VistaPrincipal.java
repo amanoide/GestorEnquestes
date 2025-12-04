@@ -12,10 +12,10 @@ public class VistaPrincipal {
     private CardLayout cardLayout;
 
     private JMenuBar menubarVista = new JMenuBar();
-    private JMenu menuFile = new JMenu("File");
-    private JMenuItem menuitemLogout = new JMenuItem("Logout");
-    private JMenuItem menuitemDeleteAccount = new JMenuItem("Esborrar compte"); // Nuevo item
-    private JMenuItem menuitemQuit = new JMenuItem("Quit");
+    private JMenu menuFile = new JMenu("Menú");
+    private JMenuItem menuitemLogout = new JMenuItem("Tancar sessió");
+    private JMenuItem menuitemDeleteAccount = new JMenuItem("Esborrar compte");
+    private JMenuItem menuitemQuit = new JMenuItem("Sortir");
 
     // Vistas secundarias
     private VistaLogin vistaLogin;
