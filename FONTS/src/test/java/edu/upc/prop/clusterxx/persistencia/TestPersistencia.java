@@ -18,6 +18,8 @@ public class TestPersistencia {
 
     private static final String DATA_DIR = "dades";
     private static final String ENQUESTES_DIR = DATA_DIR + "/enquestes";
+    private static final String USUARIS_DIR = DATA_DIR + "/usuaris";
+    private static final String PERFILS_DIR = DATA_DIR + "/perfils";
 
     private static void netejarDirectori(File dir) {
         if (dir.exists() && dir.isDirectory()) {
@@ -49,9 +51,13 @@ public class TestPersistencia {
         // Guardar
         gestor.guardarUsuaris(usuaris);
         
-        // Verificar que el fitxer existeix
-        File fitxer = new File(DATA_DIR + "/usuaris.json");
-        assertTrue("El fitxer usuaris.json hauria d'existir", fitxer.exists());
+        // Verificar que el fitxer d'índex existeix
+        File fitxerIndex = new File(USUARIS_DIR + "/index.json");
+        assertTrue("El fitxer index.json d'usuaris hauria d'existir", fitxerIndex.exists());
+        
+        // Verificar que el fitxer individual existeix
+        File fitxerUsuari = new File(USUARIS_DIR + "/testuser.json");
+        assertTrue("El fitxer testuser.json hauria d'existir", fitxerUsuari.exists());
         
         // Carregar
         HashMap<String, Usuari> usuarisCarregats = gestor.carregarUsuaris();
@@ -74,6 +80,11 @@ public class TestPersistencia {
         HashMap<String, Usuari> carregats = gestor.carregarUsuaris();
         
         assertEquals("Haurien d'haver 3 usuaris", 3, carregats.size());
+        
+        // Verificar fitxers individuals
+        assertTrue("Hauria d'existir user1.json", new File(USUARIS_DIR + "/user1.json").exists());
+        assertTrue("Hauria d'existir user2.json", new File(USUARIS_DIR + "/user2.json").exists());
+        assertTrue("Hauria d'existir user3.json", new File(USUARIS_DIR + "/user3.json").exists());
     }
 
     // ===========================================
@@ -163,8 +174,13 @@ public class TestPersistencia {
         
         gestor.guardarPerfils(perfils);
         
-        File fitxer = new File(DATA_DIR + "/perfils.json");
-        assertTrue("El fitxer perfils.json hauria d'existir", fitxer.exists());
+        // Verificar fitxer índex
+        File fitxerIndex = new File(PERFILS_DIR + "/index.json");
+        assertTrue("El fitxer index.json de perfils hauria d'existir", fitxerIndex.exists());
+        
+        // Verificar fitxers individuals
+        assertTrue("Hauria d'existir 1.json", new File(PERFILS_DIR + "/1.json").exists());
+        assertTrue("Hauria d'existir 2.json", new File(PERFILS_DIR + "/2.json").exists());
         
         HashMap<String, Perfil> carregats = gestor.carregarPerfils();
         assertEquals("Haurien d'haver 2 perfils", 2, carregats.size());
@@ -220,7 +236,6 @@ public class TestPersistencia {
         GestorUsuaris gestorNou = new GestorUsuaris();
         HashMap<String, Usuari> carregats = gestorNou.carregarUsuaris();
         
-        assertTrue("L'usuari hauria de persistir després de 'reiniciar'", 
-                   carregats.containsKey("persistent_user"));
+        assertTrue("L'usuari hauria de persistir després de 'reiniciar'", carregats.containsKey("persistent_user"));
     }
 }

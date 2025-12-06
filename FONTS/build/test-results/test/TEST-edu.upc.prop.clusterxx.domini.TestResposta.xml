@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="edu.upc.prop.clusterxx.domini.TestResposta" tests="6" skipped="0" failures="0" errors="0" timestamp="2025-12-03T13:26:08" hostname="DARI" time="0.002">
+  <properties/>
+  <testcase name="testTextAmbEspais" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.001"/>
+  <testcase name="testModificarResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
+  <testcase name="testConstructoraResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
+  <testcase name="testTextRespostaBuit" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
+  <testcase name="testToStringAmbTextNull" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
+  <testcase name="testToStringResposta" classname="edu.upc.prop.clusterxx.domini.TestResposta" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
