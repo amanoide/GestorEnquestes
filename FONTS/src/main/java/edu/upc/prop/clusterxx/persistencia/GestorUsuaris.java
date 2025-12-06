@@ -49,6 +49,7 @@ public class GestorUsuaris {
 
     /**
      * Guarda un únic usuari al seu fitxer individual.
+     * Inclou dades d'autenticació i enquestes participades.
      * 
      * @param usuari L'usuari a guardar
      * @throws IOException Si hi ha error d'escriptura
@@ -59,7 +60,13 @@ public class GestorUsuaris {
         JSONObject jsonUsuari = new JSONObject();
         jsonUsuari.put("username", usuari.getUsername());
         jsonUsuari.put("password", usuari.getPassword());
-        // Aquí podries afegir més camps si cal (respostes, enquestesCreades, etc.)
+        
+        // Guardar enquestes participades (obtenim dels perfils)
+        JSONArray enquestesParticipades = new JSONArray();
+        for (String idEnquesta : usuari.getPerfils().keySet()) {
+            enquestesParticipades.put(idEnquesta);
+        }
+        jsonUsuari.put("enquestesParticipades", enquestesParticipades);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxer))) {
             writer.write(jsonUsuari.toString(4));
@@ -140,6 +147,7 @@ public class GestorUsuaris {
 
     /**
      * Carrega un usuari individual del seu fitxer.
+     * Nota: Les enquestesParticipades es carregaran quan es vinculin els perfils.
      * 
      * @param username El username de l'usuari a carregar
      * @return L'usuari carregat o null si no existeix
@@ -163,6 +171,7 @@ public class GestorUsuaris {
         JSONObject jsonUsuari = new JSONObject(content.toString());
         String password = jsonUsuari.optString("password", "default");
         
+        // Les enquestesParticipades es vincularan posteriorment via perfils
         return new Usuari(username, password);
     }
 }

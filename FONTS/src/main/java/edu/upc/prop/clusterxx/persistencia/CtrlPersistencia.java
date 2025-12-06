@@ -23,6 +23,8 @@ public class CtrlPersistencia {
     private GestorEnquestes gestorEnquestes;
     private GestorUsuaris gestorUsuaris;
     private GestorPerfils gestorPerfils;
+    private GestorPreguntes gestorPreguntes;
+    private GestorRespostes gestorRespostes;
 
     // Dades principals en memòria
     private HashMap<String, Enquesta> enquestes;
@@ -37,6 +39,8 @@ public class CtrlPersistencia {
         this.gestorEnquestes = new GestorEnquestes();
         this.gestorUsuaris = new GestorUsuaris();
         this.gestorPerfils = new GestorPerfils();
+        this.gestorPreguntes = new GestorPreguntes();
+        this.gestorRespostes = new GestorRespostes();
 
         this.enquestes = new HashMap<>();
         this.usuaris = new HashMap<>();
@@ -69,8 +73,8 @@ public class CtrlPersistencia {
             enquestes = gestorEnquestes.carregarEnquestes(usuaris);
 
             // Carregar preguntes i respostes
-            preguntes = gestorEnquestes.carregarPreguntes(enquestes);
-            respostes = gestorEnquestes.carregarRespostes(enquestes);
+            preguntes = gestorPreguntes.carregarPreguntes(enquestes);
+            respostes = gestorRespostes.carregarRespostes(enquestes);
 
             // Inicialitzar cache de preguntes i respostes
             inicialitzarCache();

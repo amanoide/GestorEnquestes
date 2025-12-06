@@ -11,9 +11,9 @@ import java.util.List;
 
 /**
  * Gestor encarregat de la persistència dels perfils en fitxers JSON.
- * Estructura:
- * - dades/perfils/index.json: Llista ràpida de tots els IDs de perfils
- * - dades/perfils/{id}.json: Fitxer individual per cada perfil
+ * Segueix l'estructura jeràrquica:
+ * - dades/perfils/index.json: [{ id, descripcio, idEnquesta }]
+ * - dades/perfils/{id_perfil}.json: perfil complet amb clustering (si escau)
  */
 public class GestorPerfils {
     private static final String DIRECTORI_PERFILS = "dades/perfils";
@@ -74,7 +74,8 @@ public class GestorPerfils {
     }
 
     /**
-     * Guarda l'índex amb la llista de tots els IDs de perfils.
+     * Guarda l'índex amb les dades bàsiques de tots els perfils.
+     * Format: [{ id, descripcio, idEnquesta }]
      * 
      * @param perfils Mapa de perfils
      * @throws IOException Si hi ha error d'escriptura
@@ -87,6 +88,9 @@ public class GestorPerfils {
             JSONObject jsonEntry = new JSONObject();
             jsonEntry.put("id", perfil.getId());
             jsonEntry.put("descripcion", perfil.getDescripcion());
+            if (perfil.teClustering()) {
+                jsonEntry.put("idEnquesta", perfil.getIdEnquesta());
+            }
             jsonArray.put(jsonEntry);
         }
 

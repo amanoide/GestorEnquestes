@@ -9,13 +9,20 @@ import java.util.HashMap;
 
 /**
  * Gestor encarregat de la persistència de les enquestes en fitxers JSON.
- * Utilitza una estructura de directoris:
- * - dades/enquestes/index.json: Índex amb dades bàsiques de totes les enquestes (id, títol, descripció, creador, nombre de preguntes, nombre de participants)
- * - dades/enquestes/{idenquesta}.json: Fitxer individual per cada enquesta (preguntes + respostes)
+ * Segueix l'estructura jeràrquica:
+ * - dades/enquestes/index.json: [{ id, titol, creador, numPreguntes, numParticipants }]
+ * - dades/enquestes/{id_enquesta}/enquesta.json: definició bàsica (títol, descripció, creador)
+ * - dades/enquestes/{id_enquesta}/preguntes/index.json: [{ id, text, tipus }]
+ * - dades/enquestes/{id_enquesta}/preguntes/{id_pregunta}.json: pregunta completa
+ * - dades/enquestes/{id_enquesta}/respostes/index.json: ["usuari1", "usuari2", ...]
+ * - dades/enquestes/{id_enquesta}/respostes/{username}.json: respostes de l'usuari
  */
 public class GestorEnquestes {
     private static final String DIRECTORI_ENQUESTES = "dades/enquestes";
     private static final String FITXER_INDEX = "index.json";
+    private static final String FITXER_ENQUESTA = "enquesta.json";
+    private static final String DIR_PREGUNTES = "preguntes";
+    private static final String DIR_RESPOSTES = "respostes";
 
     /**
      * Constructor. Crea el directori d'enquestes si no existeix.
@@ -44,22 +51,47 @@ public class GestorEnquestes {
     }
 
     /**
-     * Guarda una única enquesta al seu fitxer individual.
+     * Guarda una única enquesta seguint l'estructura jeràrquica:
+     * - Crea directori {id_enquesta}/
+     * - Guarda enquesta.json amb dades bàsiques (títol, descripció, creador)
+     * - Les preguntes i respostes es gestionen via GestorPreguntes i GestorRespostes
      * 
      * @param enquesta L'enquesta a guardar
      * @throws IOException Si hi ha error d'escriptura
      */
     public void guardarEnquesta(Enquesta enquesta) throws IOException {
-        JSONObject jsonEnquesta = enquestAJson(enquesta);
+        // Crear directori de l'enquesta
+        File dirEnquesta = new File(DIRECTORI_ENQUESTES, enquesta.getId());
+        if (!dirEnquesta.exists()) {
+            dirEnquesta.mkdirs();
+        }
         
-        File fitxer = new File(DIRECTORI_ENQUESTES, enquesta.getId() + ".json");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxer))) {
+        // Crear subdirectoris per preguntes i respostes
+        File dirPreguntes = new File(dirEnquesta, DIR_PREGUNTES);
+        File dirRespostes = new File(dirEnquesta, DIR_RESPOSTES);
+        if (!dirPreguntes.exists()) dirPreguntes.mkdirs();
+        if (!dirRespostes.exists()) dirRespostes.mkdirs();
+        
+        // Guardar només dades bàsiques de l'enquesta
+        JSONObject jsonEnquesta = new JSONObject();
+        jsonEnquesta.put("id", enquesta.getId());
+        jsonEnquesta.put("titol", enquesta.getTitol());
+        jsonEnquesta.put("descripcio", enquesta.getDescripcio());
+        jsonEnquesta.put("idCreador", enquesta.getIdCreador());
+        
+        // Guardar participants
+        JSONArray jsonParticipants = new JSONArray(enquesta.getParticipants());
+        jsonEnquesta.put("participants", jsonParticipants);
+        
+        File fitxerEnquesta = new File(dirEnquesta, FITXER_ENQUESTA);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxerEnquesta))) {
             writer.write(jsonEnquesta.toString(4));
         }
     }
 
     /**
      * Guarda l'índex amb les dades bàsiques de totes les enquestes.
+     * Format: [{ id, titol, creador, numPreguntes, numParticipants }]
      * Permet llistar enquestes sense carregar-les totes a memòria.
      * 
      * @param enquestes Mapa d'enquestes
@@ -72,8 +104,7 @@ public class GestorEnquestes {
             JSONObject entry = new JSONObject();
             entry.put("id", enquesta.getId());
             entry.put("titol", enquesta.getTitol());
-            entry.put("descripcio", enquesta.getDescripcio());
-            entry.put("idCreador", enquesta.getIdCreador());
+            entry.put("creador", enquesta.getIdCreador());
             entry.put("numPreguntes", enquesta.getPreguntes().size());
             entry.put("numParticipants", enquesta.getNumParticipants());
             jsonArray.put(entry);
@@ -86,83 +117,39 @@ public class GestorEnquestes {
     }
 
     /**
-     * Elimina el fitxer d'una enquesta.
+     * Elimina el directori complet d'una enquesta (incloent preguntes i respostes).
      * 
      * @param idEnquesta L'ID de l'enquesta a eliminar
      * @return true si s'ha eliminat, false si no existia
      */
     public boolean eliminarFitxerEnquesta(String idEnquesta) {
-        File fitxer = new File(DIRECTORI_ENQUESTES, idEnquesta + ".json");
-        return fitxer.delete();
+        File dirEnquesta = new File(DIRECTORI_ENQUESTES, idEnquesta);
+        return eliminarDirectoriRecursiu(dirEnquesta);
     }
-
+    
     /**
-     * Converteix una enquesta a JSONObject.
+     * Elimina un directori i tot el seu contingut de forma recursiva.
      */
-    private JSONObject enquestAJson(Enquesta enquesta) {
-        JSONObject jsonEnquesta = new JSONObject();
-        jsonEnquesta.put("id", enquesta.getId());
-        jsonEnquesta.put("titol", enquesta.getTitol());
-        jsonEnquesta.put("descripcio", enquesta.getDescripcio());
-        jsonEnquesta.put("idCreador", enquesta.getIdCreador());
-
-        // Guardar preguntes
-        JSONArray jsonPreguntes = new JSONArray();
-        for (Pregunta pregunta : enquesta.getPreguntes()) {
-            JSONObject jsonPregunta = new JSONObject();
-            jsonPregunta.put("id", pregunta.getId());
-            jsonPregunta.put("text", pregunta.getText());
-            jsonPregunta.put("tipus", pregunta.getTipus().toString());
-
-            // Camps específics segons tipus
-            if (pregunta.getTipus() == TipusPregunta.NUMERICA) {
-                if (pregunta.getValorMinim() != null)
-                    jsonPregunta.put("valorMinim", pregunta.getValorMinim());
-                if (pregunta.getValorMaxim() != null)
-                    jsonPregunta.put("valorMaxim", pregunta.getValorMaxim());
-            } else if (pregunta.tipusAdmetOpcions()) {
-                // Guardar opcions
-                JSONArray jsonOpcions = new JSONArray();
-                for (Opcio opcio : pregunta.getOpcions()) {
-                    JSONObject jsonOpcio = new JSONObject();
-                    jsonOpcio.put("id", opcio.getId());
-                    jsonOpcio.put("text", opcio.getText());
-                    if (opcio.getOrdre() != null) {
-                        jsonOpcio.put("ordre", opcio.getOrdre());
-                    }
-                    jsonOpcions.put(jsonOpcio);
-                }
-                jsonPregunta.put("opcions", jsonOpcions);
-
-                if (pregunta.getTipus() == TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE) {
-                    jsonPregunta.put("maxSeleccions", pregunta.getMaxSeleccions());
-                }
-            }
-
-            // Guardar respostes de la pregunta
-            JSONArray jsonRespostes = new JSONArray();
-            for (Resposta resposta : pregunta.getRespostes().values()) {
-                JSONObject jsonResposta = new JSONObject();
-                jsonResposta.put("id", resposta.getId());
-                jsonResposta.put("username", resposta.getUsernameUsuari());
-                jsonResposta.put("text", resposta.getTextResposta());
-                jsonRespostes.put(jsonResposta);
-            }
-            jsonPregunta.put("respostes", jsonRespostes);
-
-            jsonPreguntes.put(jsonPregunta);
+    private boolean eliminarDirectoriRecursiu(File dir) {
+        if (!dir.exists()) {
+            return false;
         }
-        jsonEnquesta.put("preguntes", jsonPreguntes);
-
-        // Guardar participants
-        JSONArray jsonParticipants = new JSONArray(enquesta.getParticipants());
-        jsonEnquesta.put("participants", jsonParticipants);
-
-        return jsonEnquesta;
+        
+        if (dir.isDirectory()) {
+            File[] fitxers = dir.listFiles();
+            if (fitxers != null) {
+                for (File fitxer : fitxers) {
+                    eliminarDirectoriRecursiu(fitxer);
+                }
+            }
+        }
+        
+        return dir.delete();
     }
 
     /**
-     * Carrega totes les enquestes dels fitxers individuals.
+     * Carrega totes les enquestes dels seus directoris individuals.
+     * Les preguntes i respostes es carreguen via GestorPreguntes i GestorRespostes.
      * 
      * @param usuaris Mapa d'usuaris existents per vincular creadors
      * @return HashMap d'enquestes carregades (id -> Enquesta)
@@ -176,21 +163,22 @@ public class GestorEnquestes {
             return enquestes;
         }
 
-        // Llistar tots els fitxers .json excepte index.json
-        File[] fitxers = dir.listFiles((d, name) -> name.endsWith(".json") && !name.equals(FITXER_INDEX));
+        // Llistar tots els subdirectoris (cada subdirectori és una enquesta)
+        File[] subdirs = dir.listFiles(File::isDirectory);
         
-        if (fitxers == null) {
+        if (subdirs == null) {
             return enquestes;
         }
 
-        for (File fitxer : fitxers) {
+        for (File subdir : subdirs) {
             try {
-                Enquesta enquesta = carregarEnquesta(fitxer, usuaris);
+                String idEnquesta = subdir.getName();
+                Enquesta enquesta = carregarEnquesta(idEnquesta, usuaris);
                 if (enquesta != null) {
                     enquestes.put(enquesta.getId(), enquesta);
                 }
             } catch (Exception e) {
-                System.err.println("Error carregant enquesta de " + fitxer.getName() + ": " + e.getMessage());
+                System.err.println("Error carregant enquesta de " + subdir.getName() + ": " + e.getMessage());
             }
         }
 
@@ -198,7 +186,9 @@ public class GestorEnquestes {
     }
 
     /**
-     * Carrega una única enquesta des del seu fitxer.
+     * Carrega una única enquesta des del seu directori jeràrquic.
+     * Només carrega les dades bàsiques de l'enquesta (de enquesta.json).
+     * Les preguntes i respostes es carreguen via GestorPreguntes i GestorRespostes.
      * 
      * @param idEnquesta L'ID de l'enquesta a carregar
      * @param usuaris Mapa d'usuaris existents
@@ -206,19 +196,19 @@ public class GestorEnquestes {
      * @throws IOException Si hi ha error de lectura
      */
     public Enquesta carregarEnquesta(String idEnquesta, HashMap<String, Usuari> usuaris) throws IOException {
-        File fitxer = new File(DIRECTORI_ENQUESTES, idEnquesta + ".json");
-        if (!fitxer.exists()) {
+        File dirEnquesta = new File(DIRECTORI_ENQUESTES, idEnquesta);
+        if (!dirEnquesta.exists() || !dirEnquesta.isDirectory()) {
             return null;
         }
-        return carregarEnquesta(fitxer, usuaris);
-    }
-
-    /**
-     * Carrega una enquesta des d'un fitxer específic.
-     */
-    private Enquesta carregarEnquesta(File fitxer, HashMap<String, Usuari> usuaris) throws IOException {
+        
+        File fitxerEnquesta = new File(dirEnquesta, FITXER_ENQUESTA);
+        if (!fitxerEnquesta.exists()) {
+            return null;
+        }
+        
+        // Llegir enquesta.json
         StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fitxer))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fitxerEnquesta))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 content.append(line);
@@ -230,13 +220,7 @@ public class GestorEnquestes {
         }
 
         JSONObject jsonEnquesta = new JSONObject(content.toString());
-        return jsonAEnquesta(jsonEnquesta, usuaris);
-    }
-
-    /**
-     * Converteix un JSONObject a Enquesta.
-     */
-    private Enquesta jsonAEnquesta(JSONObject jsonEnquesta, HashMap<String, Usuari> usuaris) {
+        
         String id = jsonEnquesta.getString("id");
         String titol = jsonEnquesta.getString("titol");
         String descripcio = jsonEnquesta.getString("descripcio");
@@ -252,66 +236,6 @@ public class GestorEnquestes {
         }
 
         Enquesta enquesta = new Enquesta(id, titol, descripcio, creador);
-
-        // Carregar preguntes
-        JSONArray jsonPreguntes = jsonEnquesta.getJSONArray("preguntes");
-        for (int j = 0; j < jsonPreguntes.length(); j++) {
-            JSONObject jsonPregunta = jsonPreguntes.getJSONObject(j);
-            String idPregunta = jsonPregunta.getString("id");
-            String textPregunta = jsonPregunta.getString("text");
-            String tipusStr = jsonPregunta.getString("tipus");
-
-            Pregunta pregunta = new Pregunta(idPregunta, textPregunta, tipusStr);
-
-            // Configurar camps específics
-            if (pregunta.getTipus() == TipusPregunta.NUMERICA) {
-                Double min = jsonPregunta.has("valorMinim") ? jsonPregunta.getDouble("valorMinim") : null;
-                Double max = jsonPregunta.has("valorMaxim") ? jsonPregunta.getDouble("valorMaxim") : null;
-                pregunta.setRangNumeric(min, max);
-            } else if (pregunta.tipusAdmetOpcions()) {
-                if (jsonPregunta.has("opcions")) {
-                    JSONArray jsonOpcions = jsonPregunta.getJSONArray("opcions");
-                    for (int k = 0; k < jsonOpcions.length(); k++) {
-                        JSONObject jsonOpcio = jsonOpcions.getJSONObject(k);
-                        int idOpcio = jsonOpcio.getInt("id");
-                        String textOpcio = jsonOpcio.getString("text");
-                        Integer ordre = jsonOpcio.has("ordre") ? jsonOpcio.getInt("ordre") : null;
-
-                        Opcio opcio = new Opcio(idOpcio, textOpcio, ordre);
-                        pregunta.afegirOpcio(opcio);
-                    }
-                }
-                if (pregunta.getTipus() == TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE
-                        && jsonPregunta.has("maxSeleccions")) {
-                    pregunta.setMaxSeleccions(jsonPregunta.getInt("maxSeleccions"));
-                }
-            }
-
-            // Carregar respostes
-            if (jsonPregunta.has("respostes")) {
-                JSONArray jsonRespostes = jsonPregunta.getJSONArray("respostes");
-                for (int k = 0; k < jsonRespostes.length(); k++) {
-                    JSONObject jsonResposta = jsonRespostes.getJSONObject(k);
-                    String idResposta = jsonResposta.getString("id");
-                    String username = jsonResposta.getString("username");
-                    String textResposta = jsonResposta.getString("text");
-
-                    Usuari dummyUser = new Usuari(username, "");
-                    Resposta resposta = new Resposta(idResposta, idPregunta, textResposta, dummyUser);
-                    pregunta.afegirResposta(username, resposta);
-
-                    // Vincular a l'usuari si el tenim
-                    if (usuaris != null) {
-                        Usuari u = usuaris.get(username);
-                        if (u != null) {
-                            u.afegirResposta(resposta.getId(), resposta);
-                        }
-                    }
-                }
-            }
-
-            enquesta.afegirPregunta(pregunta);
-        }
 
         // Carregar participants
         if (jsonEnquesta.has("participants")) {
