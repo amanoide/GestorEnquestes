@@ -5,8 +5,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Gestor encarregat de la persistència de les respostes en fitxers JSON.
@@ -32,7 +34,7 @@ public class GestorRespostes {
      * @param preguntes ArrayList de preguntes (contenen les respostes)
      * @throws IOException Si hi ha error d'escriptura
      */
-    public void guardarRespostes(String idEnquesta, HashMap<String, Pregunta> preguntes) throws IOException {
+    public void guardarRespostes(String idEnquesta, ArrayList<Pregunta> preguntes) throws IOException {
         File dirRespostes = getDirRespostes(idEnquesta);
         if (!dirRespostes.exists()) {
             dirRespostes.mkdirs();
@@ -41,7 +43,7 @@ public class GestorRespostes {
         // Agrupar respostes per usuari
         HashMap<String, HashMap<String, Resposta>> respostesPorUsuari = new HashMap<>();
         
-        for (Pregunta pregunta : preguntes.values()) {
+        for (Pregunta pregunta : preguntes) {
             for (Resposta resposta : pregunta.getRespostes().values()) {
                 String username = resposta.getUsernameUsuari();
                 respostesPorUsuari.putIfAbsent(username, new HashMap<>());
@@ -97,7 +99,7 @@ public class GestorRespostes {
      * @param usuaris Col·lecció d'usernames
      * @throws IOException Si hi ha error d'escriptura
      */
-    private void guardarIndex(String idEnquesta, Iterable<String> usuaris) throws IOException {
+    private void guardarIndex(String idEnquesta, Set<String> usuaris) throws IOException {
         JSONArray jsonArray = new JSONArray();
         
         for (String username : usuaris) {
@@ -130,7 +132,7 @@ public class GestorRespostes {
      * @param idEnquesta ID de l'enquesta
      * @param username Username de l'usuari
      * @param usuaris Mapa d'usuaris per vincular
-     * @return HashMap de respostes (id -> Resposta)
+     * @return HashMap de respostes (idPregunta -> Resposta)
      * @throws IOException Si hi ha error de lectura
      */
     public HashMap<String, Resposta> carregarRespostesUsuari(String idEnquesta, String username, HashMap<String, Usuari> usuaris) throws IOException {
@@ -173,7 +175,7 @@ public class GestorRespostes {
             }
 
             Resposta resposta = new Resposta(idResposta, idPregunta, textResposta, usuari);
-            respostes.put(idResposta, resposta);
+            respostes.put(idPregunta, resposta);  // Clau: idPregunta en lloc d'idResposta
         }
 
         return respostes;
@@ -184,7 +186,7 @@ public class GestorRespostes {
      * 
      * @param idEnquesta ID de l'enquesta
      * @param usuaris Mapa d'usuaris per vincular
-     * @return HashMap d'usuaris amb les seves respostes (username -> HashMap<idResposta, Resposta>)
+     * @return HashMap d'usuaris amb les seves respostes (username -> HashMap<idPregunta, Resposta>)
      * @throws IOException Si hi ha error de lectura
      */
     public HashMap<String, HashMap<String, Resposta>> carregarTotsRespostes(String idEnquesta, HashMap<String, Usuari> usuaris) throws IOException {
