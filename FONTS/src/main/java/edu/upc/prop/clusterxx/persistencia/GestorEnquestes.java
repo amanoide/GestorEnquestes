@@ -5,28 +5,27 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 /**
- * Gestor encarregat de la persistència de les enquestes en fitxers JSON.
- * Segueix l'estructura jeràrquica:
- * - dades/enquestes/index.json: [{ id, titol, creador, numPreguntes, numParticipants }]
- * - dades/enquestes/{id_enquesta}/enquesta.json: definició bàsica (títol, descripció, creador)
- * - dades/enquestes/{id_enquesta}/preguntes/index.json: [{ id, text, tipus }]
- * - dades/enquestes/{id_enquesta}/preguntes/{id_pregunta}.json: pregunta completa
- * - dades/enquestes/{id_enquesta}/respostes/index.json: ["usuari1", "usuari2", ...]
- * - dades/enquestes/{id_enquesta}/respostes/{username}.json: respostes de l'usuari
+ * Gestor encarregat de la persistència de les enquestes.
+ * Actua com a contenidor principal. Delega la gestió interna de preguntes
+ * i respostes als seus respectius gestors quan és necessari carregar tot.
  */
 public class GestorEnquestes {
     private static final String DIRECTORI_ENQUESTES = "dades/enquestes";
     private static final String FITXER_INDEX = "index.json";
     private static final String FITXER_ENQUESTA = "enquesta.json";
+    
+    // Subdirectoris que aquest gestor sap que existeixen
     private static final String DIR_PREGUNTES = "preguntes";
     private static final String DIR_RESPOSTES = "respostes";
 
-    /**
-     * Constructor. Crea el directori d'enquestes si no existeix.
-     */
     public GestorEnquestes() {
         File dir = new File(DIRECTORI_ENQUESTES);
         if (!dir.exists()) {
@@ -34,210 +33,190 @@ public class GestorEnquestes {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // GESTIÓ DE L'ENQUESTA (METADADES I ESTRUCTURA)
+    // -------------------------------------------------------------------------
+
     /**
-     * Guarda totes les enquestes: actualitza l'índex i guarda cada enquesta en el seu fitxer.
-     * 
-     * @param enquestes Mapa d'enquestes a guardar (id -> Enquesta)
-     * @throws IOException Si hi ha error d'escriptura
+     * Guarda un conjunt d'enquestes (pot ser totes o només algunes modificades).
+     * Actualitza l'índex de forma intel·ligent sense esborrar entrades existents no incloses.
+     * Si es vol guardar una única enquesta, s'ha de passar un HashMap que la contingui.
      */
     public void guardarEnquestes(HashMap<String, Enquesta> enquestes) throws IOException {
-        // Guardar l'índex
-        guardarIndex(enquestes);
-        
-        // Guardar cada enquesta en el seu fitxer
+        // 1. Guardar fitxers individuals
         for (Enquesta enquesta : enquestes.values()) {
-            guardarEnquesta(enquesta);
+            guardarFitxerEnquesta(enquesta);
         }
+        
+        // 2. Actualitzar índex (Smart Merge) amb tota la col·lecció
+        actualitzarIndex(enquestes);
     }
 
     /**
-     * Guarda una única enquesta seguint l'estructura jeràrquica:
-     * - Crea directori {id_enquesta}/
-     * - Guarda enquesta.json amb dades bàsiques (títol, descripció, creador)
-     * - Les preguntes i respostes es gestionen via GestorPreguntes i GestorRespostes
-     * 
-     * @param enquesta L'enquesta a guardar
-     * @throws IOException Si hi ha error d'escriptura
+     * Mètode intern privat per guardar només el fitxer físic.
+     * S'encarrega de crear les carpetes i el fitxer 'enquesta.json'.
      */
-    public void guardarEnquesta(Enquesta enquesta) throws IOException {
-        // Crear directori de l'enquesta
-        File dirEnquesta = new File(DIRECTORI_ENQUESTES, enquesta.getId());
-        if (!dirEnquesta.exists()) {
-            dirEnquesta.mkdirs();
-        }
+    private void guardarFitxerEnquesta(Enquesta enquesta) throws IOException {
+        // 1. Crear estructura de carpetas
+        Path dirEnquesta = Paths.get(DIRECTORI_ENQUESTES, enquesta.getId());
+        if (!Files.exists(dirEnquesta)) Files.createDirectories(dirEnquesta);
         
-        // Crear subdirectoris per preguntes i respostes
-        File dirPreguntes = new File(dirEnquesta, DIR_PREGUNTES);
-        File dirRespostes = new File(dirEnquesta, DIR_RESPOSTES);
-        if (!dirPreguntes.exists()) dirPreguntes.mkdirs();
-        if (!dirRespostes.exists()) dirRespostes.mkdirs();
+        Path dirPreguntes = dirEnquesta.resolve(DIR_PREGUNTES);
+        Path dirRespostes = dirEnquesta.resolve(DIR_RESPOSTES);
+        if (!Files.exists(dirPreguntes)) Files.createDirectories(dirPreguntes);
+        if (!Files.exists(dirRespostes)) Files.createDirectories(dirRespostes);
         
-        // Guardar només dades bàsiques de l'enquesta
+        // 2. Guardar metadades (enquesta.json)
         JSONObject jsonEnquesta = new JSONObject();
         jsonEnquesta.put("id", enquesta.getId());
         jsonEnquesta.put("titol", enquesta.getTitol());
         jsonEnquesta.put("descripcio", enquesta.getDescripcio());
         jsonEnquesta.put("idCreador", enquesta.getIdCreador());
         
-        // Guardar participants
         JSONArray jsonParticipants = new JSONArray(enquesta.getParticipants());
         jsonEnquesta.put("participants", jsonParticipants);
         
-        File fitxerEnquesta = new File(dirEnquesta, FITXER_ENQUESTA);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxerEnquesta))) {
-            writer.write(jsonEnquesta.toString(4));
-        }
+        Path fitxerEnquesta = dirEnquesta.resolve(FITXER_ENQUESTA);
+        Files.write(fitxerEnquesta, jsonEnquesta.toString(4).getBytes());
     }
 
     /**
-     * Guarda l'índex amb les dades bàsiques de totes les enquestes.
-     * Format: [{ id, titol, creador, numPreguntes, numParticipants }]
-     * Permet llistar enquestes sense carregar-les totes a memòria.
-     * 
-     * @param enquestes Mapa d'enquestes
-     * @throws IOException Si hi ha error d'escriptura
+     * LÒGICA OPTIMITZADA: Actualitza les entrades de l'índex usant un Mapa auxiliar.
+     * Complexitat reduïda de O(N*M) a O(N+M).
+     * @param enquestesActualitzades HashMap d'enquestes a actualitzar.
      */
-    private void guardarIndex(HashMap<String, Enquesta> enquestes) throws IOException {
-        JSONArray jsonArray = new JSONArray();
+    private void actualitzarIndex(HashMap<String, Enquesta> enquestesActualitzades) throws IOException {
+        Path indexPath = Paths.get(DIRECTORI_ENQUESTES, FITXER_INDEX);
         
-        for (Enquesta enquesta : enquestes.values()) {
-            JSONObject entry = new JSONObject();
-            entry.put("id", enquesta.getId());
-            entry.put("titol", enquesta.getTitol());
-            entry.put("creador", enquesta.getIdCreador());
-            entry.put("numPreguntes", enquesta.getPreguntes().size());
-            entry.put("numParticipants", enquesta.getNumParticipants());
-            jsonArray.put(entry);
-        }
-        
-        File fitxer = new File(DIRECTORI_ENQUESTES, FITXER_INDEX);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxer))) {
-            writer.write(jsonArray.toString(4));
-        }
-    }
+        // Mapa temporal per fer el merge (ID -> JSONObject)
+        HashMap<String, JSONObject> indexMap = new HashMap<>();
 
-    /**
-     * Elimina el directori complet d'una enquesta (incloent preguntes i respostes).
-     * 
-     * @param idEnquesta L'ID de l'enquesta a eliminar
-     * @return true si s'ha eliminat, false si no existia
-     */
-    public boolean eliminarFitxerEnquesta(String idEnquesta) {
-        File dirEnquesta = new File(DIRECTORI_ENQUESTES, idEnquesta);
-        return eliminarDirectoriRecursiu(dirEnquesta);
-    }
-    
-    /**
-     * Elimina un directori i tot el seu contingut de forma recursiva.
-     */
-    private boolean eliminarDirectoriRecursiu(File dir) {
-        if (!dir.exists()) {
-            return false;
-        }
-        
-        if (dir.isDirectory()) {
-            File[] fitxers = dir.listFiles();
-            if (fitxers != null) {
-                for (File fitxer : fitxers) {
-                    eliminarDirectoriRecursiu(fitxer);
+        // 1. Carregar estat actual a memòria (O(N))
+        if (Files.exists(indexPath)) {
+            String content = new String(Files.readAllBytes(indexPath));
+            if (!content.isEmpty()) {
+                JSONArray currentArray = new JSONArray(content);
+                for (int i = 0; i < currentArray.length(); i++) {
+                    JSONObject entry = currentArray.getJSONObject(i);
+                    indexMap.put(entry.getString("id"), entry);
                 }
             }
         }
-        
-        return dir.delete();
+
+        // 2. Actualitzar o afegir les noves enquestes al Mapa (O(M))
+        // El put del HashMap substitueix automàticament si la clau ja existeix (molt més ràpid que buscar)
+        for (Enquesta enquesta : enquestesActualitzades.values()) {
+            JSONObject nouEntry = new JSONObject();
+            nouEntry.put("id", enquesta.getId());
+            nouEntry.put("titol", enquesta.getTitol());
+            nouEntry.put("creador", enquesta.getIdCreador());
+            nouEntry.put("numPreguntes", enquesta.getPreguntes().size());
+            nouEntry.put("numParticipants", enquesta.getNumParticipants());
+
+            indexMap.put(enquesta.getId(), nouEntry);
+        }
+
+        // 3. Reconstruir el JSONArray i escriure (O(N+M))
+        JSONArray finalArray = new JSONArray(indexMap.values());
+        Files.write(indexPath, finalArray.toString(4).getBytes());
+    }
+
+    // -------------------------------------------------------------------------
+    // ELIMINACIÓ
+    // -------------------------------------------------------------------------
+
+    /**
+     * Elimina completament una enquesta del sistema.
+     * Esborra tant el directori físic com l'entrada a l'índex global.
+     */
+    public void eliminarEnquestaCompleta(String idEnquesta) throws IOException {
+        // 1. Eliminar directori físic i tot el seu contingut
+        Path dirEnquesta = Paths.get(DIRECTORI_ENQUESTES, idEnquesta);
+        if (Files.exists(dirEnquesta)) {
+            try (Stream<Path> walk = Files.walk(dirEnquesta)) {
+                walk.sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+            }
+        }
+
+        // 2. Eliminar de l'índex
+        eliminarEnquestaDeIndex(idEnquesta);
     }
 
     /**
-     * Carrega totes les enquestes dels seus directoris individuals.
-     * Les preguntes i respostes es carreguen via GestorPreguntes i GestorRespostes.
-     * 
-     * @param usuaris Mapa d'usuaris existents per vincular creadors
-     * @return HashMap d'enquestes carregades (id -> Enquesta)
-     * @throws IOException Si hi ha error de lectura
+     * Elimina l'entrada de l'enquesta del fitxer index.json.
      */
+    private void eliminarEnquestaDeIndex(String idEnquesta) throws IOException {
+        Path indexPath = Paths.get(DIRECTORI_ENQUESTES, FITXER_INDEX);
+        if (!Files.exists(indexPath)) return;
+
+        String content = new String(Files.readAllBytes(indexPath));
+        if (content.isEmpty()) return;
+
+        JSONArray jsonArray = new JSONArray(content);
+        JSONArray newArray = new JSONArray();
+        boolean found = false;
+        
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonEntry = jsonArray.getJSONObject(i);
+            if (!jsonEntry.getString("id").equals(idEnquesta)) {
+                newArray.put(jsonEntry);
+            } else {
+                found = true;
+            }
+        }
+
+        if (found) {
+            Files.write(indexPath, newArray.toString(4).getBytes());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // CÀRREGA
+    // -------------------------------------------------------------------------
+
     public HashMap<String, Enquesta> carregarEnquestes(HashMap<String, Usuari> usuaris) throws IOException {
         HashMap<String, Enquesta> enquestes = new HashMap<>();
         File dir = new File(DIRECTORI_ENQUESTES);
 
-        if (!dir.exists()) {
-            return enquestes;
-        }
+        if (!dir.exists()) return enquestes;
 
-        // Llistar tots els subdirectoris (cada subdirectori és una enquesta)
         File[] subdirs = dir.listFiles(File::isDirectory);
-        
-        if (subdirs == null) {
-            return enquestes;
-        }
+        if (subdirs == null) return enquestes;
 
         for (File subdir : subdirs) {
             try {
                 String idEnquesta = subdir.getName();
-                Enquesta enquesta = carregarEnquesta(idEnquesta, usuaris);
+                Enquesta enquesta = carregarDadesBasiquesEnquesta(idEnquesta, usuaris);
                 if (enquesta != null) {
                     enquestes.put(enquesta.getId(), enquesta);
                 }
             } catch (Exception e) {
-                System.err.println("Error carregant enquesta de " + subdir.getName() + ": " + e.getMessage());
+                System.err.println("Error carregant enquesta " + subdir.getName() + ": " + e.getMessage());
             }
         }
-
         return enquestes;
     }
 
-    /**
-     * Carrega una única enquesta des del seu directori jeràrquic.
-     * Només carrega les dades bàsiques de l'enquesta (de enquesta.json).
-     * Les preguntes i respostes es carreguen via GestorPreguntes i GestorRespostes.
-     * 
-     * @param idEnquesta L'ID de l'enquesta a carregar
-     * @param usuaris Mapa d'usuaris existents
-     * @return L'enquesta carregada o null si no existeix
-     * @throws IOException Si hi ha error de lectura
-     */
-    public Enquesta carregarEnquesta(String idEnquesta, HashMap<String, Usuari> usuaris) throws IOException {
-        File dirEnquesta = new File(DIRECTORI_ENQUESTES, idEnquesta);
-        if (!dirEnquesta.exists() || !dirEnquesta.isDirectory()) {
-            return null;
-        }
+    public Enquesta carregarDadesBasiquesEnquesta(String idEnquesta, HashMap<String, Usuari> usuaris) throws IOException {
+        Path path = Paths.get(DIRECTORI_ENQUESTES, idEnquesta, FITXER_ENQUESTA);
+        if (!Files.exists(path)) return null;
         
-        File fitxerEnquesta = new File(dirEnquesta, FITXER_ENQUESTA);
-        if (!fitxerEnquesta.exists()) {
-            return null;
-        }
-        
-        // Llegir enquesta.json
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fitxerEnquesta))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line);
-            }
-        }
-
-        if (content.length() == 0) {
-            return null;
-        }
-
-        JSONObject jsonEnquesta = new JSONObject(content.toString());
+        String content = new String(Files.readAllBytes(path));
+        JSONObject jsonEnquesta = new JSONObject(content);
         
         String id = jsonEnquesta.getString("id");
         String titol = jsonEnquesta.getString("titol");
         String descripcio = jsonEnquesta.getString("descripcio");
         String idCreador = jsonEnquesta.getString("idCreador");
 
-        // Recuperar l'objecte usuari creador si existeix
         Usuari creador = null;
-        if (usuaris != null) {
-            creador = usuaris.get(idCreador);
-        }
-        if (creador == null) {
-            creador = new Usuari(idCreador, "unknown");
-        }
+        if (usuaris != null) creador = usuaris.get(idCreador);
+        if (creador == null) creador = new Usuari(idCreador, "unknown");
 
         Enquesta enquesta = new Enquesta(id, titol, descripcio, creador);
 
-        // Carregar participants
         if (jsonEnquesta.has("participants")) {
             JSONArray jsonParticipants = jsonEnquesta.getJSONArray("participants");
             for (int k = 0; k < jsonParticipants.length(); k++) {
@@ -245,38 +224,19 @@ public class GestorEnquestes {
             }
         }
 
-        // Vincular enquesta a l'usuari creador
-        if (creador != null) {
-            creador.addEnquestaCreada(enquesta);
-        }
+        if (creador != null) creador.addEnquestaCreada(enquesta);
 
         return enquesta;
     }
-
+    
     /**
-     * Obté les dades bàsiques de totes les enquestes sense carregar-les completament.
-     * 
-     * @return JSONArray amb les metadades de cada enquesta
-     * @throws IOException Si hi ha error de lectura
+     * Obté l'índex ràpid d'enquestes (per llistar sense carregar tot).
      */
     public JSONArray obtenirIndexEnquestes() throws IOException {
-        File fitxer = new File(DIRECTORI_ENQUESTES, FITXER_INDEX);
-        if (!fitxer.exists()) {
-            return new JSONArray();
-        }
-
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fitxer))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line);
-            }
-        }
-
-        if (content.length() == 0) {
-            return new JSONArray();
-        }
-
-        return new JSONArray(content.toString());
+        Path indexPath = Paths.get(DIRECTORI_ENQUESTES, FITXER_INDEX);
+        if (!Files.exists(indexPath)) return new JSONArray();
+        
+        String content = new String(Files.readAllBytes(indexPath));
+        return content.isEmpty() ? new JSONArray() : new JSONArray(content);
     }
 }
