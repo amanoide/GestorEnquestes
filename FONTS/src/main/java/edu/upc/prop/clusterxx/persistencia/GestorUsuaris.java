@@ -4,12 +4,11 @@ import edu.upc.prop.clusterxx.domini.classes.Usuari;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 /**
@@ -22,9 +21,6 @@ public class GestorUsuaris {
     private static final String DIRECTORI_USUARIS = "dades/usuaris";
     private static final String FITXER_INDEX = "index.json";
 
-    /**
-     * Constructor. Crea el directori d'usuaris si no existeix.
-     */
     public GestorUsuaris() {
         File dir = new File(DIRECTORI_USUARIS);
         if (!dir.exists()) {
@@ -33,72 +29,50 @@ public class GestorUsuaris {
     }
 
     /**
-     * Guarda tots els usuaris: actualitza l'índex i guarda cada usuari en el seu fitxer.
-     * 
-     * @param usuaris Mapa d'usuaris a guardar (username -> Usuari)
-     * @throws IOException Si hi ha error d'escriptura
+     * Guarda tots els usuaris: actualitza l'índex y guarda cada usuario.
      */
     public void guardarUsuaris(HashMap<String, Usuari> usuaris) throws IOException {
-        // Guardar cada usuari en el seu fitxer
         for (Usuari usuari : usuaris.values()) {
             guardarUsuari(usuari);
         }
-        // Actualitzar l'índex
         guardarIndex(usuaris);
     }
 
     /**
      * Guarda un únic usuari al seu fitxer individual.
-     * Inclou dades d'autenticació i enquestes participades.
-     * 
-     * @param usuari L'usuari a guardar
-     * @throws IOException Si hi ha error d'escriptura
      */
     public void guardarUsuari(Usuari usuari) throws IOException {
-        File fitxer = new File(DIRECTORI_USUARIS, usuari.getUsername() + ".json");
-        
         JSONObject jsonUsuari = new JSONObject();
         jsonUsuari.put("username", usuari.getUsername());
         jsonUsuari.put("password", usuari.getPassword());
         
-        // Guardar enquestes participades (obtenim dels perfils)
         JSONArray enquestesParticipades = new JSONArray();
         for (String idEnquesta : usuari.getPerfils().keySet()) {
             enquestesParticipades.put(idEnquesta);
         }
         jsonUsuari.put("enquestesParticipades", enquestesParticipades);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxer))) {
-            writer.write(jsonUsuari.toString(4));
-        }
+        Path path = Paths.get(DIRECTORI_USUARIS, usuari.getUsername() + ".json");
+        Files.write(path, jsonUsuari.toString(4).getBytes());
     }
 
     /**
      * Guarda l'índex amb la llista de tots els usernames.
-     * 
-     * @param usuaris Mapa d'usuaris
-     * @throws IOException Si hi ha error d'escriptura
      */
     private void guardarIndex(HashMap<String, Usuari> usuaris) throws IOException {
-        File fitxer = new File(DIRECTORI_USUARIS, FITXER_INDEX);
         JSONArray jsonArray = new JSONArray();
-
         for (Usuari usuari : usuaris.values()) {
             JSONObject jsonEntry = new JSONObject();
             jsonEntry.put("username", usuari.getUsername());
             jsonArray.put(jsonEntry);
         }
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxer))) {
-            writer.write(jsonArray.toString(4));
-        }
+        Path path = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
+        Files.write(path, jsonArray.toString(4).getBytes());
     }
 
     /**
      * Elimina el fitxer d'un usuari.
-     * 
-     * @param username El username de l'usuari a eliminar
-     * @return true si s'ha eliminat, false si no existia
      */
     public boolean eliminarFitxerUsuari(String username) {
         File fitxer = new File(DIRECTORI_USUARIS, username + ".json");
@@ -106,72 +80,72 @@ public class GestorUsuaris {
     }
 
     /**
-     * Carrega tots els usuaris dels fitxers JSON individuals.
-     * 
-     * @return Mapa d'usuaris carregats (username -> Usuari)
-     * @throws IOException Si hi ha error de lectura
+     * Elimina un usuari del fitxer d'índex.
+     * VERSIÓ OPTIMITZADA
      */
-    public HashMap<String, Usuari> carregarUsuaris() throws IOException {
-        HashMap<String, Usuari> usuaris = new HashMap<>();
-        File indexFile = new File(DIRECTORI_USUARIS, FITXER_INDEX);
+    public void eliminarUsuariDeIndex(String username) throws IOException {
+        Path indexPath = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
+        File indexFile = indexPath.toFile();
+        
+        if (!indexFile.exists()) return;
 
-        if (!indexFile.exists()) {
-            return usuaris;
-        }
+        // Lectura més moderna i neta
+        String content = new String(Files.readAllBytes(indexPath));
+        
+        if (content.isEmpty()) return;
 
-        // Llegir l'índex per saber quins usuaris carregar
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(indexFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line);
+        JSONArray jsonArray = new JSONArray(content);
+        JSONArray newArray = new JSONArray();
+        boolean found = false;
+        
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonEntry = jsonArray.getJSONObject(i);
+            if (!jsonEntry.getString("username").equals(username)) {
+                newArray.put(jsonEntry);
+            } else {
+                found = true;
             }
         }
 
-        if (content.length() == 0) return usuaris;
+        if (found) {
+            Files.write(indexPath, newArray.toString(4).getBytes());
+        }
+    }
 
-        JSONArray jsonArray = new JSONArray(content.toString());
+    public HashMap<String, Usuari> carregarUsuaris() throws IOException {
+        HashMap<String, Usuari> usuaris = new HashMap<>();
+        Path indexPath = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
+        File indexFile = indexPath.toFile();
+
+        if (!indexFile.exists()) return usuaris;
+
+        String content = new String(Files.readAllBytes(indexPath));
+        if (content.isEmpty()) return usuaris;
+
+        JSONArray jsonArray = new JSONArray(content);
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonEntry = jsonArray.getJSONObject(i);
             String username = jsonEntry.getString("username");
             
-            // Carregar l'usuari individual
             Usuari usuari = carregarUsuari(username);
             if (usuari != null) {
                 usuaris.put(username, usuari);
             }
         }
-
         return usuaris;
     }
 
-    /**
-     * Carrega un usuari individual del seu fitxer.
-     * Nota: Les enquestesParticipades es carregaran quan es vinculin els perfils.
-     * 
-     * @param username El username de l'usuari a carregar
-     * @return L'usuari carregat o null si no existeix
-     * @throws IOException Si hi ha error de lectura
-     */
     public Usuari carregarUsuari(String username) throws IOException {
-        File fitxer = new File(DIRECTORI_USUARIS, username + ".json");
+        Path path = Paths.get(DIRECTORI_USUARIS, username + ".json");
+        File fitxer = path.toFile();
         
-        if (!fitxer.exists()) {
-            return null;
-        }
+        if (!fitxer.exists()) return null;
 
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fitxer))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line);
-            }
-        }
-
-        JSONObject jsonUsuari = new JSONObject(content.toString());
+        String content = new String(Files.readAllBytes(path));
+        JSONObject jsonUsuari = new JSONObject(content);
+        
         String password = jsonUsuari.optString("password", "default");
         
-        // Les enquestesParticipades es vincularan posteriorment via perfils
         return new Usuari(username, password);
     }
 }
