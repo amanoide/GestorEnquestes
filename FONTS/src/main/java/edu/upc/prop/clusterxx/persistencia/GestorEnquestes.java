@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,19 +14,57 @@ import java.util.HashMap;
 import java.util.stream.Stream;
 
 /**
- * Gestor encarregat de la persistència de les enquestes.
- * Actua com a contenidor principal. Delega la gestió interna de preguntes
- * i respostes als seus respectius gestors quan és necessari carregar tot.
+ * Gestor encarregat de la persistència de les enquestes en el sistema de fitxers.
+ * <p>
+ * Aquesta classe gestiona l'emmagatzematge i recuperació de les enquestes utilitzant una estructura
+ * jeràrquica de directoris i fitxers JSON. Actua com a punt d'entrada principal per a la persistència
+ * d'enquestes, delegant la gestió detallada de preguntes i respostes als seus respectius gestors
+ * (GestorPreguntes i GestorRespostes) quan és necessari.
+ * </p>
+ * <p>
+ * <strong>Estructura de fitxers:</strong>
+ * <ul>
+ *   <li><code>dades/enquestes/index.json</code>: Índex global amb metadades bàsiques de totes les enquestes.</li>
+ *   <li><code>dades/enquestes/{id_enquesta}/</code>: Directori arrel per a una enquesta específica.</li>
+ *   <li><code>dades/enquestes/{id_enquesta}/enquesta.json</code>: Fitxer amb la definició bàsica de l'enquesta.</li>
+ *   <li><code>dades/enquestes/{id_enquesta}/preguntes/</code>: Subdirectori gestionat per GestorPreguntes.</li>
+ *   <li><code>dades/enquestes/{id_enquesta}/respostes/</code>: Subdirectori gestionat per GestorRespostes.</li>
+ * </ul>
+ * </p>
+ * <p>
+ * <strong>Característiques tècniques:</strong>
+ * <ul>
+ *   <li>Utilitza <code>java.nio</code> per a operacions de fitxers eficients i modernes.</li>
+ *   <li>Garanteix la codificació <strong>UTF-8</strong> en totes les operacions de lectura i escriptura.</li>
+ *   <li>Implementa un algorisme de fusió (merge) optimitzat per a l'actualització de l'índex.</li>
+ * </ul>
+ * </p>
+ * 
+ * @author ClusterXX
+ * @version 2.0
  */
 public class GestorEnquestes {
+    
+    /** Ruta relativa al directori base on s'emmagatzemen les enquestes. */
     private static final String DIRECTORI_ENQUESTES = "dades/enquestes";
+    
+    /** Nom del fitxer d'índex global. */
     private static final String FITXER_INDEX = "index.json";
+    
+    /** Nom del fitxer que conté les dades bàsiques d'una enquesta. */
     private static final String FITXER_ENQUESTA = "enquesta.json";
     
-    // Subdirectoris que aquest gestor sap que existeixen
+    /** Nom del subdirectori per a les preguntes. */
     private static final String DIR_PREGUNTES = "preguntes";
+    
+    /** Nom del subdirectori per a les respostes. */
     private static final String DIR_RESPOSTES = "respostes";
 
+    /**
+     * Constructor per defecte.
+     * Inicialitza el gestor i assegura que el directori base d'enquestes existeix.
+     * Si el directori no existeix, el crea.
+     */
     public GestorEnquestes() {
         File dir = new File(DIRECTORI_ENQUESTES);
         if (!dir.exists()) {
@@ -33,31 +72,42 @@ public class GestorEnquestes {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // GESTIÓ DE L'ENQUESTA (METADADES I ESTRUCTURA)
-    // -------------------------------------------------------------------------
-
     /**
-     * Guarda un conjunt d'enquestes (pot ser totes o només algunes modificades).
-     * Actualitza l'índex de forma intel·ligent sense esborrar entrades existents no incloses.
-     * Si es vol guardar una única enquesta, s'ha de passar un HashMap que la contingui.
+     * Guarda un conjunt d'enquestes al sistema de persistència.
+     * <p>
+     * Aquest mètode realitza dues operacions principals:
+     * <ol>
+     *   <li>Guarda individualment cada enquesta del mapa proporcionat, creant o actualitzant
+     *       la seva estructura de directoris i fitxers.</li>
+     *   <li>Actualitza l'índex global d'enquestes amb la informació de les enquestes proporcionades,
+     *       mantenint les entrades existents que no estan en el mapa (merge).</li>
+     * </ol>
+     * </p>
+     * 
+     * @param enquestes Mapa que conté les enquestes a guardar, on la clau és l'ID de l'enquesta
+     *                  i el valor és l'objecte Enquesta complet.
+     * @throws IOException Si es produeix un error d'entrada/sortida durant l'escriptura dels fitxers.
      */
     public void guardarEnquestes(HashMap<String, Enquesta> enquestes) throws IOException {
-        // 1. Guardar fitxers individuals
         for (Enquesta enquesta : enquestes.values()) {
             guardarFitxerEnquesta(enquesta);
         }
         
-        // 2. Actualitzar índex (Smart Merge) amb tota la col·lecció
         actualitzarIndex(enquestes);
     }
 
     /**
-     * Mètode intern privat per guardar només el fitxer físic.
-     * S'encarrega de crear les carpetes i el fitxer 'enquesta.json'.
+     * Guarda les dades bàsiques d'una enquesta en el seu fitxer corresponent.
+     * <p>
+     * Crea l'estructura de directoris necessària (incloent subdirectoris per preguntes i respostes)
+     * i escriu el fitxer <code>enquesta.json</code> amb les metadades de l'enquesta (títol, descripció,
+     * creador, participants).
+     * </p>
+     * 
+     * @param enquesta L'objecte Enquesta que es vol guardar.
+     * @throws IOException Si no es poden crear els directoris o escriure el fitxer.
      */
     private void guardarFitxerEnquesta(Enquesta enquesta) throws IOException {
-        // 1. Crear estructura de carpetas
         Path dirEnquesta = Paths.get(DIRECTORI_ENQUESTES, enquesta.getId());
         if (!Files.exists(dirEnquesta)) Files.createDirectories(dirEnquesta);
         
@@ -66,7 +116,6 @@ public class GestorEnquestes {
         if (!Files.exists(dirPreguntes)) Files.createDirectories(dirPreguntes);
         if (!Files.exists(dirRespostes)) Files.createDirectories(dirRespostes);
         
-        // 2. Guardar metadades (enquesta.json)
         JSONObject jsonEnquesta = new JSONObject();
         jsonEnquesta.put("id", enquesta.getId());
         jsonEnquesta.put("titol", enquesta.getTitol());
@@ -77,23 +126,31 @@ public class GestorEnquestes {
         jsonEnquesta.put("participants", jsonParticipants);
         
         Path fitxerEnquesta = dirEnquesta.resolve(FITXER_ENQUESTA);
-        Files.write(fitxerEnquesta, jsonEnquesta.toString(4).getBytes());
+        Files.write(fitxerEnquesta, jsonEnquesta.toString(4).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
-     * LÒGICA OPTIMITZADA: Actualitza les entrades de l'índex usant un Mapa auxiliar.
-     * Complexitat reduïda de O(N*M) a O(N+M).
-     * @param enquestesActualitzades HashMap d'enquestes a actualitzar.
+     * Actualitza el fitxer d'índex global amb les noves dades de les enquestes.
+     * <p>
+     * Implementa una estratègia de "Smart Merge" amb complexitat O(N+M):
+     * <ol>
+     *   <li>Llegeix l'índex actual a memòria (si existeix).</li>
+     *   <li>Actualitza o afegeix les entrades corresponents a les enquestes proporcionades.</li>
+     *   <li>Reescriu l'índex complet al disc.</li>
+     * </ol>
+     * Això assegura que no es perdin les dades d'enquestes que no estan sent modificades en aquesta operació.
+     * </p>
+     * 
+     * @param enquestesActualitzades Mapa amb les enquestes que s'han d'actualitzar o afegir a l'índex.
+     * @throws IOException Si hi ha errors llegint o escrivint el fitxer d'índex.
      */
     private void actualitzarIndex(HashMap<String, Enquesta> enquestesActualitzades) throws IOException {
         Path indexPath = Paths.get(DIRECTORI_ENQUESTES, FITXER_INDEX);
         
-        // Mapa temporal per fer el merge (ID -> JSONObject)
         HashMap<String, JSONObject> indexMap = new HashMap<>();
 
-        // 1. Carregar estat actual a memòria (O(N))
         if (Files.exists(indexPath)) {
-            String content = new String(Files.readAllBytes(indexPath));
+            String content = new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
             if (!content.isEmpty()) {
                 JSONArray currentArray = new JSONArray(content);
                 for (int i = 0; i < currentArray.length(); i++) {
@@ -103,8 +160,6 @@ public class GestorEnquestes {
             }
         }
 
-        // 2. Actualitzar o afegir les noves enquestes al Mapa (O(M))
-        // El put del HashMap substitueix automàticament si la clau ja existeix (molt més ràpid que buscar)
         for (Enquesta enquesta : enquestesActualitzades.values()) {
             JSONObject nouEntry = new JSONObject();
             nouEntry.put("id", enquesta.getId());
@@ -116,21 +171,24 @@ public class GestorEnquestes {
             indexMap.put(enquesta.getId(), nouEntry);
         }
 
-        // 3. Reconstruir el JSONArray i escriure (O(N+M))
         JSONArray finalArray = new JSONArray(indexMap.values());
-        Files.write(indexPath, finalArray.toString(4).getBytes());
+        Files.write(indexPath, finalArray.toString(4).getBytes(StandardCharsets.UTF_8));
     }
 
-    // -------------------------------------------------------------------------
-    // ELIMINACIÓ
-    // -------------------------------------------------------------------------
-
     /**
-     * Elimina completament una enquesta del sistema.
-     * Esborra tant el directori físic com l'entrada a l'índex global.
+     * Elimina completament una enquesta del sistema de persistència.
+     * <p>
+     * Aquesta operació és destructiva i irreversible. Realitza:
+     * <ol>
+     *   <li>L'eliminació recursiva del directori de l'enquesta i tot el seu contingut (preguntes, respostes, configuració).</li>
+     *   <li>L'eliminació de l'entrada corresponent a l'índex global.</li>
+     * </ol>
+     * </p>
+     * 
+     * @param idEnquesta L'identificador únic de l'enquesta a eliminar.
+     * @throws IOException Si hi ha errors durant l'esborrat de fitxers o l'actualització de l'índex.
      */
     public void eliminarEnquestaCompleta(String idEnquesta) throws IOException {
-        // 1. Eliminar directori físic i tot el seu contingut
         Path dirEnquesta = Paths.get(DIRECTORI_ENQUESTES, idEnquesta);
         if (Files.exists(dirEnquesta)) {
             try (Stream<Path> walk = Files.walk(dirEnquesta)) {
@@ -140,18 +198,24 @@ public class GestorEnquestes {
             }
         }
 
-        // 2. Eliminar de l'índex
         eliminarEnquestaDeIndex(idEnquesta);
     }
 
     /**
-     * Elimina l'entrada de l'enquesta del fitxer index.json.
+     * Elimina una enquesta específica del fitxer d'índex global.
+     * <p>
+     * Llegeix l'índex, filtra l'entrada corresponent a l'ID proporcionat i reescriu el fitxer
+     * només si s'ha trobat i eliminat l'entrada.
+     * </p>
+     * 
+     * @param idEnquesta L'identificador de l'enquesta a eliminar de l'índex.
+     * @throws IOException Si hi ha errors de lectura o escriptura.
      */
     private void eliminarEnquestaDeIndex(String idEnquesta) throws IOException {
         Path indexPath = Paths.get(DIRECTORI_ENQUESTES, FITXER_INDEX);
         if (!Files.exists(indexPath)) return;
 
-        String content = new String(Files.readAllBytes(indexPath));
+        String content = new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
         if (content.isEmpty()) return;
 
         JSONArray jsonArray = new JSONArray(content);
@@ -168,14 +232,22 @@ public class GestorEnquestes {
         }
 
         if (found) {
-            Files.write(indexPath, newArray.toString(4).getBytes());
+            Files.write(indexPath, newArray.toString(4).getBytes(StandardCharsets.UTF_8));
         }
     }
 
-    // -------------------------------------------------------------------------
-    // CÀRREGA
-    // -------------------------------------------------------------------------
-
+    /**
+     * Carrega totes les enquestes disponibles al sistema.
+     * <p>
+     * Explora el directori d'enquestes i carrega les dades bàsiques de cada enquesta trobada.
+     * Aquest mètode només carrega l'estructura principal (Enquesta); les preguntes i respostes
+     * s'han de carregar posteriorment o sota demanda utilitzant els seus gestors específics.
+     * </p>
+     * 
+     * @param usuaris Mapa d'usuaris existents per vincular l'enquesta amb el seu creador.
+     * @return Un HashMap amb totes les enquestes carregades, indexades per ID.
+     * @throws IOException Si hi ha errors generals d'accés al sistema de fitxers.
+     */
     public HashMap<String, Enquesta> carregarEnquestes(HashMap<String, Usuari> usuaris) throws IOException {
         HashMap<String, Enquesta> enquestes = new HashMap<>();
         File dir = new File(DIRECTORI_ENQUESTES);
@@ -199,11 +271,23 @@ public class GestorEnquestes {
         return enquestes;
     }
 
+    /**
+     * Carrega les dades bàsiques d'una enquesta específica des del seu fitxer JSON.
+     * <p>
+     * Recupera informació com el títol, descripció, creador i llista de participants.
+     * També estableix la relació bidireccional amb l'usuari creador si aquest existeix al mapa proporcionat.
+     * </p>
+     * 
+     * @param idEnquesta L'identificador de l'enquesta a carregar.
+     * @param usuaris Mapa d'usuaris per resoldre la referència al creador.
+     * @return L'objecte Enquesta carregat, o <code>null</code> si el fitxer no existeix.
+     * @throws IOException Si hi ha errors de lectura del fitxer.
+     */
     public Enquesta carregarDadesBasiquesEnquesta(String idEnquesta, HashMap<String, Usuari> usuaris) throws IOException {
         Path path = Paths.get(DIRECTORI_ENQUESTES, idEnquesta, FITXER_ENQUESTA);
         if (!Files.exists(path)) return null;
         
-        String content = new String(Files.readAllBytes(path));
+        String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
         JSONObject jsonEnquesta = new JSONObject(content);
         
         String id = jsonEnquesta.getString("id");
@@ -230,13 +314,20 @@ public class GestorEnquestes {
     }
     
     /**
-     * Obté l'índex ràpid d'enquestes (per llistar sense carregar tot).
+     * Obté el contingut de l'índex global d'enquestes.
+     * <p>
+     * Aquest mètode és útil per obtenir una llista ràpida de totes les enquestes disponibles
+     * amb les seves metadades bàsiques sense necessitat de carregar i analitzar cada fitxer d'enquesta individualment.
+     * </p>
+     * 
+     * @return Un JSONArray amb la llista d'enquestes i les seves dades resumides.
+     * @throws IOException Si hi ha errors llegint el fitxer d'índex.
      */
     public JSONArray obtenirIndexEnquestes() throws IOException {
         Path indexPath = Paths.get(DIRECTORI_ENQUESTES, FITXER_INDEX);
         if (!Files.exists(indexPath)) return new JSONArray();
         
-        String content = new String(Files.readAllBytes(indexPath));
+        String content = new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
         return content.isEmpty() ? new JSONArray() : new JSONArray(content);
     }
 }
