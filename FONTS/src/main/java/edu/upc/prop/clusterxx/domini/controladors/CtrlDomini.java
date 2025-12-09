@@ -1640,6 +1640,30 @@ public class CtrlDomini {
     }
 
     /**
+     * Consulta les enquestes creades per l'usuari autenticat.
+     * 
+     * Aquest mètode retorna només les enquestes on l'usuari actual és el creador.
+     * És útil per veure les enquestes pròpies d'un usuari sense mostrar totes les
+     * enquestes del sistema.
+     * 
+     * @return ArrayList amb les enquestes creades per l'usuari actual. Mai retorna
+     *         null;
+     *         si l'usuari no ha creat cap enquesta, retorna una llista buida.
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat al
+     *                                     sistema
+     */
+    public List<Enquesta> consultarEnquestesDelUsuari() throws UsuariNoAutenticatException {
+        // Validar que hi ha un usuari autenticat
+        Usuari usuariActual = ctrlUsuari.getUsuariActual();
+        if (usuariActual == null) {
+            throw new UsuariNoAutenticatException("Cal estar autenticat per consultar les teves enquestes.");
+        }
+
+        // Obtenir les enquestes creades per l'usuari
+        return usuariActual.getEnquestesCreades();
+    }
+
+    /**
      * Consulta una enquesta específica per ID.
      * 
      * @param idEnquesta L'ID de l'enquesta a consultar

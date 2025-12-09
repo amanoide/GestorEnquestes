@@ -12,7 +12,7 @@ public class VistaPrincipal {
     private CardLayout cardLayout;
 
     private JMenuBar menubarVista = new JMenuBar();
-    private JMenu menuFile = new JMenu("Menú");
+    private JMenu menuFile = new JMenu("Menu");
     private JMenuItem menuitemLogout = new JMenuItem("Tancar sessió");
     private JMenuItem menuitemDeleteAccount = new JMenuItem("Esborrar compte");
     private JMenuItem menuitemQuit = new JMenuItem("Sortir");
