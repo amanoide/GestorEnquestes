@@ -1,6 +1,7 @@
 package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +11,12 @@ import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 
 public class DialogoResponderEnquesta extends JDialog {
+
+    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
+    private static final Color TEXT_COLOR = new Color(44, 62, 80);
+    private static final Color CARD_COLOR = Color.WHITE;
+
     private CtrlPresentacio iCtrlPresentacio;
     private String idEnquesta;
     private ArrayList<Pregunta> preguntes;
@@ -26,44 +33,50 @@ public class DialogoResponderEnquesta extends JDialog {
     }
 
     private void inicializar() {
-        setLayout(new BorderLayout());
-        setSize(600, 500);
+        setLayout(new BorderLayout(10, 10));
+        setSize(650, 550);
         setLocationRelativeTo(getOwner());
+        getContentPane().setBackground(BACKGROUND_COLOR);
+        ((JPanel) getContentPane()).setBorder(new EmptyBorder(15, 15, 15, 15));
+
+        // Título
+        JLabel titulo = new JLabel("📝 Respondre Enquesta: " + idEnquesta);
+        titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 18));
+        titulo.setForeground(TEXT_COLOR);
+        add(titulo, BorderLayout.NORTH);
 
         JPanel panelContent = new JPanel();
         panelContent.setLayout(new BoxLayout(panelContent, BoxLayout.Y_AXIS));
-        panelContent.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panelContent.setBackground(BACKGROUND_COLOR);
+        panelContent.setBorder(new EmptyBorder(10, 5, 10, 5));
 
         for (Pregunta p : preguntes) {
-            JPanel panelPregunta = new JPanel(new BorderLayout());
-            panelPregunta.setBorder(BorderFactory.createTitledBorder(p.getText()));
-            panelPregunta.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100)); // Altura fixa aprox
+            JPanel panelPregunta = new JPanel(new BorderLayout(5, 5));
+            panelPregunta.setBackground(CARD_COLOR);
+            panelPregunta.setBorder(new CompoundBorder(
+                    new LineBorder(new Color(220, 220, 220), 1, true),
+                    new EmptyBorder(12, 12, 12, 12)));
+            panelPregunta.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
 
             JComponent input = crearComponentInput(p);
 
-            // Afegir etiqueta amb instruccions
-            String instruccions = "";
-            switch (p.getTipus()) {
-                case NUMERICA:
-                    instruccions = "[Min: " + p.getValorMinim() + ", Max: " + p.getValorMaxim() + "]";
-                    break;
-                case TEXT_LLIURE:
-                    instruccions = "[Text lliure]";
-                    break;
-                case QUALITATIVA_ORDENADA:
-                case QUALITATIVA_NO_ORDENADA_SIMPLE:
-                    instruccions = "[Selecciona una opció]";
-                    break;
-                case QUALITATIVA_NO_ORDENADA_MULTIPLE:
-                    instruccions = "[Selecciona múltiples opcions (Max: " + p.getMaxSeleccions() + ")]";
-                    break;
-            }
+            // Pregunta con emoji según tipo
+            String emoji = getEmojiTipus(p.getTipus());
+            JLabel lblPregunta = new JLabel(emoji + " " + p.getText());
+            lblPregunta.setFont(new Font("Segoe UI Emoji", Font.BOLD, 13));
+            lblPregunta.setForeground(TEXT_COLOR);
 
+            String instruccions = getInstruccions(p);
             JLabel lblInstruccions = new JLabel(instruccions);
-            lblInstruccions.setForeground(Color.GRAY);
-            lblInstruccions.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 0));
+            lblInstruccions.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+            lblInstruccions.setForeground(new Color(149, 165, 166));
 
-            panelPregunta.add(lblInstruccions, BorderLayout.NORTH);
+            JPanel headerPanel = new JPanel(new BorderLayout());
+            headerPanel.setBackground(CARD_COLOR);
+            headerPanel.add(lblPregunta, BorderLayout.NORTH);
+            headerPanel.add(lblInstruccions, BorderLayout.SOUTH);
+
+            panelPregunta.add(headerPanel, BorderLayout.NORTH);
             panelPregunta.add(input, BorderLayout.CENTER);
 
             inputComponents.put(p.getId(), input);
@@ -72,11 +85,15 @@ public class DialogoResponderEnquesta extends JDialog {
         }
 
         JScrollPane scroll = new JScrollPane(panelContent);
+        scroll.setBorder(null);
+        scroll.getViewport().setBackground(BACKGROUND_COLOR);
         add(scroll, BorderLayout.CENTER);
 
-        JPanel panelBotons = new JPanel();
-        JButton btnEnviar = new JButton("Enviar Respostes");
-        JButton btnCancel = new JButton("Cancel·lar");
+        JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        panelBotons.setBackground(BACKGROUND_COLOR);
+
+        JButton btnEnviar = crearBoton("✅ Enviar Respostes", new Color(39, 174, 96));
+        JButton btnCancel = crearBoton("✖ Cancel·lar", new Color(149, 165, 166));
 
         btnEnviar.addActionListener(e -> enviarRespostes());
         btnCancel.addActionListener(e -> setVisible(false));
@@ -86,35 +103,87 @@ public class DialogoResponderEnquesta extends JDialog {
         add(panelBotons, BorderLayout.SOUTH);
     }
 
+    private String getEmojiTipus(TipusPregunta tp) {
+        switch (tp) {
+            case NUMERICA:
+                return "🔢";
+            case TEXT_LLIURE:
+                return "✏️";
+            case QUALITATIVA_ORDENADA:
+            case QUALITATIVA_NO_ORDENADA_SIMPLE:
+                return "📋";
+            case QUALITATIVA_NO_ORDENADA_MULTIPLE:
+                return "☑️";
+            default:
+                return "❓";
+        }
+    }
+
+    private String getInstruccions(Pregunta p) {
+        switch (p.getTipus()) {
+            case NUMERICA:
+                return "Valor entre " + p.getValorMinim() + " i " + p.getValorMaxim();
+            case TEXT_LLIURE:
+                return "Text lliure";
+            case QUALITATIVA_ORDENADA:
+            case QUALITATIVA_NO_ORDENADA_SIMPLE:
+                return "Selecciona una opció";
+            case QUALITATIVA_NO_ORDENADA_MULTIPLE:
+                return "Selecciona fins a " + p.getMaxSeleccions() + " opcions";
+            default:
+                return "";
+        }
+    }
+
+    private JButton crearBoton(String text, Color color) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI Emoji", Font.BOLD, 13));
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(color);
+        btn.setBorder(new EmptyBorder(10, 20, 10, 20));
+        btn.setContentAreaFilled(true);
+        btn.setOpaque(true);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
+
     private JComponent crearComponentInput(Pregunta p) {
         TipusPregunta tp = p.getTipus();
         switch (tp) {
             case NUMERICA:
                 SpinnerNumberModel model = new SpinnerNumberModel(p.getValorMinim(), p.getValorMinim(),
                         p.getValorMaxim(), Double.valueOf(1.0));
-                return new JSpinner(model);
+                JSpinner spinner = new JSpinner(model);
+                spinner.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+                return spinner;
 
             case TEXT_LLIURE:
-                return new JTextField();
+                JTextField textField = new JTextField();
+                textField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+                textField.setBorder(new CompoundBorder(
+                        new LineBorder(new Color(200, 200, 200), 1, true),
+                        new EmptyBorder(8, 10, 8, 10)));
+                return textField;
 
             case QUALITATIVA_ORDENADA:
             case QUALITATIVA_NO_ORDENADA_SIMPLE:
                 JComboBox<String> combo = new JComboBox<>();
+                combo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
                 for (Opcio o : p.getOpcions()) {
                     combo.addItem(o.getText());
                 }
                 return combo;
 
             case QUALITATIVA_NO_ORDENADA_MULTIPLE:
-                // Per múltiple, usem un panell amb checkboxes
-                JPanel panelChecks = new JPanel(new GridLayout(0, 1));
-                // Guardem referència al panell, però necessitarem iterar els seus fills
-                // Per simplificar, guardarem el panell com a component
-                // I afegirem una propietat client per saber que és múltiple
+                JPanel panelChecks = new JPanel(new GridLayout(0, 2, 5, 5));
+                panelChecks.setBackground(CARD_COLOR);
                 panelChecks.putClientProperty("isMultiple", true);
                 for (Opcio o : p.getOpcions()) {
                     JCheckBox cb = new JCheckBox(o.getText());
-                    cb.setName(String.valueOf(o.getId())); // Guardem ID al nom per recuperar-lo
+                    cb.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+                    cb.setBackground(CARD_COLOR);
+                    cb.setName(String.valueOf(o.getId()));
                     panelChecks.add(cb);
                 }
                 return panelChecks;
@@ -158,47 +227,14 @@ public class DialogoResponderEnquesta extends JDialog {
             JPanel panel = (JPanel) comp;
             StringBuilder sb = new StringBuilder();
             for (Component c : panel.getComponents()) {
-                if (c instanceof JCheckBox) {
-                    JCheckBox cb = (JCheckBox) c;
-                    if (cb.isSelected()) {
-                        if (sb.length() > 0)
-                            sb.append(",");
-                        // Necessitem l'ID de l'opció per al format esperat pel domini?
-                        // El driver usa IDs (0,1,2) separats per comes.
-                        // Aquí hem de mapejar el text a l'ID o usar l'índex.
-                        // Per simplificar, assumim que el domini accepta el text o l'ID.
-                        // Re-mirant el driver: "Escull opcions (IDs ex: 0,1,2)"
-                        // Així que necessitem els IDs.
-                        // En crearComponentInput, no tenim fàcil accés als IDs originals de les opcions
-                        // si només guardem el text al checkbox.
-                        // Millor recuperar l'ID.
-                        // Anem a assumir que el text del checkbox és suficient O que hem de buscar
-                        // l'ID.
-                        // Per ara enviem el text i veiem si falla, o millor, enviem l'ID si podem.
-                        // En el loop de creació: cb.setActionCommand(String.valueOf(o.getId()));
-                        // Però JCheckBox no té actionCommand visible fàcilment sense listener.
-                        // Usem el text per ara, si falla, ho arreglarem.
-                        // EDIT: El driver diu "Escull opcions (IDs ex: 0,1,2)".
-                        // El mètode contestarEnquesta rep un String.
-                        // Si el domini espera IDs, hem d'enviar IDs.
-                        // Tornem a mirar com recuperar l'ID.
-                        // En el loop de creació, podem posar l'ID al nom del component o similar.
-                        // Però esperem, el driver diu: respostes.put(p.getId(), opcionsEsc); on
-                        // opcionsEsc són "0,1,2".
-                        // Així que sí, necessitem els IDs.
-                        // Modificaré crearComponentInput per posar l'ID al name del checkbox.
-                        if (c.getName() != null) {
-                            sb.append(c.getName());
-                        }
-                    }
+                if (c instanceof JCheckBox && ((JCheckBox) c).isSelected() && c.getName() != null) {
+                    if (sb.length() > 0)
+                        sb.append(",");
+                    sb.append(c.getName());
                 }
             }
             return sb.toString();
         }
         return "";
     }
-
-    // Sobreescrivim per arreglar lo dels IDs en multiple
-    // Aquesta classe interna o mètode privat hauria de ser més net, però per ara ho
-    // fem així.
 }

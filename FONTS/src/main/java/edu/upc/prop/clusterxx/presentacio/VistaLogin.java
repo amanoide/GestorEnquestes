@@ -1,6 +1,7 @@
 package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -8,11 +9,20 @@ public class VistaLogin extends JPanel {
     private CtrlPresentacio iCtrlPresentacio;
     private VistaPrincipal vistaPrincipal;
 
-    private JTextField textUser = new JTextField(15);
-    private JPasswordField textPass = new JPasswordField(15);
+    // Colores del tema
+    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private static final Color PRIMARY_HOVER = new Color(52, 152, 219);
+    private static final Color SECONDARY_COLOR = new Color(149, 165, 166);
+    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
+    private static final Color CARD_COLOR = Color.WHITE;
+    private static final Color TEXT_COLOR = new Color(44, 62, 80);
+    private static final Color ERROR_COLOR = new Color(231, 76, 60);
+
+    private JTextField textUser = new JTextField(20);
+    private JPasswordField textPass = new JPasswordField(20);
     private JButton btnLogin = new JButton("Iniciar sessió");
-    private JButton btnGoToRegister = new JButton("Registrar-se");
-    private JLabel labelStatusLogin = new JLabel("");
+    private JButton btnGoToRegister = new JButton("Crear compte nou");
+    private JLabel labelStatusLogin = new JLabel(" ");
 
     public VistaLogin(CtrlPresentacio ctrlPresentacio, VistaPrincipal vistaPrincipal) {
         this.iCtrlPresentacio = ctrlPresentacio;
@@ -21,80 +31,151 @@ public class VistaLogin extends JPanel {
     }
 
     private void inicializarComponentes() {
+        this.setBackground(BACKGROUND_COLOR);
         this.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Panel tarjeta
+        JPanel cardPanel = new JPanel();
+        cardPanel.setBackground(CARD_COLOR);
+        cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
+        cardPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 3, 3, new Color(0, 0, 0, 30)),
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(new Color(189, 195, 199), 1, true),
+                        new EmptyBorder(40, 50, 40, 50))));
+
+        // Icono
+        JLabel iconLabel = new JLabel("🔐");
+        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
+        iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cardPanel.add(iconLabel);
+        cardPanel.add(Box.createVerticalStrut(10));
 
         // Título
-        JLabel title = new JLabel("Login");
-        title.setFont(new Font("Arial", Font.BOLD, 20));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(10, 10, 20, 10);
-        this.add(title, gbc);
+        JLabel title = new JLabel("Benvingut!");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        title.setForeground(TEXT_COLOR);
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cardPanel.add(title);
 
-        // Reset insets
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridwidth = 1;
+        // Subtítulo
+        JLabel subtitle = new JLabel("Inicia sessió per continuar");
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        subtitle.setForeground(SECONDARY_COLOR);
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cardPanel.add(subtitle);
+        cardPanel.add(Box.createVerticalStrut(30));
 
-        // Usuario
-        gbc.gridy++;
-        gbc.gridx = 0;
-        this.add(new JLabel("Usuari:"), gbc);
-        gbc.gridx = 1;
-        this.add(textUser, gbc);
+        // Campo Usuario
+        cardPanel.add(createLabel("Usuari"));
+        cardPanel.add(Box.createVerticalStrut(5));
+        styleTextField(textUser);
+        cardPanel.add(textUser);
+        cardPanel.add(Box.createVerticalStrut(15));
 
-        // Contraseña
-        gbc.gridy++;
-        gbc.gridx = 0;
-        this.add(new JLabel("Contrasenya:"), gbc);
-        gbc.gridx = 1;
-        this.add(textPass, gbc);
+        // Campo Contraseña
+        cardPanel.add(createLabel("Contrasenya"));
+        cardPanel.add(Box.createVerticalStrut(5));
+        styleTextField(textPass);
+        cardPanel.add(textPass);
+        cardPanel.add(Box.createVerticalStrut(25));
 
         // Botones
-        gbc.gridy++;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        // Botón Login (top margin 15, bottom 0)
-        gbc.insets = new Insets(15, 5, 0, 5);
-        this.add(btnLogin, gbc);
+        styleButton(btnLogin, true);
+        cardPanel.add(btnLogin);
+        cardPanel.add(Box.createVerticalStrut(10));
 
-        gbc.gridy++;
-        // Botón Registro (top margin 2, bottom 5) - Muy cerca del anterior
-        gbc.insets = new Insets(2, 5, 5, 5);
-        this.add(btnGoToRegister, gbc);
+        styleButton(btnGoToRegister, false);
+        cardPanel.add(btnGoToRegister);
+        cardPanel.add(Box.createVerticalStrut(15));
 
         // Status
-        gbc.gridy++;
-        labelStatusLogin.setHorizontalAlignment(SwingConstants.CENTER);
-        this.add(labelStatusLogin, gbc);
+        labelStatusLogin.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        labelStatusLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cardPanel.add(labelStatusLogin);
 
         // Listeners
         btnLogin.addActionListener(e -> actionPerformed_btnLogin(e));
         btnGoToRegister.addActionListener(e -> vistaPrincipal.mostrarVista("REGISTER"));
+        textPass.addActionListener(e -> actionPerformed_btnLogin(e));
+
+        this.add(cardPanel);
     }
 
-    /**
-     * Gestiona l'acció del botó de Login.
-     * Intenta autenticar l'usuari amb les credencials introduïdes.
-     * Si és correcte, redirigeix a la pantalla principal.
-     * 
-     * @param event L'event d'acció disparat pel botó.
-     */
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        label.setForeground(TEXT_COLOR);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return label;
+    }
+
+    private void styleTextField(JTextField field) {
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setMaximumSize(new Dimension(280, 40));
+        field.setPreferredSize(new Dimension(280, 40));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(189, 195, 199), 1, true),
+                new EmptyBorder(8, 12, 8, 12)));
+    }
+
+    private void styleButton(JButton button, boolean isPrimary) {
+        button.setFont(new Font("Segoe UI", isPrimary ? Font.BOLD : Font.PLAIN, 14));
+        button.setMaximumSize(new Dimension(280, 45));
+        button.setPreferredSize(new Dimension(280, 45));
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        if (isPrimary) {
+            button.setForeground(Color.WHITE);
+            button.setBackground(PRIMARY_COLOR);
+            button.setBorderPainted(false);
+            button.setContentAreaFilled(true);
+            button.setOpaque(true);
+            button.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    button.setBackground(PRIMARY_HOVER);
+                }
+
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    button.setBackground(PRIMARY_COLOR);
+                }
+            });
+        } else {
+            button.setForeground(PRIMARY_COLOR);
+            button.setBackground(CARD_COLOR);
+            button.setBorder(new LineBorder(PRIMARY_COLOR, 1, true));
+            button.setContentAreaFilled(true);
+            button.setOpaque(true);
+            button.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    button.setBackground(new Color(235, 245, 251));
+                }
+
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    button.setBackground(CARD_COLOR);
+                }
+            });
+        }
+    }
+
     public void actionPerformed_btnLogin(ActionEvent event) {
-        String user = textUser.getText();
+        String user = textUser.getText().trim();
         String pass = new String(textPass.getPassword());
 
-        boolean loginOk = iCtrlPresentacio.login(user, pass);
+        if (user.isEmpty() || pass.isEmpty()) {
+            labelStatusLogin.setText("⚠ Camps obligatoris");
+            labelStatusLogin.setForeground(ERROR_COLOR);
+            return;
+        }
 
-        if (loginOk) {
-            vistaPrincipal.mostrarVista("MENU"); // Ir al Menú Principal
+        if (iCtrlPresentacio.login(user, pass)) {
+            labelStatusLogin.setText(" ");
+            vistaPrincipal.mostrarVista("MENU");
         } else {
-            labelStatusLogin.setText("Error: Credencials incorrectes");
-            labelStatusLogin.setForeground(Color.RED);
+            labelStatusLogin.setText("⚠ Credencials incorrectes");
+            labelStatusLogin.setForeground(ERROR_COLOR);
         }
     }
 }

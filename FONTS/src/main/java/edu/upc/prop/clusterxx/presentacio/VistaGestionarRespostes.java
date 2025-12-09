@@ -1,20 +1,23 @@
 package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.util.ArrayList;
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 
 public class VistaGestionarRespostes extends JPanel {
+
+    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
+    private static final Color TEXT_COLOR = new Color(44, 62, 80);
+
     private CtrlPresentacio iCtrlPresentacio;
     private VistaPrincipal vistaPrincipal;
 
     private DefaultListModel<String> listModel = new DefaultListModel<>();
     private JList<String> listEnquestes = new JList<>(listModel);
-
-    private JButton btnModificar = new JButton("Veure/Modificar Respostes");
-    private JButton btnEsborrar = new JButton("Esborrar Totes les Respostes");
-    private JButton btnTornar = new JButton("Tornar al Menú");
+    private JButton btnModificar, btnEsborrar, btnTornar;
 
     public VistaGestionarRespostes(CtrlPresentacio ctrlPresentacio, VistaPrincipal vistaPrincipal) {
         this.iCtrlPresentacio = ctrlPresentacio;
@@ -23,28 +26,38 @@ public class VistaGestionarRespostes extends JPanel {
     }
 
     private void inicializarComponentes() {
-        setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setLayout(new BorderLayout(10, 10));
+        setBackground(BACKGROUND_COLOR);
+        setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Títol
-        JLabel lblTitol = new JLabel("Les Meves Enquestes Contestades");
-        lblTitol.setFont(new Font("Arial", Font.BOLD, 18));
-        lblTitol.setHorizontalAlignment(SwingConstants.CENTER);
+        // Título
+        JLabel lblTitol = new JLabel("📋 Les Meves Enquestes Contestades");
+        lblTitol.setFont(new Font("Segoe UI Emoji", Font.BOLD, 20));
+        lblTitol.setForeground(TEXT_COLOR);
         add(lblTitol, BorderLayout.NORTH);
 
-        // Llista
+        // Lista
+        listEnquestes.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        listEnquestes.setFixedCellHeight(40);
+        listEnquestes.setSelectionBackground(new Color(52, 152, 219, 80));
         JScrollPane scroll = new JScrollPane(listEnquestes);
-        scroll.setBorder(BorderFactory.createTitledBorder("Selecciona una enquesta per gestionar"));
+        scroll.setBorder(BorderFactory.createTitledBorder("Selecciona una enquesta"));
         add(scroll, BorderLayout.CENTER);
 
-        // Botons
-        JPanel panelBotons = new JPanel();
+        // Botones
+        JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        panelBotons.setBackground(BACKGROUND_COLOR);
+
+        btnModificar = crearBoton("👁️ Veure/Modificar", PRIMARY_COLOR);
+        btnEsborrar = crearBoton("🗑️ Esborrar Totes", new Color(231, 76, 60));
+        btnTornar = crearBoton("← Tornar", new Color(149, 165, 166));
+
         panelBotons.add(btnModificar);
         panelBotons.add(btnEsborrar);
         panelBotons.add(btnTornar);
         add(panelBotons, BorderLayout.SOUTH);
 
-        // Estat inicial
+        // Estado inicial
         btnModificar.setEnabled(false);
         btnEsborrar.setEnabled(false);
 
@@ -60,6 +73,19 @@ public class VistaGestionarRespostes extends JPanel {
         btnModificar.addActionListener(e -> obrirDialegModificar());
         btnEsborrar.addActionListener(e -> esborrarRespostes());
         btnTornar.addActionListener(e -> vistaPrincipal.mostrarVista("MENU"));
+    }
+
+    private JButton crearBoton(String text, Color color) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI Emoji", Font.BOLD, 12));
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(color);
+        btn.setBorder(new EmptyBorder(8, 15, 8, 15));
+        btn.setContentAreaFilled(true);
+        btn.setOpaque(true);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
     }
 
     public void actualizarLista() {
@@ -81,14 +107,9 @@ public class VistaGestionarRespostes extends JPanel {
         if (selected == null || selected.startsWith("No has contestat"))
             return;
 
-        String idEnquesta = selected.split(":")[0];
+        String idEnquesta = selected.split(":")[0].trim();
         Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-
-        // Reutilitzem el diàleg existent que ja funciona bé
-        DialogoGestionarRespostes dialogo = new DialogoGestionarRespostes(parentFrame, iCtrlPresentacio, idEnquesta);
-        dialogo.setVisible(true);
-
-        // Al tornar, refresquem per si s'ha esborrat tot des del diàleg
+        new DialogoGestionarRespostes(parentFrame, iCtrlPresentacio, idEnquesta).setVisible(true);
         actualizarLista();
     }
 
@@ -97,19 +118,17 @@ public class VistaGestionarRespostes extends JPanel {
         if (selected == null || selected.startsWith("No has contestat"))
             return;
 
-        String idEnquesta = selected.split(":")[0];
+        String idEnquesta = selected.split(":")[0].trim();
 
         int confirm = JOptionPane.showConfirmDialog(this,
-                "Estàs segur que vols esborrar TOTES les teves respostes a l'enquesta " + idEnquesta + "?",
-                "Confirmar esborrat",
-                JOptionPane.YES_NO_OPTION);
+                "Esborrar TOTES les respostes a l'enquesta " + idEnquesta + "?",
+                "Confirmar", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
             String resultat = iCtrlPresentacio.esborrarRespostesEnquesta(idEnquesta);
             JOptionPane.showMessageDialog(this, resultat);
-            if (resultat.contains("correctament")) {
+            if (resultat.contains("correctament"))
                 actualizarLista();
-            }
         }
     }
 }

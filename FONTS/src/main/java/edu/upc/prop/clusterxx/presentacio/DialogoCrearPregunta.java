@@ -1,23 +1,24 @@
 package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DialogoCrearPregunta extends JDialog {
-    private boolean confirmado = false;
 
-    private JTextField textId = new JTextField(10);
+    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
+
+    private boolean confirmado = false;
+    private JTextField textId = new JTextField(20);
     private JTextField textPregunta = new JTextField(20);
     private JComboBox<String> comboTipus;
-
-    // Camps específics
     private JPanel panelOpcions;
-    private JTextField textMin = new JTextField(5);
-    private JTextField textMax = new JTextField(5);
-    private JTextArea areaOpcions = new JTextArea(3, 20); // Una opció per línia
+    private JTextField textMin = new JTextField(8);
+    private JTextField textMax = new JTextField(8);
+    private JTextArea areaOpcions = new JTextArea(4, 20);
     private JSpinner spinnerMaxSeleccions = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
 
     public DialogoCrearPregunta(Frame owner) {
@@ -31,100 +32,134 @@ public class DialogoCrearPregunta extends JDialog {
     }
 
     private void inicializar() {
-        setLayout(new BorderLayout());
+        setSize(500, 520);
+        setLocationRelativeTo(getOwner());
+        setLayout(new BorderLayout(10, 10));
+        getContentPane().setBackground(BACKGROUND_COLOR);
 
-        // Panel Central
-        JPanel panelForm = new JPanel(new GridBagLayout());
-        panelForm.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Título centrado
+        JLabel titulo = new JLabel("❓ Nova Pregunta");
+        titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 18));
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setBorder(new EmptyBorder(15, 0, 15, 0));
+        add(titulo, BorderLayout.NORTH);
+
+        // Panel central con formulario
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
+        formPanel.setBorder(new EmptyBorder(10, 30, 10, 30));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 0, 5, 0);
+        gbc.gridx = 0;
+        gbc.weightx = 1.0;
 
         // ID
-        gbc.gridx = 0;
         gbc.gridy = 0;
-        panelForm.add(new JLabel("ID Pregunta:"), gbc);
-        gbc.gridx = 1;
-        panelForm.add(textId, gbc);
+        formPanel.add(crearLabel("Identificador"), gbc);
+        gbc.gridy = 1;
+        textId.setPreferredSize(new Dimension(400, 30));
+        formPanel.add(textId, gbc);
 
         // Text
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panelForm.add(new JLabel("Text:"), gbc);
-        gbc.gridx = 1;
-        panelForm.add(textPregunta, gbc);
+        gbc.gridy = 2;
+        formPanel.add(crearLabel("Text de la pregunta"), gbc);
+        gbc.gridy = 3;
+        textPregunta.setPreferredSize(new Dimension(400, 30));
+        formPanel.add(textPregunta, gbc);
 
         // Tipus
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panelForm.add(new JLabel("Tipus:"), gbc);
-
-        String[] tipus = { "TEXT_LLIURE", "NUMERICA", "QUALITATIVA_ORDENADA", "QUALITATIVA_NO_ORDENADA_SIMPLE",
-                "QUALITATIVA_NO_ORDENADA_MULTIPLE" };
+        gbc.gridy = 4;
+        formPanel.add(crearLabel("Tipus"), gbc);
+        gbc.gridy = 5;
+        String[] tipus = { "TEXT_LLIURE", "NUMERICA", "QUALITATIVA_ORDENADA",
+                "QUALITATIVA_NO_ORDENADA_SIMPLE", "QUALITATIVA_NO_ORDENADA_MULTIPLE" };
         comboTipus = new JComboBox<>(tipus);
-        gbc.gridx = 1;
-        panelForm.add(comboTipus, gbc);
+        comboTipus.setPreferredSize(new Dimension(400, 30));
+        formPanel.add(comboTipus, gbc);
 
-        // Panel dinàmic per opcions extra
+        // Panel dinámico
         panelOpcions = new JPanel(new CardLayout());
+        panelOpcions.setPreferredSize(new Dimension(400, 160));
+        panelOpcions.setBackground(Color.WHITE);
 
-        // Panel Buit (Text lliure)
-        panelOpcions.add(new JPanel(), "BUIT");
+        JPanel panelBuit = new JPanel();
+        panelBuit.setBackground(Color.WHITE);
+        panelOpcions.add(panelBuit, "BUIT");
 
-        // Panel Numèric
-        JPanel panelNumeric = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelNumeric.add(new JLabel("Min:"));
+        // Panel numérico
+        JPanel panelNumeric = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        panelNumeric.setBackground(Color.WHITE);
+        panelNumeric.add(new JLabel("Mínim:"));
+        textMin.setPreferredSize(new Dimension(80, 30));
         panelNumeric.add(textMin);
-        panelNumeric.add(new JLabel("Max:"));
+        panelNumeric.add(new JLabel("Màxim:"));
+        textMax.setPreferredSize(new Dimension(80, 30));
         panelNumeric.add(textMax);
         panelOpcions.add(panelNumeric, "NUMERIC");
 
-        // Panel Qualitatiu
-        JPanel panelQualitatiu = new JPanel(new BorderLayout());
-        panelQualitatiu.add(new JLabel("Opcions (una per línia):"), BorderLayout.NORTH);
-        panelQualitatiu.add(new JScrollPane(areaOpcions), BorderLayout.CENTER);
-
-        JPanel panelMultiple = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelMultiple.add(new JLabel("Max Seleccions:"));
-        panelMultiple.add(spinnerMaxSeleccions);
-        panelQualitatiu.add(panelMultiple, BorderLayout.SOUTH);
-
+        // Panel qualitativo
+        JPanel panelQualitatiu = new JPanel();
+        panelQualitatiu.setLayout(new BoxLayout(panelQualitatiu, BoxLayout.Y_AXIS));
+        panelQualitatiu.setBackground(Color.WHITE);
+        panelQualitatiu.add(crearLabel("Opcions (una per línia)"));
+        areaOpcions.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        JScrollPane scrollOpcions = new JScrollPane(areaOpcions);
+        scrollOpcions.setPreferredSize(new Dimension(400, 100));
+        scrollOpcions.setMaximumSize(new Dimension(400, 100));
+        panelQualitatiu.add(scrollOpcions);
+        JPanel panelMaxSel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        panelMaxSel.setBackground(Color.WHITE);
+        panelMaxSel.add(new JLabel("Màxim seleccions:"));
+        panelMaxSel.add(spinnerMaxSeleccions);
+        panelQualitatiu.add(panelMaxSel);
         panelOpcions.add(panelQualitatiu, "QUALITATIU");
 
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        panelForm.add(panelOpcions, gbc);
+        gbc.gridy = 6;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formPanel.add(panelOpcions, gbc);
 
-        add(panelForm, BorderLayout.CENTER);
+        add(formPanel, BorderLayout.CENTER);
 
-        // Botons
-        JPanel panelBotons = new JPanel();
-        JButton btnOk = new JButton("Confirmar");
-        JButton btnCancel = new JButton("Cancel·lar");
+        // Botones
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        buttonPanel.setBackground(Color.WHITE);
 
+        JButton btnOk = crearBoton("✓ Crear", PRIMARY_COLOR);
+        JButton btnCancel = crearBoton("✖ Cancel·lar", new Color(149, 165, 166));
+
+        buttonPanel.add(btnOk);
+        buttonPanel.add(btnCancel);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Listeners
         btnOk.addActionListener(e -> {
             if (validar()) {
                 confirmado = true;
                 setVisible(false);
             }
         });
-
         btnCancel.addActionListener(e -> setVisible(false));
+        comboTipus.addItemListener(e -> actualizarPanelOpcions((String) comboTipus.getSelectedItem()));
+    }
 
-        panelBotons.add(btnOk);
-        panelBotons.add(btnCancel);
-        add(panelBotons, BorderLayout.SOUTH);
+    private JLabel crearLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        return label;
+    }
 
-        // Listener combo
-        comboTipus.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                actualizarPanelOpcions((String) e.getItem());
-            }
-        });
-
-        pack();
-        setLocationRelativeTo(getOwner());
+    private JButton crearBoton(String text, Color color) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI Emoji", Font.BOLD, 12));
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(color);
+        btn.setBorder(new EmptyBorder(8, 15, 8, 15));
+        btn.setContentAreaFilled(true);
+        btn.setOpaque(true);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
     }
 
     private void actualizarPanelOpcions(String tipus) {
@@ -140,8 +175,12 @@ public class DialogoCrearPregunta extends JDialog {
     }
 
     private boolean validar() {
-        if (textId.getText().trim().isEmpty() || textPregunta.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "ID i Text són obligatoris.");
+        if (textId.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "L'identificador és obligatori");
+            return false;
+        }
+        if (textPregunta.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El text de la pregunta és obligatori");
             return false;
         }
         return true;
@@ -152,11 +191,11 @@ public class DialogoCrearPregunta extends JDialog {
     }
 
     public String getId() {
-        return textId.getText();
+        return textId.getText().trim();
     }
 
     public String getPreguntaText() {
-        return textPregunta.getText();
+        return textPregunta.getText().trim();
     }
 
     public String getTipus() {
@@ -186,10 +225,14 @@ public class DialogoCrearPregunta extends JDialog {
         return new ArrayList<>(Arrays.asList(texto.split("\\n")));
     }
 
+    public int getMaxSeleccions() {
+        return (Integer) spinnerMaxSeleccions.getValue();
+    }
+
     public void setDades(String id, String text, String tipus, Double min, Double max,
             ArrayList<edu.upc.prop.clusterxx.domini.classes.Opcio> opcions, int maxSel) {
         textId.setText(id);
-        textId.setEditable(false); // No es pot canviar l'ID en modificar
+        textId.setEditable(false);
         textPregunta.setText(text);
         comboTipus.setSelectedItem(tipus);
 
@@ -207,11 +250,6 @@ public class DialogoCrearPregunta extends JDialog {
         }
 
         spinnerMaxSeleccions.setValue(maxSel > 0 ? maxSel : 1);
-
         actualizarPanelOpcions(tipus);
-    }
-
-    public int getMaxSeleccions() {
-        return (Integer) spinnerMaxSeleccions.getValue();
     }
 }
