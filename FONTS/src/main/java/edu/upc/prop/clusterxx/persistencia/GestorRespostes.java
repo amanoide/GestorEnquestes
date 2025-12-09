@@ -5,20 +5,45 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
- * Gestor encarregat de la persistència de les respostes en fitxers JSON.
- * Segueix l'estructura jeràrquica:
- * - dades/enquestes/{id_enquesta}/respostes/index.json: ["usuari1", "usuari2", ...]
- * - dades/enquestes/{id_enquesta}/respostes/{username}.json: totes les respostes de l'usuari a aquesta enquesta
+ * Gestor encarregat de la persistència de les respostes en el sistema de fitxers.
+ * <p>
+ * Aquesta classe gestiona l'emmagatzematge i recuperació de les respostes dels usuaris a les enquestes.
+ * Utilitza una estructura jeràrquica on les respostes s'agrupen per enquesta i després per usuari.
+ * </p>
+ * <p>
+ * <strong>Estructura de fitxers:</strong>
+ * <ul>
+ *   <li><code>dades/enquestes/{id_enquesta}/respostes/index.json</code>: Índex amb la llista d'usuaris que han respost.</li>
+ *   <li><code>dades/enquestes/{id_enquesta}/respostes/{username}.json</code>: Fitxer amb totes les respostes d'un usuari específic per a aquesta enquesta.</li>
+ * </ul>
+ * </p>
+ * <p>
+ * <strong>Característiques tècniques:</strong>
+ * <ul>
+ *   <li>Utilitza <code>java.nio</code> per a operacions de fitxers eficients.</li>
+ *   <li>Garanteix la codificació <strong>UTF-8</strong>.</li>
+ *   <li>Implementa estratègies d'actualització incremental (Smart Merge) per a l'índex de participants.</li>
+ * </ul>
+ * </p>
+ *
+ * @author ClusterXX
+ * @version 2.0
  */
 public class GestorRespostes {
+
+    /** Ruta base del directori d'enquestes. */
     private static final String DIRECTORI_BASE = "dades/enquestes";
+
+    /** Nom del subdirectori on s'emmagatzemen les respostes. */
     private static final String SUBDIR_RESPOSTES = "respostes";
+
+    /** Nom del fitxer d'índex de participants. */
     private static final String FITXER_INDEX = "index.json";
 
     /**
@@ -28,11 +53,15 @@ public class GestorRespostes {
     }
 
     /**
-     * Guarda totes les respostes d'una enquesta: actualitza l'índex i guarda les respostes de cada usuari.
-     * 
-     * @param idEnquesta ID de l'enquesta
-     * @param preguntes ArrayList de preguntes (contenen les respostes)
-     * @throws IOException Si hi ha error d'escriptura
+     * Guarda totes les respostes d'una enquesta al sistema de persistència.
+     * <p>
+     * Aquest mètode agrupa les respostes per usuari, guarda els fitxers individuals de cada usuari
+     * i actualitza l'índex de participants de l'enquesta.
+     * </p>
+     *
+     * @param idEnquesta L'identificador de l'enquesta.
+     * @param preguntes Llista de preguntes que contenen les respostes a guardar.
+     * @throws IOException Si es produeix un error d'entrada/sortida.
      */
     public void guardarRespostes(String idEnquesta, ArrayList<Pregunta> preguntes) throws IOException {
         File dirRespostes = getDirRespostes(idEnquesta);
@@ -40,7 +69,6 @@ public class GestorRespostes {
             dirRespostes.mkdirs();
         }
 
-        // Agrupar respostes per usuari
         HashMap<String, HashMap<String, Resposta>> respostesPorUsuari = new HashMap<>();
         
         for (Pregunta pregunta : preguntes) {
@@ -51,22 +79,23 @@ public class GestorRespostes {
             }
         }
 
-        // Guardar l'índex
         guardarIndex(idEnquesta, respostesPorUsuari.keySet());
         
-        // Guardar respostes de cada usuari
         for (Map.Entry<String, HashMap<String, Resposta>> entry : respostesPorUsuari.entrySet()) {
             guardarRespostesUsuari(idEnquesta, entry.getKey(), entry.getValue());
         }
     }
 
     /**
-     * Guarda les respostes d'un usuari específic a una enquesta.
-     * 
-     * @param idEnquesta ID de l'enquesta
-     * @param username Username de l'usuari
-     * @param respostes HashMap de respostes de l'usuari (id -> Resposta)
-     * @throws IOException Si hi ha error d'escriptura
+     * Guarda les respostes d'un usuari específic per a una enquesta concreta.
+     * <p>
+     * Crea o sobreescriu el fitxer JSON de l'usuari dins del directori de respostes de l'enquesta.
+     * </p>
+     *
+     * @param idEnquesta L'identificador de l'enquesta.
+     * @param username El nom de l'usuari que ha respost.
+     * @param respostes Mapa de les respostes de l'usuari.
+     * @throws IOException Si no es pot escriure el fitxer.
      */
     public void guardarRespostesUsuari(String idEnquesta, String username, HashMap<String, Resposta> respostes) throws IOException {
         File dirRespostes = getDirRespostes(idEnquesta);
@@ -85,40 +114,52 @@ public class GestorRespostes {
             jsonRespostes.put(jsonResposta);
         }
         
-        File fitxer = new File(dirRespostes, username + ".json");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxer))) {
-            writer.write(jsonRespostes.toString(4));
-        }
+        Path fitxer = dirRespostes.toPath().resolve(username + ".json");
+        Files.write(fitxer, jsonRespostes.toString(4).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
-     * Guarda l'índex de respostes amb els usuaris que han participat.
-     * Format: ["usuari1", "usuari2", ...]
-     * 
-     * @param idEnquesta ID de l'enquesta
-     * @param usuaris Col·lecció d'usernames
-     * @throws IOException Si hi ha error d'escriptura
+     * Actualitza l'índex de participants d'una enquesta.
+     * <p>
+     * Afegeix els nous usuaris a la llista existent sense eliminar els que ja hi eren (Smart Merge).
+     * </p>
+     *
+     * @param idEnquesta L'identificador de l'enquesta.
+     * @param nousUsuaris Conjunt de noms d'usuari a afegir a l'índex.
+     * @throws IOException Si hi ha errors de lectura o escriptura.
      */
-    private void guardarIndex(String idEnquesta, Set<String> usuaris) throws IOException {
-        JSONArray jsonArray = new JSONArray();
+    private void guardarIndex(String idEnquesta, Set<String> nousUsuaris) throws IOException {
+        File dirRespostes = getDirRespostes(idEnquesta);
+        File fitxer = new File(dirRespostes, FITXER_INDEX);
         
-        for (String username : usuaris) {
+        Set<String> usuarisTotals = new LinkedHashSet<>();
+
+        if (fitxer.exists()) {
+            String content = new String(Files.readAllBytes(fitxer.toPath()), StandardCharsets.UTF_8);
+            if (!content.isEmpty()) {
+                JSONArray currentArray = new JSONArray(content);
+                for (int i = 0; i < currentArray.length(); i++) {
+                    usuarisTotals.add(currentArray.getString(i));
+                }
+            }
+        }
+
+        usuarisTotals.addAll(nousUsuaris);
+
+        JSONArray jsonArray = new JSONArray();
+        for (String username : usuarisTotals) {
             jsonArray.put(username);
         }
         
-        File dirRespostes = getDirRespostes(idEnquesta);
-        File fitxer = new File(dirRespostes, FITXER_INDEX);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxer))) {
-            writer.write(jsonArray.toString(4));
-        }
+        Files.write(fitxer.toPath(), jsonArray.toString(4).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
-     * Elimina el fitxer de respostes d'un usuari.
-     * 
-     * @param idEnquesta ID de l'enquesta
-     * @param username Username de l'usuari
-     * @return true si s'ha eliminat, false si no existia
+     * Elimina el fitxer de respostes d'un usuari per a una enquesta.
+     *
+     * @param idEnquesta L'identificador de l'enquesta.
+     * @param username El nom de l'usuari.
+     * @return true si el fitxer s'ha eliminat correctament, false altrament.
      */
     public boolean eliminarRespostesUsuari(String idEnquesta, String username) {
         File dirRespostes = getDirRespostes(idEnquesta);
@@ -127,13 +168,16 @@ public class GestorRespostes {
     }
 
     /**
-     * Carrega les respostes d'un usuari específic.
-     * 
-     * @param idEnquesta ID de l'enquesta
-     * @param username Username de l'usuari
-     * @param usuaris Mapa d'usuaris per vincular
-     * @return HashMap de respostes (idPregunta -> Resposta)
-     * @throws IOException Si hi ha error de lectura
+     * Carrega les respostes d'un usuari específic per a una enquesta.
+     * <p>
+     * Llegeix el fitxer JSON de l'usuari i reconstrueix els objectes Resposta.
+     * </p>
+     *
+     * @param idEnquesta L'identificador de l'enquesta.
+     * @param username El nom de l'usuari.
+     * @param usuaris Mapa d'usuaris per resoldre la referència a l'objecte Usuari.
+     * @return Un HashMap amb les respostes de l'usuari, on la clau és l'ID de la pregunta.
+     * @throws IOException Si hi ha errors de lectura.
      */
     public HashMap<String, Resposta> carregarRespostesUsuari(String idEnquesta, String username, HashMap<String, Usuari> usuaris) throws IOException {
         HashMap<String, Resposta> respostes = new HashMap<>();
@@ -144,19 +188,13 @@ public class GestorRespostes {
             return respostes;
         }
 
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fitxer))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line);
-            }
-        }
-
-        if (content.length() == 0) {
+        String content = new String(Files.readAllBytes(fitxer.toPath()), StandardCharsets.UTF_8);
+        
+        if (content.isEmpty()) {
             return respostes;
         }
 
-        JSONArray jsonRespostes = new JSONArray(content.toString());
+        JSONArray jsonRespostes = new JSONArray(content);
         
         for (int i = 0; i < jsonRespostes.length(); i++) {
             JSONObject jsonResposta = jsonRespostes.getJSONObject(i);
@@ -165,7 +203,6 @@ public class GestorRespostes {
             String usernameResposta = jsonResposta.getString("username");
             String textResposta = jsonResposta.getString("text");
 
-            // Recuperar l'usuari si existeix
             Usuari usuari = null;
             if (usuaris != null) {
                 usuari = usuaris.get(usernameResposta);
@@ -175,19 +212,22 @@ public class GestorRespostes {
             }
 
             Resposta resposta = new Resposta(idResposta, idPregunta, textResposta, usuari);
-            respostes.put(idPregunta, resposta);  // Clau: idPregunta en lloc d'idResposta
+            respostes.put(idPregunta, resposta);
         }
 
         return respostes;
     }
 
     /**
-     * Carrega totes les respostes d'una enquesta (de tots els usuaris).
-     * 
-     * @param idEnquesta ID de l'enquesta
-     * @param usuaris Mapa d'usuaris per vincular
-     * @return HashMap d'usuaris amb les seves respostes (username -> HashMap<idPregunta, Resposta>)
-     * @throws IOException Si hi ha error de lectura
+     * Carrega totes les respostes de tots els usuaris per a una enquesta.
+     * <p>
+     * Explora el directori de respostes de l'enquesta i carrega cada fitxer d'usuari trobat.
+     * </p>
+     *
+     * @param idEnquesta L'identificador de l'enquesta.
+     * @param usuaris Mapa d'usuaris per vincular les respostes amb els seus autors.
+     * @return Un HashMap on la clau és el nom d'usuari i el valor és un mapa de les seves respostes.
+     * @throws IOException Si hi ha errors de lectura.
      */
     public HashMap<String, HashMap<String, Resposta>> carregarTotsRespostes(String idEnquesta, HashMap<String, Usuari> usuaris) throws IOException {
         HashMap<String, HashMap<String, Resposta>> totesRespostes = new HashMap<>();
@@ -197,7 +237,6 @@ public class GestorRespostes {
             return totesRespostes;
         }
 
-        // Llistar tots els fitxers .json excepte index.json
         File[] fitxers = dirRespostes.listFiles((d, name) -> name.endsWith(".json") && !name.equals(FITXER_INDEX));
         
         if (fitxers == null) {
@@ -220,18 +259,24 @@ public class GestorRespostes {
     }
 
     /**
-     * Obté el directori de respostes per una enquesta.
+     * Obté l'objecte File que representa el directori de respostes d'una enquesta.
+     *
+     * @param idEnquesta L'identificador de l'enquesta.
+     * @return L'objecte File del directori.
      */
     private File getDirRespostes(String idEnquesta) {
         return new File(DIRECTORI_BASE + File.separator + idEnquesta + File.separator + SUBDIR_RESPOSTES);
     }
 
     /**
-     * Obté la llista d'usuaris que han contestat una enquesta sense carregar totes les respostes.
-     * 
-     * @param idEnquesta ID de l'enquesta
-     * @return JSONArray amb els usernames
-     * @throws IOException Si hi ha error de lectura
+     * Obté la llista d'usuaris que han participat en una enquesta.
+     * <p>
+     * Llegeix el fitxer d'índex de participants sense necessitat de carregar totes les respostes.
+     * </p>
+     *
+     * @param idEnquesta L'identificador de l'enquesta.
+     * @return Un JSONArray amb els noms d'usuari dels participants.
+     * @throws IOException Si hi ha errors de lectura.
      */
     public JSONArray obtenirIndexRespostes(String idEnquesta) throws IOException {
         File dirRespostes = getDirRespostes(idEnquesta);
@@ -241,19 +286,11 @@ public class GestorRespostes {
             return new JSONArray();
         }
 
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fitxer))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line);
-            }
-        }
-
-        if (content.length() == 0) {
+        String content = new String(Files.readAllBytes(fitxer.toPath()), StandardCharsets.UTF_8);
+        if (content.isEmpty()) {
             return new JSONArray();
         }
 
-        return new JSONArray(content.toString());
+        return new JSONArray(content);
     }
 }
-
