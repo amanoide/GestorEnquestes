@@ -6,21 +6,50 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
 /**
- * Gestor encarregat de la persistència dels usuaris en fitxers JSON.
- * Estructura:
- * - dades/usuaris/index.json: Llista ràpida de tots els usernames
- * - dades/usuaris/{username}.json: Fitxer individual per cada usuari
+ * Gestor encarregat de la persistència dels usuaris en el sistema de fitxers.
+ * <p>
+ * Aquesta classe gestiona l'emmagatzematge i recuperació dels usuaris utilitzant fitxers JSON.
+ * Manté un índex global per a un accés ràpid i fitxers individuals per a les dades detallades
+ * de cada usuari.
+ * </p>
+ * <p>
+ * <strong>Estructura de fitxers:</strong>
+ * <ul>
+ *   <li><code>dades/usuaris/index.json</code>: Índex global amb els noms d'usuari existents.</li>
+ *   <li><code>dades/usuaris/{username}.json</code>: Fitxer individual amb les dades de l'usuari (password, enquestes participades).</li>
+ * </ul>
+ * </p>
+ * <p>
+ * <strong>Característiques tècniques:</strong>
+ * <ul>
+ *   <li>Utilitza <code>java.nio</code> per a operacions de fitxers eficients.</li>
+ *   <li>Garanteix la codificació <strong>UTF-8</strong>.</li>
+ *   <li>Implementa estratègies d'actualització incremental (Smart Merge) per a l'índex.</li>
+ * </ul>
+ * </p>
+ *
+ * @author ClusterXX
+ * @version 2.0
  */
 public class GestorUsuaris {
+
+    /** Ruta relativa al directori base on s'emmagatzemen els usuaris. */
     private static final String DIRECTORI_USUARIS = "dades/usuaris";
+
+    /** Nom del fitxer d'índex global. */
     private static final String FITXER_INDEX = "index.json";
 
+    /**
+     * Constructor per defecte.
+     * Inicialitza el gestor i assegura que el directori base d'usuaris existeix.
+     */
     public GestorUsuaris() {
         File dir = new File(DIRECTORI_USUARIS);
         if (!dir.exists()) {
@@ -29,50 +58,117 @@ public class GestorUsuaris {
     }
 
     /**
-     * Guarda tots els usuaris: actualitza l'índex y guarda cada usuario.
+     * Guarda un conjunt d'usuaris al sistema de persistència.
+     * <p>
+     * Actualitza tant els fitxers individuals de cada usuari com l'índex global.
+     * </p>
+     *
+     * @param usuaris Mapa amb els usuaris a guardar, indexats per nom d'usuari.
+     * @throws IOException Si es produeix un error d'entrada/sortida.
      */
     public void guardarUsuaris(HashMap<String, Usuari> usuaris) throws IOException {
         for (Usuari usuari : usuaris.values()) {
-            guardarUsuari(usuari);
+            guardarFitxerUsuari(usuari);
         }
-        guardarIndex(usuaris);
+        actualitzarIndex(usuaris);
     }
 
     /**
-     * Guarda un únic usuari al seu fitxer individual.
+     * Guarda o actualitza un únic usuari.
+     * <p>
+     * Aquesta operació és eficient ja que només escriu el fitxer de l'usuari específic
+     * i actualitza la seva entrada a l'índex, sense reescriure tots els fitxers d'usuaris.
+     * </p>
+     *
+     * @param usuari L'objecte Usuari a guardar.
+     * @throws IOException Si es produeix un error d'entrada/sortida.
      */
     public void guardarUsuari(Usuari usuari) throws IOException {
+        guardarFitxerUsuari(usuari);
+
+        HashMap<String, Usuari> singleMap = new HashMap<>();
+        singleMap.put(usuari.getUsername(), usuari);
+        actualitzarIndex(singleMap);
+    }
+
+    /**
+     * Escriu les dades d'un usuari en el seu fitxer JSON corresponent.
+     *
+     * @param usuari L'usuari del qual es volen guardar les dades.
+     * @throws IOException Si no es pot escriure el fitxer.
+     */
+    private void guardarFitxerUsuari(Usuari usuari) throws IOException {
         JSONObject jsonUsuari = new JSONObject();
         jsonUsuari.put("username", usuari.getUsername());
         jsonUsuari.put("password", usuari.getPassword());
-        
+
         JSONArray enquestesParticipades = new JSONArray();
-        for (String idEnquesta : usuari.getPerfils().keySet()) {
-            enquestesParticipades.put(idEnquesta);
+        if (usuari.getPerfils() != null) {
+            for (String idEnquesta : usuari.getPerfils().keySet()) {
+                enquestesParticipades.put(idEnquesta);
+            }
         }
         jsonUsuari.put("enquestesParticipades", enquestesParticipades);
 
         Path path = Paths.get(DIRECTORI_USUARIS, usuari.getUsername() + ".json");
-        Files.write(path, jsonUsuari.toString(4).getBytes());
+        Files.write(path, jsonUsuari.toString(4).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
-     * Guarda l'índex amb la llista de tots els usernames.
+     * Actualitza el fitxer d'índex global amb els usuaris proporcionats.
+     * <p>
+     * Llegeix l'índex actual, afegeix o actualitza les entrades dels usuaris donats
+     * i torna a escriure l'índex complet.
+     * </p>
+     *
+     * @param usuarisActualitzats Mapa dels usuaris que s'han d'actualitzar a l'índex.
+     * @throws IOException Si hi ha errors de lectura o escriptura.
      */
-    private void guardarIndex(HashMap<String, Usuari> usuaris) throws IOException {
-        JSONArray jsonArray = new JSONArray();
-        for (Usuari usuari : usuaris.values()) {
-            JSONObject jsonEntry = new JSONObject();
-            jsonEntry.put("username", usuari.getUsername());
-            jsonArray.put(jsonEntry);
+    private void actualitzarIndex(HashMap<String, Usuari> usuarisActualitzats) throws IOException {
+        Path indexPath = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
+
+        HashMap<String, JSONObject> indexMap = new HashMap<>();
+
+        if (Files.exists(indexPath)) {
+            String content = new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
+            if (!content.isEmpty()) {
+                JSONArray currentArray = new JSONArray(content);
+                for (int i = 0; i < currentArray.length(); i++) {
+                    JSONObject entry = currentArray.getJSONObject(i);
+                    indexMap.put(entry.getString("username"), entry);
+                }
+            }
         }
 
-        Path path = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
-        Files.write(path, jsonArray.toString(4).getBytes());
+        for (Usuari usuari : usuarisActualitzats.values()) {
+            JSONObject entry = new JSONObject();
+            entry.put("username", usuari.getUsername());
+            indexMap.put(usuari.getUsername(), entry);
+        }
+
+        JSONArray finalArray = new JSONArray(indexMap.values());
+        Files.write(indexPath, finalArray.toString(4).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
-     * Elimina el fitxer d'un usuari.
+     * Elimina completament un usuari del sistema.
+     * <p>
+     * Esborra el fitxer JSON de l'usuari i la seva entrada a l'índex global.
+     * </p>
+     *
+     * @param username El nom d'usuari a eliminar.
+     * @throws IOException Si hi ha errors durant l'eliminació.
+     */
+    public void eliminarUsuariComplet(String username) throws IOException {
+        eliminarFitxerUsuari(username);
+        eliminarUsuariDeIndex(username);
+    }
+
+    /**
+     * Elimina el fitxer físic d'un usuari.
+     *
+     * @param username El nom de l'usuari.
+     * @return true si el fitxer s'ha eliminat correctament, false altrament.
      */
     public boolean eliminarFitxerUsuari(String username) {
         File fitxer = new File(DIRECTORI_USUARIS, username + ".json");
@@ -80,24 +176,24 @@ public class GestorUsuaris {
     }
 
     /**
-     * Elimina un usuari del fitxer d'índex.
-     * VERSIÓ OPTIMITZADA
+     * Elimina l'entrada d'un usuari del fitxer d'índex.
+     *
+     * @param username El nom de l'usuari a eliminar de l'índex.
+     * @throws IOException Si hi ha errors de lectura o escriptura.
      */
-    public void eliminarUsuariDeIndex(String username) throws IOException {
+    private void eliminarUsuariDeIndex(String username) throws IOException {
         Path indexPath = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
         File indexFile = indexPath.toFile();
-        
+
         if (!indexFile.exists()) return;
 
-        // Lectura més moderna i neta
-        String content = new String(Files.readAllBytes(indexPath));
-        
+        String content = new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
         if (content.isEmpty()) return;
 
         JSONArray jsonArray = new JSONArray(content);
         JSONArray newArray = new JSONArray();
         boolean found = false;
-        
+
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonEntry = jsonArray.getJSONObject(i);
             if (!jsonEntry.getString("username").equals(username)) {
@@ -108,10 +204,19 @@ public class GestorUsuaris {
         }
 
         if (found) {
-            Files.write(indexPath, newArray.toString(4).getBytes());
+            Files.write(indexPath, newArray.toString(4).getBytes(StandardCharsets.UTF_8));
         }
     }
 
+    /**
+     * Carrega tots els usuaris registrats al sistema.
+     * <p>
+     * Llegeix l'índex global i carrega individualment cada usuari llistat.
+     * </p>
+     *
+     * @return Un HashMap amb tots els usuaris carregats, indexats per nom d'usuari.
+     * @throws IOException Si hi ha errors de lectura.
+     */
     public HashMap<String, Usuari> carregarUsuaris() throws IOException {
         HashMap<String, Usuari> usuaris = new HashMap<>();
         Path indexPath = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
@@ -119,14 +224,14 @@ public class GestorUsuaris {
 
         if (!indexFile.exists()) return usuaris;
 
-        String content = new String(Files.readAllBytes(indexPath));
+        String content = new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
         if (content.isEmpty()) return usuaris;
 
         JSONArray jsonArray = new JSONArray(content);
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonEntry = jsonArray.getJSONObject(i);
             String username = jsonEntry.getString("username");
-            
+
             Usuari usuari = carregarUsuari(username);
             if (usuari != null) {
                 usuaris.put(username, usuari);
@@ -135,17 +240,24 @@ public class GestorUsuaris {
         return usuaris;
     }
 
+    /**
+     * Carrega les dades d'un usuari específic des del seu fitxer.
+     *
+     * @param username El nom de l'usuari a carregar.
+     * @return L'objecte Usuari carregat, o null si no existeix.
+     * @throws IOException Si hi ha errors de lectura.
+     */
     public Usuari carregarUsuari(String username) throws IOException {
         Path path = Paths.get(DIRECTORI_USUARIS, username + ".json");
         File fitxer = path.toFile();
-        
+
         if (!fitxer.exists()) return null;
 
-        String content = new String(Files.readAllBytes(path));
+        String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
         JSONObject jsonUsuari = new JSONObject(content);
-        
+
         String password = jsonUsuari.optString("password", "default");
-        
+
         return new Usuari(username, password);
     }
 }
