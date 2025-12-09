@@ -13,9 +13,9 @@ public class VistaPrincipal {
 
     private JMenuBar menubarVista = new JMenuBar();
     private JMenu menuFile = new JMenu("File");
-    private JMenuItem menuitemLogout = new JMenuItem("Logout");
+    private JMenuItem menuitemLogout = new JMenuItem("Tancar sessió");
     private JMenuItem menuitemDeleteAccount = new JMenuItem("Esborrar compte"); // Nuevo item
-    private JMenuItem menuitemQuit = new JMenuItem("Quit");
+    private JMenuItem menuitemQuit = new JMenuItem("Sortir");
 
     // Vistas secundarias
     private VistaLogin vistaLogin;
@@ -23,6 +23,7 @@ public class VistaPrincipal {
     private VistaMenuPrincipal vistaMenuPrincipal;
     private VistaGestionEnquestes vistaGestionEnquestes;
     private VistaGestionarRespostes vistaGestionarRespostes; // Nueva vista
+    private VistaAnalisi vistaAnalisi;
 
     public VistaPrincipal(CtrlPresentacio pCtrlPresentacio) {
         iCtrlPresentacio = pCtrlPresentacio;
@@ -31,7 +32,7 @@ public class VistaPrincipal {
 
     public void hacerVisible() {
         frameVista.pack();
-        frameVista.setSize(900, 600);
+        frameVista.setSize(900, 700);
         frameVista.setLocationRelativeTo(null);
         frameVista.setVisible(true);
     }
@@ -49,6 +50,7 @@ public class VistaPrincipal {
         vistaMenuPrincipal = new VistaMenuPrincipal(iCtrlPresentacio, this);
         vistaGestionEnquestes = new VistaGestionEnquestes(iCtrlPresentacio, this);
         vistaGestionarRespostes = new VistaGestionarRespostes(iCtrlPresentacio, this); // Nueva vista
+        vistaAnalisi = new VistaAnalisi(iCtrlPresentacio, this);
 
         // Añadir paneles al CardLayout
         panelContenidos.add(vistaLogin, "LOGIN");
@@ -56,6 +58,7 @@ public class VistaPrincipal {
         panelContenidos.add(vistaMenuPrincipal, "MENU");
         panelContenidos.add(vistaGestionEnquestes, "GESTION");
         panelContenidos.add(vistaGestionarRespostes, "GESTION_RESPOSTES"); // Añadir al layout
+        panelContenidos.add(vistaAnalisi, "ANALISI");
 
         frameVista.setContentPane(panelContenidos);
 
@@ -112,6 +115,8 @@ public class VistaPrincipal {
             vistaGestionEnquestes.actualizarLista();
         } else if ("GESTION_RESPOSTES".equals(nombreVista)) {
             vistaGestionarRespostes.actualizarLista();
+        } else if ("ANALISI".equals(nombreVista)) {
+            vistaAnalisi.actualizarLista();
         }
     }
 }

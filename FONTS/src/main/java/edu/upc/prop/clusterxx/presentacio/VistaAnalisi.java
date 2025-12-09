@@ -6,7 +6,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 
-public class VistaGestionarRespostes extends JPanel {
+public class VistaAnalisi extends JPanel {
     
     private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
     private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
@@ -17,9 +17,9 @@ public class VistaGestionarRespostes extends JPanel {
 
     private DefaultListModel<String> listModel = new DefaultListModel<>();
     private JList<String> listEnquestes = new JList<>(listModel);
-    private JButton btnModificar, btnEsborrar, btnTornar;
+    private JButton btnAnalitzar, btnVeurePerfil, btnTornar;
 
-    public VistaGestionarRespostes(CtrlPresentacio ctrlPresentacio, VistaPrincipal vistaPrincipal) {
+    public VistaAnalisi(CtrlPresentacio ctrlPresentacio, VistaPrincipal vistaPrincipal) {
         this.iCtrlPresentacio = ctrlPresentacio;
         this.vistaPrincipal = vistaPrincipal;
         inicializarComponentes();
@@ -31,7 +31,7 @@ public class VistaGestionarRespostes extends JPanel {
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // Título
-        JLabel lblTitol = new JLabel("📋 Les Meves Enquestes Contestades");
+        JLabel lblTitol = new JLabel("📊 Anàlisi de Clustering");
         lblTitol.setFont(new Font("Segoe UI Emoji", Font.BOLD, 20));
         lblTitol.setForeground(TEXT_COLOR);
         add(lblTitol, BorderLayout.NORTH);
@@ -41,37 +41,34 @@ public class VistaGestionarRespostes extends JPanel {
         listEnquestes.setFixedCellHeight(40);
         listEnquestes.setSelectionBackground(new Color(52, 152, 219, 80));
         JScrollPane scroll = new JScrollPane(listEnquestes);
-        scroll.setBorder(BorderFactory.createTitledBorder("Selecciona una enquesta"));
+        scroll.setBorder(BorderFactory.createTitledBorder("Les meves enquestes"));
         add(scroll, BorderLayout.CENTER);
 
         // Botones
         JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         panelBotons.setBackground(BACKGROUND_COLOR);
         
-        btnModificar = crearBoton("👁️ Veure/Modificar", PRIMARY_COLOR);
-        btnEsborrar = crearBoton("🗑️ Esborrar Totes", new Color(231, 76, 60));
+        btnAnalitzar = crearBoton("📈 Analitzar Enquesta", PRIMARY_COLOR);
+        btnVeurePerfil = crearBoton("👤 Veure el Meu Perfil", new Color(39, 174, 96));
         btnTornar = crearBoton("← Tornar", new Color(149, 165, 166));
         
-        panelBotons.add(btnModificar);
-        panelBotons.add(btnEsborrar);
+        panelBotons.add(btnAnalitzar);
+        panelBotons.add(btnVeurePerfil);
         panelBotons.add(btnTornar);
         add(panelBotons, BorderLayout.SOUTH);
 
         // Estado inicial
-        btnModificar.setEnabled(false);
-        btnEsborrar.setEnabled(false);
+        btnAnalitzar.setEnabled(false);
 
         // Listeners
         listEnquestes.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                boolean selected = !listEnquestes.isSelectionEmpty();
-                btnModificar.setEnabled(selected);
-                btnEsborrar.setEnabled(selected);
+                btnAnalitzar.setEnabled(!listEnquestes.isSelectionEmpty());
             }
         });
 
-        btnModificar.addActionListener(e -> obrirDialegModificar());
-        btnEsborrar.addActionListener(e -> esborrarRespostes());
+        btnAnalitzar.addActionListener(e -> analitzarEnquesta());
+        btnVeurePerfil.addActionListener(e -> veureMeuPerfil());
         btnTornar.addActionListener(e -> vistaPrincipal.mostrarVista("MENU"));
     }
 
@@ -88,42 +85,30 @@ public class VistaGestionarRespostes extends JPanel {
 
     public void actualizarLista() {
         listModel.clear();
-        ArrayList<Enquesta> contestades = iCtrlPresentacio.getEnquestesContestades();
-        if (contestades.isEmpty()) {
-            listModel.addElement("No has contestat cap enquesta encara.");
+        ArrayList<Enquesta> enquestes = iCtrlPresentacio.getEnquestesUsuari();
+        if (enquestes.isEmpty()) {
+            listModel.addElement("No tens enquestes creades.");
             listEnquestes.setEnabled(false);
         } else {
             listEnquestes.setEnabled(true);
-            for (Enquesta e : contestades) {
+            for (Enquesta e : enquestes) {
                 listModel.addElement(e.getId() + ": " + e.getTitol());
             }
         }
     }
 
-    private void obrirDialegModificar() {
+    private void analitzarEnquesta() {
         String selected = listEnquestes.getSelectedValue();
-        if (selected == null || selected.startsWith("No has contestat")) return;
+        if (selected == null || selected.startsWith("No tens")) return;
 
         String idEnquesta = selected.split(":")[0].trim();
         Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-        new DialogoGestionarRespostes(parentFrame, iCtrlPresentacio, idEnquesta).setVisible(true);
-        actualizarLista();
+        new DialogoAnalisi(parentFrame, iCtrlPresentacio, idEnquesta).setVisible(true);
     }
 
-    private void esborrarRespostes() {
-        String selected = listEnquestes.getSelectedValue();
-        if (selected == null || selected.startsWith("No has contestat")) return;
-
-        String idEnquesta = selected.split(":")[0].trim();
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Esborrar TOTES les respostes a l'enquesta " + idEnquesta + "?",
-                "Confirmar", JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            String resultat = iCtrlPresentacio.esborrarRespostesEnquesta(idEnquesta);
-            JOptionPane.showMessageDialog(this, resultat);
-            if (resultat.contains("correctament")) actualizarLista();
-        }
+    private void veureMeuPerfil() {
+        String perfil = iCtrlPresentacio.consultarMeuPerfil();
+        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
+        new DialogoPerfil(parentFrame, perfil).setVisible(true);
     }
 }

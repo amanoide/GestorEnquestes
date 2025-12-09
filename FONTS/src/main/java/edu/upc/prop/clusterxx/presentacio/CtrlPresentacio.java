@@ -87,7 +87,7 @@ public class CtrlPresentacio {
      */
     public ArrayList<edu.upc.prop.clusterxx.domini.classes.Enquesta> getEnquestesUsuari() {
         try {
-            return ctrlDomini.consultarEnquestes();
+            return new ArrayList<>(ctrlDomini.consultarEnquestesDelUsuari());
         } catch (Exception e) {
             System.out.println("Error al consultar enquestes: " + e.getMessage());
             return new ArrayList<>();
@@ -450,5 +450,139 @@ public class CtrlPresentacio {
             System.out.println("Error filtrant enquestes contestades: " + e.getMessage());
         }
         return contestades;
+    }
+
+    /**
+     * Analitza una enquesta amb l'algoritme de clustering especificat.
+     * 
+     * @param idEnquesta ID de l'enquesta
+     * @param modeK Mode de selecció de K: "manual", "aleatori" o "automatic"
+     * @param kManual Valor de K (només si modeK = "manual")
+     * @param algoritme Algoritme: "kmeans", "kmeans++" o "kmedoids"
+     * @return Text amb els resultats de l'anàlisi
+     */
+    public String analitzarEnquesta(String idEnquesta, String modeK, int kManual, String algoritme) {
+        try {
+            int k;
+            String detallsK = "";
+            
+            // Determinar el valor de K segons el mode
+            if (modeK.equals("manual")) {
+                k = kManual;
+                detallsK = "K seleccionat manualment: " + k;
+            } else if (modeK.equals("aleatori")) {
+                k = ctrlDomini.escollirKAleatori(idEnquesta);
+                detallsK = "K escollit aleatòriament: " + k;
+            } else { // automatic
+                edu.upc.prop.clusterxx.domini.controladors.CtrlAnalisi.OptimalKResult optResult = 
+                    ctrlDomini.trobarMillorK(idEnquesta, 2, 10, algoritme, 100);
+                k = optResult.bestK;
+                detallsK = "K òptim trobat (Silhouette): " + k + " (coeficient: " + 
+                          String.format("%.4f", optResult.bestSilhouette) + ")";
+            }
+
+            // Executar l'anàlisi
+            boolean usePlusPlus = algoritme.equals("kmeans++");
+            edu.upc.prop.clusterxx.domini.controladors.CtrlDomini.ResultatClustering resultat = 
+                ctrlDomini.analitzarEnquesta(idEnquesta, k, usePlusPlus, 100, algoritme);
+
+            // Formatar resultats
+            StringBuilder sb = new StringBuilder();
+            sb.append("=== RESULTATS DE L'ANÀLISI ===\n\n");
+            sb.append("Enquesta: ").append(idEnquesta).append("\n");
+            sb.append("Algoritme: ").append(algoritme.toUpperCase()).append("\n");
+            sb.append(detallsK).append("\n");
+            sb.append("Iteracions màximes: 100\n\n");
+            
+            sb.append("--- MÈTRIQUES GLOBALS ---\n");
+            sb.append("Coeficient de Silhouette global: ").append(String.format("%.4f", resultat.silhouetteGlobal)).append("\n\n");
+            
+            sb.append("--- CLUSTERS TROBATS ---\n");
+            for (int i = 0; i < resultat.clusters.size(); i++) {
+                edu.upc.prop.clusterxx.domini.classes.Kluster cluster = resultat.clusters.get(i);
+                sb.append("Cluster ").append(i).append(":\n");
+                sb.append("  Mida: ").append(cluster.size()).append(" usuaris\n");
+                sb.append("  Silhouette: ").append(String.format("%.4f", resultat.silhouettePerCluster[i])).append("\n");
+                
+                // Obtenir representant
+                String usernameRep = resultat.getUsernameRepresentant(i);
+                if (usernameRep != null) {
+                    sb.append("  Representant: ").append(usernameRep).append("\n");
+                    
+                    // Obtenir perfil del representant
+                    try {
+                        edu.upc.prop.clusterxx.domini.classes.Perfil perfil = ctrlDomini.getPerfil(usernameRep);
+                        if (perfil != null) {
+                            sb.append("  Descripció perfil: ").append(perfil.getDescripcion()).append("\n");
+                        }
+                    } catch (Exception ignored) {}
+                }
+                sb.append("\n");
+            }
+            
+            return sb.toString();
+            
+        } catch (Exception e) {
+            return "Error en l'anàlisi: " + e.getMessage();
+        }
+    }
+
+    /**
+     * Consulta el perfil de l'usuari actual.
+     * 
+     * @return Text amb la informació del perfil
+     */
+    public String consultarMeuPerfil() {
+        try {
+            if (currentUsername == null) {
+                return "No hi ha cap usuari autenticat.";
+            }
+            
+            // Obtenir l'usuari actual
+            edu.upc.prop.clusterxx.domini.classes.Usuari usuari = ctrlDomini.getUsuariActual();
+            if (usuari == null) {
+                return "No s'ha trobat l'usuari: " + currentUsername;
+            }
+            
+            // Obtenir tots els perfils de l'usuari
+            java.util.HashMap<String, edu.upc.prop.clusterxx.domini.classes.Perfil> perfils = usuari.getPerfils();
+            
+            if (perfils == null || perfils.isEmpty()) {
+                return "No tens cap perfil generat encara.\n\nPer generar un perfil:\n1. Respon una enquesta\n2. Espera que el creador de l'enquesta faci l'anàlisi de clustering\n3. Se t'assignarà automàticament un perfil basat en les teves respostes";
+            }
+            
+            StringBuilder sb = new StringBuilder();
+            sb.append("=== ELS MEUS PERFILS ===\n\n");
+            sb.append("Usuari: ").append(currentUsername).append("\n");
+            sb.append("Total de perfils: ").append(perfils.size()).append("\n\n");
+            
+            int count = 1;
+            for (java.util.Map.Entry<String, edu.upc.prop.clusterxx.domini.classes.Perfil> entry : perfils.entrySet()) {
+                edu.upc.prop.clusterxx.domini.classes.Perfil perfil = entry.getValue();
+                sb.append("--- PERFIL ").append(count++).append(" ---\n");
+                sb.append("Enquesta: ").append(perfil.getIdEnquesta()).append("\n");
+                sb.append("Cluster: ").append(perfil.getClusterNom()).append("\n");
+                sb.append("Descripció: ").append(perfil.getDescripcion()).append("\n");
+                
+                if (perfil.getClusterMida() != null) {
+                    sb.append("Membres del grup: ").append(perfil.getClusterMida()).append(" persones\n");
+                }
+                
+                if (perfil.getClusterSilhouette() != null) {
+                    sb.append("Qualitat: ").append(perfil.getQualitatText()).append("\n");
+                }
+                
+                if (perfil.getAlgoritme() != null) {
+                    sb.append("Algoritme utilitzat: ").append(perfil.getAlgoritme()).append("\n");
+                }
+                
+                sb.append("\n");
+            }
+            
+            return sb.toString();
+            
+        } catch (Exception e) {
+            return "Error consultant el perfil: " + e.getMessage();
+        }
     }
 }

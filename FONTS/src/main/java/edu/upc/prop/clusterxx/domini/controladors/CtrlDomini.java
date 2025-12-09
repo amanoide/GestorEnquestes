@@ -2566,11 +2566,13 @@ public class CtrlDomini {
                     Usuari usuari = ctrlPersistencia.getUsuari(username);
                     if (usuari != null) {
                         usuari.assignarPerfil(idEnquesta, perfilCluster);
-                        // Els usuaris ja es guarden en la persistència
                     }
                 }
             }
         }
+
+        // Guardar tots els canvis de perfils als usuaris
+        ctrlPersistencia.guardarDades();
 
         // 8. Retornar resultats
         return new ResultatClustering(clusters, silhouette, silhouettePerCluster,

@@ -1,10 +1,16 @@
 package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.util.ArrayList;
 
 public class DialogoGestionPreguntes extends JDialog {
+    
+    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
+    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
+    private static final Color TEXT_COLOR = new Color(44, 62, 80);
+    
     private CtrlPresentacio iCtrlPresentacio;
     private String idEnquesta;
 
@@ -20,32 +26,56 @@ public class DialogoGestionPreguntes extends JDialog {
     }
 
     private void inicializar() {
-        setLayout(new BorderLayout());
-        setSize(500, 400);
+        setLayout(new BorderLayout(10, 10));
+        setSize(550, 450);
         setLocationRelativeTo(getOwner());
+        getContentPane().setBackground(BACKGROUND_COLOR);
+        ((JPanel)getContentPane()).setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        // Llista
+        // Título
+        JLabel titulo = new JLabel("📋 Preguntes de l'enquesta: " + idEnquesta);
+        titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 16));
+        titulo.setForeground(TEXT_COLOR);
+        add(titulo, BorderLayout.NORTH);
+
+        // Lista
+        listPreguntes.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        listPreguntes.setFixedCellHeight(40);
+        listPreguntes.setSelectionBackground(new Color(52, 152, 219, 80));
         JScrollPane scroll = new JScrollPane(listPreguntes);
-        scroll.setBorder(BorderFactory.createTitledBorder("Preguntes de l'enquesta"));
+        scroll.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
         add(scroll, BorderLayout.CENTER);
 
-        // Botons
-        JPanel panelBotons = new JPanel();
-        JButton btnAfegir = new JButton("Afegir Pregunta");
-        JButton btnModificar = new JButton("Modificar Pregunta"); // Nuevo botón
-        JButton btnEliminar = new JButton("Eliminar Seleccionada");
-        JButton btnTancar = new JButton("Tancar");
+        // Botones
+        JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 8));
+        panelBotons.setBackground(BACKGROUND_COLOR);
+        
+        JButton btnAfegir = crearBoton("➕ Afegir", new Color(39, 174, 96));
+        JButton btnModificar = crearBoton("✏️ Modificar", PRIMARY_COLOR);
+        JButton btnEliminar = crearBoton("🗑️ Eliminar", new Color(231, 76, 60));
+        JButton btnTancar = crearBoton("✖ Tancar", new Color(149, 165, 166));
 
         btnAfegir.addActionListener(e -> afegirPregunta());
-        btnModificar.addActionListener(e -> modificarPregunta()); // Listener
+        btnModificar.addActionListener(e -> modificarPregunta());
         btnEliminar.addActionListener(e -> eliminarPregunta());
         btnTancar.addActionListener(e -> setVisible(false));
 
         panelBotons.add(btnAfegir);
-        panelBotons.add(btnModificar); // Añadir al panel
+        panelBotons.add(btnModificar);
         panelBotons.add(btnEliminar);
         panelBotons.add(btnTancar);
         add(panelBotons, BorderLayout.SOUTH);
+    }
+
+    private JButton crearBoton(String text, Color color) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI Emoji", Font.BOLD, 12));
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(color);
+        btn.setBorder(new EmptyBorder(8, 14, 8, 14));
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
     }
 
     private void cargarPreguntes() {
@@ -119,9 +149,10 @@ public class DialogoGestionPreguntes extends JDialog {
             return;
         }
 
-        String idPregunta = selected.split(":")[0]; // Assumint format "ID: Text..."
+        String idPregunta = selected.split(":")[0];
 
-        int confirm = JOptionPane.showConfirmDialog(this, "¿Segur que vols eliminar la pregunta " + idPregunta + "?");
+        int confirm = JOptionPane.showConfirmDialog(this, "Eliminar la pregunta " + idPregunta + "?",
+            "Confirmar", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             String resultado = iCtrlPresentacio.eliminarPregunta(idEnquesta, idPregunta);
             JOptionPane.showMessageDialog(this, resultado);
