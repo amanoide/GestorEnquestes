@@ -60,7 +60,9 @@ public class GestorUsuaris {
     /**
      * Guarda un conjunt d'usuaris al sistema de persistència.
      * <p>
-     * Actualitza tant els fitxers individuals de cada usuari com l'índex global.
+     * IMPORTANT: Aquest mètode SOBRESCRIU completament l'índex amb els usuaris proporcionats.
+     * Això és útil per operacions batch o quan es vol persistir l'estat complet del sistema.
+     * Per afegir usuaris incrementalment, utilitzar guardarUsuari().
      * </p>
      *
      * @param usuaris Mapa amb els usuaris a guardar, indexats per nom d'usuari.
@@ -70,14 +72,14 @@ public class GestorUsuaris {
         for (Usuari usuari : usuaris.values()) {
             guardarFitxerUsuari(usuari);
         }
-        actualitzarIndex(usuaris);
+        sobrescriureIndex(usuaris);
     }
 
     /**
      * Guarda o actualitza un únic usuari.
      * <p>
      * Aquesta operació és eficient ja que només escriu el fitxer de l'usuari específic
-     * i actualitza la seva entrada a l'índex, sense reescriure tots els fitxers d'usuaris.
+     * i actualitza la seva entrada a l'índex sense afectar altres usuaris (fa MERGE).
      * </p>
      *
      * @param usuari L'objecte Usuari a guardar.
@@ -88,7 +90,7 @@ public class GestorUsuaris {
 
         HashMap<String, Usuari> singleMap = new HashMap<>();
         singleMap.put(usuari.getUsername(), usuari);
-        actualitzarIndex(singleMap);
+        actualitzarIndexMerge(singleMap);
     }
 
     /**
@@ -115,20 +117,43 @@ public class GestorUsuaris {
     }
 
     /**
-     * Actualitza el fitxer d'índex global amb els usuaris proporcionats.
+     * Sobrescriu completament l'índex amb els usuaris proporcionats (mode REPLACE).
      * <p>
-     * Llegeix l'índex actual, afegeix o actualitza les entrades dels usuaris donats
-     * i torna a escriure l'índex complet.
+     * Aquest mètode elimina totes les entrades de l'índex que no estiguin en el mapa proporcionat.
+     * </p>
+     *
+     * @param usuarisActualitzats Mapa dels usuaris que seran l'únic contingut de l'índex.
+     * @throws IOException Si hi ha errors de lectura o escriptura.
+     */
+    private void sobrescriureIndex(HashMap<String, Usuari> usuarisActualitzats) throws IOException {
+        Path indexPath = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
+        JSONArray finalArray = new JSONArray();
+        
+        for (Usuari usuari : usuarisActualitzats.values()) {
+            JSONObject entry = new JSONObject();
+            entry.put("username", usuari.getUsername());
+            finalArray.put(entry);
+        }
+        
+        Files.write(indexPath, finalArray.toString(4).getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Actualitza el fitxer d'índex global amb els usuaris proporcionats (mode MERGE).
+     * <p>
+     * Aquest mètode fa un MERGE intel·ligent: llegeix l'índex actual, actualitza o afegeix
+     * les entrades dels usuaris proporcionats, i manté les entrades existents que no estan
+     * en el mapa d'actualització.
      * </p>
      *
      * @param usuarisActualitzats Mapa dels usuaris que s'han d'actualitzar a l'índex.
      * @throws IOException Si hi ha errors de lectura o escriptura.
      */
-    private void actualitzarIndex(HashMap<String, Usuari> usuarisActualitzats) throws IOException {
+    private void actualitzarIndexMerge(HashMap<String, Usuari> usuarisActualitzats) throws IOException {
         Path indexPath = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
-
         HashMap<String, JSONObject> indexMap = new HashMap<>();
 
+        // Llegir índex existent si existeix
         if (Files.exists(indexPath)) {
             String content = new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
             if (!content.isEmpty()) {
@@ -140,12 +165,14 @@ public class GestorUsuaris {
             }
         }
 
+        // Afegir o actualitzar usuaris
         for (Usuari usuari : usuarisActualitzats.values()) {
             JSONObject entry = new JSONObject();
             entry.put("username", usuari.getUsername());
             indexMap.put(usuari.getUsername(), entry);
         }
 
+        // Escriure índex complet
         JSONArray finalArray = new JSONArray(indexMap.values());
         Files.write(indexPath, finalArray.toString(4).getBytes(StandardCharsets.UTF_8));
     }
@@ -257,7 +284,18 @@ public class GestorUsuaris {
         JSONObject jsonUsuari = new JSONObject(content);
 
         String password = jsonUsuari.optString("password", "default");
+        Usuari usuari = new Usuari(username, password);
 
-        return new Usuari(username, password);
+        // Carregar enquestes participades si existeixen
+        if (jsonUsuari.has("enquestesParticipades")) {
+            JSONArray enquestesArray = jsonUsuari.getJSONArray("enquestesParticipades");
+            for (int i = 0; i < enquestesArray.length(); i++) {
+                String idEnquesta = enquestesArray.getString(i);
+                // Nota: Els perfils es carregaran després quan es vinculi amb les enquestes
+                usuari.getPerfils().put(idEnquesta, null);
+            }
+        }
+
+        return usuari;
     }
 }

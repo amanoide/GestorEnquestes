@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.stream.Stream;
@@ -202,6 +203,18 @@ public class GestorEnquestes {
     }
 
     /**
+     * Adaptador no-throw que elimina una enquesta completa. Alguns callers (p.ex. CtrlPersistencia)
+     * esperen un mètode que no llenci excepcions; aquest envolta la versió que pot llençar IOException.
+     */
+    public void eliminarFitxerEnquesta(String idEnquesta) {
+        try {
+            eliminarEnquestaCompleta(idEnquesta);
+        } catch (IOException e) {
+            System.err.println("Error eliminant enquesta " + idEnquesta + ": " + e.getMessage());
+        }
+    }
+
+    /**
      * Elimina una enquesta específica del fitxer d'índex global.
      * <p>
      * Llegeix l'índex, filtra l'entrada corresponent a l'ID proporcionat i reescriu el fitxer
@@ -240,8 +253,7 @@ public class GestorEnquestes {
      * Carrega totes les enquestes disponibles al sistema.
      * <p>
      * Explora el directori d'enquestes i carrega les dades bàsiques de cada enquesta trobada.
-     * Aquest mètode només carrega l'estructura principal (Enquesta); les preguntes i respostes
-     * s'han de carregar posteriorment o sota demanda utilitzant els seus gestors específics.
+     * També carrega les preguntes associades a cada enquesta.
      * </p>
      * 
      * @param usuaris Mapa d'usuaris existents per vincular l'enquesta amb el seu creador.
@@ -257,11 +269,22 @@ public class GestorEnquestes {
         File[] subdirs = dir.listFiles(File::isDirectory);
         if (subdirs == null) return enquestes;
 
+        GestorPreguntes gestorPreguntes = new GestorPreguntes();
+        
         for (File subdir : subdirs) {
             try {
                 String idEnquesta = subdir.getName();
                 Enquesta enquesta = carregarDadesBasiquesEnquesta(idEnquesta, usuaris);
                 if (enquesta != null) {
+                    // Carregar preguntes associades
+                    try {
+                        ArrayList<Pregunta> preguntes = gestorPreguntes.carregarPreguntes(idEnquesta);
+                        for (Pregunta p : preguntes) {
+                            enquesta.afegirPregunta(p);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Error carregant preguntes per enquesta " + idEnquesta + ": " + e.getMessage());
+                    }
                     enquestes.put(enquesta.getId(), enquesta);
                 }
             } catch (Exception e) {
@@ -329,5 +352,27 @@ public class GestorEnquestes {
         
         String content = new String(Files.readAllBytes(indexPath), StandardCharsets.UTF_8);
         return content.isEmpty() ? new JSONArray() : new JSONArray(content);
+    }
+
+    /**
+     * Guarda una única enquesta (adaptador). Els tests i altres callers poden cridar
+     * aquest mètode senzill sense gestionar IOException.
+     * També guarda les preguntes i respostes associades si existeixen.
+     */
+    public void guardarEnquesta(Enquesta enquesta) {
+        try {
+            guardarFitxerEnquesta(enquesta);
+            HashMap<String, Enquesta> map = new HashMap<>();
+            map.put(enquesta.getId(), enquesta);
+            actualitzarIndex(map);
+            
+            // Guardar preguntes si n'hi ha
+            if (enquesta.getPreguntes() != null && !enquesta.getPreguntes().isEmpty()) {
+                GestorPreguntes gestorPreguntes = new GestorPreguntes();
+                gestorPreguntes.guardarPreguntes(enquesta.getId(), enquesta.getPreguntes());
+            }
+        } catch (IOException e) {
+            System.err.println("Error guardant enquesta " + enquesta.getId() + ": " + e.getMessage());
+        }
     }
 }

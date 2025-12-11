@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Gestor encarregat de la persistència de les preguntes en fitxers JSON.
@@ -140,6 +141,31 @@ public class GestorPreguntes {
         }
 
         return preguntes;
+    }
+
+    /**
+     * Carrega totes les preguntes de totes les enquestes passades i les retorna en un mapa
+     * on la clau és l'ID de la pregunta.
+     * <p>
+     * Aquest mètode actua com a adaptador per a les crides que volen un mapa global de preguntes
+     * a partir d'un mapa d'enquestes carregades.
+     * </p>
+     */
+    public HashMap<String, Pregunta> carregarPreguntes(HashMap<String, Enquesta> enquestes) throws IOException {
+        HashMap<String, Pregunta> all = new HashMap<>();
+        if (enquestes == null) return all;
+
+        for (String idEnquesta : enquestes.keySet()) {
+            try {
+                ArrayList<Pregunta> l = carregarPreguntes(idEnquesta);
+                for (Pregunta p : l) {
+                    if (p != null) all.put(p.getId(), p);
+                }
+            } catch (Exception e) {
+                System.err.println("Error carregant preguntes per enquesta " + idEnquesta + ": " + e.getMessage());
+            }
+        }
+        return all;
     }
 
     /**

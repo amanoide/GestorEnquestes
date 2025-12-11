@@ -259,6 +259,34 @@ public class GestorRespostes {
     }
 
     /**
+     * Carrega totes les respostes de totes les enquestes passades i retorna un mapa global
+     * on la clau és l'ID de la resposta i el valor és l'objecte Resposta.
+     * <p>
+     * Aquest mètode actua com a adaptador per a crides que volen un mapa pla de respostes
+     * a partir d'un mapa d'enquestes.
+     * </p>
+     */
+    public HashMap<String, Resposta> carregarRespostes(HashMap<String, Enquesta> enquestes) throws IOException {
+        HashMap<String, Resposta> all = new HashMap<>();
+        if (enquestes == null) return all;
+
+        for (String idEnquesta : enquestes.keySet()) {
+            try {
+                HashMap<String, HashMap<String, Resposta>> perUsuari = carregarTotsRespostes(idEnquesta, null);
+                for (HashMap<String, Resposta> userMap : perUsuari.values()) {
+                    for (Resposta r : userMap.values()) {
+                        if (r != null) all.put(r.getId(), r);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error carregant respostes per enquesta " + idEnquesta + ": " + e.getMessage());
+            }
+        }
+
+        return all;
+    }
+
+    /**
      * Obté l'objecte File que representa el directori de respostes d'una enquesta.
      *
      * @param idEnquesta L'identificador de l'enquesta.

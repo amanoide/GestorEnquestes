@@ -151,13 +151,13 @@ public class TestPersistencia {
         Enquesta enquesta = new Enquesta("enq_eliminar", "Per eliminar", "Test", creador);
         gestor.guardarEnquesta(enquesta);
         
-        File fitxer = new File(ENQUESTES_DIR + "/enq_eliminar.json");
-        assertTrue("El fitxer hauria d'existir abans d'eliminar", fitxer.exists());
+        File dirEnquesta = new File(ENQUESTES_DIR + "/enq_eliminar");
+        assertTrue("El directori hauria d'existir abans d'eliminar", dirEnquesta.exists());
         
         // Eliminar
         gestor.eliminarFitxerEnquesta("enq_eliminar");
         
-        assertFalse("El fitxer NO hauria d'existir després d'eliminar", fitxer.exists());
+        assertFalse("El directori NO hauria d'existir després d'eliminar", dirEnquesta.exists());
     }
 
     // ===========================================

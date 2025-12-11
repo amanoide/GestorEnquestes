@@ -69,14 +69,10 @@ public class CtrlPersistencia {
             // Carregar perfils
             perfils = gestorPerfils.carregarPerfils();
 
-            // Carregar enquestes i vincular amb usuaris
+            // Carregar enquestes (ja carrega preguntes internament)
             enquestes = gestorEnquestes.carregarEnquestes(usuaris);
 
-            // Carregar preguntes i respostes
-            preguntes = gestorPreguntes.carregarPreguntes(enquestes);
-            respostes = gestorRespostes.carregarRespostes(enquestes);
-
-            // Inicialitzar cache de preguntes i respostes
+            // Inicialitzar cache de preguntes i respostes a partir de les enquestes carregades
             inicialitzarCache();
         } catch (IOException e) {
             System.err.println("Error carregant dades: " + e.getMessage());
@@ -103,13 +99,54 @@ public class CtrlPersistencia {
     /**
      * Guarda totes les dades a disc.
      */
-    public void guardarDades() {
+    private void guardarDades() {
         try {
             gestorUsuaris.guardarUsuaris(usuaris);
             gestorPerfils.guardarPerfils(perfils);
             gestorEnquestes.guardarEnquestes(enquestes);
         } catch (IOException e) {
             System.err.println("Error guardant dades: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Força el guardado de totes les dades (mètode públic per ús extern).
+     * Utilitzar només quan sigui necessari guardar tot el sistema.
+     */
+    public void flush() {
+        guardarDades();
+    }
+
+    /**
+     * Guarda només les enquestes a disc (més eficient que guardarDades()).
+     */
+    private void guardarEnquestes() {
+        try {
+            gestorEnquestes.guardarEnquestes(enquestes);
+        } catch (IOException e) {
+            System.err.println("Error guardant enquestes: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Guarda només els usuaris a disc (més eficient que guardarDades()).
+     */
+    private void guardarUsuaris() {
+        try {
+            gestorUsuaris.guardarUsuaris(usuaris);
+        } catch (IOException e) {
+            System.err.println("Error guardant usuaris: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Guarda només els perfils a disc (més eficient que guardarDades()).
+     */
+    private void guardarPerfils() {
+        try {
+            gestorPerfils.guardarPerfils(perfils);
+        } catch (IOException e) {
+            System.err.println("Error guardant perfils: " + e.getMessage());
         }
     }
 
@@ -128,7 +165,7 @@ public class CtrlPersistencia {
         for (Pregunta p : enquesta.getPreguntes()) {
             preguntes.put(p.getId(), p);
         }
-        guardarDades();
+        guardarEnquestes();
     }
 
     /**
@@ -145,7 +182,7 @@ public class CtrlPersistencia {
                 respostes.put(r.getId(), r);
             }
         }
-        guardarDades();
+        guardarEnquestes();
     }
 
     /**
@@ -157,10 +194,15 @@ public class CtrlPersistencia {
     public boolean eliminarEnquesta(String id) {
         Enquesta removed = enquestes.remove(id);
         if (removed != null) {
-            // Reconstruir cache per netejar preguntes i respostes de l'enquesta eliminada
-            inicialitzarCache();
+            // Eliminar preguntes i respostes específiques de l'enquesta eliminada
+            for (Pregunta p : removed.getPreguntes()) {
+                preguntes.remove(p.getId());
+                for (String idResposta : p.getRespostes().keySet()) {
+                    respostes.remove(idResposta);
+                }
+            }
             gestorEnquestes.eliminarFitxerEnquesta(id);
-            guardarDades();
+            guardarEnquestes();
             return true;
         }
         return false;
@@ -215,25 +257,7 @@ public class CtrlPersistencia {
         if (usuari != null) {
             usuari.afegirResposta(resposta.getId(), resposta);
         }
-        guardarDades();
-    }
-
-    /**
-     * Afegeix una resposta al sistema (signatura alternativa).
-     * 
-     * @param idResposta L'ID de la resposta
-     * @param resposta   La resposta a afegir
-     * @param pregunta   La pregunta a la qual pertany
-     */
-    public void afegirResposta(String idResposta, Resposta resposta, Pregunta pregunta) {
-        respostes.put(idResposta, resposta);
-        pregunta.afegirResposta(resposta.getUsernameUsuari(), resposta);
-
-        Usuari usuari = getUsuari(resposta.getUsernameUsuari());
-        if (usuari != null) {
-            usuari.afegirResposta(idResposta, resposta);
-        }
-        guardarDades();
+        guardarEnquestes();
     }
 
     /**
@@ -253,7 +277,7 @@ public class CtrlPersistencia {
             if (p != null) {
                 p.eliminarResposta(resposta.getUsernameUsuari());
             }
-            guardarDades();
+            guardarEnquestes();
         }
         return resposta;
     }
@@ -281,7 +305,7 @@ public class CtrlPersistencia {
      */
     public void saveUsuaris(HashMap<String, Usuari> usuaris) {
         this.usuaris = new HashMap<>(usuaris);
-        guardarDades();
+        guardarUsuaris();
     }
 
     /**
@@ -291,18 +315,7 @@ public class CtrlPersistencia {
      */
     public void afegirUsuari(Usuari usuari) {
         usuaris.put(usuari.getUsername(), usuari);
-        guardarDades();
-    }
-
-    /**
-     * Afegeix un nou usuari (signatura alternativa).
-     * 
-     * @param username El nom d'usuari
-     * @param usuari   L'usuari a afegir
-     */
-    public void afegirUsuari(String username, Usuari usuari) {
-        usuaris.put(username, usuari);
-        guardarDades();
+        guardarUsuaris();
     }
 
     /**
@@ -312,7 +325,7 @@ public class CtrlPersistencia {
         Usuari u = usuaris.remove(username);
         if (u != null) {
             gestorUsuaris.eliminarFitxerUsuari(username);
-            guardarDades();
+            guardarUsuaris();
         }
         return u;
     }
@@ -354,7 +367,7 @@ public class CtrlPersistencia {
      */
     public void savePerfils(HashMap<String, Perfil> perfils) {
         this.perfils = new HashMap<>(perfils);
-        guardarDades();
+        guardarPerfils();
     }
 
     /**
@@ -364,18 +377,7 @@ public class CtrlPersistencia {
      */
     public void afegirPerfil(Perfil perfil) {
         perfils.put(String.valueOf(perfil.getId()), perfil);
-        guardarDades();
-    }
-
-    /**
-     * Afegeix un nou perfil (signatura alternativa).
-     * 
-     * @param id     L'ID del perfil
-     * @param perfil El perfil a afegir
-     */
-    public void afegirPerfil(String id, Perfil perfil) {
-        perfils.put(id, perfil);
-        guardarDades();
+        guardarPerfils();
     }
 
     /**
@@ -385,7 +387,7 @@ public class CtrlPersistencia {
         Perfil p = perfils.remove(id);
         if (p != null) {
             gestorPerfils.eliminarFitxerPerfil(id);
-            guardarDades();
+            guardarPerfils();
         }
         return p;
     }
@@ -414,7 +416,7 @@ public class CtrlPersistencia {
      */
     public void afegirPregunta(String id, Pregunta pregunta) {
         preguntes.put(id, pregunta);
-        guardarDades();
+        guardarEnquestes();
     }
 
     /**
@@ -423,7 +425,7 @@ public class CtrlPersistencia {
     public Pregunta eliminarPregunta(String id) {
         Pregunta p = preguntes.remove(id);
         if (p != null)
-            guardarDades();
+            guardarEnquestes();
         return p;
     }
 
