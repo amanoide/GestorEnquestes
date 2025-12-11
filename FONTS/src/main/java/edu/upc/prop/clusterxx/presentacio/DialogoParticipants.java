@@ -5,6 +5,20 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Diàleg modal encarregat de presentar la llista d'usuaris que han participat
+ * en una enquesta.
+ * 
+ * Aquesta classe mostra una finestra emergent amb un llistat numerat de noms
+ * d'usuari
+ * i un resum del total de participants. És útil per monitoritzar la
+ * participació i
+ * verificar qui ha respost a una enquesta específica.
+ * 
+ * Gestiona dos estats principals:
+ * Informar que no hi ha cap participant si la llista està buida.
+ * Mostrar la llista detallada amb scroll si hi ha respostes.
+ */
 public class DialogoParticipants extends JDialog {
 
     private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
@@ -17,11 +31,35 @@ public class DialogoParticipants extends JDialog {
     private JLabel lblTotal = new JLabel();
     private JButton btnTancar = new JButton("Tancar");
 
+    /**
+     * Constructor de la classe DialogoParticipants.
+     * 
+     * Inicialitza el diàleg, configura les seves propietats com a finestra modal
+     * i construeix la interfície gràfica amb les dades proporcionades.
+     *
+     * @param parent        Finestra (Frame) propietària del diàleg, bloquejada
+     *                      mentre aquest està obert.
+     * @param enquestaTitol El títol de l'enquesta, utilitzat per donar context a la
+     *                      llista.
+     * @param participants  Col·lecció (ArrayList) amb els noms dels usuaris que han
+     *                      participat.
+     */
     public DialogoParticipants(Frame parent, String enquestaTitol, ArrayList<String> participants) {
         super(parent, "Participants de l'enquesta", true);
         inicializarComponentes(enquestaTitol, participants);
     }
 
+    /**
+     * Construeix i organitza tots els components visuals del diàleg.
+     * 
+     * Defineix un disseny de tres parts:
+     * Capçalera: Mostra el títol "Participants" i el nom de l'enquesta.
+     * Cos central: Mostra la llista d'usuaris o un missatge si està buida.
+     * Peu: Conté el botó per tancar la finestra i el comptador total.
+     * 
+     * @param enquestaTitol Títol de l'enquesta a mostrar a la capçalera.
+     * @param participants  Llista de noms d'usuari per omplir el component JList.
+     */
     private void inicializarComponentes(String enquestaTitol, ArrayList<String> participants) {
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(BACKGROUND_COLOR);

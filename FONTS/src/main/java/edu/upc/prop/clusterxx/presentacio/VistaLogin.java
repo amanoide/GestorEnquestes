@@ -5,8 +5,30 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+/**
+ * Vista d'autenticació i punt d'entrada principal per als usuaris de
+ * l'aplicació.
+ * 
+ * Aquesta classe gestiona el procés d'inici de sessió (login). És la primera
+ * pantalla
+ * que veu l'usuari (si no està ja autenticat).
+ * 
+ * Funcionalitats clau:
+ * 
+ * Recollida segura de credencials (nom d'usuari i contrasenya oculta).
+ * Validació bàsica de camps buits.
+ * Interacció amb el {@link CtrlPresentacio} per verificar la
+ * identitat.
+ * Redirecció al menú principal en cas d'èxit o al registre si es
+ * sol·licita.
+ */
 public class VistaLogin extends JPanel {
+    /** Controlador de presentació per gestionar l'autenticació. */
     private CtrlPresentacio iCtrlPresentacio;
+    /**
+     * Referència a la vista principal per navegar a altres pantalles (Menú,
+     * Registre).
+     */
     private VistaPrincipal vistaPrincipal;
 
     // Colores del tema
@@ -24,12 +46,32 @@ public class VistaLogin extends JPanel {
     private JButton btnGoToRegister = new JButton("Crear compte nou");
     private JLabel labelStatusLogin = new JLabel(" ");
 
+    /**
+     * Constructor de la classe VistaLogin.
+     * 
+     * Inicialitza la vista de login, enllaça amb el controlador i la vista mare,
+     * i construeix la interfície d'usuari.
+     *
+     * @param ctrlPresentacio Controlador de presentació per a validar les
+     *                        credencials.
+     * @param vistaPrincipal  Referència a la finestra principal per permetre la
+     *                        navegació.
+     */
     public VistaLogin(CtrlPresentacio ctrlPresentacio, VistaPrincipal vistaPrincipal) {
         this.iCtrlPresentacio = ctrlPresentacio;
         this.vistaPrincipal = vistaPrincipal;
         inicializarComponentes();
     }
 
+    /**
+     * Configura i disposa els elements gràfics de la pantalla de login.
+     * 
+     * Crea un disseny centrat, net i modern utilitzant GridBagLayout i panells amb
+     * vores compostes.
+     * Afegeix icones, títols descripitius i els camps d'entrada necessaris.
+     * També configura els listeners per als botons i l'acció d'enviar amb la tecla
+     * Intro.
+     */
     private void inicializarComponentes() {
         this.setBackground(BACKGROUND_COLOR);
         this.setLayout(new GridBagLayout());
@@ -102,6 +144,12 @@ public class VistaLogin extends JPanel {
         this.add(cardPanel);
     }
 
+    /**
+     * Helper per crear etiquetes estilitzades.
+     *
+     * @param text Text de l'etiqueta.
+     * @return JLabel configurat.
+     */
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -110,6 +158,11 @@ public class VistaLogin extends JPanel {
         return label;
     }
 
+    /**
+     * Aplica estils comuns als camps de text de login.
+     *
+     * @param field Camp de text a personalitzar.
+     */
     private void styleTextField(JTextField field) {
         field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         field.setMaximumSize(new Dimension(280, 40));
@@ -119,6 +172,13 @@ public class VistaLogin extends JPanel {
                 new EmptyBorder(8, 12, 8, 12)));
     }
 
+    /**
+     * Estilitza els botons de la pantalla de login.
+     *
+     * @param button    Referència al botó.
+     * @param isPrimary Defineix si és el botó principal (Login) o secundari (Crear
+     *                  compte).
+     */
     private void styleButton(JButton button, boolean isPrimary) {
         button.setFont(new Font("Segoe UI", isPrimary ? Font.BOLD : Font.PLAIN, 14));
         button.setMaximumSize(new Dimension(280, 45));
@@ -160,6 +220,19 @@ public class VistaLogin extends JPanel {
         }
     }
 
+    /**
+     * Gestiona la lògica d'inici de sessió en confirmar el formulari.
+     * 
+     * Passos:
+     * 
+     * Verifica que no hi hagi camps buits.
+     * Crida a {@link CtrlPresentacio#login(String, String)} amb les dades.
+     * Si el login és correcte, neteja errors i navega al menú principal
+     * ("MENU").
+     * Si és incorrecte, mostra un missatge d'error a l'usuari.
+     *
+     * @param event Esdeveniment generat pel botó o teclat.
+     */
     public void actionPerformed_btnLogin(ActionEvent event) {
         String user = textUser.getText().trim();
         String pass = new String(textPass.getPassword());

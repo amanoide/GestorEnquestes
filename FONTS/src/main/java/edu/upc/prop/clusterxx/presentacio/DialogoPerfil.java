@@ -4,6 +4,21 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
+/**
+ * Diàleg modal dissenyat per presentar informació detallada del perfil de
+ * l'usuari.
+ * 
+ * Aquesta classe s'utilitza principalment per mostrar els resultats de
+ * l'anàlisi de clustering,
+ * permetent a l'usuari veure a quin grup o perfil ha estat assignat basant-se
+ * en les seves
+ * respostes.
+ * 
+ * Característiques:
+ * Presentació clara amb una icona i títol destacats.
+ * Àrea de text de només lectura per mostrar descripcions extenses del perfil.
+ * Botó de tancament intuïtiu.
+ */
 public class DialogoPerfil extends JDialog {
 
     private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
@@ -15,11 +30,34 @@ public class DialogoPerfil extends JDialog {
     private JTextArea textAreaPerfil;
     private JButton btnTancar;
 
+    /**
+     * Constructor de la classe DialogoPerfil.
+     * 
+     * Crea una nova instància del diàleg, bloquejant la interacció amb la finestra
+     * pare
+     * fins que es tanqui.
+     *
+     * @param parent     Finestra (Frame) que actua com a propietària del diàleg.
+     * @param infoPerfil Cadena de text que conté la informació completa del perfil
+     *                   a visualitzar.
+     */
     public DialogoPerfil(Frame parent, String infoPerfil) {
         super(parent, "El Meu Perfil", true);
         inicializarComponentes(infoPerfil);
     }
 
+    /**
+     * Configura la interfície gràfica de l'usuari per al diàleg.
+     * 
+     * Estructura del diàleg:
+     * Capçalera: Icona d'usuari i titol "El Meu Perfil".
+     * Cos: Àrea de text amb scroll (JScrollPane) per acomodar textos llargs sobre
+     * el perfil.
+     * Peu: Botó "Tancar" amb efecte de color en passar el ratolí.
+     * 
+     * @param infoPerfil El text descriptiu del perfil que s'inserirà a l'àrea de
+     *                   text.
+     */
     private void inicializarComponentes(String infoPerfil) {
         setLayout(new BorderLayout(15, 15));
         getContentPane().setBackground(BACKGROUND_COLOR);

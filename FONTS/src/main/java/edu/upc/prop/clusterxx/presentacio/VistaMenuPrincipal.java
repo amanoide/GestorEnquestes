@@ -4,8 +4,25 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
+/**
+ * Vista central de navegació i funcionalitats principals de l'aplicació.
+ * 
+ * Aquesta classe actua com a "hub" o centre de comandament un cop l'usuari ha
+ * iniciat sessió.
+ * Proporciona un accés clar i categoritzat a totes les funcions del sistema,
+ * com ara:
+ * Crear noves enquestes (manualment o per importació).
+ * Gestionar les enquestes pròpies.
+ * Respondre enquestes d'altres usuaris.
+ * Realitzar anàlisis de dades (clustering).
+ * 
+ * Utilitza un disseny de botons grans i categoritzats per colors per facilitar
+ * la usabilitat.
+ */
 public class VistaMenuPrincipal extends JPanel {
+    /** Controlador de presentació per gestionar les accions del menú. */
     private CtrlPresentacio iCtrlPresentacio;
+    /** Referència a la vista principal per canviar entre pantalles. */
     private VistaPrincipal vistaPrincipal;
 
     // Colores del tema
@@ -26,12 +43,32 @@ public class VistaMenuPrincipal extends JPanel {
     private JButton btnGestionarRespostes = new JButton("Gestionar Les Meves Respostes");
     private JButton btnLogout = new JButton("Tancar sessió");
 
+    /**
+     * Constructor de la classe VistaMenuPrincipal.
+     * 
+     * Inicialitza els components visuals i estableix les dependències necessàries.
+     *
+     * @param ctrlPresentacio Controlador de presentació per delegar la lògica de
+     *                        negoci.
+     * @param vistaPrincipal  Marc principal de l'aplicació per a la navegació entre
+     *                        vistes.
+     */
     public VistaMenuPrincipal(CtrlPresentacio ctrlPresentacio, VistaPrincipal vistaPrincipal) {
         this.iCtrlPresentacio = ctrlPresentacio;
         this.vistaPrincipal = vistaPrincipal;
         inicializarComponentes();
     }
 
+    /**
+     * Construeix la interfície gràfica del menú principal.
+     * 
+     * Organitza les funcionalitats en seccions lògiques ("Crear", "Gestionar",
+     * "Respondre")
+     * utilitzant un disseny vertical net i espaiat. Aplica estils visuals
+     * diferenciats
+     * per grups de funcionalitats (blau per creació, verd per gestió, taronja per
+     * accions d'usuari).
+     */
     private void inicializarComponentes() {
         this.setBackground(BACKGROUND_COLOR);
         this.setLayout(new GridBagLayout());
@@ -123,6 +160,12 @@ public class VistaMenuPrincipal extends JPanel {
         this.add(cardPanel);
     }
 
+    /**
+     * Mètode d'utilitat per crear capçaleres de secció estilitzades.
+     *
+     * @param text El títol de la secció (ex: "CREAR", "GESTIONAR").
+     * @return Una {@link JLabel} configurada amb l'estil de títol de secció petit.
+     */
     private JLabel createSectionLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Segoe UI", Font.BOLD, 11));
@@ -131,6 +174,14 @@ public class VistaMenuPrincipal extends JPanel {
         return label;
     }
 
+    /**
+     * Aplica l'estil visual personalitzat a un botó, incloent el color de fons i
+     * efectes de ratolí.
+     *
+     * @param button El botó a configurar.
+     * @param color  El color base del botó, que s'aclareix automàticament per a
+     *               l'efecte "hover".
+     */
     private void styleButton(JButton button, Color color) {
         button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         button.setForeground(Color.WHITE);
@@ -156,6 +207,15 @@ public class VistaMenuPrincipal extends JPanel {
         });
     }
 
+    /**
+     * Obre un diàleg modal per a la creació d'una nova enquesta.
+     * 
+     * Espera a que l'usuari ompli les dades i confirmi. Si l'usuari confirma (botó
+     * "Crear"),
+     * recull les dades introduïdes i delega al controlador la creació real de
+     * l'enquesta.
+     * Finalment, mostra un missatge informatiu amb el resultat de l'operació.
+     */
     private void mostrarDialogoCrear() {
         Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
         DialogoEnquesta dialogo = new DialogoEnquesta(parentFrame, "Nova enquesta", true);
@@ -167,6 +227,13 @@ public class VistaMenuPrincipal extends JPanel {
         }
     }
 
+    /**
+     * Obre un selector de fitxers natiu (JFileChooser) per importar una enquesta.
+     * 
+     * Si l'usuari selecciona un fitxer vàlid, obté la seva ruta absoluta i crida al
+     * controlador
+     * per processar la importació. Mostra el resultat de l'operació a l'usuari.
+     */
     private void importarEnquesta() {
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(this);
@@ -177,6 +244,16 @@ public class VistaMenuPrincipal extends JPanel {
         }
     }
 
+    /**
+     * Inicia el flux de resposta a una enquesta.
+     * 
+     * El procés consta de dos passos:
+     * 
+     * Mostra un diàleg ({@link DialogoSeleccionarEnquesta}) perquè l'usuari
+     * triï quina enquesta vol respondre.
+     * Si es selecciona una enquesta, obre un segon diàleg
+     * ({@link DialogoResponderEnquesta}) per a la resposta efectiva.
+     */
     private void mostrarDialogoResponder() {
         Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
         DialogoSeleccionarEnquesta dialogoSel = new DialogoSeleccionarEnquesta(parentFrame, iCtrlPresentacio);
@@ -190,6 +267,11 @@ public class VistaMenuPrincipal extends JPanel {
         }
     }
 
+    /**
+     * Navega cap a la vista de gestió de les respostes realitzades per l'usuari.
+     * Permet a l'usuari veure i administrar les enquestes que ha respost
+     * anteriorment.
+     */
     private void mostrarDialogoGestionarRespostes() {
         vistaPrincipal.mostrarVista("GESTION_RESPOSTES");
     }

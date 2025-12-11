@@ -10,6 +10,20 @@ import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 
+/**
+ * Diàleg interactiu per permetre a l'usuari respondre a una enquesta.
+ * 
+ * Aquesta classe és clau en la interacció de l'usuari, ja que genera
+ * dinàmicament
+ * els camps del formulari basant-se en les definicions de les preguntes de
+ * l'enquesta.
+ * 
+ * Funcionalitats:
+ * Generació dinàmica d'inputs (Spinners per numèriques, TextFields per text,
+ * ComboBoxes i CheckBoxes per opcions).
+ * Validació de respostes obligatòries abans de l'enviament.
+ * Recollida i empaquetament de respostes per enviar-les al controlador.
+ */
 public class DialogoResponderEnquesta extends JDialog {
 
     private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
@@ -24,6 +38,18 @@ public class DialogoResponderEnquesta extends JDialog {
     // Map per guardar els components d'entrada per recuperar els valors després
     private Map<String, JComponent> inputComponents = new HashMap<>();
 
+    /**
+     * Constructor del diàleg de resposta d'enquestes.
+     * 
+     * Inicialitza el diàleg, carrega les preguntes de l'enquesta especificada
+     * mitjançant
+     * el controlador i construeix la interfície dinàmica.
+     *
+     * @param owner           Finestra propietària del diàleg.
+     * @param ctrlPresentacio Instància del controlador per recuperar preguntes i
+     *                        guardar respostes.
+     * @param idEnquesta      Identificador únic de l'enquesta que es vol respondre.
+     */
     public DialogoResponderEnquesta(Frame owner, CtrlPresentacio ctrlPresentacio, String idEnquesta) {
         super(owner, "Respondre Enquesta - " + idEnquesta, true);
         this.iCtrlPresentacio = ctrlPresentacio;
@@ -32,6 +58,18 @@ public class DialogoResponderEnquesta extends JDialog {
         inicializar();
     }
 
+    /**
+     * Mètode principal de construcció de la interfície.
+     * 
+     * Itera sobre la llista de preguntes carregades i, per a cadascuna:
+     * Crea un panell contenidor.
+     * Afegeix el text de la pregunta i les instruccions.
+     * Genera el component d'entrada adequat (Input field) mitjançant
+     * {@link #crearComponentInput(Pregunta)}.
+     * Afegeix el component a un mapa per referència posterior.
+     * 
+     * També afegeix els botons d'acció "Enviar" i "Cancel·lar" al peu del diàleg.
+     */
     private void inicializar() {
         setLayout(new BorderLayout(10, 10));
         setSize(650, 550);
@@ -103,6 +141,13 @@ public class DialogoResponderEnquesta extends JDialog {
         add(panelBotons, BorderLayout.SOUTH);
     }
 
+    /**
+     * Retorna un emoji visual que representa gràficament el tipus de pregunta.
+     * Ajuda a l'usuari a identificar ràpidament com ha de respondre.
+     *
+     * @param tp El tipus de la pregunta (NUMERICA, TEXT_LLIURE, etc.).
+     * @return Un string que conté l'emoji corresponent.
+     */
     private String getEmojiTipus(TipusPregunta tp) {
         switch (tp) {
             case NUMERICA:
@@ -119,6 +164,13 @@ public class DialogoResponderEnquesta extends JDialog {
         }
     }
 
+    /**
+     * Genera un text descriptiu amb instruccions sobre com respondre la pregunta.
+     * Per exemple, per a preguntes numèriques indica el rang permès.
+     *
+     * @param p La pregunta objecte de la qual extreure les restriccions.
+     * @return Una cadena amb les instruccions formatades.
+     */
     private String getInstruccions(Pregunta p) {
         switch (p.getTipus()) {
             case NUMERICA:
@@ -148,6 +200,18 @@ public class DialogoResponderEnquesta extends JDialog {
         return btn;
     }
 
+    /**
+     * Fàbrica de components d'entrada: crea el widget de Swing adequat segons el
+     * tipus de pregunta.
+     * 
+     * JSpinner: per a preguntes numèriques (configurat amb min/max/step).
+     * JTextField: per a preguntes de text lliure.
+     * JComboBox: per a preguntes de selecció simple (opcions desplegables).
+     * JPanel amb JCheckBox: per a preguntes de selecció múltiple.
+     *
+     * @param p L'objecte Pregunta que defineix el tipus i les opcions disponibles.
+     * @return Un JComponent configurat i llest per ser afegit a la interfície.
+     */
     private JComponent crearComponentInput(Pregunta p) {
         TipusPregunta tp = p.getTipus();
         switch (tp) {
@@ -193,6 +257,16 @@ public class DialogoResponderEnquesta extends JDialog {
         }
     }
 
+    /**
+     * Processa l'enviament del formulari.
+     * 
+     * Recorre tots els components d'entrada generats, extreu el valor seleccionat
+     * o introduït per l'usuari i realitza:
+     * Validació: Comprova que no hi hagi respostes buides.
+     * Recollida: Emmagatzema la resposta al mapa de resultats.
+     * Enviament: Transmet les dades al controlador.
+     * Feedback: Mostra el resultat de l'operació i tanca el diàleg si és exitós.
+     */
     private void enviarRespostes() {
         HashMap<String, String> respostes = new HashMap<>();
 
@@ -216,6 +290,18 @@ public class DialogoResponderEnquesta extends JDialog {
         }
     }
 
+    /**
+     * Mètode auxiliar polimòrfic per extreure el valor en text de qualsevol
+     * component d'entrada suportat.
+     * 
+     * Gestiona la lògica específica per obtenir dades de JSpinner, JTextField,
+     * JComboBox i
+     * grups de JCheckBox (construint una cadena separada per comes per a seleccions
+     * múltiples).
+     *
+     * @param comp El component d'entrada del qual es vol llegir el valor.
+     * @return Una cadena de text representant la resposta de l'usuari.
+     */
     private String obtenerValor(JComponent comp) {
         if (comp instanceof JSpinner) {
             return String.valueOf(((JSpinner) comp).getValue());
