@@ -130,46 +130,13 @@ public class VistaPrincipal {
         frameVista.setJMenuBar(menubarVista);
 
         // --- Listeners ---
-        menuitemLogout.addActionListener(e -> cerrarSesion());
-        menuitemDeleteAccount.addActionListener(e -> eliminarCuenta());
+        menuitemLogout.setActionCommand(MyActionListener.Action.LOGOUT.name());
+        menuitemLogout.addActionListener(new MyActionListener(iCtrlPresentacio, this));
+        
+        menuitemDeleteAccount.setActionCommand(MyActionListener.Action.ELIMINAR_COMPTE.name());
+        menuitemDeleteAccount.addActionListener(new MyActionListener(iCtrlPresentacio, this));
+        
         menuitemQuit.addActionListener(e -> System.exit(0));
-    }
-
-    /**
-     * Executa el procés de tancament de sessió de l'usuari.
-     * 
-     * Notifica al controlador per realitzar el logout lògic i, posteriorment,
-     * redirigeix la interfície gràfica a la vista d'inici de sessió ("LOGIN").
-     * Aquest mètode neteja l'estat visual necessari per garantir que el següent
-     * usuari no vegi dades residuals.
-     */
-    private void cerrarSesion() {
-        iCtrlPresentacio.logout();
-        // Limpiar la vista de gestión (opcional, pero recomendable)
-        // vistaGestionEnquestes.limpiar(); // Si tuviéramos un método limpiar
-        mostrarVista("LOGIN");
-    }
-
-    /**
-     * Gestiona el procés crític d'eliminació del compte de l'usuari actual.
-     * 
-     * Mostra un diàleg de confirmació per evitar esborrats accidentals.
-     * Si l'usuari confirma, sol·licita al controlador l'eliminació permanent de les
-     * dades.
-     * En cas d'èxit, redirigeix automàticament a la pantalla de login.
-     */
-    private void eliminarCuenta() {
-        int confirm = JOptionPane.showConfirmDialog(frameVista,
-                "¿Estàs segur de que vols esborrar el teu compte? Aquesta acció és irreversible.",
-                "Eliminar compte", JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            String resultado = iCtrlPresentacio.esborrarUsuariActual();
-            JOptionPane.showMessageDialog(frameVista, resultado);
-            if (resultado.contains("correctament")) {
-                mostrarVista("LOGIN");
-            }
-        }
     }
 
     /**

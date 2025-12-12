@@ -8,25 +8,52 @@ import java.util.HashMap;
 
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 
+/**
+ * Diàleg per gestionar (visualitzar, modificar i esborrar) les respostes de
+ * l'usuari a una enquesta específica.
+ * 
+ * Aquest diàleg mostra totes les respostes que l'usuari actual ha donat a una
+ * enquesta concreta, permetent modificar respostes individuals o esborrar totes
+ * les respostes de cop.
+ * 
+ * Funcionalitats clau:
+ * 
+ * Visualització de totes les respostes de l'usuari amb pregunta i tipus.
+ * Modificació individual de cada resposta mitjançant un diàleg d'input.
+ * Esborrat massiu de totes les respostes amb confirmació.
+ * Indicador visual quan no hi ha respostes.
+ * Actualització dinàmica del contingut després de cada canvi.
+ * Estils visuals diferenciats per a cada acció (modificar=taronja,
+ *   esborrar=vermell).
+ * 
+ * 
+ * El diàleg és modal i es refresca automàticament després de cada modificació
+ * per mostrar els canvis en temps real.
+ */
 public class DialogoGestionarRespostes extends JDialog {
-    // Colores del tema
-    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
-    private static final Color PRIMARY_HOVER = new Color(52, 152, 219);
-    private static final Color SECONDARY_COLOR = new Color(149, 165, 166);
-    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
-    private static final Color CARD_COLOR = Color.WHITE;
-    private static final Color TEXT_COLOR = new Color(44, 62, 80);
-    private static final Color SUCCESS_COLOR = new Color(39, 174, 96);
-    private static final Color DANGER_COLOR = new Color(231, 76, 60);
-    private static final Color WARNING_COLOR = new Color(243, 156, 18);
-
+    /** Controlador de presentació per executar les operacions sobre respostes. */
     private CtrlPresentacio iCtrlPresentacio;
+    /** Identificador de l'enquesta de la qual es gestionen les respostes. */
     private String idEnquesta;
+    /** Llista de preguntes de l'enquesta. */
     private ArrayList<Pregunta> preguntes;
+    /** Mapa amb les respostes de l'usuari (clau: idPregunta, valor: resposta). */
     private HashMap<String, String> respostesUsuari;
 
+    /** Panel principal que conté les targetes de respostes. */
     private JPanel panelContent;
 
+    /**
+     * Constructor del diàleg de gestió de respostes.
+     * 
+     * Inicialitza el diàleg, carrega les dades de l'enquesta i les respostes de
+     * l'usuari, i construeix la interfície.
+     *
+     * @param owner           Finestra propietària del diàleg (per centrar-lo).
+     * @param ctrlPresentacio Controlador de presentació per gestionar les
+     *                        operacions.
+     * @param idEnquesta      Identificador de l'enquesta a gestionar.
+     */
     public DialogoGestionarRespostes(Frame owner, CtrlPresentacio ctrlPresentacio, String idEnquesta) {
         super(owner, "Gestionar Respostes", true);
         this.iCtrlPresentacio = ctrlPresentacio;
@@ -35,45 +62,75 @@ public class DialogoGestionarRespostes extends JDialog {
         inicializar();
     }
 
+    /**
+     * Carrega les dades de l'enquesta (preguntes i respostes de l'usuari) des
+     * del controlador.
+     * 
+     * Aquest mètode s'invoca a l'inicialització i després de cada modificació
+     * per actualitzar les dades mostrades.
+     */
     private void cargarDatos() {
         this.preguntes = iCtrlPresentacio.getPreguntesEnquestaObjects(idEnquesta);
         this.respostesUsuari = iCtrlPresentacio.getRespostesUsuariEnquesta(idEnquesta);
     }
 
+    public String getIdEnquesta() {
+        return idEnquesta;
+    }
+
+    public void actualizarVista() {
+        cargarDatos();
+        refrescarPanelContent();
+    }
+
+    public String getResposta(String idPregunta) {
+        return respostesUsuari.get(idPregunta);
+    }
+
+    /**
+     * Inicialitza i configura tots els components gràfics del diàleg.
+     * 
+     * Crea una interfície amb tres seccions:
+     * 
+     * Adalt: Capçalera amb icona, títol i subtítol amb l'ID de l'enquesta.
+     * Medio: Panel desplaçable amb targetes de respostes.
+     * Abajo: Botons d'acció (Esborrar Totes i Tancar).
+     * 
+     */
     private void inicializar() {
         setSize(700, 600);
         setLocationRelativeTo(getOwner());
         setResizable(false);
-        getContentPane().setBackground(BACKGROUND_COLOR);
+        getContentPane().setBackground(UIStyles.BACKGROUND_COLOR);
 
         // Panel principal
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(BACKGROUND_COLOR);
+        mainPanel.setBackground(UIStyles.BACKGROUND_COLOR);
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // Header
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
-        headerPanel.setBackground(CARD_COLOR);
+        headerPanel.setBackground(UIStyles.CARD_COLOR);
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(189, 195, 199), 1, true),
+                new LineBorder(UIStyles.BORDER_COLOR, 1, true),
                 new EmptyBorder(20, 30, 20, 30)));
 
         JLabel iconLabel = new JLabel("📋");
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 36));
+        iconLabel.setFont(UIStyles.FONT_ICON_MEDIUM);
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         headerPanel.add(iconLabel);
         headerPanel.add(Box.createVerticalStrut(8));
 
         JLabel titleLabel = new JLabel("Gestionar Respostes");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        titleLabel.setForeground(TEXT_COLOR);
+        titleLabel.setFont(UIStyles.FONT_DIALOG_TITLE);
+        titleLabel.setForeground(UIStyles.TEXT_COLOR);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         headerPanel.add(titleLabel);
 
         JLabel subtitleLabel = new JLabel("Enquesta: " + idEnquesta);
-        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        subtitleLabel.setForeground(SECONDARY_COLOR);
+        subtitleLabel.setFont(UIStyles.FONT_DIALOG_SUBTITLE_13);
+        subtitleLabel.setForeground(UIStyles.SECONDARY_COLOR);
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         headerPanel.add(subtitleLabel);
 
@@ -82,28 +139,27 @@ public class DialogoGestionarRespostes extends JDialog {
         // Content panel
         panelContent = new JPanel();
         panelContent.setLayout(new BoxLayout(panelContent, BoxLayout.Y_AXIS));
-        panelContent.setBackground(BACKGROUND_COLOR);
+        panelContent.setBackground(UIStyles.BACKGROUND_COLOR);
         panelContent.setBorder(new EmptyBorder(15, 0, 15, 0));
 
         refrescarPanelContent();
 
         JScrollPane scroll = new JScrollPane(panelContent);
         scroll.setBorder(null);
-        scroll.getViewport().setBackground(BACKGROUND_COLOR);
+        scroll.getViewport().setBackground(UIStyles.BACKGROUND_COLOR);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainPanel.add(scroll, BorderLayout.CENTER);
 
         // Footer con botones
         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        footerPanel.setBackground(BACKGROUND_COLOR);
+        footerPanel.setBackground(UIStyles.BACKGROUND_COLOR);
 
-        JButton btnEsborrarTot = new JButton("Esborrar Totes");
-        styleButton(btnEsborrarTot, DANGER_COLOR);
-        btnEsborrarTot.addActionListener(e -> esborrarTotesRespostes());
+        JButton btnEsborrarTot = UIComponents.createColorButton("Esborrar Totes", UIStyles.DANGER_COLOR);
+        btnEsborrarTot.setActionCommand(MyActionListener.Action.ELIMINAR_RESPOSTA.name());
+        btnEsborrarTot.addActionListener(new MyActionListener(iCtrlPresentacio, null, this));
         footerPanel.add(btnEsborrarTot);
 
-        JButton btnTancar = new JButton("Tancar");
-        styleButton(btnTancar, SECONDARY_COLOR);
+        JButton btnTancar = UIComponents.createColorButton("Tancar", UIStyles.SECONDARY_COLOR);
         btnTancar.addActionListener(e -> setVisible(false));
         footerPanel.add(btnTancar);
 
@@ -112,19 +168,28 @@ public class DialogoGestionarRespostes extends JDialog {
         setContentPane(mainPanel);
     }
 
+    /**
+     * Refresca el contingut del panel amb les respostes actualitzades.
+     * 
+     * Neteja el panel i torna a crear totes les targetes de respostes. Si
+     * l'usuari no ha respost l'enquesta, mostra un missatge indicatiu.
+     * 
+     * Aquest mètode s'invoca després de cada modificació o esborrat de
+     * respostes.
+     */
     private void refrescarPanelContent() {
         panelContent.removeAll();
 
         if (respostesUsuari.isEmpty()) {
             JPanel emptyPanel = new JPanel();
-            emptyPanel.setBackground(CARD_COLOR);
+            emptyPanel.setBackground(UIStyles.CARD_COLOR);
             emptyPanel.setBorder(BorderFactory.createCompoundBorder(
                     new LineBorder(new Color(189, 195, 199), 1, true),
                     new EmptyBorder(40, 40, 40, 40)));
 
             JLabel emptyLabel = new JLabel("No has respost aquesta enquesta.");
             emptyLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            emptyLabel.setForeground(SECONDARY_COLOR);
+            emptyLabel.setForeground(UIStyles.SECONDARY_COLOR);
             emptyPanel.add(emptyLabel);
 
             panelContent.add(emptyPanel);
@@ -141,106 +206,66 @@ public class DialogoGestionarRespostes extends JDialog {
         panelContent.repaint();
     }
 
+    /**
+     * Crea una targeta visual per a una resposta individual.
+     * 
+     * La targeta mostra:
+     * 
+     * Text de la pregunta (negreta).
+     * Resposta actual de l'usuari (verd).
+     * Tipus de pregunta (cursiva, gris).
+     * Botó "Modificar" (taronja) a la dreta.
+     * 
+     *
+     * @param p Pregunta de la qual es mostra la resposta.
+     * @return Panel JPanel amb la targeta completa.
+     */
     private JPanel crearPanelResposta(Pregunta p) {
         JPanel panelPregunta = new JPanel(new BorderLayout(15, 0));
-        panelPregunta.setBackground(CARD_COLOR);
+        panelPregunta.setBackground(UIStyles.CARD_COLOR);
         panelPregunta.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(189, 195, 199), 1, true),
+                new LineBorder(UIStyles.BORDER_COLOR, 1, true),
                 new EmptyBorder(15, 20, 15, 20)));
         panelPregunta.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
         // Panel izquierdo con pregunta y respuesta
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setBackground(CARD_COLOR);
+        leftPanel.setBackground(UIStyles.CARD_COLOR);
 
         JLabel lblPregunta = new JLabel(p.getText());
-        lblPregunta.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblPregunta.setForeground(TEXT_COLOR);
+        lblPregunta.setFont(UIStyles.FONT_NORMAL);
+        lblPregunta.setForeground(UIStyles.TEXT_COLOR);
         lblPregunta.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.add(lblPregunta);
         leftPanel.add(Box.createVerticalStrut(5));
 
         String respostaActual = respostesUsuari.get(p.getId());
         JLabel lblResposta = new JLabel(respostaActual);
-        lblResposta.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lblResposta.setForeground(SUCCESS_COLOR);
+        lblResposta.setFont(UIStyles.FONT_INPUT);
+        lblResposta.setForeground(UIStyles.SUCCESS_COLOR);
         lblResposta.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.add(lblResposta);
 
         JLabel lblTipus = new JLabel("Tipus: " + p.getTipus());
-        lblTipus.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        lblTipus.setForeground(SECONDARY_COLOR);
+        lblTipus.setFont(UIStyles.FONT_INSTRUCTIONS);
+        lblTipus.setForeground(UIStyles.SECONDARY_COLOR);
         lblTipus.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.add(lblTipus);
 
         panelPregunta.add(leftPanel, BorderLayout.CENTER);
 
         // Botón modificar
-        JButton btnModificar = new JButton("Modificar");
-        styleButton(btnModificar, WARNING_COLOR);
+        JButton btnModificar = UIComponents.createColorButton("Modificar", UIStyles.WARNING_COLOR);
         btnModificar.setPreferredSize(new Dimension(120, 35));
-        btnModificar.addActionListener(e -> modificarResposta(p));
+        btnModificar.setActionCommand(MyActionListener.Action.MODIFICAR_RESPOSTA_INDIVIDUAL.name());
+        btnModificar.addActionListener(new MyActionListener(iCtrlPresentacio, null, new Object[] { this, p }));
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 10));
-        rightPanel.setBackground(CARD_COLOR);
+        rightPanel.setBackground(UIStyles.CARD_COLOR);
         rightPanel.add(btnModificar);
         panelPregunta.add(rightPanel, BorderLayout.EAST);
 
         return panelPregunta;
-    }
-
-    private void styleButton(JButton button, Color color) {
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        button.setForeground(Color.WHITE);
-        button.setBackground(color);
-        button.setContentAreaFilled(true);
-        button.setOpaque(true);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        Color hoverColor = color.brighter();
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                button.setBackground(hoverColor);
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                button.setBackground(color);
-            }
-        });
-    }
-
-    private void modificarResposta(Pregunta p) {
-        String novaResposta = JOptionPane.showInputDialog(this,
-                "Introdueix la nova resposta per a:\n\n" + p.getText() + "\n\n" +
-                        "Format esperat: " + p.getTipus(),
-                respostesUsuari.get(p.getId()));
-
-        if (novaResposta != null && !novaResposta.trim().isEmpty()) {
-            String resultat = iCtrlPresentacio.modificarResposta(idEnquesta, p.getId(), novaResposta);
-            JOptionPane.showMessageDialog(this, resultat);
-            if (resultat.contains("correctament")) {
-                cargarDatos();
-                refrescarPanelContent();
-            }
-        }
-    }
-
-    private void esborrarTotesRespostes() {
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Estàs segur que vols esborrar TOTES les teves respostes?\n\nAquesta acció no es pot desfer.",
-                "Confirmar esborrat",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            String resultat = iCtrlPresentacio.esborrarRespostesEnquesta(idEnquesta);
-            JOptionPane.showMessageDialog(this, resultat);
-            if (resultat.contains("correctament")) {
-                setVisible(false);
-            }
-        }
     }
 }
