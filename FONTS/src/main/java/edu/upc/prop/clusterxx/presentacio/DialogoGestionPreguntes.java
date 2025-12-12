@@ -5,18 +5,49 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Diàleg per gestionar (afegir, modificar i eliminar) les preguntes d'una
+ * enquesta.
+ * 
+ * Aquest diàleg mostra una llista de totes les preguntes d'una enquesta i
+ * ofereix operacions CRUD (Create, Read, Update, Delete) sobre elles.
+ * 
+ * Funcionalitats clau:
+ * 
+ * Visualització de totes les preguntes amb ID, text i tipus.
+ * Creació de noves preguntes mitjançant DialogoCrearPregunta.
+ * Modificació de preguntes existents (ID no editable).
+ * Eliminació de preguntes amb confirmació.
+ * Actualització automàtica de la llista després de cada operació.
+ * Validació de selecció abans de modificar/eliminar.
+ * 
+ * 
+ * El diàleg és modal i s'actualitza dinàmicament per reflectir els canvis
+ * al sistema.
+ */
 public class DialogoGestionPreguntes extends JDialog {
 
-    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
-    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
-    private static final Color TEXT_COLOR = new Color(44, 62, 80);
-
+    /** Controlador de presentació per executar operacions sobre preguntes. */
     private CtrlPresentacio iCtrlPresentacio;
+    /** Identificador de l'enquesta de la qual es gestionen les preguntes. */
     private String idEnquesta;
 
+    /** Model de dades per a la llista de preguntes. */
     private DefaultListModel<String> listModel = new DefaultListModel<>();
+    /** Component visual que mostra la llista de preguntes. */
     private JList<String> listPreguntes = new JList<>(listModel);
 
+    /**
+     * Constructor del diàleg de gestió de preguntes.
+     * 
+     * Inicialitza el diàleg, construeix la interfície i carrega la llista de
+     * preguntes de l'enquesta especificada.
+     *
+     * @param owner           Finestra propietària del diàleg (per centrar-lo).
+     * @param ctrlPresentacio Controlador de presentació per gestionar les
+     *                        operacions.
+     * @param idEnquesta      Identificador de l'enquesta a gestionar.
+     */
     public DialogoGestionPreguntes(Frame owner, CtrlPresentacio ctrlPresentacio, String idEnquesta) {
         super(owner, "Gestionar Preguntes - " + idEnquesta, true);
         this.iCtrlPresentacio = ctrlPresentacio;
@@ -25,39 +56,59 @@ public class DialogoGestionPreguntes extends JDialog {
         cargarPreguntes();
     }
 
+    /**
+     * Inicialitza i configura tots els components gràfics del diàleg.
+     * 
+     * Crea una interfície amb tres seccions:
+     * 
+     * Adalt: Títol amb icona i nom de l'enquesta.
+     * medio: Llista desplaçable de preguntes.
+     * Abajo: Botons d'acció (Afegir, Modificar, Eliminar, Tancar).
+     * 
+     * 
+     * Cada pregunta es mostra amb el format: "ID: Text [Tipus]".
+     */
     private void inicializar() {
         setLayout(new BorderLayout(10, 10));
         setSize(550, 450);
         setLocationRelativeTo(getOwner());
-        getContentPane().setBackground(BACKGROUND_COLOR);
+        getContentPane().setBackground(UIStyles.BACKGROUND_COLOR);
         ((JPanel) getContentPane()).setBorder(new EmptyBorder(15, 15, 15, 15));
 
         // Título
         JLabel titulo = new JLabel("📋 Preguntes de l'enquesta: " + idEnquesta);
         titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 16));
-        titulo.setForeground(TEXT_COLOR);
+        titulo.setForeground(UIStyles.TEXT_COLOR);
         add(titulo, BorderLayout.NORTH);
 
         // Lista
         listPreguntes.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         listPreguntes.setFixedCellHeight(40);
-        listPreguntes.setSelectionBackground(new Color(52, 152, 219, 80));
+        listPreguntes.setSelectionBackground(UIStyles.SELECTION_COLOR);
         JScrollPane scroll = new JScrollPane(listPreguntes);
-        scroll.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        scroll.setBorder(BorderFactory.createLineBorder(UIStyles.BORDER_LIGHT));
         add(scroll, BorderLayout.CENTER);
 
         // Botones
         JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 8));
-        panelBotons.setBackground(BACKGROUND_COLOR);
+        panelBotons.setBackground(UIStyles.BACKGROUND_COLOR);
 
-        JButton btnAfegir = crearBoton("➕ Afegir", new Color(39, 174, 96));
-        JButton btnModificar = crearBoton("✏️ Modificar", PRIMARY_COLOR);
-        JButton btnEliminar = crearBoton("🗑️ Eliminar", new Color(231, 76, 60));
-        JButton btnTancar = crearBoton("✖ Tancar", new Color(149, 165, 166));
+        JButton btnAfegir = UIComponents.createColorButton("➕ Afegir", UIStyles.SUCCESS_COLOR);
+        JButton btnModificar = UIComponents.createColorButton("✏️ Modificar", UIStyles.PRIMARY_COLOR);
+        JButton btnEliminar = UIComponents.createColorButton("🗑️ Eliminar", UIStyles.ERROR_COLOR);
+        JButton btnTancar = UIComponents.createColorButton("✖ Tancar", UIStyles.SECONDARY_COLOR);
 
-        btnAfegir.addActionListener(e -> afegirPregunta());
-        btnModificar.addActionListener(e -> modificarPregunta());
-        btnEliminar.addActionListener(e -> eliminarPregunta());
+        MyActionListener listener = new MyActionListener(iCtrlPresentacio, null, this);
+
+        btnAfegir.setActionCommand(MyActionListener.Action.CREAR_PREGUNTA.name());
+        btnAfegir.addActionListener(listener);
+
+        btnModificar.setActionCommand(MyActionListener.Action.MODIFICAR_PREGUNTA.name());
+        btnModificar.addActionListener(listener);
+
+        btnEliminar.setActionCommand(MyActionListener.Action.ELIMINAR_PREGUNTA.name());
+        btnEliminar.addActionListener(listener);
+
         btnTancar.addActionListener(e -> setVisible(false));
 
         panelBotons.add(btnAfegir);
@@ -67,20 +118,16 @@ public class DialogoGestionPreguntes extends JDialog {
         add(panelBotons, BorderLayout.SOUTH);
     }
 
-    private JButton crearBoton(String text, Color color) {
-        JButton btn = new JButton(text);
-        btn.setFont(new Font("Segoe UI Emoji", Font.BOLD, 12));
-        btn.setForeground(Color.WHITE);
-        btn.setBackground(color);
-        btn.setBorder(new EmptyBorder(8, 14, 8, 14));
-        btn.setContentAreaFilled(true);
-        btn.setOpaque(true);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return btn;
-    }
-
-    private void cargarPreguntes() {
+    /**
+     * Carrega la llista de preguntes de l'enquesta des del controlador.
+     * 
+     * Neteja el model de la llista i afegeix totes les preguntes amb el format:
+     * "ID: Text [Tipus]".
+     * 
+     * Aquest mètode s'invoca després de cada operació (afegir, modificar,
+     * eliminar) per actualitzar la visualització.
+     */
+    void cargarPreguntes() {
         listModel.clear();
         ArrayList<edu.upc.prop.clusterxx.domini.classes.Pregunta> preguntas = iCtrlPresentacio
                 .getPreguntesEnquestaObjects(idEnquesta);
@@ -89,76 +136,15 @@ public class DialogoGestionPreguntes extends JDialog {
         }
     }
 
-    private void afegirPregunta() {
-        DialogoCrearPregunta dialogo = new DialogoCrearPregunta(this);
-        dialogo.setVisible(true);
-
-        if (dialogo.isConfirmado()) {
-            String resultado = iCtrlPresentacio.afegirPregunta(
-                    idEnquesta,
-                    dialogo.getId(),
-                    dialogo.getPreguntaText(),
-                    dialogo.getTipus(),
-                    dialogo.getMin(),
-                    dialogo.getMax(),
-                    dialogo.getOpcions(),
-                    dialogo.getMaxSeleccions());
-            JOptionPane.showMessageDialog(this, resultado);
-            cargarPreguntes();
-        }
+    public String getIdEnquesta() {
+        return idEnquesta;
     }
 
-    private void modificarPregunta() {
+    public String getSelectedPreguntaId() {
         String selected = listPreguntes.getSelectedValue();
-        if (selected == null) {
-            JOptionPane.showMessageDialog(this, "Selecciona una pregunta per modificar.");
-            return;
-        }
-
-        String idPregunta = selected.split(":")[0];
-        edu.upc.prop.clusterxx.domini.classes.Pregunta p = iCtrlPresentacio.getDadesPregunta(idEnquesta, idPregunta);
-
-        if (p == null) {
-            JOptionPane.showMessageDialog(this, "Error al recuperar dades de la pregunta.");
-            return;
-        }
-
-        DialogoCrearPregunta dialogo = new DialogoCrearPregunta(this);
-        dialogo.setTitle("Modificar Pregunta");
-        dialogo.setDades(p.getId(), p.getText(), p.getTipus().toString(),
-                p.getValorMinim(), p.getValorMaxim(), p.getOpcions(), p.getMaxSeleccions());
-        dialogo.setVisible(true);
-
-        if (dialogo.isConfirmado()) {
-            String resultado = iCtrlPresentacio.modificarPregunta(
-                    idEnquesta,
-                    dialogo.getId(),
-                    dialogo.getPreguntaText(),
-                    dialogo.getTipus(),
-                    dialogo.getMin(),
-                    dialogo.getMax(),
-                    dialogo.getOpcions(),
-                    dialogo.getMaxSeleccions());
-            JOptionPane.showMessageDialog(this, resultado);
-            cargarPreguntes();
-        }
+        if (selected == null) return null;
+        return selected.split(":")[0].trim();
     }
 
-    private void eliminarPregunta() {
-        String selected = listPreguntes.getSelectedValue();
-        if (selected == null) {
-            JOptionPane.showMessageDialog(this, "Selecciona una pregunta per eliminar.");
-            return;
-        }
 
-        String idPregunta = selected.split(":")[0];
-
-        int confirm = JOptionPane.showConfirmDialog(this, "Eliminar la pregunta " + idPregunta + "?",
-                "Confirmar", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            String resultado = iCtrlPresentacio.eliminarPregunta(idEnquesta, idPregunta);
-            JOptionPane.showMessageDialog(this, resultado);
-            cargarPreguntes();
-        }
-    }
 }

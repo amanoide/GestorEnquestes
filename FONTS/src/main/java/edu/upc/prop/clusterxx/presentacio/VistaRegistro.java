@@ -31,15 +31,6 @@ public class VistaRegistro extends JPanel {
      */
     private VistaPrincipal vistaPrincipal;
 
-    // Colores del tema
-    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
-    private static final Color PRIMARY_HOVER = new Color(52, 152, 219);
-    private static final Color SECONDARY_COLOR = new Color(149, 165, 166);
-    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
-    private static final Color CARD_COLOR = Color.WHITE;
-    private static final Color TEXT_COLOR = new Color(44, 62, 80);
-    private static final Color ERROR_COLOR = new Color(231, 76, 60);
-
     private JTextField textRegUser = new JTextField(20);
     private JPasswordField textRegPass = new JPasswordField(20);
     private JPasswordField textRegPassConfirm = new JPasswordField(20);
@@ -76,211 +67,105 @@ public class VistaRegistro extends JPanel {
      * gestionar la interactivitat.
      */
     private void inicializarComponentes() {
-        this.setBackground(BACKGROUND_COLOR);
+        this.setBackground(UIStyles.BACKGROUND_COLOR);
         this.setLayout(new GridBagLayout());
 
         // Panel tarjeta
-        JPanel cardPanel = new JPanel();
-        cardPanel.setBackground(CARD_COLOR);
-        cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
-        cardPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 3, 3, new Color(0, 0, 0, 30)),
-                BorderFactory.createCompoundBorder(
-                        new LineBorder(new Color(189, 195, 199), 1, true),
-                        new EmptyBorder(40, 50, 40, 50))));
+        JPanel cardPanel = UIComponents.createCardPanel();
 
         // Icona
-        JLabel iconLabel = new JLabel("👤");
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
-        iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        cardPanel.add(iconLabel);
+        cardPanel.add(UIComponents.createIconLabel("👤"));
         cardPanel.add(Box.createVerticalStrut(10));
 
         // Títol
-        JLabel title = new JLabel("Crear Compte");
-        title.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        title.setForeground(TEXT_COLOR);
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        cardPanel.add(title);
+        cardPanel.add(UIComponents.createTitleLabel("Crear Compte"));
 
         // Subtítol
-        JLabel subtitle = new JLabel("Registra't per començar");
-        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        subtitle.setForeground(SECONDARY_COLOR);
-        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        cardPanel.add(subtitle);
+        cardPanel.add(UIComponents.createSubtitleLabel("Registra't per començar"));
         cardPanel.add(Box.createVerticalStrut(30));
 
         // Camp Usuari
-        cardPanel.add(createLabel("Nom d'usuari (mínim 3 caràcters)"));
+        cardPanel.add(UIComponents.createLabel("Nom d'usuari (mínim 3 caràcters)"));
         cardPanel.add(Box.createVerticalStrut(5));
-        styleTextField(textRegUser);
+        UIComponents.styleTextField(textRegUser);
         cardPanel.add(textRegUser);
         cardPanel.add(Box.createVerticalStrut(15));
 
         // Camp Contrasenya
-        cardPanel.add(createLabel("Contrasenya (mínim 4 caràcters)"));
+        cardPanel.add(UIComponents.createLabel("Contrasenya (mínim 4 caràcters)"));
         cardPanel.add(Box.createVerticalStrut(5));
-        styleTextField(textRegPass);
+        UIComponents.styleTextField(textRegPass);
         cardPanel.add(textRegPass);
         cardPanel.add(Box.createVerticalStrut(15));
 
         // Camp Confirmar Contrasenya
-        cardPanel.add(createLabel("Confirmar Contrasenya"));
+        cardPanel.add(UIComponents.createLabel("Confirmar Contrasenya"));
         cardPanel.add(Box.createVerticalStrut(5));
-        styleTextField(textRegPassConfirm);
+        UIComponents.styleTextField(textRegPassConfirm);
         cardPanel.add(textRegPassConfirm);
         cardPanel.add(Box.createVerticalStrut(25));
 
         // Botons
-        styleButton(btnRegistrar, true);
+        UIComponents.styleButton(btnRegistrar, true);
         cardPanel.add(btnRegistrar);
         cardPanel.add(Box.createVerticalStrut(10));
 
-        styleButton(btnBackToLogin, false);
+        UIComponents.styleButton(btnBackToLogin, false);
         cardPanel.add(btnBackToLogin);
         cardPanel.add(Box.createVerticalStrut(15));
 
         // Etiqueta Status
-        labelStatusRegistro.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        labelStatusRegistro.setFont(UIStyles.FONT_LABEL);
         labelStatusRegistro.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(labelStatusRegistro);
 
         // Listeners
-        btnRegistrar.addActionListener(e -> actionPerformed_btnRegistrar(e));
-        btnBackToLogin.addActionListener(e -> vistaPrincipal.mostrarVista("LOGIN"));
-        textRegPassConfirm.addActionListener(e -> actionPerformed_btnRegistrar(e));
+        btnRegistrar.setActionCommand(MyActionListener.Action.REGISTER.name());
+        btnRegistrar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnBackToLogin.setActionCommand(MyActionListener.Action.MOSTRAR_LOGIN.name());
+        btnBackToLogin.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        textRegPassConfirm.setActionCommand(MyActionListener.Action.REGISTER.name());
+        textRegPassConfirm.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
 
         this.add(cardPanel);
     }
 
     /**
-     * Mètode auxiliar per crear etiquetes (JLabel) amb un estil visual consistent.
-     * S'utilitza per als títols dels camps del formulari.
+     * Obté el nom d'usuari introduït al formulari de registre.
      *
-     * @param text El text que es mostrarà a l'etiqueta.
-     * @return Un objecte {@link JLabel} configurat amb la font, color i alineació
-     *         correctes.
+     * @return Nom d'usuari (sense espais).
      */
-    private JLabel createLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        label.setForeground(TEXT_COLOR);
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        return label;
+    String getUsername() {
+        return textRegUser.getText().trim();
     }
 
     /**
-     * Aplica l'estil visual estàndard als camps de text (entrades d'usuari).
-     * Defineix la mida, la font i les vores dels camps per mantenir la coherència
-     * visual de l'aplicació.
+     * Obté la contrasenya introduïda al formulari de registre.
      *
-     * @param field El component {@link JTextField} al qual s'ha d'aplicar l'estil.
+     * @return Contrasenya com a String.
      */
-    private void styleTextField(JTextField field) {
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        field.setMaximumSize(new Dimension(280, 40));
-        field.setPreferredSize(new Dimension(280, 40));
-        field.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(189, 195, 199), 1, true),
-                new EmptyBorder(8, 12, 8, 12)));
+    String getPassword() {
+        return new String(textRegPass.getPassword());
     }
 
     /**
-     * Aplica l'estil visual als botons de la interfície.
-     * 
-     * Permet diferenciar entre botons d'acció principal (fons sòlid, destacats) i
-     * secundaris (contorn, més subtils).
-     * També configura efectes de "hover" (passar el ratolí per sobre) per millorar
-     * la usabilitat.
+     * Obté la confirmació de contrasenya introduïda.
      *
-     * @param button    El botó {@link JButton} a estilitzar.
-     * @param isPrimary Indica el tipus de botó: {@code true} per a accions
-     *                  principals (ex: Registrar),
-     *                  {@code false} per a secundàries (ex: Tornar).
+     * @return Confirmació de contrasenya com a String.
      */
-    private void styleButton(JButton button, boolean isPrimary) {
-        button.setFont(new Font("Segoe UI", isPrimary ? Font.BOLD : Font.PLAIN, 14));
-        button.setMaximumSize(new Dimension(280, 45));
-        button.setPreferredSize(new Dimension(280, 45));
-        button.setFocusPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        if (isPrimary) {
-            button.setForeground(Color.WHITE);
-            button.setBackground(PRIMARY_COLOR);
-            button.setBorderPainted(false);
-            button.setContentAreaFilled(true);
-            button.setOpaque(true);
-            button.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseEntered(java.awt.event.MouseEvent e) {
-                    button.setBackground(PRIMARY_HOVER);
-                }
-
-                public void mouseExited(java.awt.event.MouseEvent e) {
-                    button.setBackground(PRIMARY_COLOR);
-                }
-            });
-        } else {
-            button.setForeground(PRIMARY_COLOR);
-            button.setBackground(CARD_COLOR);
-            button.setBorder(new LineBorder(PRIMARY_COLOR, 1, true));
-            button.setContentAreaFilled(true);
-            button.setOpaque(true);
-            button.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseEntered(java.awt.event.MouseEvent e) {
-                    button.setBackground(new Color(235, 245, 251));
-                }
-
-                public void mouseExited(java.awt.event.MouseEvent e) {
-                    button.setBackground(CARD_COLOR);
-                }
-            });
-        }
+    String getPasswordConfirm() {
+        return new String(textRegPassConfirm.getPassword());
     }
 
     /**
-     * Gestiona l'esdeveniment de fer clic al botó "Crear Compte" o prémer Intro al
-     * camp de contrasenya.
-     * 
-     * Aquest mètode realitza les següents accions:
-     * 
-     * Recull les dades introduïdes pels usuaris.
-     * Valida que els camps no estiguin buits.
-     * Verifica que la contrasenya i la seva confirmació coincideixin.
-     * Si les dades són vàlides localment, crida al mètode
-     * {@link CtrlPresentacio#registrarUsuari(String, String)}.
-     * Mostra feedback a l'usuari: missatges d'error en vermell o un diàleg
-     * d'èxit si el registre funciona.
+     * Mostra un missatge d'error a la interfície.
      *
-     * @param event L'objecte {@link ActionEvent} generat per l'acció de l'usuari.
+     * @param missatge Missatge d'error a mostrar.
      */
-    public void actionPerformed_btnRegistrar(ActionEvent event) {
-        String user = textRegUser.getText().trim();
-        String pass = new String(textRegPass.getPassword());
-        String passConfirm = new String(textRegPassConfirm.getPassword());
-
-        if (user.isEmpty() || pass.isEmpty() || passConfirm.isEmpty()) {
-            labelStatusRegistro.setText("⚠ Camps obligatoris");
-            labelStatusRegistro.setForeground(ERROR_COLOR);
-            return;
-        }
-
-        if (!pass.equals(passConfirm)) {
-            labelStatusRegistro.setText("⚠ Les contrasenyes no coincideixen");
-            labelStatusRegistro.setForeground(ERROR_COLOR);
-            return;
-        }
-
-        String resultado = iCtrlPresentacio.registrarUsuari(user, pass);
-        if (resultado.contains("correctament")) {
-            JOptionPane.showMessageDialog(this, "✓ " + resultado, "Registre Completat",
-                    JOptionPane.INFORMATION_MESSAGE);
-            vistaPrincipal.mostrarVista("LOGIN");
-        } else {
-            labelStatusRegistro.setText("⚠ " + resultado.replace("Error: ", ""));
-            labelStatusRegistro.setForeground(ERROR_COLOR);
-        }
+    void mostrarError(String missatge) {
+        labelStatusRegistro.setText(missatge);
+        labelStatusRegistro.setForeground(UIStyles.ERROR_COLOR);
     }
 }

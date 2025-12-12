@@ -35,7 +35,7 @@ sourceSets {
 }
 
 ext {
-    javaMainClass = 'edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver'
+    javaMainClass = 'edu.upc.prop.clusterxx.Main'
 }
 
 application {
@@ -69,7 +69,7 @@ dependencies {
 }
 
 tasks.named('run', JavaExec) {
-    classpath = sourceSets.drivers.runtimeClasspath
+    classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
 }
 

@@ -4,57 +4,109 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
+/**
+ * Vista per gestionar (modificar, eliminar i veure) les enquestes creades per
+ * l'usuari.
+ * 
+ * Aquesta vista mostra una llista de totes les enquestes creades per l'usuari
+ * autenticat i ofereix operacions de gestió sobre elles.
+ * 
+ * Funcionalitats clau:
+ * 
+ * Visualització de totes les enquestes creades per l'usuari.
+ * Modificació de títol i descripció d'enquestes existents.
+ * Gestió de preguntes de cada enquesta (obre DialogoGestionPreguntes).
+ * Visualització de participants que han respost (obre DialogoParticipants).
+ * Eliminació d'enquestes amb confirmació.
+ * Deshabilitació de botons quan no hi ha selecció.
+ * Actualització dinàmica de la llista després de cada operació.
+ * 
+ * 
+ * La vista s'actualitza automàticament mitjançant el mètode
+ * {@link #actualizarLista()} cada vegada que es mostra des de
+ * {@link VistaPrincipal}.
+ */
 public class VistaGestionEnquestes extends JPanel {
 
-    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
-    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
-    private static final Color TEXT_COLOR = new Color(44, 62, 80);
-
+    /** Controlador de presentació per executar operacions sobre enquestes. */
     private CtrlPresentacio iCtrlPresentacio;
+    /** Referència a la vista principal per permetre la navegació. */
     private VistaPrincipal vistaPrincipal;
 
+    /** Model de dades per a la llista d'enquestes. */
     private DefaultListModel<String> listModelEnquestes = new DefaultListModel<>();
-    private JList<String> listEnquestes = new JList<>(listModelEnquestes);
+    /** Component visual que mostra la llista d'enquestes. */
+    JList<String> listEnquestes = new JList<>(listModelEnquestes);
+    /** Botó per modificar una enquesta seleccionada. */
     private JButton btnEditar = new JButton("✏️ Modificar");
+    /** Botó per gestionar les preguntes d'una enquesta. */
     private JButton btnGestionarPreguntes = new JButton("📝 Gestionar Preguntes");
+    /** Botó per veure els participants que han respost. */
     private JButton btnVeureParticipants = new JButton("👥 Veure Participants");
+    /** Botó per eliminar una enquesta seleccionada. */
     private JButton btnEliminar = new JButton("🗑️ Eliminar");
+    /** Botó per tornar al menú principal. */
     private JButton btnVolver = new JButton("← Tornar");
 
+    /**
+     * Constructor de la vista de gestió d'enquestes.
+     * 
+     * Inicialitza la vista, enllaça amb el controlador i la vista principal,
+     * i construeix la interfície d'usuari.
+     *
+     * @param ctrlPresentacio Controlador de presentació per a les operacions
+     *                        sobre enquestes.
+     * @param vistaPrincipal  Referència a la finestra principal per a la
+     *                        navegació.
+     */
     public VistaGestionEnquestes(CtrlPresentacio ctrlPresentacio, VistaPrincipal vistaPrincipal) {
         this.iCtrlPresentacio = ctrlPresentacio;
         this.vistaPrincipal = vistaPrincipal;
         inicializarComponentes();
     }
 
+    /**
+     * Inicialitza i configura tots els components gràfics de la vista.
+     * 
+     * Crea una interfície amb tres seccions:
+     * 
+     * Adalt: Títol amb icona de gestió (📋).
+     * MIG: Llista desplaçable d'enquestes de l'usuari.
+     * Abaix: Botons d'acció (Modificar, Gestionar Preguntes, Veure
+     *   Participants, Eliminar, Tornar).
+     * 
+     * 
+     * Configura els listeners per habilitar/deshabilitar els botons segons la
+     * selecció de la llista. Tots els botons estan deshabiltats inicialment.
+     */
     private void inicializarComponentes() {
         setLayout(new BorderLayout(10, 10));
-        setBackground(BACKGROUND_COLOR);
+        setBackground(UIStyles.BACKGROUND_COLOR);
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // Título
         JLabel titulo = new JLabel("📋 Gestió d'Enquestes");
-        titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 20));
-        titulo.setForeground(TEXT_COLOR);
+        titulo.setFont(UIStyles.FONT_VIEW_TITLE);
+        titulo.setForeground(UIStyles.TEXT_COLOR);
         add(titulo, BorderLayout.NORTH);
 
         // Lista
-        listEnquestes.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        listEnquestes.setFixedCellHeight(35);
-        listEnquestes.setSelectionBackground(new Color(52, 152, 219, 80));
+        listEnquestes.setFont(UIStyles.FONT_NORMAL);
+        listEnquestes.setFixedCellHeight(40);
+        listEnquestes.setSelectionBackground(UIStyles.SELECTION_COLOR);
         JScrollPane scrollList = new JScrollPane(listEnquestes);
         scrollList.setBorder(BorderFactory.createTitledBorder("Les meves enquestes"));
         add(scrollList, BorderLayout.CENTER);
 
         // Botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        panelBotones.setBackground(BACKGROUND_COLOR);
+        panelBotones.setBackground(UIStyles.BACKGROUND_COLOR);
 
-        styleButton(btnEditar, PRIMARY_COLOR);
-        styleButton(btnGestionarPreguntes, new Color(39, 174, 96));
-        styleButton(btnVeureParticipants, new Color(243, 156, 18));
-        styleButton(btnEliminar, new Color(231, 76, 60));
-        styleButton(btnVolver, new Color(149, 165, 166));
+        UIComponents.styleButton(btnEditar, UIStyles.PRIMARY_COLOR);
+        UIComponents.styleButton(btnGestionarPreguntes, UIStyles.SUCCESS_COLOR);
+        UIComponents.styleButton(btnVeureParticipants, UIStyles.WARNING_COLOR);
+        UIComponents.styleButton(btnEliminar, UIStyles.ERROR_COLOR);
+        UIComponents.styleButton(btnVolver, UIStyles.SECONDARY_COLOR);
 
         panelBotones.add(btnEditar);
         panelBotones.add(btnGestionarPreguntes);
@@ -64,11 +116,20 @@ public class VistaGestionEnquestes extends JPanel {
         add(panelBotones, BorderLayout.SOUTH);
 
         // Listeners
-        btnEditar.addActionListener(e -> mostrarDialogoEditar());
-        btnGestionarPreguntes.addActionListener(e -> mostrarDialogoPreguntes());
-        btnVeureParticipants.addActionListener(e -> mostrarParticipants());
-        btnEliminar.addActionListener(e -> eliminarEnquesta());
-        btnVolver.addActionListener(e -> vistaPrincipal.mostrarVista("MENU"));
+        btnEditar.setActionCommand(MyActionListener.Action.MODIFICAR_ENQUESTA.name());
+        btnEditar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnGestionarPreguntes.setActionCommand(MyActionListener.Action.GESTIONAR_PREGUNTES.name());
+        btnGestionarPreguntes.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnVeureParticipants.setActionCommand(MyActionListener.Action.VEURE_PARTICIPANTS.name());
+        btnVeureParticipants.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnEliminar.setActionCommand(MyActionListener.Action.ELIMINAR_ENQUESTA.name());
+        btnEliminar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnVolver.setActionCommand(MyActionListener.Action.TORNAR_MENU.name());
+        btnVolver.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
 
         listEnquestes.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -86,107 +147,26 @@ public class VistaGestionEnquestes extends JPanel {
         btnEliminar.setEnabled(false);
     }
 
-    private void styleButton(JButton btn, Color color) {
-        btn.setFont(new Font("Segoe UI Emoji", Font.BOLD, 12));
-        btn.setForeground(Color.WHITE);
-        btn.setBackground(color);
-        btn.setBorder(new EmptyBorder(8, 15, 8, 15));
-        btn.setContentAreaFilled(true);
-        btn.setOpaque(true);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    }
-
+    /**
+     * Actualitza la llista d'enquestes amb les enquestes de l'usuari actual.
+     * 
+     * Aquest mètode és invocat des de {@link VistaPrincipal#mostrarVista(String)}
+     * cada vegada que es mostra aquesta vista.
+     */
     public void actualizarLista() {
         refreshEnquestesList();
     }
 
-    private void mostrarDialogoEditar() {
-        String selected = listEnquestes.getSelectedValue();
-        if (selected == null)
-            return;
-
-        String id = selected.split(":")[0].trim();
-        String currentTitle = "", currentDesc = "";
-
-        for (edu.upc.prop.clusterxx.domini.classes.Enquesta e : iCtrlPresentacio.getEnquestesUsuari()) {
-            if (e.getId().equals(id)) {
-                currentTitle = e.getTitol();
-                currentDesc = e.getDescripcio();
-                break;
-            }
-        }
-
-        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-        DialogoEnquesta dialogo = new DialogoEnquesta(parentFrame, "Modificar Enquesta", false);
-        dialogo.setDatos(id, currentTitle, currentDesc);
-        dialogo.setVisible(true);
-
-        if (dialogo.isConfirmado()) {
-            String resultado = iCtrlPresentacio.modificarEnquesta(id, dialogo.getTitol(), dialogo.getDesc());
-            JOptionPane.showMessageDialog(this, resultado);
-            if (resultado.contains("correctament"))
-                refreshEnquestesList();
-        }
-    }
-
-    private void mostrarDialogoPreguntes() {
-        String selected = listEnquestes.getSelectedValue();
-        if (selected == null) {
-            JOptionPane.showMessageDialog(this, "Selecciona una enquesta.");
-            return;
-        }
-
-        String id = selected.split(":")[0].trim();
-        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-        new DialogoGestionPreguntes(parentFrame, iCtrlPresentacio, id).setVisible(true);
-    }
-
-    private void mostrarParticipants() {
-        String selected = listEnquestes.getSelectedValue();
-        if (selected == null) {
-            JOptionPane.showMessageDialog(this, "Selecciona una enquesta.");
-            return;
-        }
-
-        String id = selected.split(":")[0].trim();
-
-        // Buscar la enquesta
-        edu.upc.prop.clusterxx.domini.classes.Enquesta enquesta = null;
-        for (edu.upc.prop.clusterxx.domini.classes.Enquesta e : iCtrlPresentacio.getEnquestesUsuari()) {
-            if (e.getId().equals(id)) {
-                enquesta = e;
-                break;
-            }
-        }
-
-        if (enquesta == null) {
-            JOptionPane.showMessageDialog(this, "No s'ha trobat l'enquesta.");
-            return;
-        }
-
-        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-        new DialogoParticipants(parentFrame, enquesta.getTitol(), enquesta.getParticipants()).setVisible(true);
-    }
-
-    private void eliminarEnquesta() {
-        String selected = listEnquestes.getSelectedValue();
-        if (selected == null)
-            return;
-
-        String id = selected.split(":")[0].trim();
-        int confirm = JOptionPane.showConfirmDialog(this, "Eliminar l'enquesta " + id + "?",
-                "Confirmar", JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            String resultado = iCtrlPresentacio.esborrarEnquesta(id);
-            JOptionPane.showMessageDialog(this, resultado);
-            if (resultado.contains("correctament"))
-                refreshEnquestesList();
-        }
-    }
-
-    private void refreshEnquestesList() {
+    /**
+     * Refresca el contingut de la llista d'enquestes.
+     * 
+     * Neteja el model de la llista i afegeix totes les enquestes de l'usuari
+     * obtingudes del controlador amb el format "ID: Títol".
+     * 
+     * Aquest mètode s'invoca després de cada operació de modificació o
+     * eliminació.
+     */
+    void refreshEnquestesList() {
         listModelEnquestes.clear();
         for (edu.upc.prop.clusterxx.domini.classes.Enquesta e : iCtrlPresentacio.getEnquestesUsuari()) {
             listModelEnquestes.addElement(e.getId() + ": " + e.getTitol());

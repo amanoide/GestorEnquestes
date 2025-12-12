@@ -26,11 +26,6 @@ import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
  */
 public class DialogoResponderEnquesta extends JDialog {
 
-    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
-    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
-    private static final Color TEXT_COLOR = new Color(44, 62, 80);
-    private static final Color CARD_COLOR = Color.WHITE;
-
     private CtrlPresentacio iCtrlPresentacio;
     private String idEnquesta;
     private ArrayList<Pregunta> preguntes;
@@ -74,23 +69,23 @@ public class DialogoResponderEnquesta extends JDialog {
         setLayout(new BorderLayout(10, 10));
         setSize(650, 550);
         setLocationRelativeTo(getOwner());
-        getContentPane().setBackground(BACKGROUND_COLOR);
+        getContentPane().setBackground(UIStyles.BACKGROUND_COLOR);
         ((JPanel) getContentPane()).setBorder(new EmptyBorder(15, 15, 15, 15));
 
         // Título
         JLabel titulo = new JLabel("📝 Respondre Enquesta: " + idEnquesta);
         titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 18));
-        titulo.setForeground(TEXT_COLOR);
+        titulo.setForeground(UIStyles.TEXT_COLOR);
         add(titulo, BorderLayout.NORTH);
 
         JPanel panelContent = new JPanel();
         panelContent.setLayout(new BoxLayout(panelContent, BoxLayout.Y_AXIS));
-        panelContent.setBackground(BACKGROUND_COLOR);
+        panelContent.setBackground(UIStyles.BACKGROUND_COLOR);
         panelContent.setBorder(new EmptyBorder(10, 5, 10, 5));
 
         for (Pregunta p : preguntes) {
             JPanel panelPregunta = new JPanel(new BorderLayout(5, 5));
-            panelPregunta.setBackground(CARD_COLOR);
+            panelPregunta.setBackground(UIStyles.CARD_COLOR);
             panelPregunta.setBorder(new CompoundBorder(
                     new LineBorder(new Color(220, 220, 220), 1, true),
                     new EmptyBorder(12, 12, 12, 12)));
@@ -102,15 +97,15 @@ public class DialogoResponderEnquesta extends JDialog {
             String emoji = getEmojiTipus(p.getTipus());
             JLabel lblPregunta = new JLabel(emoji + " " + p.getText());
             lblPregunta.setFont(new Font("Segoe UI Emoji", Font.BOLD, 13));
-            lblPregunta.setForeground(TEXT_COLOR);
+            lblPregunta.setForeground(UIStyles.TEXT_COLOR);
 
             String instruccions = getInstruccions(p);
             JLabel lblInstruccions = new JLabel(instruccions);
-            lblInstruccions.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-            lblInstruccions.setForeground(new Color(149, 165, 166));
+            lblInstruccions.setFont(UIStyles.FONT_INSTRUCTIONS);
+            lblInstruccions.setForeground(UIStyles.TEXT_SECONDARY);
 
             JPanel headerPanel = new JPanel(new BorderLayout());
-            headerPanel.setBackground(CARD_COLOR);
+            headerPanel.setBackground(UIStyles.CARD_COLOR);
             headerPanel.add(lblPregunta, BorderLayout.NORTH);
             headerPanel.add(lblInstruccions, BorderLayout.SOUTH);
 
@@ -124,14 +119,14 @@ public class DialogoResponderEnquesta extends JDialog {
 
         JScrollPane scroll = new JScrollPane(panelContent);
         scroll.setBorder(null);
-        scroll.getViewport().setBackground(BACKGROUND_COLOR);
+        scroll.getViewport().setBackground(UIStyles.BACKGROUND_COLOR);
         add(scroll, BorderLayout.CENTER);
 
         JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        panelBotons.setBackground(BACKGROUND_COLOR);
+        panelBotons.setBackground(UIStyles.BACKGROUND_COLOR);
 
-        JButton btnEnviar = crearBoton("✅ Enviar Respostes", new Color(39, 174, 96));
-        JButton btnCancel = crearBoton("✖ Cancel·lar", new Color(149, 165, 166));
+        JButton btnEnviar = UIComponents.createColorButton("✅ Enviar Respostes", UIStyles.SUCCESS_COLOR);
+        JButton btnCancel = UIComponents.createColorButton("✖ Cancel·lar", UIStyles.SECONDARY_COLOR);
 
         btnEnviar.addActionListener(e -> enviarRespostes());
         btnCancel.addActionListener(e -> setVisible(false));
@@ -187,19 +182,6 @@ public class DialogoResponderEnquesta extends JDialog {
         }
     }
 
-    private JButton crearBoton(String text, Color color) {
-        JButton btn = new JButton(text);
-        btn.setFont(new Font("Segoe UI Emoji", Font.BOLD, 13));
-        btn.setForeground(Color.WHITE);
-        btn.setBackground(color);
-        btn.setBorder(new EmptyBorder(10, 20, 10, 20));
-        btn.setContentAreaFilled(true);
-        btn.setOpaque(true);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return btn;
-    }
-
     /**
      * Fàbrica de components d'entrada: crea el widget de Swing adequat segons el
      * tipus de pregunta.
@@ -241,12 +223,12 @@ public class DialogoResponderEnquesta extends JDialog {
 
             case QUALITATIVA_NO_ORDENADA_MULTIPLE:
                 JPanel panelChecks = new JPanel(new GridLayout(0, 2, 5, 5));
-                panelChecks.setBackground(CARD_COLOR);
+                panelChecks.setBackground(UIStyles.CARD_COLOR);
                 panelChecks.putClientProperty("isMultiple", true);
                 for (Opcio o : p.getOpcions()) {
                     JCheckBox cb = new JCheckBox(o.getText());
-                    cb.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-                    cb.setBackground(CARD_COLOR);
+                    cb.setFont(UIStyles.FONT_CHECKBOX);
+                    cb.setBackground(UIStyles.CARD_COLOR);
                     cb.setName(String.valueOf(o.getId()));
                     panelChecks.add(cb);
                 }

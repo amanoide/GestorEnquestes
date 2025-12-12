@@ -2,90 +2,6 @@
     "descripcio": "Enquesta per avaluar la satisfaccio dels estudiants amb el curs de programacio",
     "preguntes": [
         {
-            "valorMinim": 0,
-            "respostes": [
-                {
-                    "id": "p1_joan",
-                    "text": "20.0",
-                    "username": "joan"
-                },
-                {
-                    "id": "p1_pau",
-                    "text": "13.0",
-                    "username": "pau"
-                },
-                {
-                    "id": "p1_marta",
-                    "text": "22.0",
-                    "username": "marta"
-                },
-                {
-                    "id": "p1_carla",
-                    "text": "9.0",
-                    "username": "carla"
-                },
-                {
-                    "id": "p1_sofia",
-                    "text": "16.0",
-                    "username": "sofia"
-                },
-                {
-                    "id": "p1_jairo",
-                    "text": "10.0",
-                    "username": "jairo"
-                },
-                {
-                    "id": "p1_anna",
-                    "text": "8.0",
-                    "username": "anna"
-                },
-                {
-                    "id": "p1_roger",
-                    "text": "19.0",
-                    "username": "roger"
-                },
-                {
-                    "id": "p1_laura",
-                    "text": "18.0",
-                    "username": "laura"
-                },
-                {
-                    "id": "p1_alex",
-                    "text": "11.0",
-                    "username": "alex"
-                },
-                {
-                    "id": "p1_julia",
-                    "text": "17.0",
-                    "username": "julia"
-                },
-                {
-                    "id": "p1_marc",
-                    "text": "14.0",
-                    "username": "marc"
-                },
-                {
-                    "id": "p1_maria",
-                    "text": "15.0",
-                    "username": "maria"
-                },
-                {
-                    "id": "p1_david",
-                    "text": "25.0",
-                    "username": "david"
-                },
-                {
-                    "id": "p1_pere",
-                    "text": "12.0",
-                    "username": "pere"
-                }
-            ],
-            "valorMaxim": 50,
-            "id": "p1",
-            "text": "Quantes hores estudies per setmana?",
-            "tipus": "NUMERICA"
-        },
-        {
             "respostes": [
                 {
                     "id": "1_joan",
@@ -111,11 +27,6 @@
                     "id": "1_sofia",
                     "text": "M'encanta programar",
                     "username": "sofia"
-                },
-                {
-                    "id": "1_jairo",
-                    "text": "M'agrada molt la programació",
-                    "username": "jairo"
                 },
                 {
                     "id": "1_anna",
@@ -193,11 +104,6 @@
                     "id": "p2_sofia",
                     "text": "Excelente",
                     "username": "sofia"
-                },
-                {
-                    "id": "p2_jairo",
-                    "text": "Bueno",
-                    "username": "jairo"
                 },
                 {
                     "id": "p2_anna",

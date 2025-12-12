@@ -6,51 +6,97 @@ import java.awt.*;
 import java.util.ArrayList;
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 
+/**
+ * Vista per gestionar les respostes de l'usuari a les enquestes contestades.
+ * 
+ * Aquesta vista mostra una llista de totes les enquestes que l'usuari ha
+ * contestat, permetent visualitzar/modificar les respostes individuals o
+ * esborrar totes les respostes d'una enquesta.
+ * 
+ * Funcionalitats clau:
+ * 
+ * Llista de totes les enquestes contestades per l'usuari autenticat.
+ * Botó per veure i modificar respostes (obre DialogoGestionarRespostes).
+ * Botó per esborrar totes les respostes d'una enquesta amb confirmació.
+ * Deshabilitació de botons quan no hi ha selecció.
+ * Actualització dinàmica de la llista després de cada operació.
+ * Navegació de tornada al menú principal.
+ * 
+ * 
+ * La vista s'actualitza automàticament mitjançant el mètode
+ * {@link #actualizarLista()} cada vegada que es mostra des de
+ * {@link VistaPrincipal}.
+ */
 public class VistaGestionarRespostes extends JPanel {
 
-    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
-    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
-    private static final Color TEXT_COLOR = new Color(44, 62, 80);
-
+    /** Controlador de presentació per executar operacions sobre respostes. */
     private CtrlPresentacio iCtrlPresentacio;
+    /** Referència a la vista principal per permetre la navegació. */
     private VistaPrincipal vistaPrincipal;
 
+    /** Model de dades per a la llista d'enquestes contestades. */
     private DefaultListModel<String> listModel = new DefaultListModel<>();
-    private JList<String> listEnquestes = new JList<>(listModel);
+    /** Component visual que mostra la llista d'enquestes contestades. */
+    JList<String> listEnquestes = new JList<>(listModel);
+    /** Botons d'acció de la vista. */
     private JButton btnModificar, btnEsborrar, btnTornar;
 
+    /**
+     * Constructor de la vista de gestió de respostes.
+     * 
+     * Inicialitza la vista, enllaça amb el controlador i la vista principal,
+     * i construeix la interfície d'usuari.
+     *
+     * @param ctrlPresentacio Controlador de presentació per a les operacions
+     *                        sobre respostes.
+     * @param vistaPrincipal  Referència a la finestra principal per a la
+     *                        navegació.
+     */
     public VistaGestionarRespostes(CtrlPresentacio ctrlPresentacio, VistaPrincipal vistaPrincipal) {
         this.iCtrlPresentacio = ctrlPresentacio;
         this.vistaPrincipal = vistaPrincipal;
         inicializarComponentes();
     }
 
+    /**
+     * Inicialitza i configura tots els components gràfics de la vista.
+     * 
+     * Crea una interfície amb tres seccions:
+     * 
+     * Adalt: Títol amb icona d'enquestes contestades (📋).
+     * Mig: Llista desplaçable d'enquestes contestades per l'usuari.
+     * Abaix: Botons d'acció (Veure/Modificar, Esborrar Totes, Tornar).
+     * 
+     * 
+     * Configura els listeners per habilitar/deshabilitar els botons segons la
+     * selecció de la llista.
+     */
     private void inicializarComponentes() {
         setLayout(new BorderLayout(10, 10));
-        setBackground(BACKGROUND_COLOR);
+        setBackground(UIStyles.BACKGROUND_COLOR);
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // Título
         JLabel lblTitol = new JLabel("📋 Les Meves Enquestes Contestades");
-        lblTitol.setFont(new Font("Segoe UI Emoji", Font.BOLD, 20));
-        lblTitol.setForeground(TEXT_COLOR);
+        lblTitol.setFont(UIStyles.FONT_VIEW_TITLE);
+        lblTitol.setForeground(UIStyles.TEXT_COLOR);
         add(lblTitol, BorderLayout.NORTH);
 
         // Lista
-        listEnquestes.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        listEnquestes.setFont(UIStyles.FONT_NORMAL);
         listEnquestes.setFixedCellHeight(40);
-        listEnquestes.setSelectionBackground(new Color(52, 152, 219, 80));
+        listEnquestes.setSelectionBackground(UIStyles.SELECTION_COLOR);
         JScrollPane scroll = new JScrollPane(listEnquestes);
         scroll.setBorder(BorderFactory.createTitledBorder("Selecciona una enquesta"));
         add(scroll, BorderLayout.CENTER);
 
         // Botones
         JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        panelBotons.setBackground(BACKGROUND_COLOR);
+        panelBotons.setBackground(UIStyles.BACKGROUND_COLOR);
 
-        btnModificar = crearBoton("👁️ Veure/Modificar", PRIMARY_COLOR);
-        btnEsborrar = crearBoton("🗑️ Esborrar Totes", new Color(231, 76, 60));
-        btnTornar = crearBoton("← Tornar", new Color(149, 165, 166));
+        btnModificar = UIComponents.createColorButton("👁️ Veure/Modificar", UIStyles.PRIMARY_COLOR);
+        btnEsborrar = UIComponents.createColorButton("🗑️ Esborrar Totes", UIStyles.ERROR_COLOR);
+        btnTornar = UIComponents.createColorButton("← Tornar", UIStyles.SECONDARY_COLOR);
 
         panelBotons.add(btnModificar);
         panelBotons.add(btnEsborrar);
@@ -70,24 +116,28 @@ public class VistaGestionarRespostes extends JPanel {
             }
         });
 
-        btnModificar.addActionListener(e -> obrirDialegModificar());
-        btnEsborrar.addActionListener(e -> esborrarRespostes());
-        btnTornar.addActionListener(e -> vistaPrincipal.mostrarVista("MENU"));
+        btnModificar.setActionCommand(MyActionListener.Action.MODIFICAR_RESPOSTA.name());
+        btnModificar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnEsborrar.setActionCommand(MyActionListener.Action.ELIMINAR_RESPOSTA.name());
+        btnEsborrar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnTornar.setActionCommand(MyActionListener.Action.TORNAR_MENU.name());
+        btnTornar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
     }
 
-    private JButton crearBoton(String text, Color color) {
-        JButton btn = new JButton(text);
-        btn.setFont(new Font("Segoe UI Emoji", Font.BOLD, 12));
-        btn.setForeground(Color.WHITE);
-        btn.setBackground(color);
-        btn.setBorder(new EmptyBorder(8, 15, 8, 15));
-        btn.setContentAreaFilled(true);
-        btn.setOpaque(true);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return btn;
-    }
-
+    /**
+     * Actualitza la llista d'enquestes amb les enquestes contestades per
+     * l'usuari actual.
+     * 
+     * Neteja el model de la llista i afegeix totes les enquestes contestades
+     * obtingudes del controlador. Si l'usuari no ha contestat cap enquesta,
+     * mostra un missatge indicatiu i deshabilita la llista.
+     * 
+     * Aquest mètode és invocat des de {@link VistaPrincipal#mostrarVista(String)}
+     * cada vegada que es mostra aquesta vista, i també després d'esborrar
+     * respostes.
+     */
     public void actualizarLista() {
         listModel.clear();
         ArrayList<Enquesta> contestades = iCtrlPresentacio.getEnquestesContestades();
@@ -99,36 +149,6 @@ public class VistaGestionarRespostes extends JPanel {
             for (Enquesta e : contestades) {
                 listModel.addElement(e.getId() + ": " + e.getTitol());
             }
-        }
-    }
-
-    private void obrirDialegModificar() {
-        String selected = listEnquestes.getSelectedValue();
-        if (selected == null || selected.startsWith("No has contestat"))
-            return;
-
-        String idEnquesta = selected.split(":")[0].trim();
-        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-        new DialogoGestionarRespostes(parentFrame, iCtrlPresentacio, idEnquesta).setVisible(true);
-        actualizarLista();
-    }
-
-    private void esborrarRespostes() {
-        String selected = listEnquestes.getSelectedValue();
-        if (selected == null || selected.startsWith("No has contestat"))
-            return;
-
-        String idEnquesta = selected.split(":")[0].trim();
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Esborrar TOTES les respostes a l'enquesta " + idEnquesta + "?",
-                "Confirmar", JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            String resultat = iCtrlPresentacio.esborrarRespostesEnquesta(idEnquesta);
-            JOptionPane.showMessageDialog(this, resultat);
-            if (resultat.contains("correctament"))
-                actualizarLista();
         }
     }
 }

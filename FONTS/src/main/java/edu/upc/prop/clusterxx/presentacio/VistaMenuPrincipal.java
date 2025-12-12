@@ -25,16 +25,6 @@ public class VistaMenuPrincipal extends JPanel {
     /** Referència a la vista principal per canviar entre pantalles. */
     private VistaPrincipal vistaPrincipal;
 
-    // Colores del tema
-    private static final Color PRIMARY_COLOR = new Color(41, 128, 185);
-    private static final Color PRIMARY_HOVER = new Color(52, 152, 219);
-    private static final Color SECONDARY_COLOR = new Color(149, 165, 166);
-    private static final Color BACKGROUND_COLOR = new Color(236, 240, 241);
-    private static final Color CARD_COLOR = Color.WHITE;
-    private static final Color TEXT_COLOR = new Color(44, 62, 80);
-    private static final Color SUCCESS_COLOR = new Color(39, 174, 96);
-    private static final Color WARNING_COLOR = new Color(243, 156, 18);
-
     private JButton btnNueva = new JButton("Nova enquesta");
     private JButton btnImportar = new JButton("Importar enquesta");
     private JButton btnGestionar = new JButton("Gestionar les meves enquestes");
@@ -70,209 +60,95 @@ public class VistaMenuPrincipal extends JPanel {
      * accions d'usuari).
      */
     private void inicializarComponentes() {
-        this.setBackground(BACKGROUND_COLOR);
+        this.setBackground(UIStyles.BACKGROUND_COLOR);
         this.setLayout(new GridBagLayout());
 
         // Panel tarjeta
-        JPanel cardPanel = new JPanel();
-        cardPanel.setBackground(CARD_COLOR);
-        cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
-        cardPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 3, 3, new Color(0, 0, 0, 30)),
-                BorderFactory.createCompoundBorder(
-                        new LineBorder(new Color(189, 195, 199), 1, true),
-                        new EmptyBorder(40, 50, 40, 50))));
+        JPanel cardPanel = UIComponents.createCardPanel();
 
         // Icono
-        JLabel iconLabel = new JLabel("📊");
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
-        iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        cardPanel.add(iconLabel);
+        cardPanel.add(UIComponents.createIconLabel("📊"));
         cardPanel.add(Box.createVerticalStrut(10));
 
         // Título
-        JLabel title = new JLabel("Gestor d'Enquestes");
-        title.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        title.setForeground(TEXT_COLOR);
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        cardPanel.add(title);
+        cardPanel.add(UIComponents.createTitleLabel("Gestor d'Enquestes"));
 
         // Subtítulo
         JLabel subtitle = new JLabel("Què vols fer avui?");
-        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        subtitle.setForeground(SECONDARY_COLOR);
+        subtitle.setFont(UIStyles.FONT_SUBTITLE);
+        subtitle.setForeground(UIStyles.SECONDARY_COLOR);
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(subtitle);
         cardPanel.add(Box.createVerticalStrut(30));
 
         // Sección: Crear enquestes
-        cardPanel.add(createSectionLabel("Crear"));
+        cardPanel.add(UIComponents.createSectionLabel("Crear"));
         cardPanel.add(Box.createVerticalStrut(8));
-        styleButton(btnNueva, PRIMARY_COLOR);
+        UIComponents.styleButton(btnNueva, UIStyles.PRIMARY_COLOR);
+        btnNueva.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(btnNueva);
         cardPanel.add(Box.createVerticalStrut(8));
-        styleButton(btnImportar, PRIMARY_COLOR);
+        UIComponents.styleButton(btnImportar, UIStyles.PRIMARY_COLOR);
+        btnImportar.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(btnImportar);
         cardPanel.add(Box.createVerticalStrut(20));
 
         // Sección: Gestionar
-        cardPanel.add(createSectionLabel("Gestionar"));
+        cardPanel.add(UIComponents.createSectionLabel("Gestionar"));
         cardPanel.add(Box.createVerticalStrut(8));
-        styleButton(btnGestionar, SUCCESS_COLOR);
+        UIComponents.styleButton(btnGestionar, UIStyles.SUCCESS_COLOR);
+        btnGestionar.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(btnGestionar);
         cardPanel.add(Box.createVerticalStrut(8));
-        styleButton(btnAnalisi, SUCCESS_COLOR);
+        UIComponents.styleButton(btnAnalisi, UIStyles.SUCCESS_COLOR);
+        btnAnalisi.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(btnAnalisi);
         cardPanel.add(Box.createVerticalStrut(20));
 
         // Sección: Respondre
-        cardPanel.add(createSectionLabel("Respondre"));
+        cardPanel.add(UIComponents.createSectionLabel("Respondre"));
         cardPanel.add(Box.createVerticalStrut(8));
-        styleButton(btnRespondre, WARNING_COLOR);
+        UIComponents.styleButton(btnRespondre, UIStyles.WARNING_COLOR);
+        btnRespondre.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(btnRespondre);
         cardPanel.add(Box.createVerticalStrut(8));
-        styleButton(btnGestionarRespostes, WARNING_COLOR);
+        UIComponents.styleButton(btnGestionarRespostes, UIStyles.WARNING_COLOR);
+        btnGestionarRespostes.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(btnGestionarRespostes);
         cardPanel.add(Box.createVerticalStrut(25));
 
         // Separador
         JSeparator separator = new JSeparator();
         separator.setMaximumSize(new Dimension(300, 1));
+        separator.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(separator);
         cardPanel.add(Box.createVerticalStrut(15));
 
         // Botón logout
-        styleButton(btnLogout, new Color(231, 76, 60));
+        UIComponents.styleButton(btnLogout, UIStyles.ERROR_COLOR);
+        btnLogout.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(btnLogout);
 
         // Listeners
-        btnNueva.addActionListener(e -> mostrarDialogoCrear());
-        btnImportar.addActionListener(e -> importarEnquesta());
-        btnGestionar.addActionListener(e -> vistaPrincipal.mostrarVista("GESTION"));
+        btnNueva.setActionCommand(MyActionListener.Action.CREAR_ENQUESTA.name());
+        btnNueva.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnImportar.setActionCommand(MyActionListener.Action.IMPORTAR_ENQUESTA.name());
+        btnImportar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnGestionar.setActionCommand(MyActionListener.Action.GESTIONAR_ENQUESTES.name());
+        btnGestionar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
         btnAnalisi.addActionListener(e -> vistaPrincipal.mostrarVista("ANALISI"));
-        btnRespondre.addActionListener(e -> mostrarDialogoResponder());
-        btnGestionarRespostes.addActionListener(e -> mostrarDialogoGestionarRespostes());
-        btnLogout.addActionListener(e -> {
-            iCtrlPresentacio.logout();
-            vistaPrincipal.mostrarVista("LOGIN");
-        });
+        
+        btnRespondre.setActionCommand(MyActionListener.Action.RESPONDRE_ENQUESTA.name());
+        btnRespondre.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnGestionarRespostes.addActionListener(e -> vistaPrincipal.mostrarVista("GESTION_RESPOSTES"));
+        
+        btnLogout.setActionCommand(MyActionListener.Action.LOGOUT.name());
+        btnLogout.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
 
         this.add(cardPanel);
-    }
-
-    /**
-     * Mètode d'utilitat per crear capçaleres de secció estilitzades.
-     *
-     * @param text El títol de la secció (ex: "CREAR", "GESTIONAR").
-     * @return Una {@link JLabel} configurada amb l'estil de títol de secció petit.
-     */
-    private JLabel createSectionLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        label.setForeground(SECONDARY_COLOR);
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        return label;
-    }
-
-    /**
-     * Aplica l'estil visual personalitzat a un botó, incloent el color de fons i
-     * efectes de ratolí.
-     *
-     * @param button El botó a configurar.
-     * @param color  El color base del botó, que s'aclareix automàticament per a
-     *               l'efecte "hover".
-     */
-    private void styleButton(JButton button, Color color) {
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        button.setForeground(Color.WHITE);
-        button.setBackground(color);
-        button.setMaximumSize(new Dimension(300, 45));
-        button.setPreferredSize(new Dimension(300, 45));
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setContentAreaFilled(true);
-        button.setOpaque(true);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        Color hoverColor = color.brighter();
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                button.setBackground(hoverColor);
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                button.setBackground(color);
-            }
-        });
-    }
-
-    /**
-     * Obre un diàleg modal per a la creació d'una nova enquesta.
-     * 
-     * Espera a que l'usuari ompli les dades i confirmi. Si l'usuari confirma (botó
-     * "Crear"),
-     * recull les dades introduïdes i delega al controlador la creació real de
-     * l'enquesta.
-     * Finalment, mostra un missatge informatiu amb el resultat de l'operació.
-     */
-    private void mostrarDialogoCrear() {
-        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-        DialogoEnquesta dialogo = new DialogoEnquesta(parentFrame, "Nova enquesta", true);
-        dialogo.setVisible(true);
-
-        if (dialogo.isConfirmado()) {
-            String resultado = iCtrlPresentacio.crearEnquesta(dialogo.getId(), dialogo.getTitol(), dialogo.getDesc());
-            JOptionPane.showMessageDialog(this, resultado);
-        }
-    }
-
-    /**
-     * Obre un selector de fitxers natiu (JFileChooser) per importar una enquesta.
-     * 
-     * Si l'usuari selecciona un fitxer vàlid, obté la seva ruta absoluta i crida al
-     * controlador
-     * per processar la importació. Mostra el resultat de l'operació a l'usuari.
-     */
-    private void importarEnquesta() {
-        JFileChooser fileChooser = new JFileChooser();
-        int result = fileChooser.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            java.io.File selectedFile = fileChooser.getSelectedFile();
-            String resultado = iCtrlPresentacio.importarEnquesta(selectedFile.getAbsolutePath());
-            JOptionPane.showMessageDialog(this, resultado);
-        }
-    }
-
-    /**
-     * Inicia el flux de resposta a una enquesta.
-     * 
-     * El procés consta de dos passos:
-     * 
-     * Mostra un diàleg ({@link DialogoSeleccionarEnquesta}) perquè l'usuari
-     * triï quina enquesta vol respondre.
-     * Si es selecciona una enquesta, obre un segon diàleg
-     * ({@link DialogoResponderEnquesta}) per a la resposta efectiva.
-     */
-    private void mostrarDialogoResponder() {
-        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-        DialogoSeleccionarEnquesta dialogoSel = new DialogoSeleccionarEnquesta(parentFrame, iCtrlPresentacio);
-        dialogoSel.setVisible(true);
-
-        if (dialogoSel.isConfirmado()) {
-            String idEnquesta = dialogoSel.getSelectedId();
-            DialogoResponderEnquesta dialogoResp = new DialogoResponderEnquesta(parentFrame, iCtrlPresentacio,
-                    idEnquesta);
-            dialogoResp.setVisible(true);
-        }
-    }
-
-    /**
-     * Navega cap a la vista de gestió de les respostes realitzades per l'usuari.
-     * Permet a l'usuari veure i administrar les enquestes que ha respost
-     * anteriorment.
-     */
-    private void mostrarDialogoGestionarRespostes() {
-        vistaPrincipal.mostrarVista("GESTION_RESPOSTES");
     }
 }
