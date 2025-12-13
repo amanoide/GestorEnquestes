@@ -1,0 +1,201 @@
+{
+    "descripcio": "Enquesta per avaluar la satisfaccio dels estudiants amb el curs de programacio",
+    "preguntes": [
+        {
+            "respostes": [
+                {
+                    "id": "1_joan",
+                    "text": "El curs està ben estructurat",
+                    "username": "joan"
+                },
+                {
+                    "id": "1_pau",
+                    "text": "Els exercicis són útils",
+                    "username": "pau"
+                },
+                {
+                    "id": "1_marta",
+                    "text": "Molt bon curs en general",
+                    "username": "marta"
+                },
+                {
+                    "id": "1_carla",
+                    "text": "És el meu tema preferit",
+                    "username": "carla"
+                },
+                {
+                    "id": "1_sofia",
+                    "text": "M'encanta programar",
+                    "username": "sofia"
+                },
+                {
+                    "id": "1_anna",
+                    "text": "Trobo que és molt pràctic",
+                    "username": "anna"
+                },
+                {
+                    "id": "1_roger",
+                    "text": "M'agradaria més temps de pràctica",
+                    "username": "roger"
+                },
+                {
+                    "id": "1_laura",
+                    "text": "Les classes són molt dinàmiques",
+                    "username": "laura"
+                },
+                {
+                    "id": "1_alex",
+                    "text": "És desafiant però gratificant",
+                    "username": "alex"
+                },
+                {
+                    "id": "1_julia",
+                    "text": "Aprenc a resoldre problemes",
+                    "username": "julia"
+                },
+                {
+                    "id": "1_marc",
+                    "text": "Podria ser més pràctic",
+                    "username": "marc"
+                },
+                {
+                    "id": "1_maria",
+                    "text": "És interessant però difícil",
+                    "username": "maria"
+                },
+                {
+                    "id": "1_david",
+                    "text": "Aprenc molt cada dia",
+                    "username": "david"
+                },
+                {
+                    "id": "1_pere",
+                    "text": "Necessito més exemples pràctics",
+                    "username": "pere"
+                }
+            ],
+            "id": "1",
+            "text": "Comentaris sobre el curs",
+            "tipus": "TEXT_LLIURE"
+        },
+        {
+            "respostes": [
+                {
+                    "id": "p2_joan",
+                    "text": "Excelente",
+                    "username": "joan"
+                },
+                {
+                    "id": "p2_pau",
+                    "text": "Bueno",
+                    "username": "pau"
+                },
+                {
+                    "id": "p2_marta",
+                    "text": "Excelente",
+                    "username": "marta"
+                },
+                {
+                    "id": "p2_carla",
+                    "text": "Bueno",
+                    "username": "carla"
+                },
+                {
+                    "id": "p2_sofia",
+                    "text": "Excelente",
+                    "username": "sofia"
+                },
+                {
+                    "id": "p2_anna",
+                    "text": "Regular",
+                    "username": "anna"
+                },
+                {
+                    "id": "p2_roger",
+                    "text": "Bueno",
+                    "username": "roger"
+                },
+                {
+                    "id": "p2_laura",
+                    "text": "Excelente",
+                    "username": "laura"
+                },
+                {
+                    "id": "p2_alex",
+                    "text": "Bueno",
+                    "username": "alex"
+                },
+                {
+                    "id": "p2_julia",
+                    "text": "Excelente",
+                    "username": "julia"
+                },
+                {
+                    "id": "p2_marc",
+                    "text": "Regular",
+                    "username": "marc"
+                },
+                {
+                    "id": "p2_maria",
+                    "text": "Excelente",
+                    "username": "maria"
+                },
+                {
+                    "id": "p2_david",
+                    "text": "Excelente",
+                    "username": "david"
+                },
+                {
+                    "id": "p2_pere",
+                    "text": "Bueno",
+                    "username": "pere"
+                }
+            ],
+            "id": "p2",
+            "text": "Com valores el professor?",
+            "opcions": [
+                {
+                    "ordre": 1,
+                    "id": 1,
+                    "text": "Malo"
+                },
+                {
+                    "ordre": 2,
+                    "id": 2,
+                    "text": "Regular"
+                },
+                {
+                    "ordre": 3,
+                    "id": 3,
+                    "text": "Bueno"
+                },
+                {
+                    "ordre": 4,
+                    "id": 4,
+                    "text": "Excelente"
+                }
+            ],
+            "tipus": "QUALITATIVA_ORDENADA"
+        }
+    ],
+    "titol": "Satisfaccio del Curs de Programacio",
+    "id": "enc_prog",
+    "idCreador": "jairo",
+    "participants": [
+        "jairo",
+        "maria",
+        "anna",
+        "joan",
+        "pere",
+        "laura",
+        "david",
+        "carla",
+        "marc",
+        "sofia",
+        "alex",
+        "marta",
+        "pau",
+        "julia",
+        "roger"
+    ]
+}

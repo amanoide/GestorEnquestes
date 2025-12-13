@@ -210,7 +210,7 @@ DEFAULT_JVM_OPTS=""
 
 set -- \
         -classpath "$CLASSPATH" \
-        edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver \
+        edu.upc.prop.clusterxx.Main \
         "$@"
 
 # Stop when "xargs" is not available.

@@ -72,7 +72,7 @@ set CLASSPATH=%APP_HOME%\lib\gradlepoc-1.0-SNAPSHOT.jar;%APP_HOME%\lib\gson-2.8.
 
 
 @rem Execute gradlepoc
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLEPOC_OPTS%  -classpath "%CLASSPATH%" edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver %*
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLEPOC_OPTS%  -classpath "%CLASSPATH%" edu.upc.prop.clusterxx.Main %*
 
 :end
 @rem End local scope for the variables with windows NT shell

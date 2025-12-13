@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 <testsuite name="edu.upc.prop.clusterxx.domini.TestKMeans" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-12-03T13:26:08" hostname="DARI" time="0.005">
   <properties/>
   <testcase name="testFitRebutjaKZero" classname="edu.upc.prop.clusterxx.domini.TestKMeans" time="0.005"/>
+=======
+<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeans" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-12-12T12:15:31" hostname="DESKTOP-JJJGPR0" time="0.002">
+  <properties/>
+  <testcase name="testFitRebutjaKZero" classname="edu.upc.prop.clusterxx.domini.TestKMeans" time="0.002"/>
+>>>>>>> origin/joan
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

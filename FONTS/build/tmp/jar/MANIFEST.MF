@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver
+Main-Class: edu.upc.prop.clusterxx.Main
 
