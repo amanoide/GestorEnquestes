@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestUsuari" tests="5" skipped="0" failures="0" errors="0" timestamp="2025-12-14T15:39:06" hostname="LAPTOP-LVPJG8BN" time="0.001">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestUsuari" tests="5" skipped="0" failures="0" errors="0" timestamp="2025-12-14T18:26:14" hostname="LAPTOP-LVPJG8BN" time="0.0">
   <properties/>
-  <testcase name="testModificarEnquestesUsuari" classname="edu.upc.prop.clusterxx.domini.TestUsuari" time="0.001"/>
+  <testcase name="testModificarEnquestesUsuari" classname="edu.upc.prop.clusterxx.domini.TestUsuari" time="0.0"/>
   <testcase name="testLoginUsuari" classname="edu.upc.prop.clusterxx.domini.TestUsuari" time="0.0"/>
   <testcase name="testCheckPassword" classname="edu.upc.prop.clusterxx.domini.TestUsuari" time="0.0"/>
   <testcase name="testConstructoraUsuari" classname="edu.upc.prop.clusterxx.domini.TestUsuari" time="0.0"/>

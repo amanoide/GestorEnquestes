@@ -70,7 +70,7 @@ public class DialogoGestionPreguntes extends JDialog {
      */
     private void inicializar() {
         setLayout(new BorderLayout(10, 10));
-        setSize(550, 450);
+        setSize(700, 450);
         setLocationRelativeTo(getOwner());
         getContentPane().setBackground(UIStyles.BACKGROUND_COLOR);
         ((JPanel) getContentPane()).setBorder(new EmptyBorder(15, 15, 15, 15));

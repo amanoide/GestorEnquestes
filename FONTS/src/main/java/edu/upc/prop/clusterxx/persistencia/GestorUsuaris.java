@@ -47,6 +47,12 @@ public class GestorUsuaris {
     private static final String FITXER_INDEX = "index.json";
 
     /**
+     * Mapa temporal per emmagatzemar els IDs de perfils al carregar usuaris.
+     * Format: usuariUsername -> (idEnquesta -> perfilId)
+     */
+    private HashMap<String, HashMap<String, Long>> perfilsTemporals = new HashMap<>();
+
+    /**
      * Constructor per defecte.
      * Els directoris es crearan automàticament quan sigui necessari guardar dades.
      */
@@ -108,12 +114,23 @@ public class GestorUsuaris {
         jsonUsuari.put("password", usuari.getPassword());
 
         JSONArray enquestesParticipades = new JSONArray();
+        JSONObject perfils = new JSONObject();
         if (usuari.getPerfils() != null) {
-            for (String idEnquesta : usuari.getPerfils().keySet()) {
+            for (java.util.Map.Entry<String, edu.upc.prop.clusterxx.domini.classes.Perfil> entry : 
+                    usuari.getPerfils().entrySet()) {
+                String idEnquesta = entry.getKey();
+                edu.upc.prop.clusterxx.domini.classes.Perfil perfil = entry.getValue();
+                
                 enquestesParticipades.put(idEnquesta);
+                
+                // Guardar l'ID del perfil si existeix
+                if (perfil != null) {
+                    perfils.put(idEnquesta, perfil.getId());
+                }
             }
         }
         jsonUsuari.put("enquestesParticipades", enquestesParticipades);
+        jsonUsuari.put("perfils", perfils);
 
         Path path = Paths.get(DIRECTORI_USUARIS, usuari.getUsername() + ".json");
         Files.write(path, jsonUsuari.toString(4).getBytes(StandardCharsets.UTF_8));
@@ -301,16 +318,44 @@ public class GestorUsuaris {
         String password = jsonUsuari.optString("password", "default");
         Usuari usuari = new Usuari(username, password);
 
-        // Carregar enquestes participades si existeixen
+        // Carregar enquestes participades i IDs de perfils si existeixen
         if (jsonUsuari.has("enquestesParticipades")) {
             JSONArray enquestesArray = jsonUsuari.getJSONArray("enquestesParticipades");
+            JSONObject perfilsObject = jsonUsuari.optJSONObject("perfils");
+            
             for (int i = 0; i < enquestesArray.length(); i++) {
                 String idEnquesta = enquestesArray.getString(i);
-                // Nota: Els perfils es carregaran després quan es vinculi amb les enquestes
-                usuari.getPerfils().put(idEnquesta, null);
+                usuari.getPerfils().put(idEnquesta, null); // Es vinculará després
+                
+                // Si té un ID de perfil assignat, guardar-lo temporalment
+                if (perfilsObject != null && perfilsObject.has(idEnquesta)) {
+                    long perfilId = perfilsObject.getLong(idEnquesta);
+                    if (!perfilsTemporals.containsKey(username)) {
+                        perfilsTemporals.put(username, new HashMap<>());
+                    }
+                    perfilsTemporals.get(username).put(idEnquesta, perfilId);
+                }
             }
         }
 
         return usuari;
+    }
+
+    /**
+     * Obté el mapa temporal d'IDs de perfils carregats durant la càrrega d'usuaris.
+     * Aquest mapa s'utilitza per vincular correctament els perfils amb els usuaris després de carregar-los.
+     *
+     * @return Mapa amb username -> (idEnquesta -> perfilId)
+     */
+    public HashMap<String, HashMap<String, Long>> getPerfilsTemporals() {
+        return perfilsTemporals;
+    }
+
+    /**
+     * Neteja el mapa temporal de perfils.
+     * S'ha de cridar després de vincular correctament els perfils amb els usuaris.
+     */
+    public void netejarPerfilsTemporals() {
+        perfilsTemporals.clear();
     }
 }

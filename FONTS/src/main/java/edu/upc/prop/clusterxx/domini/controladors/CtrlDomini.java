@@ -2128,6 +2128,15 @@ public class CtrlDomini {
         return ctrlPerfil.getPerfil(id);
     }
 
+    /**
+     * Obté tots els perfils del sistema.
+     * 
+     * @return Mapa amb tots els perfils indexats per ID
+     */
+    public HashMap<String, Perfil> getAllPerfils() {
+        return ctrlPersistencia.getAllPerfils();
+    }
+
     // --- Mètodes auxiliars ---
 
     /**
@@ -2465,6 +2474,9 @@ public class CtrlDomini {
             int maxIters, String algoritmeNom)
             throws EnquestaNoExisteixException {
 
+        // 0. Eliminar els perfils antics d'aquesta enquesta
+        ctrlPersistencia.eliminarPerfilsEnquesta(idEnquesta);
+
         // 1. Obtenir l'enquesta
         Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
         if (enquesta == null) {
@@ -2569,6 +2581,9 @@ public class CtrlDomini {
                     centroid,
                     preguntesText,
                     algoritmeNom);
+
+            // Afegir el perfil al sistema de persistència (sense guardar encara per eficiència)
+            ctrlPersistencia.afegirPerfilSenseGuardar(perfilCluster);
 
             // Assignar perfil a cada usuari del cluster
             for (String[] memberVector : members) {

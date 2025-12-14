@@ -53,7 +53,7 @@ public class MyActionListener implements ActionListener {
         RESPONDRE_ENQUESTA, GESTIONAR_RESPOSTES, MODIFICAR_RESPOSTA, MODIFICAR_RESPOSTA_INDIVIDUAL, ELIMINAR_RESPOSTA, IMPORTAR_RESPOSTA, VEURE_RESPOSTES_ENQUESTA,
 
         // Anàlisi
-        ANALITZAR_ENQUESTA, VEURE_PERFIL,
+        ANALITZAR_ENQUESTA, VEURE_ANALISI_ENQUESTA, VEURE_PERFIL, VEURE_PERFIL_ENQUESTA, VEURE_TOTS_PERFILS,
 
         // Usuaris
         ELIMINAR_COMPTE
@@ -208,8 +208,17 @@ public class MyActionListener implements ActionListener {
             case ANALITZAR_ENQUESTA:
                 handleAnalitzarEnquesta();
                 break;
+            case VEURE_ANALISI_ENQUESTA:
+                handleVeureAnalisiEnquesta();
+                break;
             case VEURE_PERFIL:
                 handleVeurePerfil();
+                break;
+            case VEURE_PERFIL_ENQUESTA:
+                handleVeurePerfilEnquesta();
+                break;
+            case VEURE_TOTS_PERFILS:
+                handleVeureTotsPerfils();
                 break;
 
             // Usuaris
@@ -777,11 +786,77 @@ public class MyActionListener implements ActionListener {
     }
 
     /**
+     * Gestiona l'acció de veure l'anàlisi de clustering d'una enquesta.
+     * Mostra tots els perfils/clusters generats per a l'enquesta seleccionada.
+     */
+    private void handleVeureAnalisiEnquesta() {
+        if (!(context instanceof VistaAnalisi)) {
+            System.err.println("Context no és VistaAnalisi");
+            return;
+        }
+
+        VistaAnalisi vista = (VistaAnalisi) context;
+        String selected = vista.listEnquestes.getSelectedValue();
+        
+        if (selected == null || selected.equals("No tens enquestes creades.")) {
+            JOptionPane.showMessageDialog(getParentFrame(),
+                    "Si us plau, selecciona una enquesta.",
+                    "Enquesta no seleccionada",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Extreure l'ID de l'enquesta
+        String idEnquesta = selected.split(":")[0].trim();
+        
+        String analisi = ctrlPresentacio.consultarAnalisiEnquesta(idEnquesta);
+        Frame parent = getParentFrame();
+        new DialogoPerfil(parent, analisi).setVisible(true);
+    }
+
+    /**
      * Gestiona la visualització del perfil de clustering de l'usuari.
      * 
      * Consulta els perfils i els mostra en un diàleg.
      */
     private void handleVeurePerfil() {
+        String perfil = ctrlPresentacio.consultarMeuPerfil();
+        Frame parent = getParentFrame();
+        new DialogoPerfil(parent, perfil).setVisible(true);
+    }
+
+    /**
+     * Gestiona l'acció de veure el perfil d'una enquesta seleccionada.
+     */
+    private void handleVeurePerfilEnquesta() {
+        if (!(context instanceof VistaGestionarRespostes)) {
+            System.err.println("Context no és VistaGestionarRespostes");
+            return;
+        }
+
+        VistaGestionarRespostes vista = (VistaGestionarRespostes) context;
+        String selected = vista.listEnquestes.getSelectedValue();
+        
+        if (selected == null || selected.equals("No has contestat cap enquesta encara.")) {
+            JOptionPane.showMessageDialog(getParentFrame(),
+                    "Si us plau, selecciona una enquesta.",
+                    "Enquesta no seleccionada",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Extreure l'ID de l'enquesta
+        String idEnquesta = selected.split(":")[0].trim();
+        
+        String perfil = ctrlPresentacio.consultarPerfilEnquesta(idEnquesta);
+        Frame parent = getParentFrame();
+        new DialogoPerfil(parent, perfil).setVisible(true);
+    }
+
+    /**
+     * Gestiona l'acció de veure tots els perfils de l'usuari.
+     */
+    private void handleVeureTotsPerfils() {
         String perfil = ctrlPresentacio.consultarMeuPerfil();
         Frame parent = getParentFrame();
         new DialogoPerfil(parent, perfil).setVisible(true);
