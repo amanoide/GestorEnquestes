@@ -79,6 +79,18 @@ public class GestorRespostes {
             }
         }
 
+        // Eliminar fitxers d'usuaris que ja no tenen respostes
+        File[] existingFiles = dirRespostes.listFiles((d, name) -> name.endsWith(".json") && !name.equals(FITXER_INDEX));
+        if (existingFiles != null) {
+            for (File f : existingFiles) {
+                String filename = f.getName();
+                String username = filename.substring(0, filename.lastIndexOf('.'));
+                if (!respostesPorUsuari.containsKey(username)) {
+                    f.delete();
+                }
+            }
+        }
+
         guardarIndex(idEnquesta, respostesPorUsuari.keySet());
         
         for (Map.Entry<String, HashMap<String, Resposta>> entry : respostesPorUsuari.entrySet()) {
@@ -103,6 +115,12 @@ public class GestorRespostes {
             dirRespostes.mkdirs();
         }
 
+        // Si no hi ha respostes, eliminar el fitxer si existeix
+        if (respostes.isEmpty()) {
+            eliminarRespostesUsuari(idEnquesta, username);
+            return;
+        }
+
         JSONArray jsonRespostes = new JSONArray();
         
         for (Resposta resposta : respostes.values()) {
@@ -121,7 +139,7 @@ public class GestorRespostes {
     /**
      * Actualitza l'índex de participants d'una enquesta.
      * <p>
-     * Afegeix els nous usuaris a la llista existent sense eliminar els que ja hi eren (Smart Merge).
+     * Sobreescriu l'índex amb la llista actual d'usuaris que tenen respostes.
      * </p>
      *
      * @param idEnquesta L'identificador de l'enquesta.
@@ -132,22 +150,8 @@ public class GestorRespostes {
         File dirRespostes = getDirRespostes(idEnquesta);
         File fitxer = new File(dirRespostes, FITXER_INDEX);
         
-        Set<String> usuarisTotals = new LinkedHashSet<>();
-
-        if (fitxer.exists()) {
-            String content = new String(Files.readAllBytes(fitxer.toPath()), StandardCharsets.UTF_8);
-            if (!content.isEmpty()) {
-                JSONArray currentArray = new JSONArray(content);
-                for (int i = 0; i < currentArray.length(); i++) {
-                    usuarisTotals.add(currentArray.getString(i));
-                }
-            }
-        }
-
-        usuarisTotals.addAll(nousUsuaris);
-
         JSONArray jsonArray = new JSONArray();
-        for (String username : usuarisTotals) {
+        for (String username : nousUsuaris) {
             jsonArray.put(username);
         }
         

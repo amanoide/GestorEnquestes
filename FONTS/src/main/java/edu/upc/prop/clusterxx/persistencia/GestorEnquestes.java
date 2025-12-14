@@ -103,6 +103,7 @@ public class GestorEnquestes {
      * Crea l'estructura de directoris necessària (incloent subdirectoris per preguntes i respostes)
      * i escriu el fitxer <code>enquesta.json</code> amb les metadades de l'enquesta (títol, descripció,
      * creador, participants).
+     * També delega el guardat de preguntes i respostes als seus respectius gestors.
      * </p>
      * 
      * @param enquesta L'objecte Enquesta que es vol guardar.
@@ -128,6 +129,13 @@ public class GestorEnquestes {
         
         Path fitxerEnquesta = dirEnquesta.resolve(FITXER_ENQUESTA);
         Files.write(fitxerEnquesta, jsonEnquesta.toString(4).getBytes(StandardCharsets.UTF_8));
+
+        // Delegar guardat de preguntes i respostes
+        GestorPreguntes gestorPreguntes = new GestorPreguntes();
+        gestorPreguntes.guardarPreguntes(enquesta.getId(), enquesta.getPreguntes());
+
+        GestorRespostes gestorRespostes = new GestorRespostes();
+        gestorRespostes.guardarRespostes(enquesta.getId(), enquesta.getPreguntes());
     }
 
     /**
@@ -165,6 +173,7 @@ public class GestorEnquestes {
             JSONObject nouEntry = new JSONObject();
             nouEntry.put("id", enquesta.getId());
             nouEntry.put("titol", enquesta.getTitol());
+            nouEntry.put("descripcio", enquesta.getDescripcio());
             nouEntry.put("creador", enquesta.getIdCreador());
             nouEntry.put("numPreguntes", enquesta.getPreguntes().size());
             nouEntry.put("numParticipants", enquesta.getNumParticipants());
@@ -270,6 +279,7 @@ public class GestorEnquestes {
         if (subdirs == null) return enquestes;
 
         GestorPreguntes gestorPreguntes = new GestorPreguntes();
+        GestorRespostes gestorRespostes = new GestorRespostes();
         
         for (File subdir : subdirs) {
             try {
@@ -285,6 +295,24 @@ public class GestorEnquestes {
                     } catch (Exception e) {
                         System.err.println("Error carregant preguntes per enquesta " + idEnquesta + ": " + e.getMessage());
                     }
+
+                    // Carregar respostes associades
+                    try {
+                        for (String participant : enquesta.getParticipants()) {
+                            HashMap<String, Resposta> respostesUsuari = gestorRespostes.carregarRespostesUsuari(
+                                    idEnquesta, participant, usuaris);
+                            
+                            for (Resposta r : respostesUsuari.values()) {
+                                Pregunta p = enquesta.getPregunta(r.getIdPregunta());
+                                if (p != null) {
+                                    p.afegirResposta(participant, r);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Error carregant respostes per enquesta " + idEnquesta + ": " + e.getMessage());
+                    }
+
                     enquestes.put(enquesta.getId(), enquesta);
                 }
             } catch (Exception e) {

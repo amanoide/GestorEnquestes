@@ -47,6 +47,7 @@ public class CtrlResposta {
 
     public void modificarResposta(Resposta resposta, String novaResposta) {
         resposta.modificarResposta(novaResposta);
+        persistencia.actualitzarResposta(resposta);
     }
 
     /**

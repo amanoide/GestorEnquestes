@@ -1,0 +1,7 @@
+{
+    "valorMinim": 0,
+    "valorMaxim": 50,
+    "id": "p1",
+    "text": "Quantes hores estudies per setmana?",
+    "tipus": "NUMERICA"
+}

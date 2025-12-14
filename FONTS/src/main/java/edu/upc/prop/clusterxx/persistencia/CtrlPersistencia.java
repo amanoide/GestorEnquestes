@@ -104,6 +104,7 @@ public class CtrlPersistencia {
             System.err.println("Error guardant dades: " + e.getMessage());
         }
     }
+        
 
     /**
      * Força el guardado de totes les dades (mètode públic per ús extern).
@@ -242,17 +243,49 @@ public class CtrlPersistencia {
     public void afegirResposta(Resposta resposta) {
         respostes.put(resposta.getId(), resposta);
 
+        String idEnquestaTrobada = null;
+
         // Afegir a la pregunta corresponent
         Pregunta pregunta = getPregunta(resposta.getIdPregunta());
         if (pregunta != null) {
             pregunta.afegirResposta(resposta.getUsernameUsuari(), resposta);
+
+            // Actualitzar participació a l'enquesta
+            for (Enquesta e : enquestes.values()) {
+                if (e.getPregunta(pregunta.getId()) != null) {
+                    e.registrarParticipacio(resposta.getUsernameUsuari());
+                    idEnquestaTrobada = e.getId();
+                    break;
+                }
+            }
         }
 
         // Afegir a l'usuari
         Usuari usuari = getUsuari(resposta.getUsernameUsuari());
         if (usuari != null) {
             usuari.afegirResposta(resposta.getId(), resposta);
+            
+            // Actualitzar llista d'enquestes participades (via perfils)
+            if (idEnquestaTrobada != null && !usuari.tePerfil(idEnquestaTrobada)) {
+                usuari.assignarPerfil(idEnquestaTrobada, null);
+                try {
+                    gestorUsuaris.guardarUsuari(usuari);
+                } catch (IOException e) {
+                    System.err.println("Error guardant usuari: " + e.getMessage());
+                }
+            }
         }
+        guardarEnquestes();
+    }
+
+    /**
+     * Actualitza una resposta existent i guarda els canvis.
+     * 
+     * @param resposta La resposta modificada
+     */
+    public void actualitzarResposta(Resposta resposta) {
+        // Com que treballem amb referències, l'objecte ja està actualitzat en memòria.
+        // Només cal persistir els canvis.
         guardarEnquestes();
     }
 
@@ -272,6 +305,33 @@ public class CtrlPersistencia {
             Pregunta p = getPregunta(resposta.getIdPregunta());
             if (p != null) {
                 p.eliminarResposta(resposta.getUsernameUsuari());
+                
+                // Actualitzar llista de participants de l'enquesta
+                for (Enquesta e : enquestes.values()) {
+                    if (e.getPregunta(p.getId()) != null) {
+                        boolean hasOtherAnswers = false;
+                        for (Pregunta q : e.getPreguntes()) {
+                            if (q.teResposta(resposta.getUsernameUsuari())) {
+                                hasOtherAnswers = true;
+                                break;
+                            }
+                        }
+                        if (!hasOtherAnswers) {
+                            e.eliminarParticipacio(resposta.getUsernameUsuari());
+                            
+                            // Actualitzar llista d'enquestes participades de l'usuari
+                            if (usuari != null) {
+                                usuari.eliminarPerfil(e.getId());
+                                try {
+                                    gestorUsuaris.guardarUsuari(usuari);
+                                } catch (IOException ex) {
+                                    System.err.println("Error guardant usuari: " + ex.getMessage());
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
             }
             guardarEnquestes();
         }

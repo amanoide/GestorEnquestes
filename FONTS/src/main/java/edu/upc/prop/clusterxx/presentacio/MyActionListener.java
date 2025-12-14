@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Frame;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
+import edu.upc.prop.clusterxx.domini.classes.Opcio;
+import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 
 /**
  * Listener centralitzat per gestionar totes les accions dels botons de la
@@ -327,7 +329,7 @@ public class MyActionListener implements ActionListener {
             }
 
             Frame parent = getParentFrame();
-            DialogoEnquesta dialogo = new DialogoEnquesta(parent, "Modificar Enquesta", true);
+            DialogoEnquesta dialogo = new DialogoEnquesta(parent, "Modificar Enquesta", false);
             dialogo.setDatos(id, currentTitle, currentDesc);
             dialogo.setVisible(true);
 
@@ -580,10 +582,45 @@ public class MyActionListener implements ActionListener {
                 Pregunta p = (Pregunta) ctx[1];
 
                 String currentAnswer = dialogo.getResposta(p.getId());
-                String novaResposta = JOptionPane.showInputDialog(dialogo,
-                        "Introdueix la nova resposta per a:\n\n" + p.getText() + "\n\n" +
-                                "Format esperat: " + p.getTipus(),
-                        currentAnswer);
+                String novaResposta = null;
+
+                if (p.tipusAdmetOpcions() && p.getTipus() != TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE) {
+                    // Mostrar ComboBox para opciones simples/ordenadas
+                    java.util.ArrayList<Opcio> opcions = p.getOpcions();
+                    String[] opcionsText = new String[opcions.size()];
+                    for (int i = 0; i < opcions.size(); i++) {
+                        opcionsText[i] = opcions.get(i).getText();
+                    }
+                    
+                    Object selected = JOptionPane.showInputDialog(dialogo,
+                            "Selecciona la nova resposta per a:\n\n" + p.getText(),
+                            "Modificar Resposta",
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            opcionsText,
+                            currentAnswer);
+                            
+                    if (selected != null) {
+                        novaResposta = selected.toString();
+                    }
+                } else {
+                    // Input de texto normal para otros tipos
+                    String message = "Introdueix la nova resposta per a:\n\n" + p.getText() + "\n\n" +
+                                   "Format esperat: " + p.getTipus();
+                                   
+                    if (p.getTipus() == TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE) {
+                        message += "\n(Opcions vàlides: ";
+                        for (Opcio o : p.getOpcions()) {
+                            message += o.getText() + ", ";
+                        }
+                        if (!p.getOpcions().isEmpty()) {
+                            message = message.substring(0, message.length() - 2);
+                        }
+                        message += ")";
+                    }
+                    
+                    novaResposta = JOptionPane.showInputDialog(dialogo, message, currentAnswer);
+                }
 
                 if (novaResposta != null && !novaResposta.trim().isEmpty()) {
                     String resultat = ctrlPresentacio.modificarResposta(dialogo.getIdEnquesta(), p.getId(), novaResposta);
