@@ -76,7 +76,7 @@ public class DialogoGestionPreguntes extends JDialog {
         ((JPanel) getContentPane()).setBorder(new EmptyBorder(15, 15, 15, 15));
 
         // Título
-        JLabel titulo = new JLabel("📋 Preguntes de l'enquesta: " + idEnquesta);
+        JLabel titulo = new JLabel("Preguntes de l'enquesta: " + idEnquesta);
         titulo.setFont(UIStyles.FONT_SECTION);
         titulo.setForeground(UIStyles.TEXT_COLOR);
         add(titulo, BorderLayout.NORTH);

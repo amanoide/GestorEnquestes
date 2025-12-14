@@ -29,7 +29,7 @@ public class DialogoRespostesPregunta extends JDialog {
         getContentPane().setBackground(UIStyles.BACKGROUND_COLOR);
 
         // Títol
-        JLabel titulo = new JLabel("📋 Respostes de la pregunta");
+        JLabel titulo = new JLabel("Respostes de la pregunta");
         titulo.setFont(UIStyles.FONT_SECTION);
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
         titulo.setBorder(new EmptyBorder(15, 10, 15, 10));
@@ -72,7 +72,7 @@ public class DialogoRespostesPregunta extends JDialog {
                 respostaPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
                 // Usuari
-                JLabel lblUsuari = new JLabel("👤 " + resposta.getUsernameUsuari());
+                JLabel lblUsuari = new JLabel(resposta.getUsernameUsuari());
                 lblUsuari.setFont(UIStyles.FONT_NORMAL.deriveFont(Font.BOLD));
                 lblUsuari.setForeground(UIStyles.TEXT_COLOR);
                 

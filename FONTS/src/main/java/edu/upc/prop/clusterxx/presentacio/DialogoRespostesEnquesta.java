@@ -95,7 +95,7 @@ public class DialogoRespostesEnquesta extends JDialog {
                             respostaPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
                             respostaPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
-                            JLabel lblUsuari = new JLabel("👤 " + resposta.getUsernameUsuari() + ":");
+                            JLabel lblUsuari = new JLabel(resposta.getUsernameUsuari() + ":");
                             lblUsuari.setFont(UIStyles.FONT_NORMAL.deriveFont(Font.BOLD));
                             
                             JLabel lblText = new JLabel(resposta.getTextResposta());
