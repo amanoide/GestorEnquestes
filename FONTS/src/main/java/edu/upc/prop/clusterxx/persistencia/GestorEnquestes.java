@@ -63,14 +63,10 @@ public class GestorEnquestes {
 
     /**
      * Constructor per defecte.
-     * Inicialitza el gestor i assegura que el directori base d'enquestes existeix.
-     * Si el directori no existeix, el crea.
+     * Els directoris es crearan automàticament quan sigui necessari guardar dades.
      */
     public GestorEnquestes() {
-        File dir = new File(DIRECTORI_ENQUESTES);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
+        // No crear directoris fins que sigui necessari
     }
 
     /**

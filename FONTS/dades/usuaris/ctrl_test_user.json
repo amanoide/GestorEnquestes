@@ -1,4 +1,5 @@
 {
     "password": "mypass",
-    "username": "ctrl_test_user"
+    "username": "ctrl_test_user",
+    "enquestesParticipades": []
 }

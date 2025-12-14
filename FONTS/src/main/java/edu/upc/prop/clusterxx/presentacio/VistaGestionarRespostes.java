@@ -39,7 +39,7 @@ public class VistaGestionarRespostes extends JPanel {
     /** Component visual que mostra la llista d'enquestes contestades. */
     JList<String> listEnquestes = new JList<>(listModel);
     /** Botons d'acció de la vista. */
-    private JButton btnModificar, btnEsborrar, btnTornar;
+    private JButton btnModificar, btnEsborrar, btnImportar, btnTornar;
 
     /**
      * Constructor de la vista de gestió de respostes.
@@ -96,10 +96,12 @@ public class VistaGestionarRespostes extends JPanel {
 
         btnModificar = UIComponents.createColorButton("👁️ Veure/Modificar", UIStyles.PRIMARY_COLOR);
         btnEsborrar = UIComponents.createColorButton("🗑️ Esborrar Totes", UIStyles.ERROR_COLOR);
+        btnImportar = UIComponents.createColorButton("📥 Importar Resposta", UIStyles.FOREST_GREEN);
         btnTornar = UIComponents.createColorButton("← Tornar", UIStyles.SECONDARY_COLOR);
 
         panelBotons.add(btnModificar);
         panelBotons.add(btnEsborrar);
+        panelBotons.add(btnImportar);
         panelBotons.add(btnTornar);
         add(panelBotons, BorderLayout.SOUTH);
 
@@ -121,6 +123,9 @@ public class VistaGestionarRespostes extends JPanel {
         
         btnEsborrar.setActionCommand(MyActionListener.Action.ELIMINAR_RESPOSTA.name());
         btnEsborrar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnImportar.setActionCommand(MyActionListener.Action.IMPORTAR_RESPOSTA.name());
+        btnImportar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
         
         btnTornar.setActionCommand(MyActionListener.Action.TORNAR_MENU.name());
         btnTornar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));

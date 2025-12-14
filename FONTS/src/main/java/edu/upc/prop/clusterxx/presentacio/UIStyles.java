@@ -60,6 +60,21 @@ public class UIStyles {
     /** Color de selecció per llistes (blau amb transparència) */
     public static final Color SELECTION_COLOR = new Color(52, 152, 219, 80);
     
+    /** Color per vores mitjanes (gris mitjà) */
+    public static final Color BORDER_MEDIUM = new Color(200, 200, 200);
+    
+    /** Color per fons de respostes (blau cel clar) */
+    public static final Color RESPONSE_BACKGROUND = new Color(240, 248, 255);
+    
+    /** Color per botó eliminar compte (vermell fosc) */
+    public static final Color DARK_RED = new Color(139, 0, 0);
+    
+    /** Color per botó importar (verd bosc) */
+    public static final Color FOREST_GREEN = new Color(34, 139, 34);
+    
+    /** Color d'ombra (negre amb transparència) */
+    public static final Color SHADOW_COLOR = new Color(0, 0, 0, 30);
+    
     // ========== FONTS ==========
     
     /** Font per títols principals */

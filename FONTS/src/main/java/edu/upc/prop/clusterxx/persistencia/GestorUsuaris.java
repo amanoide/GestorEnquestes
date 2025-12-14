@@ -48,13 +48,10 @@ public class GestorUsuaris {
 
     /**
      * Constructor per defecte.
-     * Inicialitza el gestor i assegura que el directori base d'usuaris existeix.
+     * Els directoris es crearan automàticament quan sigui necessari guardar dades.
      */
     public GestorUsuaris() {
-        File dir = new File(DIRECTORI_USUARIS);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
+        // No crear directoris fins que sigui necessari
     }
 
     /**
@@ -100,6 +97,12 @@ public class GestorUsuaris {
      * @throws IOException Si no es pot escriure el fitxer.
      */
     private void guardarFitxerUsuari(Usuari usuari) throws IOException {
+        // Assegurar que el directori existeix
+        File dir = new File(DIRECTORI_USUARIS);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         JSONObject jsonUsuari = new JSONObject();
         jsonUsuari.put("username", usuari.getUsername());
         jsonUsuari.put("password", usuari.getPassword());
@@ -126,6 +129,12 @@ public class GestorUsuaris {
      * @throws IOException Si hi ha errors de lectura o escriptura.
      */
     private void sobrescriureIndex(HashMap<String, Usuari> usuarisActualitzats) throws IOException {
+        // Assegurar que el directori existeix
+        File dir = new File(DIRECTORI_USUARIS);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         Path indexPath = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
         JSONArray finalArray = new JSONArray();
         
@@ -150,6 +159,12 @@ public class GestorUsuaris {
      * @throws IOException Si hi ha errors de lectura o escriptura.
      */
     private void actualitzarIndexMerge(HashMap<String, Usuari> usuarisActualitzats) throws IOException {
+        // Assegurar que el directori existeix
+        File dir = new File(DIRECTORI_USUARIS);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         Path indexPath = Paths.get(DIRECTORI_USUARIS, FITXER_INDEX);
         HashMap<String, JSONObject> indexMap = new HashMap<>();
 

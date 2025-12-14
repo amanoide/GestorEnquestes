@@ -231,7 +231,7 @@ public class UIComponents {
         panel.setBackground(UIStyles.CARD_COLOR);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 3, 3, new Color(0, 0, 0, 30)),
+                BorderFactory.createMatteBorder(0, 0, 3, 3, UIStyles.SHADOW_COLOR),
                 BorderFactory.createCompoundBorder(
                         new LineBorder(UIStyles.BORDER_COLOR, 1, true),
                         new EmptyBorder(40, 50, 40, 50))));
@@ -252,7 +252,7 @@ public class UIComponents {
         panel.setBackground(UIStyles.CARD_COLOR);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 3, 3, new Color(0, 0, 0, 30)),
+                BorderFactory.createMatteBorder(0, 0, 3, 3, UIStyles.SHADOW_COLOR),
                 BorderFactory.createCompoundBorder(
                         new LineBorder(UIStyles.BORDER_COLOR, 1, true),
                         new EmptyBorder(top, left, bottom, right))));

@@ -73,7 +73,7 @@ public class VistaPrincipal {
      */
     public void hacerVisible() {
         frameVista.pack();
-        frameVista.setSize(900, 700);
+        frameVista.setSize(900, 800);
         frameVista.setLocationRelativeTo(null);
         frameVista.setVisible(true);
     }

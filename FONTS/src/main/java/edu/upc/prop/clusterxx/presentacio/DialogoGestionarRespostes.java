@@ -184,11 +184,11 @@ public class DialogoGestionarRespostes extends JDialog {
             JPanel emptyPanel = new JPanel();
             emptyPanel.setBackground(UIStyles.CARD_COLOR);
             emptyPanel.setBorder(BorderFactory.createCompoundBorder(
-                    new LineBorder(new Color(189, 195, 199), 1, true),
+                    new LineBorder(UIStyles.BORDER_COLOR, 1, true),
                     new EmptyBorder(40, 40, 40, 40)));
 
             JLabel emptyLabel = new JLabel("No has respost aquesta enquesta.");
-            emptyLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            emptyLabel.setFont(UIStyles.FONT_NORMAL);
             emptyLabel.setForeground(UIStyles.SECONDARY_COLOR);
             emptyPanel.add(emptyLabel);
 

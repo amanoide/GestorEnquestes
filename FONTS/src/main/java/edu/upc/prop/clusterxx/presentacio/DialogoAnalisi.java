@@ -77,7 +77,7 @@ public class DialogoAnalisi extends JDialog {
 
         // Título
         JLabel titulo = new JLabel("📊 Configuració d'Anàlisi de Clustering");
-        titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 16));
+        titulo.setFont(UIStyles.FONT_SECTION);
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
         titulo.setBorder(new EmptyBorder(15, 0, 15, 0));
         add(titulo, BorderLayout.NORTH);

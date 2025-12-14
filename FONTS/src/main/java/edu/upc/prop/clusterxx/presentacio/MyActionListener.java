@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Frame;
+import java.util.ArrayList;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
@@ -46,10 +47,10 @@ public class MyActionListener implements ActionListener {
         IMPORTAR_ENQUESTA, GESTIONAR_ENQUESTES, VEURE_PARTICIPANTS,
 
         // Preguntes
-        GESTIONAR_PREGUNTES, CREAR_PREGUNTA, MODIFICAR_PREGUNTA, ELIMINAR_PREGUNTA,
+        GESTIONAR_PREGUNTES, CREAR_PREGUNTA, MODIFICAR_PREGUNTA, ELIMINAR_PREGUNTA, VEURE_RESPOSTES_PREGUNTA,
 
         // Respostes
-        RESPONDRE_ENQUESTA, GESTIONAR_RESPOSTES, MODIFICAR_RESPOSTA, MODIFICAR_RESPOSTA_INDIVIDUAL, ELIMINAR_RESPOSTA,
+        RESPONDRE_ENQUESTA, GESTIONAR_RESPOSTES, MODIFICAR_RESPOSTA, MODIFICAR_RESPOSTA_INDIVIDUAL, ELIMINAR_RESPOSTA, IMPORTAR_RESPOSTA, VEURE_RESPOSTES_ENQUESTA,
 
         // Anàlisi
         ANALITZAR_ENQUESTA, VEURE_PERFIL,
@@ -176,6 +177,9 @@ public class MyActionListener implements ActionListener {
             case ELIMINAR_PREGUNTA:
                 handleEliminarPregunta();
                 break;
+            case VEURE_RESPOSTES_PREGUNTA:
+                handleVeureRespostesPregunta();
+                break;
 
             // Respostes
             case RESPONDRE_ENQUESTA:
@@ -192,6 +196,12 @@ public class MyActionListener implements ActionListener {
                 break;
             case ELIMINAR_RESPOSTA:
                 handleEliminarResposta();
+                break;
+            case IMPORTAR_RESPOSTA:
+                handleImportarResposta();
+                break;
+            case VEURE_RESPOSTES_ENQUESTA:
+                handleVeureRespostesEnquesta();
                 break;
 
             // Anàlisi
@@ -531,6 +541,25 @@ public class MyActionListener implements ActionListener {
         }
     }
 
+    /**
+     * Gestiona la visualització de totes les respostes d'una pregunta.
+     */
+    private void handleVeureRespostesPregunta() {
+        if (context instanceof DialogoGestionPreguntes) {
+            DialogoGestionPreguntes dialogo = (DialogoGestionPreguntes) context;
+            String idPregunta = dialogo.getSelectedPreguntaId();
+
+            if (idPregunta == null) {
+                JOptionPane.showMessageDialog(dialogo, "Selecciona una pregunta per veure les respostes.");
+                return;
+            }
+
+            // Obrir el diàleg amb les respostes de la pregunta
+            DialogoRespostesPregunta dialogoRespostes = new DialogoRespostesPregunta(dialogo, ctrlPresentacio, idPregunta);
+            dialogoRespostes.setVisible(true);
+        }
+    }
+
     // ============ RESPOSTES ============
 
     /**
@@ -546,6 +575,19 @@ public class MyActionListener implements ActionListener {
 
         if (dialogoSel.isConfirmado()) {
             String idEnquesta = dialogoSel.getSelectedId();
+            
+            // Verificar si l'enquesta té preguntes abans d'obrir el diàleg
+            ArrayList<Pregunta> preguntes = 
+                ctrlPresentacio.getPreguntesEnquestaObjects(idEnquesta);
+            
+            if (preguntes == null || preguntes.isEmpty()) {
+                JOptionPane.showMessageDialog(parent,
+                    "Actualment no hi ha preguntes a respondre",
+                    "Enquesta sense preguntes",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
             DialogoResponderEnquesta dialogoResp = new DialogoResponderEnquesta(
                     parent, ctrlPresentacio, idEnquesta);
             dialogoResp.setVisible(true);
@@ -669,6 +711,48 @@ public class MyActionListener implements ActionListener {
                 if (onSuccess != null)
                     onSuccess.run();
             }
+        }
+    }
+
+    /**
+     * Gestiona la importació d'una resposta des d'un fitxer JSON.
+     * 
+     * Obre un diàleg de selecció de fitxer i crida al controlador per importar la resposta.
+     */
+    private void handleImportarResposta() {
+        Frame parent = getParentFrame();
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(parent);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            java.io.File selectedFile = fileChooser.getSelectedFile();
+            String resultado = ctrlPresentacio.importarResposta(selectedFile.getAbsolutePath());
+            JOptionPane.showMessageDialog(parent, resultado);
+            
+            // Actualitzar la llista si estem en la vista de gestió de respostes
+            if (context instanceof VistaGestionarRespostes) {
+                VistaGestionarRespostes vista = (VistaGestionarRespostes) context;
+                vista.actualizarLista();
+            }
+        }
+    }
+
+    /**
+     * Gestiona la visualització de totes les respostes d'una enquesta.
+     * 
+     * Mostra un diàleg amb totes les respostes de tots els usuaris a l'enquesta seleccionada.
+     */
+    private void handleVeureRespostesEnquesta() {
+        if (context instanceof VistaGestionEnquestes) {
+            VistaGestionEnquestes vista = (VistaGestionEnquestes) context;
+            String selected = vista.listEnquestes.getSelectedValue();
+            if (selected == null) return;
+
+            String idEnquesta = selected.split(":")[0].trim();
+            
+            Frame parent = getParentFrame();
+            DialogoRespostesEnquesta dialogo = new DialogoRespostesEnquesta(parent, ctrlPresentacio, idEnquesta);
+            dialogo.setVisible(true);
         }
     }
 

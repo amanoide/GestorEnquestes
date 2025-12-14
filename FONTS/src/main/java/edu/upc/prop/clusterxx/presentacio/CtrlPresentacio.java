@@ -5,6 +5,8 @@ import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
+import edu.upc.prop.clusterxx.domini.classes.Resposta;
+import java.util.HashMap;
 import java.util.ArrayList;
 
 /**
@@ -85,7 +87,7 @@ public class CtrlPresentacio {
      * @return Una llista d'objectes Enquesta. Si hi ha un error, retorna una llista
      *         buida.
      */
-    public ArrayList<edu.upc.prop.clusterxx.domini.classes.Enquesta> getEnquestesUsuari() {
+    public ArrayList<Enquesta> getEnquestesUsuari() {
         try {
             return new ArrayList<>(ctrlDomini.consultarEnquestesDelUsuari());
         } catch (Exception e) {
@@ -148,6 +150,52 @@ public class CtrlPresentacio {
     }
 
     /**
+     * Importa una resposta des d'un fitxer JSON.
+     * 
+     * @param path Ruta del fitxer JSON a importar.
+     * @return Missatge de resultat.
+     */
+    public String importarResposta(String path) {
+        try {
+            ctrlDomini.importarRespostes(path);
+            return "Respostes importades correctament!";
+        } catch (Exception e) {
+            return "Error al importar: " + e.getMessage();
+        }
+    }
+
+    /**
+     * Consulta totes les respostes d'una enquesta.
+     * Només el creador de l'enquesta pot consultar-les.
+     * 
+     * @param idEnquesta L'ID de l'enquesta
+     * @return HashMap amb clau=idPregunta i valor=ArrayList de totes les respostes
+     */
+    public HashMap<String, ArrayList<edu.upc.prop.clusterxx.domini.classes.Resposta>> consultarRespostesEnquesta(String idEnquesta) {
+        try {
+            return ctrlDomini.consultarRespostesEnquesta(idEnquesta);
+        } catch (Exception e) {
+            System.err.println("Error consultant respostes: " + e.getMessage());
+            return new java.util.HashMap<>();
+        }
+    }
+
+    /**
+     * Consulta totes les respostes d'una pregunta específica.
+     * 
+     * @param idPregunta L'ID de la pregunta
+     * @return ArrayList de totes les respostes de la pregunta
+     */
+    public ArrayList<Resposta> consultarRespostesPregunta(String idPregunta) {
+        try {
+            return ctrlDomini.consultarRespostesPregunta(idPregunta);
+        } catch (Exception e) {
+            System.err.println("Error consultant respostes de la pregunta: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
      * Tanca la sessió de l'usuari actual.
      */
     public void logout() {
@@ -201,6 +249,16 @@ public class CtrlPresentacio {
                     p = new Pregunta(idPregunta, textPregunta);
                     break;
                 case QUALITATIVA_ORDENADA:
+                    p = new Pregunta(idPregunta, textPregunta, tp, maxSeleccions);
+                    if (opcions != null) {
+                        int i = 1;
+                        for (String opcioText : opcions) {
+                            // Per a preguntes ordenades, l'ordre és la posició a la llista
+                            p.afegirOpcio(new Opcio(i, opcioText, i));
+                            i++;
+                        }
+                    }
+                    break;
                 case QUALITATIVA_NO_ORDENADA_SIMPLE:
                 case QUALITATIVA_NO_ORDENADA_MULTIPLE:
                     p = new Pregunta(idPregunta, textPregunta, tp, maxSeleccions);
@@ -253,6 +311,16 @@ public class CtrlPresentacio {
                     p = new Pregunta(idPregunta, textPregunta);
                     break;
                 case QUALITATIVA_ORDENADA:
+                    p = new Pregunta(idPregunta, textPregunta, tp, maxSeleccions);
+                    if (opcions != null) {
+                        int i = 1;
+                        for (String opcioText : opcions) {
+                            // Per a preguntes ordenades, l'ordre és la posició a la llista
+                            p.afegirOpcio(new Opcio(i, opcioText, i));
+                            i++;
+                        }
+                    }
+                    break;
                 case QUALITATIVA_NO_ORDENADA_SIMPLE:
                 case QUALITATIVA_NO_ORDENADA_MULTIPLE:
                     p = new Pregunta(idPregunta, textPregunta, tp, maxSeleccions);

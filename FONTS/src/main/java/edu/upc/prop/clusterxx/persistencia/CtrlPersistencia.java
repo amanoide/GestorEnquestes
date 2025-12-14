@@ -147,6 +147,19 @@ public class CtrlPersistencia {
         }
     }
 
+    /**
+     * Guarda un usuari individual a disc.
+     * 
+     * @param usuari L'usuari a guardar
+     */
+    public void guardarUsuari(Usuari usuari) {
+        try {
+            gestorUsuaris.guardarUsuari(usuari);
+        } catch (IOException e) {
+            System.err.println("Error guardant usuari: " + e.getMessage());
+        }
+    }
+
     // ===========================================
     // ENQUESTES
     // ===========================================
@@ -275,7 +288,11 @@ public class CtrlPersistencia {
                 }
             }
         }
-        guardarEnquestes();
+        
+        // Només guardar l'enquesta específica on s'ha afegit la resposta
+        if (idEnquestaTrobada != null) {
+            guardarEnquesta(enquestes.get(idEnquestaTrobada));
+        }
     }
 
     /**
@@ -375,14 +392,63 @@ public class CtrlPersistencia {
     }
 
     /**
-     * Elimina un usuari.
+     * Elimina un usuari i totes les seves dades associades.
+     * - Elimina totes les enquestes creades per l'usuari
+     * - Elimina totes les respostes de l'usuari en altres enquestes
+     * - Elimina l'usuari de les participacions en enquestes
+     * - Elimina el fitxer de l'usuari i l'actualitza de l'índex
      */
     public Usuari eliminarUsuari(String username) {
-        Usuari u = usuaris.remove(username);
-        if (u != null) {
-            gestorUsuaris.eliminarFitxerUsuari(username);
-            guardarUsuaris();
+        Usuari u = usuaris.get(username);
+        if (u == null) {
+            return null;
         }
+
+        // 1. Eliminar totes les enquestes creades per l'usuari
+        ArrayList<String> enquestesAEliminar = new ArrayList<>();
+        for (Enquesta e : enquestes.values()) {
+            if (e.getIdCreador().equals(username)) {
+                enquestesAEliminar.add(e.getId());
+            }
+        }
+        for (String idEnquesta : enquestesAEliminar) {
+            eliminarEnquesta(idEnquesta);
+        }
+
+        // 2. Eliminar totes les respostes de l'usuari en altres enquestes
+        ArrayList<String> respostesAEliminar = new ArrayList<>();
+        for (Resposta r : respostes.values()) {
+            if (r.getUsernameUsuari().equals(username)) {
+                respostesAEliminar.add(r.getId());
+            }
+        }
+        for (String idResposta : respostesAEliminar) {
+            // Eliminar resposta de la pregunta
+            Resposta resposta = respostes.get(idResposta);
+            if (resposta != null) {
+                Pregunta p = getPregunta(resposta.getIdPregunta());
+                if (p != null) {
+                    p.eliminarResposta(username);
+                }
+                respostes.remove(idResposta);
+            }
+        }
+
+        // 3. Eliminar l'usuari de les participacions en enquestes
+        for (Enquesta e : enquestes.values()) {
+            if (e.haRespostUsuari(username)) {
+                e.eliminarParticipacio(username);
+            }
+        }
+
+        // 4. Guardar canvis a les enquestes
+        guardarEnquestes();
+
+        // 5. Eliminar l'usuari del HashMap i del disc
+        usuaris.remove(username);
+        gestorUsuaris.eliminarFitxerUsuari(username);
+        guardarUsuaris();
+
         return u;
     }
 
@@ -478,10 +544,15 @@ public class CtrlPersistencia {
     /**
      * Elimina una pregunta de la cache global.
      */
-    public Pregunta eliminarPregunta(String id) {
-        Pregunta p = preguntes.remove(id);
-        if (p != null)
+    public Pregunta eliminarPregunta(String idEnquesta, String idPregunta) {
+        Pregunta p = preguntes.remove(idPregunta);
+        if (p != null) {
+            // Eliminar el archivo físico de la pregunta
+            GestorPreguntes gestorPreguntes = new GestorPreguntes();
+            gestorPreguntes.eliminarPregunta(idEnquesta, idPregunta);
+            // Actualizar el index.json
             guardarEnquestes();
+        }
         return p;
     }
 
