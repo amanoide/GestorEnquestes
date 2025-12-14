@@ -53,6 +53,7 @@ public class CtrlEnquesta {
         Enquesta e = persistencia.getEnquesta(id);
         if (e != null) {
             e.setTitol(nouTitol);
+            persistencia.guardarEnquesta(e);
         }
     }
 
@@ -66,6 +67,7 @@ public class CtrlEnquesta {
         Enquesta e = persistencia.getEnquesta(id);
         if (e != null) {
             e.setDescripcio(novaDescripcio);
+            persistencia.guardarEnquesta(e);
         }
     }
 

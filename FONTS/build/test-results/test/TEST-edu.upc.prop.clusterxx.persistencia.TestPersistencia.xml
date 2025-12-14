@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
+<testsuite name="edu.upc.prop.clusterxx.persistencia.TestPersistencia" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-12-03T13:26:08" hostname="DARI" time="0.122">
+  <properties/>
+  <testcase name="testCtrlPersistenciaAfegirEnquesta" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.035"/>
+  <testcase name="testCtrlPersistenciaAfegirUsuari" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.003"/>
+  <testcase name="testCtrlPersistenciaSingleton" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.0"/>
+  <testcase name="testEliminarEnquesta" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.001"/>
+  <testcase name="testGuardarEnquestaAmbPreguntes" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.02"/>
+  <testcase name="testGuardarEnquestaBuida" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.002"/>
+  <testcase name="testGuardarICarregarPerfils" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.004"/>
+  <testcase name="testGuardarICarregarUsuari" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.006"/>
+  <testcase name="testGuardarMultiplesUsuaris" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.005"/>
+  <testcase name="testPersistenciaSobreviuReinicio" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.046"/>
+=======
 <testsuite name="edu.upc.prop.clusterxx.persistencia.TestPersistencia" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-12-12T12:15:31" hostname="DESKTOP-JJJGPR0" time="0.069">
   <properties/>
   <testcase name="test01_GuardarICarregarUsuari" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.017"/>
@@ -11,6 +25,7 @@
   <testcase name="test08_CtrlPersistenciaAfegirUsuari" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.006"/>
   <testcase name="test09_CtrlPersistenciaAfegirEnquesta" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.012"/>
   <testcase name="test10_PersistenciaSobreviuReinicio" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.003"/>
+>>>>>>> origin/joan
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -1,0 +1,17 @@
+[
+    {
+        "id": "p1",
+        "text": "Quantes hores estudies per setmana?",
+        "tipus": "NUMERICA"
+    },
+    {
+        "id": "p2",
+        "text": "Com valores el professor?",
+        "tipus": "QUALITATIVA_ORDENADA"
+    },
+    {
+        "id": "p3",
+        "text": "Quins llenguatges programes?",
+        "tipus": "QUALITATIVA_NO_ORDENADA_MULTIPLE"
+    }
+]

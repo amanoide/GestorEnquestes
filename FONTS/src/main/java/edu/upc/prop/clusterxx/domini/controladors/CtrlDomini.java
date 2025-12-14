@@ -2574,7 +2574,7 @@ public class CtrlDomini {
         }
 
         // Guardar tots els canvis de perfils als usuaris
-        ctrlPersistencia.guardarDades();
+        ctrlPersistencia.flush();
 
         // 8. Retornar resultats
         return new ResultatClustering(clusters, silhouette, silhouettePerCluster,

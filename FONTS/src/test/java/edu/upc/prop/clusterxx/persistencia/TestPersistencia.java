@@ -18,14 +18,16 @@ public class TestPersistencia {
 
     private static final String DATA_DIR = "dades";
     private static final String ENQUESTES_DIR = DATA_DIR + "/enquestes";
+    private static final String USUARIS_DIR = DATA_DIR + "/usuaris";
+    private static final String PERFILS_DIR = DATA_DIR + "/perfils";
 
-    private static void limpiarDirectorio(File dir) {
+    private static void netejarDirectori(File dir) {
         if (dir.exists() && dir.isDirectory()) {
             File[] files = dir.listFiles();
             if (files != null) {
                 for (File f : files) {
                     if (f.isDirectory()) {
-                        limpiarDirectorio(f);
+                        netejarDirectori(f);
                     }
                     f.delete();
                 }
@@ -38,7 +40,7 @@ public class TestPersistencia {
     // ===========================================
 
     @Test
-    public void test01_GuardarICarregarUsuari() throws Exception {
+    public void testGuardarICarregarUsuari() throws Exception {
         GestorUsuaris gestor = new GestorUsuaris();
         
         // Crear usuari
@@ -49,9 +51,13 @@ public class TestPersistencia {
         // Guardar
         gestor.guardarUsuaris(usuaris);
         
-        // Verificar que el fitxer existeix
-        File fitxer = new File(DATA_DIR + "/usuaris.json");
-        assertTrue("El fitxer usuaris.json hauria d'existir", fitxer.exists());
+        // Verificar que el fitxer d'índex existeix
+        File fitxerIndex = new File(USUARIS_DIR + "/index.json");
+        assertTrue("El fitxer index.json d'usuaris hauria d'existir", fitxerIndex.exists());
+        
+        // Verificar que el fitxer individual existeix
+        File fitxerUsuari = new File(USUARIS_DIR + "/testuser.json");
+        assertTrue("El fitxer testuser.json hauria d'existir", fitxerUsuari.exists());
         
         // Carregar
         HashMap<String, Usuari> usuarisCarregats = gestor.carregarUsuaris();
@@ -62,7 +68,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test02_GuardarMultiplesUsuaris() throws Exception {
+    public void testGuardarMultiplesUsuaris() throws Exception {
         GestorUsuaris gestor = new GestorUsuaris();
         
         HashMap<String, Usuari> usuaris = new HashMap<>();
@@ -74,6 +80,11 @@ public class TestPersistencia {
         HashMap<String, Usuari> carregats = gestor.carregarUsuaris();
         
         assertEquals("Haurien d'haver 3 usuaris", 3, carregats.size());
+        
+        // Verificar fitxers individuals
+        assertTrue("Hauria d'existir user1.json", new File(USUARIS_DIR + "/user1.json").exists());
+        assertTrue("Hauria d'existir user2.json", new File(USUARIS_DIR + "/user2.json").exists());
+        assertTrue("Hauria d'existir user3.json", new File(USUARIS_DIR + "/user3.json").exists());
     }
 
     // ===========================================
@@ -81,7 +92,7 @@ public class TestPersistencia {
     // ===========================================
 
     @Test
-    public void test03_GuardarEnquestaBuida() throws Exception {
+    public void testGuardarEnquestaBuida() throws Exception {
         GestorEnquestes gestor = new GestorEnquestes();
         
         // Crear usuari creador
@@ -99,7 +110,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test04_GuardarEnquestaAmbPreguntes() throws Exception {
+    public void testGuardarEnquestaAmbPreguntes() throws Exception {
         GestorEnquestes gestor = new GestorEnquestes();
         GestorUsuaris gestorUsuaris = new GestorUsuaris();
         
@@ -132,7 +143,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test05_EliminarEnquesta() throws Exception {
+    public void testEliminarEnquesta() throws Exception {
         GestorEnquestes gestor = new GestorEnquestes();
         Usuari creador = new Usuari("creador3", "pass");
         
@@ -140,13 +151,13 @@ public class TestPersistencia {
         Enquesta enquesta = new Enquesta("enq_eliminar", "Per eliminar", "Test", creador);
         gestor.guardarEnquesta(enquesta);
         
-        File fitxer = new File(ENQUESTES_DIR + "/enq_eliminar.json");
-        assertTrue("El fitxer hauria d'existir abans d'eliminar", fitxer.exists());
+        File dirEnquesta = new File(ENQUESTES_DIR + "/enq_eliminar");
+        assertTrue("El directori hauria d'existir abans d'eliminar", dirEnquesta.exists());
         
         // Eliminar
         gestor.eliminarFitxerEnquesta("enq_eliminar");
         
-        assertFalse("El fitxer NO hauria d'existir després d'eliminar", fitxer.exists());
+        assertFalse("El directori NO hauria d'existir després d'eliminar", dirEnquesta.exists());
     }
 
     // ===========================================
@@ -154,7 +165,7 @@ public class TestPersistencia {
     // ===========================================
 
     @Test
-    public void test06_GuardarICarregarPerfils() throws Exception {
+    public void testGuardarICarregarPerfils() throws Exception {
         GestorPerfils gestor = new GestorPerfils();
         
         HashMap<String, Perfil> perfils = new HashMap<>();
@@ -163,8 +174,13 @@ public class TestPersistencia {
         
         gestor.guardarPerfils(perfils);
         
-        File fitxer = new File(DATA_DIR + "/perfils.json");
-        assertTrue("El fitxer perfils.json hauria d'existir", fitxer.exists());
+        // Verificar fitxer índex
+        File fitxerIndex = new File(PERFILS_DIR + "/index.json");
+        assertTrue("El fitxer index.json de perfils hauria d'existir", fitxerIndex.exists());
+        
+        // Verificar fitxers individuals
+        assertTrue("Hauria d'existir 1.json", new File(PERFILS_DIR + "/1.json").exists());
+        assertTrue("Hauria d'existir 2.json", new File(PERFILS_DIR + "/2.json").exists());
         
         HashMap<String, Perfil> carregats = gestor.carregarPerfils();
         assertEquals("Haurien d'haver 2 perfils", 2, carregats.size());
@@ -175,7 +191,7 @@ public class TestPersistencia {
     // ===========================================
 
     @Test
-    public void test07_CtrlPersistenciaSingleton() {
+    public void testCtrlPersistenciaSingleton() {
         CtrlPersistencia ctrl1 = CtrlPersistencia.getInstance();
         CtrlPersistencia ctrl2 = CtrlPersistencia.getInstance();
         
@@ -183,7 +199,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test08_CtrlPersistenciaAfegirUsuari() {
+    public void testCtrlPersistenciaAfegirUsuari() {
         CtrlPersistencia ctrl = CtrlPersistencia.getInstance();
         
         Usuari usuari = new Usuari("ctrl_test_user", "mypass");
@@ -194,7 +210,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test09_CtrlPersistenciaAfegirEnquesta() {
+    public void testCtrlPersistenciaAfegirEnquesta() {
         CtrlPersistencia ctrl = CtrlPersistencia.getInstance();
         
         Usuari creador = new Usuari("ctrl_creador", "pass");
@@ -209,7 +225,7 @@ public class TestPersistencia {
     }
 
     @Test
-    public void test10_PersistenciaSobreviuReinicio() throws Exception {
+    public void testPersistenciaSobreviuReinicio() throws Exception {
         // Primer: guardar dades
         GestorUsuaris gestor = new GestorUsuaris();
         HashMap<String, Usuari> usuaris = new HashMap<>();
@@ -220,7 +236,6 @@ public class TestPersistencia {
         GestorUsuaris gestorNou = new GestorUsuaris();
         HashMap<String, Usuari> carregats = gestorNou.carregarUsuaris();
         
-        assertTrue("L'usuari hauria de persistir després de 'reiniciar'", 
-                   carregats.containsKey("persistent_user"));
+        assertTrue("L'usuari hauria de persistir després de 'reiniciar'", carregats.containsKey("persistent_user"));
     }
 }
