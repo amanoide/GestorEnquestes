@@ -18,17 +18,17 @@ import java.util.Arrays;
  * TEXT_LLIURE: Resposta de text obert sense restriccions.
  * NUMERICA: Resposta numèrica amb rang mínim i màxim.
  * QUALITATIVA_ORDENADA: Opcions predefinides amb ordre (ex: escala
- *   Likert).
+ * Likert).
  * QUALITATIVA_NO_ORDENADA_SIMPLE: Opcions predefinides sense ordre,
- *   selecció única.
+ * selecció única.
  * QUALITATIVA_NO_ORDENADA_MULTIPLE: Opcions predefinides sense ordre,
- *   selecció múltiple.
+ * selecció múltiple.
  * 
  * 
  * Funcionalitats clau:
  * 
  * Interfície adaptativa que mostra controls específics segons el tipus de
- *   pregunta.
+ * pregunta.
  * Validació de camps obligatoris (ID i text de la pregunta).
  * Suport per edició de preguntes existents (ID no editable).
  * Configuració de rangs per preguntes numèriques.
@@ -53,7 +53,9 @@ public class DialogoCrearPregunta extends JDialog {
     private JTextField textMax = new JTextField(8);
     /** Àrea de text per introduir opcions (preguntes qualitatives). */
     private JTextArea areaOpcions = new JTextArea(4, 20);
-    /** Spinner per configurar el nombre màxim de seleccions (preguntes múltiples). */
+    /**
+     * Spinner per configurar el nombre màxim de seleccions (preguntes múltiples).
+     */
     private JSpinner spinnerMaxSeleccions = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
 
     /**
@@ -62,16 +64,6 @@ public class DialogoCrearPregunta extends JDialog {
      * @param owner Finestra propietària del diàleg (per centrar-lo).
      */
     public DialogoCrearPregunta(Frame owner) {
-        super(owner, "Nova Pregunta", true);
-        inicializar();
-    }
-
-    /**
-     * Constructor per crear un diàleg de nova pregunta amb Dialog com a propietari.
-     * 
-     * @param owner Diàleg propietari del diàleg (per centrar-lo).
-     */
-    public DialogoCrearPregunta(Dialog owner) {
         super(owner, "Nova Pregunta", true);
         inicializar();
     }
@@ -210,7 +202,7 @@ public class DialogoCrearPregunta extends JDialog {
      * 
      * NUMERICA: Mostra camps per mínim i màxim.
      * QUALITATIVA_*: Mostra àrea de text per opcions i spinner de màxim
-     *   seleccions.
+     * seleccions.
      * TEXT_LLIURE: Mostra panel buit (sense opcions addicionals).
      * 
      * 
