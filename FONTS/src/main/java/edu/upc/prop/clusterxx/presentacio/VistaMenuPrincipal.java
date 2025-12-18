@@ -32,6 +32,7 @@ public class VistaMenuPrincipal extends JPanel {
     private JButton btnRespondre = new JButton("Respondre Enquesta");
     private JButton btnGestionarRespostes = new JButton("Gestionar Les Meves Respostes");
     private JButton btnLogout = new JButton("Tancar sessió");
+    private JButton btnEliminarCompte = new JButton("Eliminar el meu compte");
 
     /**
      * Constructor de la classe VistaMenuPrincipal.
@@ -128,6 +129,12 @@ public class VistaMenuPrincipal extends JPanel {
         UIComponents.styleButton(btnLogout, UIStyles.ERROR_COLOR);
         btnLogout.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(btnLogout);
+        cardPanel.add(Box.createVerticalStrut(8));
+        
+        // Botón eliminar compte
+        UIComponents.styleButton(btnEliminarCompte, UIStyles.DARK_RED);
+        btnEliminarCompte.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cardPanel.add(btnEliminarCompte);
 
         // Listeners
         btnNueva.setActionCommand(MyActionListener.Action.CREAR_ENQUESTA.name());
@@ -148,6 +155,9 @@ public class VistaMenuPrincipal extends JPanel {
         
         btnLogout.setActionCommand(MyActionListener.Action.LOGOUT.name());
         btnLogout.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnEliminarCompte.setActionCommand(MyActionListener.Action.ELIMINAR_COMPTE.name());
+        btnEliminarCompte.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
 
         this.add(cardPanel);
     }

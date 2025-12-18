@@ -1,59 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<testsuite name="edu.upc.prop.clusterxx.domini.TestPregunta" tests="27" skipped="0" failures="0" errors="0" timestamp="2025-12-03T13:26:08" hostname="DARI" time="0.024">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestPregunta" tests="27" skipped="0" failures="0" errors="0" timestamp="2025-12-14T18:26:14" hostname="LAPTOP-LVPJG8BN" time="0.007">
   <properties/>
-  <testcase name="testValidarRespostaNumericaSenseRang" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.014"/>
-  <testcase name="testSetRangNumNoNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
-  <testcase name="testEliminarOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.002"/>
-  <testcase name="testAfegirOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
-=======
-<testsuite name="edu.upc.prop.clusterxx.domini.TestPregunta" tests="27" skipped="0" failures="0" errors="0" timestamp="2025-12-12T12:15:31" hostname="DESKTOP-JJJGPR0" time="0.016">
-  <properties/>
-  <testcase name="testValidarRespostaNumericaSenseRang" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.002"/>
+  <testcase name="testValidarRespostaNumericaSenseRang" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
   <testcase name="testSetRangNumNoNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testEliminarOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.002"/>
+  <testcase name="testEliminarOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
   <testcase name="testAfegirOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
->>>>>>> origin/joan
   <testcase name="testConstructoraTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testSetGetTextPregunta" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testToStringQualitativaSimple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testEliminarOpcioInexistentNoCanvia" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
+  <testcase name="testEliminarOpcioInexistentNoCanvia" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testToStringNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-<<<<<<< HEAD
   <testcase name="constructorAmbString_mappingTipus" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testToStringTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testSetGetMaxSeleccions" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
   <testcase name="testValidarRespostesNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testSetGetRangNum" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
+  <testcase name="testSetGetRangNum" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testConstructoraQualitativaNoOrdenadaSimple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testGetOpcioInexistent" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testToStringQualitativaMúltiple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testAfegirOpcioPreguntaNoQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testValidarRespostesQualitativaMultiple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-=======
-  <testcase name="constructorAmbString_mappingTipus" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
-  <testcase name="testToStringTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testSetGetMaxSeleccions" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
-  <testcase name="testValidarRespostesNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
-  <testcase name="testSetGetRangNum" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testConstructoraQualitativaNoOrdenadaSimple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testGetOpcioInexistent" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testToStringQualitativaMúltiple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
-  <testcase name="testAfegirOpcioPreguntaNoQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testValidarRespostesQualitativaMultiple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
->>>>>>> origin/joan
   <testcase name="testTipusOpcions" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
   <testcase name="testConstructoraQualitativaNoOrdenadaMultiple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testValidarRespostaTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testGetOpcionsNoModifica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testValidarRespostesQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-<<<<<<< HEAD
   <testcase name="testValidarRespostaQualitativaMultipleAmbEspais" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-=======
-  <testcase name="testValidarRespostaQualitativaMultipleAmbEspais" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
->>>>>>> origin/joan
   <testcase name="testConstructoraNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testConstructoraQualitativaOrdenada" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
+  <testcase name="testConstructoraQualitativaOrdenada" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -39,7 +39,7 @@ public class VistaGestionarRespostes extends JPanel {
     /** Component visual que mostra la llista d'enquestes contestades. */
     JList<String> listEnquestes = new JList<>(listModel);
     /** Botons d'acció de la vista. */
-    private JButton btnModificar, btnEsborrar, btnTornar;
+    private JButton btnModificar, btnEsborrar, btnImportar, btnVeurePerfilEnquesta, btnVeureTotsPerfils, btnTornar;
 
     /**
      * Constructor de la vista de gestió de respostes.
@@ -90,22 +90,43 @@ public class VistaGestionarRespostes extends JPanel {
         scroll.setBorder(BorderFactory.createTitledBorder("Selecciona una enquesta"));
         add(scroll, BorderLayout.CENTER);
 
-        // Botones
-        JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        panelBotons.setBackground(UIStyles.BACKGROUND_COLOR);
+        // Botones - organizados en dos filas
+        JPanel panelBotonsContainer = new JPanel();
+        panelBotonsContainer.setLayout(new BoxLayout(panelBotonsContainer, BoxLayout.Y_AXIS));
+        panelBotonsContainer.setBackground(UIStyles.BACKGROUND_COLOR);
+
+        // Primera fila - Acciones sobre respostes
+        JPanel panelBotons1 = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        panelBotons1.setBackground(UIStyles.BACKGROUND_COLOR);
 
         btnModificar = UIComponents.createColorButton("👁️ Veure/Modificar", UIStyles.PRIMARY_COLOR);
         btnEsborrar = UIComponents.createColorButton("🗑️ Esborrar Totes", UIStyles.ERROR_COLOR);
+        btnImportar = UIComponents.createColorButton("📥 Importar Resposta", UIStyles.FOREST_GREEN);
+
+        panelBotons1.add(btnModificar);
+        panelBotons1.add(btnEsborrar);
+        panelBotons1.add(btnImportar);
+
+        // Segona fila - Perfils i navegació
+        JPanel panelBotons2 = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        panelBotons2.setBackground(UIStyles.BACKGROUND_COLOR);
+
+        btnVeurePerfilEnquesta = UIComponents.createColorButton("👤 Veure el Meu Perfil", UIStyles.SUCCESS_COLOR);
+        btnVeureTotsPerfils = UIComponents.createColorButton("📋 Tots els Perfils", UIStyles.WARNING_COLOR);
         btnTornar = UIComponents.createColorButton("← Tornar", UIStyles.SECONDARY_COLOR);
 
-        panelBotons.add(btnModificar);
-        panelBotons.add(btnEsborrar);
-        panelBotons.add(btnTornar);
-        add(panelBotons, BorderLayout.SOUTH);
+        panelBotons2.add(btnVeurePerfilEnquesta);
+        panelBotons2.add(btnVeureTotsPerfils);
+        panelBotons2.add(btnTornar);
+
+        panelBotonsContainer.add(panelBotons1);
+        panelBotonsContainer.add(panelBotons2);
+        add(panelBotonsContainer, BorderLayout.SOUTH);
 
         // Estado inicial
         btnModificar.setEnabled(false);
         btnEsborrar.setEnabled(false);
+        btnVeurePerfilEnquesta.setEnabled(false);
 
         // Listeners
         listEnquestes.addListSelectionListener(e -> {
@@ -113,6 +134,7 @@ public class VistaGestionarRespostes extends JPanel {
                 boolean selected = !listEnquestes.isSelectionEmpty();
                 btnModificar.setEnabled(selected);
                 btnEsborrar.setEnabled(selected);
+                btnVeurePerfilEnquesta.setEnabled(selected);
             }
         });
 
@@ -121,6 +143,15 @@ public class VistaGestionarRespostes extends JPanel {
         
         btnEsborrar.setActionCommand(MyActionListener.Action.ELIMINAR_RESPOSTA.name());
         btnEsborrar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnImportar.setActionCommand(MyActionListener.Action.IMPORTAR_RESPOSTA.name());
+        btnImportar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnVeurePerfilEnquesta.setActionCommand(MyActionListener.Action.VEURE_PERFIL_ENQUESTA.name());
+        btnVeurePerfilEnquesta.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnVeureTotsPerfils.setActionCommand(MyActionListener.Action.VEURE_TOTS_PERFILS.name());
+        btnVeureTotsPerfils.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
         
         btnTornar.setActionCommand(MyActionListener.Action.TORNAR_MENU.name());
         btnTornar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));

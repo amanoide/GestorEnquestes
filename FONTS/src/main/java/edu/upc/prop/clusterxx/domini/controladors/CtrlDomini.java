@@ -195,7 +195,7 @@ public class CtrlDomini {
             }
 
             // Eliminar la pregunta de persistència global
-            ctrlPersistencia.eliminarPregunta(pregunta.getId());
+            ctrlPersistencia.eliminarPregunta(id, pregunta.getId());
         }
 
         // 2. Eliminar l'enquesta de la llista del creador
@@ -514,10 +514,17 @@ public class CtrlDomini {
             throw new PermisDenegatException("Només el creador de l'enquesta pot eliminar preguntes.");
         }
 
+        // Verificar que la encuesta no tiene respuestas
+        HashMap<String, Resposta> respostesPregunta = pregunta.getRespostes();
+        if (!respostesPregunta.isEmpty()) {
+            throw new IllegalStateException(
+                    "No es pot eliminar la pregunta perquè l'enquesta ja té respostes. " +
+                    "Aquesta pregunta té " + respostesPregunta.size() + " resposta(es).");
+        }
+
         // IMPORTANT: Eliminar totes les respostes associades a aquesta pregunta abans
         // d'eliminar-la
         // Crear una llista temporal per evitar ConcurrentModificationException
-        HashMap<String, Resposta> respostesPregunta = pregunta.getRespostes();
         ArrayList<String> idsRespostes = new ArrayList<>(respostesPregunta.keySet());
 
         for (String username : idsRespostes) {
@@ -1270,6 +1277,7 @@ public class CtrlDomini {
             if (json.has("respostes")) {
                 JSONArray respostesArray = json.getJSONArray("respostes");
                 int respostesImportades = 0;
+                int usuarisIgnorats = 0;
 
                 for (int i = 0; i < respostesArray.length(); i++) {
                     JSONObject respostaUsuariJson = respostesArray.getJSONObject(i);
@@ -1279,8 +1287,7 @@ public class CtrlDomini {
                     // Verificar que l'usuari existeix
                     Usuari usuari = ctrlPersistencia.getUsuari(username);
                     if (usuari == null) {
-
-                        System.out.println("⚠ Avís: L'usuari '" + username + "' no existeix, se saltarà.");
+                        usuarisIgnorats++;
                         continue;
                     }
 
@@ -1311,6 +1318,8 @@ public class CtrlDomini {
                         if (usuariTeRespostes) {
                             try {
                                 registrarParticipacio(idEnquesta, username);
+                                // Guardar l'usuari per assegurar que les participacions es persisteixen
+                                ctrlPersistencia.guardarUsuari(usuari);
                                 respostesImportades++;
                             } catch (Exception e) {
                                 // Ignorar si ja estava registrat
@@ -1323,7 +1332,11 @@ public class CtrlDomini {
                     throw new ErrorImportacioException("No s'ha pogut importar cap resposta vàlida");
                 }
 
-                System.out.println("✓ S'han importat respostes de " + respostesImportades + " participants");
+                String missatge = "✓ S'han importat respostes de " + respostesImportades + " participants";
+                if (usuarisIgnorats > 0) {
+                    missatge += ". S'han ignorat " + usuarisIgnorats + " usuari(s) no registrat(s)";
+                }
+                System.out.println(missatge);
             } else {
                 throw new ErrorImportacioException("El fitxer JSON no conté l'array 'respostes'");
             }
@@ -2115,6 +2128,15 @@ public class CtrlDomini {
         return ctrlPerfil.getPerfil(id);
     }
 
+    /**
+     * Obté tots els perfils del sistema.
+     * 
+     * @return Mapa amb tots els perfils indexats per ID
+     */
+    public HashMap<String, Perfil> getAllPerfils() {
+        return ctrlPersistencia.getAllPerfils();
+    }
+
     // --- Mètodes auxiliars ---
 
     /**
@@ -2452,6 +2474,9 @@ public class CtrlDomini {
             int maxIters, String algoritmeNom)
             throws EnquestaNoExisteixException {
 
+        // 0. Eliminar els perfils antics d'aquesta enquesta
+        ctrlPersistencia.eliminarPerfilsEnquesta(idEnquesta);
+
         // 1. Obtenir l'enquesta
         Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
         if (enquesta == null) {
@@ -2556,6 +2581,9 @@ public class CtrlDomini {
                     centroid,
                     preguntesText,
                     algoritmeNom);
+
+            // Afegir el perfil al sistema de persistència (sense guardar encara per eficiència)
+            ctrlPersistencia.afegirPerfilSenseGuardar(perfilCluster);
 
             // Assignar perfil a cada usuari del cluster
             for (String[] memberVector : members) {

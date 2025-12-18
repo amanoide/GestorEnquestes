@@ -20,13 +20,11 @@ public class GestorPerfils {
     private static final String FITXER_INDEX = "index.json";
 
     /**
-     * Constructor. Crea el directori de perfils si no existeix.
+     * Constructor per defecte.
+     * Els directoris es crearan automàticament quan sigui necessari guardar dades.
      */
     public GestorPerfils() {
-        File dir = new File(DIRECTORI_PERFILS);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
+        // No crear directoris fins que sigui necessari
     }
 
     /**
@@ -51,6 +49,12 @@ public class GestorPerfils {
      * @throws IOException Si hi ha error d'escriptura
      */
     public void guardarPerfil(Perfil perfil) throws IOException {
+        // Assegurar que el directori existeix
+        File dir = new File(DIRECTORI_PERFILS);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         File fitxer = new File(DIRECTORI_PERFILS, perfil.getId() + ".json");
 
         JSONObject jsonPerfil = new JSONObject();
@@ -81,6 +85,12 @@ public class GestorPerfils {
      * @throws IOException Si hi ha error d'escriptura
      */
     private void guardarIndex(HashMap<String, Perfil> perfils) throws IOException {
+        // Assegurar que el directori existeix
+        File dir = new File(DIRECTORI_PERFILS);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         File fitxer = new File(DIRECTORI_PERFILS, FITXER_INDEX);
         JSONArray jsonArray = new JSONArray();
 

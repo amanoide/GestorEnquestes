@@ -39,7 +39,7 @@ public class VistaAnalisi extends JPanel {
     /** Component visual que mostra la llista d'enquestes. */
     JList<String> listEnquestes = new JList<>(listModel);
     /** Botons d'acció de la vista. */
-    private JButton btnAnalitzar, btnVeurePerfil, btnTornar;
+    private JButton btnAnalitzar, btnVeureAnalisi, btnTornar;
 
     /**
      * Constructor de la vista d'anàlisi de clustering.
@@ -95,29 +95,32 @@ public class VistaAnalisi extends JPanel {
         panelBotons.setBackground(UIStyles.BACKGROUND_COLOR);
 
         btnAnalitzar = UIComponents.createColorButton("📈 Analitzar Enquesta", UIStyles.PRIMARY_COLOR);
-        btnVeurePerfil = UIComponents.createColorButton("👤 Veure el Meu Perfil", UIStyles.SUCCESS_COLOR);
+        btnVeureAnalisi = UIComponents.createColorButton("📁 Veure Anàlisi", UIStyles.SUCCESS_COLOR);
         btnTornar = UIComponents.createColorButton("← Tornar", UIStyles.SECONDARY_COLOR);
 
         panelBotons.add(btnAnalitzar);
-        panelBotons.add(btnVeurePerfil);
+        panelBotons.add(btnVeureAnalisi);
         panelBotons.add(btnTornar);
         add(panelBotons, BorderLayout.SOUTH);
 
         // Estado inicial
         btnAnalitzar.setEnabled(false);
+        btnVeureAnalisi.setEnabled(false);
 
         // Listeners
         listEnquestes.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                btnAnalitzar.setEnabled(!listEnquestes.isSelectionEmpty());
+                boolean hasSelection = !listEnquestes.isSelectionEmpty();
+                btnAnalitzar.setEnabled(hasSelection);
+                btnVeureAnalisi.setEnabled(hasSelection);
             }
         });
 
         btnAnalitzar.setActionCommand(MyActionListener.Action.ANALITZAR_ENQUESTA.name());
         btnAnalitzar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
         
-        btnVeurePerfil.setActionCommand(MyActionListener.Action.VEURE_PERFIL.name());
-        btnVeurePerfil.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        btnVeureAnalisi.setActionCommand(MyActionListener.Action.VEURE_ANALISI_ENQUESTA.name());
+        btnVeureAnalisi.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
         
         btnTornar.setActionCommand(MyActionListener.Action.TORNAR_MENU.name());
         btnTornar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));

@@ -70,19 +70,19 @@ public class DialogoGestionPreguntes extends JDialog {
      */
     private void inicializar() {
         setLayout(new BorderLayout(10, 10));
-        setSize(550, 450);
+        setSize(700, 450);
         setLocationRelativeTo(getOwner());
         getContentPane().setBackground(UIStyles.BACKGROUND_COLOR);
         ((JPanel) getContentPane()).setBorder(new EmptyBorder(15, 15, 15, 15));
 
         // Título
-        JLabel titulo = new JLabel("📋 Preguntes de l'enquesta: " + idEnquesta);
-        titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 16));
+        JLabel titulo = new JLabel("Preguntes de l'enquesta: " + idEnquesta);
+        titulo.setFont(UIStyles.FONT_SECTION);
         titulo.setForeground(UIStyles.TEXT_COLOR);
         add(titulo, BorderLayout.NORTH);
 
         // Lista
-        listPreguntes.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        listPreguntes.setFont(UIStyles.FONT_INPUT);
         listPreguntes.setFixedCellHeight(40);
         listPreguntes.setSelectionBackground(UIStyles.SELECTION_COLOR);
         JScrollPane scroll = new JScrollPane(listPreguntes);
@@ -96,6 +96,7 @@ public class DialogoGestionPreguntes extends JDialog {
         JButton btnAfegir = UIComponents.createColorButton("➕ Afegir", UIStyles.SUCCESS_COLOR);
         JButton btnModificar = UIComponents.createColorButton("✏️ Modificar", UIStyles.PRIMARY_COLOR);
         JButton btnEliminar = UIComponents.createColorButton("🗑️ Eliminar", UIStyles.ERROR_COLOR);
+        JButton btnVeureRespostes = UIComponents.createColorButton("📊 Veure Respostes", UIStyles.WARNING_COLOR);
         JButton btnTancar = UIComponents.createColorButton("✖ Tancar", UIStyles.SECONDARY_COLOR);
 
         MyActionListener listener = new MyActionListener(iCtrlPresentacio, null, this);
@@ -109,11 +110,15 @@ public class DialogoGestionPreguntes extends JDialog {
         btnEliminar.setActionCommand(MyActionListener.Action.ELIMINAR_PREGUNTA.name());
         btnEliminar.addActionListener(listener);
 
+        btnVeureRespostes.setActionCommand(MyActionListener.Action.VEURE_RESPOSTES_PREGUNTA.name());
+        btnVeureRespostes.addActionListener(listener);
+
         btnTancar.addActionListener(e -> setVisible(false));
 
         panelBotons.add(btnAfegir);
         panelBotons.add(btnModificar);
         panelBotons.add(btnEliminar);
+        panelBotons.add(btnVeureRespostes);
         panelBotons.add(btnTancar);
         add(panelBotons, BorderLayout.SOUTH);
     }

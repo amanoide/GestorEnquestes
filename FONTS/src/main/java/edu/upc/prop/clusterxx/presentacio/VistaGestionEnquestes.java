@@ -43,6 +43,8 @@ public class VistaGestionEnquestes extends JPanel {
     private JButton btnGestionarPreguntes = new JButton("📝 Gestionar Preguntes");
     /** Botó per veure els participants que han respost. */
     private JButton btnVeureParticipants = new JButton("👥 Veure Participants");
+    /** Botó per veure totes les respostes de l'enquesta. */
+    private JButton btnVeureRespostes = new JButton("📊 Veure Respostes");
     /** Botó per eliminar una enquesta seleccionada. */
     private JButton btnEliminar = new JButton("🗑️ Eliminar");
     /** Botó per tornar al menú principal. */
@@ -98,21 +100,37 @@ public class VistaGestionEnquestes extends JPanel {
         scrollList.setBorder(BorderFactory.createTitledBorder("Les meves enquestes"));
         add(scrollList, BorderLayout.CENTER);
 
-        // Botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        // Botones organizados en dos filas
+        JPanel panelBotones = new JPanel();
+        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
         panelBotones.setBackground(UIStyles.BACKGROUND_COLOR);
+
+        // Primera fila de botones
+        JPanel primeraFila = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        primeraFila.setBackground(UIStyles.BACKGROUND_COLOR);
 
         UIComponents.styleButton(btnEditar, UIStyles.PRIMARY_COLOR);
         UIComponents.styleButton(btnGestionarPreguntes, UIStyles.SUCCESS_COLOR);
         UIComponents.styleButton(btnVeureParticipants, UIStyles.WARNING_COLOR);
+
+        primeraFila.add(btnEditar);
+        primeraFila.add(btnGestionarPreguntes);
+        primeraFila.add(btnVeureParticipants);
+
+        // Segunda fila de botones
+        JPanel segundaFila = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        segundaFila.setBackground(UIStyles.BACKGROUND_COLOR);
+
+        UIComponents.styleButton(btnVeureRespostes, UIStyles.PRIMARY_COLOR);
         UIComponents.styleButton(btnEliminar, UIStyles.ERROR_COLOR);
         UIComponents.styleButton(btnVolver, UIStyles.SECONDARY_COLOR);
 
-        panelBotones.add(btnEditar);
-        panelBotones.add(btnGestionarPreguntes);
-        panelBotones.add(btnVeureParticipants);
-        panelBotones.add(btnEliminar);
-        panelBotones.add(btnVolver);
+        segundaFila.add(btnVeureRespostes);
+        segundaFila.add(btnEliminar);
+        segundaFila.add(btnVolver);
+
+        panelBotones.add(primeraFila);
+        panelBotones.add(segundaFila);
         add(panelBotones, BorderLayout.SOUTH);
 
         // Listeners
@@ -124,6 +142,9 @@ public class VistaGestionEnquestes extends JPanel {
         
         btnVeureParticipants.setActionCommand(MyActionListener.Action.VEURE_PARTICIPANTS.name());
         btnVeureParticipants.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
+        
+        btnVeureRespostes.setActionCommand(MyActionListener.Action.VEURE_RESPOSTES_ENQUESTA.name());
+        btnVeureRespostes.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
         
         btnEliminar.setActionCommand(MyActionListener.Action.ELIMINAR_ENQUESTA.name());
         btnEliminar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
@@ -137,6 +158,7 @@ public class VistaGestionEnquestes extends JPanel {
                 btnEditar.setEnabled(selected);
                 btnGestionarPreguntes.setEnabled(selected);
                 btnVeureParticipants.setEnabled(selected);
+                btnVeureRespostes.setEnabled(selected);
                 btnEliminar.setEnabled(selected);
             }
         });
@@ -144,6 +166,7 @@ public class VistaGestionEnquestes extends JPanel {
         btnEditar.setEnabled(false);
         btnGestionarPreguntes.setEnabled(false);
         btnVeureParticipants.setEnabled(false);
+        btnVeureRespostes.setEnabled(false);
         btnEliminar.setEnabled(false);
     }
 

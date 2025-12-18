@@ -111,7 +111,7 @@ public class CtrlEnquesta {
         if (e != null) {
             e.eliminarPregunta(idPregunta);
             // També eliminar la pregunta de persistència global
-            persistencia.eliminarPregunta(idPregunta);
+            persistencia.eliminarPregunta(idEnquesta, idPregunta);
         }
     }
 
@@ -126,6 +126,8 @@ public class CtrlEnquesta {
         Enquesta e = persistencia.getEnquesta(idEnquesta);
         if (e != null) {
             e.modificarPregunta(idPregunta, nova);
+            // Guardar els canvis a la persistència
+            persistencia.guardarEnquesta(e);
         }
     }
 

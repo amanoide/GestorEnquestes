@@ -90,7 +90,7 @@ public class DialogoCrearPregunta extends JDialog {
 
         // Título centrado
         JLabel titulo = new JLabel("❓ Nova Pregunta");
-        titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 18));
+        titulo.setFont(UIStyles.FONT_ENQUESTA_TITLE);
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
         titulo.setBorder(new EmptyBorder(15, 0, 15, 0));
         add(titulo, BorderLayout.NORTH);

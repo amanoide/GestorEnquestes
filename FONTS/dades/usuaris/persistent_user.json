@@ -1,4 +1,6 @@
 {
     "password": "secret",
-    "username": "persistent_user"
+    "perfils": {},
+    "username": "persistent_user",
+    "enquestesParticipades": []
 }

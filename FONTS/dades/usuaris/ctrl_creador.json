@@ -1,4 +1,6 @@
 {
     "password": "pass",
-    "username": "ctrl_creador"
+    "perfils": {},
+    "username": "ctrl_creador",
+    "enquestesParticipades": []
 }

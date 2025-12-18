@@ -74,7 +74,7 @@ public class DialogoResponderEnquesta extends JDialog {
 
         // Título
         JLabel titulo = new JLabel("📝 Respondre Enquesta: " + idEnquesta);
-        titulo.setFont(new Font("Segoe UI Emoji", Font.BOLD, 18));
+        titulo.setFont(UIStyles.FONT_ENQUESTA_TITLE);
         titulo.setForeground(UIStyles.TEXT_COLOR);
         add(titulo, BorderLayout.NORTH);
 
@@ -87,7 +87,7 @@ public class DialogoResponderEnquesta extends JDialog {
             JPanel panelPregunta = new JPanel(new BorderLayout(5, 5));
             panelPregunta.setBackground(UIStyles.CARD_COLOR);
             panelPregunta.setBorder(new CompoundBorder(
-                    new LineBorder(new Color(220, 220, 220), 1, true),
+                    new LineBorder(UIStyles.BORDER_LIGHT, 1, true),
                     new EmptyBorder(12, 12, 12, 12)));
             panelPregunta.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
 
@@ -96,7 +96,7 @@ public class DialogoResponderEnquesta extends JDialog {
             // Pregunta con emoji según tipo
             String emoji = getEmojiTipus(p.getTipus());
             JLabel lblPregunta = new JLabel(emoji + " " + p.getText());
-            lblPregunta.setFont(new Font("Segoe UI Emoji", Font.BOLD, 13));
+            lblPregunta.setFont(UIStyles.FONT_PREGUNTA_LABEL);
             lblPregunta.setForeground(UIStyles.TEXT_COLOR);
 
             String instruccions = getInstruccions(p);
@@ -201,21 +201,21 @@ public class DialogoResponderEnquesta extends JDialog {
                 SpinnerNumberModel model = new SpinnerNumberModel(p.getValorMinim(), p.getValorMinim(),
                         p.getValorMaxim(), Double.valueOf(1.0));
                 JSpinner spinner = new JSpinner(model);
-                spinner.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+                spinner.setFont(UIStyles.FONT_INPUT);
                 return spinner;
 
             case TEXT_LLIURE:
                 JTextField textField = new JTextField();
-                textField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+                textField.setFont(UIStyles.FONT_INPUT);
                 textField.setBorder(new CompoundBorder(
-                        new LineBorder(new Color(200, 200, 200), 1, true),
+                        new LineBorder(UIStyles.BORDER_MEDIUM, 1, true),
                         new EmptyBorder(8, 10, 8, 10)));
                 return textField;
 
             case QUALITATIVA_ORDENADA:
             case QUALITATIVA_NO_ORDENADA_SIMPLE:
                 JComboBox<String> combo = new JComboBox<>();
-                combo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+                combo.setFont(UIStyles.FONT_INPUT);
                 for (Opcio o : p.getOpcions()) {
                     combo.addItem(o.getText());
                 }

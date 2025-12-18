@@ -1,4 +1,6 @@
 {
     "password": "password123",
-    "username": "testuser"
+    "perfils": {},
+    "username": "testuser",
+    "enquestesParticipades": []
 }
