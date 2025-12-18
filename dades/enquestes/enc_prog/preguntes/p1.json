@@ -1,0 +1,24 @@
+{
+    "id": "p1",
+    "text": "Quantes hores estudies per setmana?",
+    "opcions": [
+        {
+            "id": 1,
+            "text": "ct5vt"
+        },
+        {
+            "id": 2,
+            "text": "t"
+        },
+        {
+            "id": 3,
+            "text": "t"
+        },
+        {
+            "id": 4,
+            "text": "t"
+        }
+    ],
+    "tipus": "QUALITATIVA_NO_ORDENADA_MULTIPLE",
+    "maxSeleccions": 2
+}

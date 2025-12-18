@@ -6,8 +6,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import edu.upc.prop.clusterxx.domini.classes.Pregunta;
-
 /**
  * Diàleg per gestionar (visualitzar, modificar i esborrar) les respostes de
  * l'usuari a una enquesta específica.
@@ -24,7 +22,7 @@ import edu.upc.prop.clusterxx.domini.classes.Pregunta;
  * Indicador visual quan no hi ha respostes.
  * Actualització dinàmica del contingut després de cada canvi.
  * Estils visuals diferenciats per a cada acció (modificar=taronja,
- *   esborrar=vermell).
+ * esborrar=vermell).
  * 
  * 
  * El diàleg és modal i es refresca automàticament després de cada modificació
@@ -36,7 +34,7 @@ public class DialogoGestionarRespostes extends JDialog {
     /** Identificador de l'enquesta de la qual es gestionen les respostes. */
     private String idEnquesta;
     /** Llista de preguntes de l'enquesta. */
-    private ArrayList<Pregunta> preguntes;
+    private ArrayList<ArrayList<Object>> preguntes;
     /** Mapa amb les respostes de l'usuari (clau: idPregunta, valor: resposta). */
     private HashMap<String, String> respostesUsuari;
 
@@ -70,7 +68,7 @@ public class DialogoGestionarRespostes extends JDialog {
      * per actualitzar les dades mostrades.
      */
     private void cargarDatos() {
-        this.preguntes = iCtrlPresentacio.getPreguntesEnquestaObjects(idEnquesta);
+        this.preguntes = iCtrlPresentacio.getPreguntesEnquestaRaw(idEnquesta);
         this.respostesUsuari = iCtrlPresentacio.getRespostesUsuariEnquesta(idEnquesta);
     }
 
@@ -194,8 +192,10 @@ public class DialogoGestionarRespostes extends JDialog {
 
             panelContent.add(emptyPanel);
         } else {
-            for (Pregunta p : preguntes) {
-                if (respostesUsuari.containsKey(p.getId())) {
+            // [0] ID, [1] Text, [2] Tipus
+            for (ArrayList<Object> p : preguntes) {
+                String idPregunta = (String) p.get(0);
+                if (respostesUsuari.containsKey(idPregunta)) {
                     panelContent.add(crearPanelResposta(p));
                     panelContent.add(Box.createVerticalStrut(10));
                 }
@@ -220,7 +220,13 @@ public class DialogoGestionarRespostes extends JDialog {
      * @param p Pregunta de la qual es mostra la resposta.
      * @return Panel JPanel amb la targeta completa.
      */
-    private JPanel crearPanelResposta(Pregunta p) {
+    /**
+     * Crea una targeta visual per a una resposta individual.
+     * 
+     * @param p Pregunta (ArrayList<Object>) de la qual es mostra la resposta.
+     * @return Panel JPanel amb la targeta completa.
+     */
+    private JPanel crearPanelResposta(ArrayList<Object> p) {
         JPanel panelPregunta = new JPanel(new BorderLayout(15, 0));
         panelPregunta.setBackground(UIStyles.CARD_COLOR);
         panelPregunta.setBorder(BorderFactory.createCompoundBorder(
@@ -228,26 +234,30 @@ public class DialogoGestionarRespostes extends JDialog {
                 new EmptyBorder(15, 20, 15, 20)));
         panelPregunta.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
+        String id = (String) p.get(0);
+        String text = (String) p.get(1);
+        String tipus = (String) p.get(2);
+
         // Panel izquierdo con pregunta y respuesta
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBackground(UIStyles.CARD_COLOR);
 
-        JLabel lblPregunta = new JLabel(p.getText());
+        JLabel lblPregunta = new JLabel(text);
         lblPregunta.setFont(UIStyles.FONT_NORMAL);
         lblPregunta.setForeground(UIStyles.TEXT_COLOR);
         lblPregunta.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.add(lblPregunta);
         leftPanel.add(Box.createVerticalStrut(5));
 
-        String respostaActual = respostesUsuari.get(p.getId());
+        String respostaActual = respostesUsuari.get(id);
         JLabel lblResposta = new JLabel(respostaActual);
         lblResposta.setFont(UIStyles.FONT_INPUT);
         lblResposta.setForeground(UIStyles.SUCCESS_COLOR);
         lblResposta.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.add(lblResposta);
 
-        JLabel lblTipus = new JLabel("Tipus: " + p.getTipus());
+        JLabel lblTipus = new JLabel("Tipus: " + tipus);
         lblTipus.setFont(UIStyles.FONT_INSTRUCTIONS);
         lblTipus.setForeground(UIStyles.SECONDARY_COLOR);
         lblTipus.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -259,6 +269,7 @@ public class DialogoGestionarRespostes extends JDialog {
         JButton btnModificar = UIComponents.createColorButton("Modificar", UIStyles.WARNING_COLOR);
         btnModificar.setPreferredSize(new Dimension(120, 35));
         btnModificar.setActionCommand(MyActionListener.Action.MODIFICAR_RESPOSTA_INDIVIDUAL.name());
+        // Pass the raw question list
         btnModificar.addActionListener(new MyActionListener(iCtrlPresentacio, null, new Object[] { this, p }));
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 10));

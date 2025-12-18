@@ -50,7 +50,8 @@ public class MyActionListener implements ActionListener {
         GESTIONAR_PREGUNTES, CREAR_PREGUNTA, MODIFICAR_PREGUNTA, ELIMINAR_PREGUNTA, VEURE_RESPOSTES_PREGUNTA,
 
         // Respostes
-        RESPONDRE_ENQUESTA, GESTIONAR_RESPOSTES, MODIFICAR_RESPOSTA, MODIFICAR_RESPOSTA_INDIVIDUAL, ELIMINAR_RESPOSTA, IMPORTAR_RESPOSTA, VEURE_RESPOSTES_ENQUESTA,
+        RESPONDRE_ENQUESTA, GESTIONAR_RESPOSTES, MODIFICAR_RESPOSTA, MODIFICAR_RESPOSTA_INDIVIDUAL, ELIMINAR_RESPOSTA,
+        IMPORTAR_RESPOSTA, VEURE_RESPOSTES_ENQUESTA,
 
         // Anàlisi
         ANALITZAR_ENQUESTA, VEURE_ANALISI_ENQUESTA, VEURE_PERFIL, VEURE_PERFIL_ENQUESTA, VEURE_TOTS_PERFILS,
@@ -417,7 +418,7 @@ public class MyActionListener implements ActionListener {
                 return;
 
             String id = selected.split(":")[0].trim();
-            
+
             // Buscar l'enquesta per obtenir participants
             edu.upc.prop.clusterxx.domini.classes.Enquesta enquesta = null;
             for (edu.upc.prop.clusterxx.domini.classes.Enquesta e : ctrlPresentacio.getEnquestesUsuari()) {
@@ -426,7 +427,7 @@ public class MyActionListener implements ActionListener {
                     break;
                 }
             }
-            
+
             if (enquesta != null) {
                 Frame parent = getParentFrame();
                 new DialogoParticipants(parent, enquesta.getTitol(), enquesta.getParticipants()).setVisible(true);
@@ -494,17 +495,29 @@ public class MyActionListener implements ActionListener {
                 return;
             }
 
-            edu.upc.prop.clusterxx.domini.classes.Pregunta p = ctrlPresentacio.getDadesPregunta(dialogo.getIdEnquesta(), idPregunta);
+            // [0] ID (String), [1] Text (String), [2] Tipus (String), [3] Min (Double),
+            // [4] Max (Double), [5] Opcions (ArrayList<String>), [6] MaxSeleccions
+            // (Integer)
+            ArrayList<Object> dades = ctrlPresentacio.getDadesPregunta(dialogo.getIdEnquesta(), idPregunta);
 
-            if (p == null) {
+            if (dades == null) {
                 JOptionPane.showMessageDialog(parent, "Error al recuperar dades de la pregunta.");
                 return;
             }
 
             DialogoCrearPregunta dialogoCrear = new DialogoCrearPregunta(parent);
             dialogoCrear.setTitle("Modificar Pregunta");
-            dialogoCrear.setDades(p.getId(), p.getText(), p.getTipus().toString(),
-                    p.getValorMinim(), p.getValorMaxim(), p.getOpcions(), p.getMaxSeleccions());
+
+            // Unpack data safely
+            String id = (String) dades.get(0);
+            String text = (String) dades.get(1);
+            String tipus = (String) dades.get(2);
+            Double min = (Double) dades.get(3);
+            Double max = (Double) dades.get(4);
+            ArrayList<String> opcions = (ArrayList<String>) dades.get(5);
+            Integer maxSel = (Integer) dades.get(6);
+
+            dialogoCrear.setDades(id, text, tipus, min, max, opcions, maxSel != null ? maxSel : 0);
             dialogoCrear.setVisible(true);
 
             if (dialogoCrear.isConfirmado()) {
@@ -564,7 +577,8 @@ public class MyActionListener implements ActionListener {
             }
 
             // Obrir el diàleg amb les respostes de la pregunta
-            DialogoRespostesPregunta dialogoRespostes = new DialogoRespostesPregunta(dialogo, ctrlPresentacio, idPregunta);
+            DialogoRespostesPregunta dialogoRespostes = new DialogoRespostesPregunta(dialogo, ctrlPresentacio,
+                    idPregunta);
             dialogoRespostes.setVisible(true);
         }
     }
@@ -584,19 +598,18 @@ public class MyActionListener implements ActionListener {
 
         if (dialogoSel.isConfirmado()) {
             String idEnquesta = dialogoSel.getSelectedId();
-            
+
             // Verificar si l'enquesta té preguntes abans d'obrir el diàleg
-            ArrayList<Pregunta> preguntes = 
-                ctrlPresentacio.getPreguntesEnquestaObjects(idEnquesta);
-            
+            ArrayList<ArrayList<Object>> preguntes = ctrlPresentacio.getPreguntesEnquestaRaw(idEnquesta);
+
             if (preguntes == null || preguntes.isEmpty()) {
                 JOptionPane.showMessageDialog(parent,
-                    "Actualment no hi ha preguntes a respondre",
-                    "Enquesta sense preguntes",
-                    JOptionPane.WARNING_MESSAGE);
+                        "Actualment no hi ha preguntes a respondre",
+                        "Enquesta sense preguntes",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            
+
             DialogoResponderEnquesta dialogoResp = new DialogoResponderEnquesta(
                     parent, ctrlPresentacio, idEnquesta);
             dialogoResp.setVisible(true);
@@ -642,7 +655,7 @@ public class MyActionListener implements ActionListener {
                     for (int i = 0; i < opcions.size(); i++) {
                         opcionsText[i] = opcions.get(i).getText();
                     }
-                    
+
                     Object selected = JOptionPane.showInputDialog(dialogo,
                             "Selecciona la nova resposta per a:\n\n" + p.getText(),
                             "Modificar Resposta",
@@ -650,15 +663,15 @@ public class MyActionListener implements ActionListener {
                             null,
                             opcionsText,
                             currentAnswer);
-                            
+
                     if (selected != null) {
                         novaResposta = selected.toString();
                     }
                 } else {
                     // Input de texto normal para otros tipos
                     String message = "Introdueix la nova resposta per a:\n\n" + p.getText() + "\n\n" +
-                                   "Format esperat: " + p.getTipus();
-                                   
+                            "Format esperat: " + p.getTipus();
+
                     if (p.getTipus() == TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE) {
                         message += "\n(Opcions vàlides: ";
                         for (Opcio o : p.getOpcions()) {
@@ -669,12 +682,13 @@ public class MyActionListener implements ActionListener {
                         }
                         message += ")";
                     }
-                    
+
                     novaResposta = JOptionPane.showInputDialog(dialogo, message, currentAnswer);
                 }
 
                 if (novaResposta != null && !novaResposta.trim().isEmpty()) {
-                    String resultat = ctrlPresentacio.modificarResposta(dialogo.getIdEnquesta(), p.getId(), novaResposta);
+                    String resultat = ctrlPresentacio.modificarResposta(dialogo.getIdEnquesta(), p.getId(),
+                            novaResposta);
                     JOptionPane.showMessageDialog(dialogo, resultat);
                     if (resultat.contains("correctament")) {
                         dialogo.actualizarVista();
@@ -726,7 +740,8 @@ public class MyActionListener implements ActionListener {
     /**
      * Gestiona la importació d'una resposta des d'un fitxer JSON.
      * 
-     * Obre un diàleg de selecció de fitxer i crida al controlador per importar la resposta.
+     * Obre un diàleg de selecció de fitxer i crida al controlador per importar la
+     * resposta.
      */
     private void handleImportarResposta() {
         Frame parent = getParentFrame();
@@ -737,7 +752,7 @@ public class MyActionListener implements ActionListener {
             java.io.File selectedFile = fileChooser.getSelectedFile();
             String resultado = ctrlPresentacio.importarResposta(selectedFile.getAbsolutePath());
             JOptionPane.showMessageDialog(parent, resultado);
-            
+
             // Actualitzar la llista si estem en la vista de gestió de respostes
             if (context instanceof VistaGestionarRespostes) {
                 VistaGestionarRespostes vista = (VistaGestionarRespostes) context;
@@ -749,16 +764,18 @@ public class MyActionListener implements ActionListener {
     /**
      * Gestiona la visualització de totes les respostes d'una enquesta.
      * 
-     * Mostra un diàleg amb totes les respostes de tots els usuaris a l'enquesta seleccionada.
+     * Mostra un diàleg amb totes les respostes de tots els usuaris a l'enquesta
+     * seleccionada.
      */
     private void handleVeureRespostesEnquesta() {
         if (context instanceof VistaGestionEnquestes) {
             VistaGestionEnquestes vista = (VistaGestionEnquestes) context;
             String selected = vista.listEnquestes.getSelectedValue();
-            if (selected == null) return;
+            if (selected == null)
+                return;
 
             String idEnquesta = selected.split(":")[0].trim();
-            
+
             Frame parent = getParentFrame();
             DialogoRespostesEnquesta dialogo = new DialogoRespostesEnquesta(parent, ctrlPresentacio, idEnquesta);
             dialogo.setVisible(true);
@@ -797,7 +814,7 @@ public class MyActionListener implements ActionListener {
 
         VistaAnalisi vista = (VistaAnalisi) context;
         String selected = vista.listEnquestes.getSelectedValue();
-        
+
         if (selected == null || selected.equals("No tens enquestes creades.")) {
             JOptionPane.showMessageDialog(getParentFrame(),
                     "Si us plau, selecciona una enquesta.",
@@ -808,7 +825,7 @@ public class MyActionListener implements ActionListener {
 
         // Extreure l'ID de l'enquesta
         String idEnquesta = selected.split(":")[0].trim();
-        
+
         String analisi = ctrlPresentacio.consultarAnalisiEnquesta(idEnquesta);
         Frame parent = getParentFrame();
         new DialogoPerfil(parent, analisi).setVisible(true);
@@ -836,7 +853,7 @@ public class MyActionListener implements ActionListener {
 
         VistaGestionarRespostes vista = (VistaGestionarRespostes) context;
         String selected = vista.listEnquestes.getSelectedValue();
-        
+
         if (selected == null || selected.equals("No has contestat cap enquesta encara.")) {
             JOptionPane.showMessageDialog(getParentFrame(),
                     "Si us plau, selecciona una enquesta.",
@@ -847,7 +864,7 @@ public class MyActionListener implements ActionListener {
 
         // Extreure l'ID de l'enquesta
         String idEnquesta = selected.split(":")[0].trim();
-        
+
         String perfil = ctrlPresentacio.consultarPerfilEnquesta(idEnquesta);
         Frame parent = getParentFrame();
         new DialogoPerfil(parent, perfil).setVisible(true);

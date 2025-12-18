@@ -1,0 +1,27 @@
+{
+    "id": "p2",
+    "text": "Com valores el professor?",
+    "opcions": [
+        {
+            "ordre": 1,
+            "id": 1,
+            "text": "Malo"
+        },
+        {
+            "ordre": 2,
+            "id": 2,
+            "text": "Regular"
+        },
+        {
+            "ordre": 3,
+            "id": 3,
+            "text": "Bueno"
+        },
+        {
+            "ordre": 4,
+            "id": 4,
+            "text": "Excelente"
+        }
+    ],
+    "tipus": "QUALITATIVA_ORDENADA"
+}

@@ -273,6 +273,126 @@ public class CtrlDomini {
     }
 
     /**
+     * Obté les dades d'una pregunta específica en format cru (sense objectes de
+     * domini).
+     * 
+     * Retorna una llista amb:
+     * [0] ID (String)
+     * [1] Text (String)
+     * [2] Tipus (String)
+     * [3] Min (Double) - pot ser null
+     * [4] Max (Double) - pot ser null
+     * [5] Opcions (ArrayList<String>) - pot ser null/buit
+     * [6] MaxSeleccions (Integer)
+     * 
+     * @param idEnquesta ID de l'enquesta
+     * @param idPregunta ID de la pregunta
+     * @return ArrayList amb les dades o null si no troba la pregunta
+     */
+    public ArrayList<Object> getDadesPregunta(String idEnquesta, String idPregunta) {
+        try {
+            Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+            if (enquesta == null)
+                return null;
+
+            Pregunta p = enquesta.getPregunta(idPregunta);
+            if (p == null)
+                return null;
+
+            ArrayList<Object> dades = new ArrayList<>();
+            dades.add(p.getId());
+            dades.add(p.getText());
+            dades.add(p.getTipus().toString());
+            dades.add(p.getValorMinim());
+            dades.add(p.getValorMaxim());
+
+            ArrayList<String> opcionsStr = new ArrayList<>();
+            if (p.getOpcions() != null) {
+                for (Opcio o : p.getOpcions()) {
+                    opcionsStr.add(o.getText());
+                }
+            }
+            dades.add(opcionsStr);
+
+            dades.add(p.getMaxSeleccions());
+
+            return dades;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Obté totes les enquestes del sistema en format cru.
+     * 
+     * @return Llista de llistes amb [id, titol].
+     */
+    public ArrayList<ArrayList<String>> getAllEnquestesRaw() {
+        ArrayList<ArrayList<String>> resultat = new ArrayList<>();
+        try {
+            ArrayList<Enquesta> enquestes = ctrlEnquesta.llistarEnquestes();
+            for (Enquesta e : enquestes) {
+                ArrayList<String> dadesEnquesta = new ArrayList<>();
+                dadesEnquesta.add(e.getId());
+                dadesEnquesta.add(e.getTitol());
+                resultat.add(dadesEnquesta);
+            }
+        } catch (Exception e) {
+            // Retorna llista buida si hi ha error
+        }
+        return resultat;
+    }
+
+    /**
+     * Obté les preguntes d'una enquesta en format cru.
+     * 
+     * Retorna una llista on cada element és una llista amb:
+     * [0] ID (String)
+     * [1] Text (String)
+     * [2] Tipus (String)
+     * [3] Min (Double)
+     * [4] Max (Double)
+     * [5] Opcions (ArrayList<ArrayList<String>> -> [[id, text], ...])
+     * [6] MaxSeleccions (Integer)
+     * 
+     * @param idEnquesta ID de l'enquesta
+     * @return Llista de preguntes en format cru
+     */
+    public ArrayList<ArrayList<Object>> getPreguntesEnquestaRaw(String idEnquesta) {
+        ArrayList<ArrayList<Object>> resultat = new ArrayList<>();
+        try {
+            Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+            if (enquesta != null) {
+                for (Pregunta p : enquesta.getPreguntes()) {
+                    ArrayList<Object> dadesP = new ArrayList<>();
+                    dadesP.add(p.getId());
+                    dadesP.add(p.getText());
+                    dadesP.add(p.getTipus().toString());
+                    dadesP.add(p.getValorMinim());
+                    dadesP.add(p.getValorMaxim());
+
+                    ArrayList<ArrayList<String>> opcions = new ArrayList<>();
+                    if (p.getOpcions() != null) {
+                        for (Opcio o : p.getOpcions()) {
+                            ArrayList<String> dadaOpcio = new ArrayList<>();
+                            dadaOpcio.add(String.valueOf(o.getId()));
+                            dadaOpcio.add(o.getText());
+                            opcions.add(dadaOpcio);
+                        }
+                    }
+                    dadesP.add(opcions);
+                    dadesP.add(p.getMaxSeleccions());
+
+                    resultat.add(dadesP);
+                }
+            }
+        } catch (Exception e) {
+            // Retornar buit si error
+        }
+        return resultat;
+    }
+
+    /**
      * Modifica la descripció d'una enquesta existent.
      * 
      * Aquest mètode permet canviar la descripció d'una enquesta ja creada. Només el
@@ -519,7 +639,7 @@ public class CtrlDomini {
         if (!respostesPregunta.isEmpty()) {
             throw new IllegalStateException(
                     "No es pot eliminar la pregunta perquè l'enquesta ja té respostes. " +
-                    "Aquesta pregunta té " + respostesPregunta.size() + " resposta(es).");
+                            "Aquesta pregunta té " + respostesPregunta.size() + " resposta(es).");
         }
 
         // IMPORTANT: Eliminar totes les respostes associades a aquesta pregunta abans
@@ -653,6 +773,100 @@ public class CtrlDomini {
 
         // Si no hi ha respostes, podem modificar usant el mètode de CtrlEnquesta
         ctrlEnquesta.modificarPregunta(idEnquesta, idPregunta, nova);
+    }
+
+    /**
+     * Afegeix una nova pregunta a una enquesta creant l'objecte Pregunta
+     * internament.
+     *
+     * @param idEnquesta    L'ID de l'enquesta.
+     * @param idPregunta    L'ID de la nova pregunta.
+     * @param textPregunta  El text de la pregunta.
+     * @param tipus         El tipus de pregunta (NUMERICA, TEXT_LLIURE, etc.).
+     * @param min           Valor mínim (només per a NUMERICA).
+     * @param max           Valor màxim (només per a NUMERICA).
+     * @param opcions       Llista d'opcions (només per a QUALITATIVA).
+     * @param maxSeleccions Màxim de seleccions (només per a QUALITATIVA_MULTIPLE).
+     * @throws Exception Si hi ha algun error en la creació o afegit de la pregunta.
+     */
+    public void afegirPregunta(String idEnquesta, String idPregunta, String textPregunta, String tipus,
+            Double min, Double max, ArrayList<String> opcions, int maxSeleccions) throws Exception {
+
+        Pregunta p = crearPreguntaInterna(idPregunta, textPregunta, tipus, min, max, opcions, maxSeleccions);
+
+        if (p != null) {
+            afegirPregunta(idEnquesta, p);
+        } else {
+            throw new ParametreInvalidException("No s'ha pogut crear la pregunta.");
+        }
+    }
+
+    /**
+     * Modifica una pregunta existent en una enquesta creant el nou objecte Pregunta
+     * internament.
+     *
+     * @param idEnquesta    L'ID de l'enquesta.
+     * @param idPregunta    L'ID de la pregunta a modificar.
+     * @param textPregunta  El nou text de la pregunta.
+     * @param tipus         El nou tipus de pregunta.
+     * @param min           Nou valor mínim (només per a NUMERICA).
+     * @param max           Nou valor màxim (només per a NUMERICA).
+     * @param opcions       Nova llista d'opcions (només per a QUALITATIVA).
+     * @param maxSeleccions Nou màxim de seleccions (només per a
+     *                      QUALITATIVA_MULTIPLE).
+     * @throws Exception Si hi ha algun error en la modificació de la pregunta.
+     */
+    public void modificarPregunta(String idEnquesta, String idPregunta, String textPregunta, String tipus,
+            Double min, Double max, ArrayList<String> opcions, int maxSeleccions) throws Exception {
+
+        Pregunta p = crearPreguntaInterna(idPregunta, textPregunta, tipus, min, max, opcions, maxSeleccions);
+
+        if (p != null) {
+            modificarPregunta(idEnquesta, idPregunta, p);
+        } else {
+            throw new ParametreInvalidException("No s'ha pogut crear l'objecte pregunta modificat.");
+        }
+    }
+
+    /**
+     * Mètode privat auxiliar per crear instàncies de Pregunta a partir de
+     * paràmetres primitius.
+     */
+    private Pregunta crearPreguntaInterna(String idPregunta, String textPregunta, String tipus,
+            Double min, Double max, ArrayList<String> opcions, int maxSeleccions) {
+
+        Pregunta p = null;
+        TipusPregunta tp = TipusPregunta.valueOf(tipus);
+
+        switch (tp) {
+            case NUMERICA:
+                p = new Pregunta(idPregunta, textPregunta, min, max);
+                break;
+            case TEXT_LLIURE:
+                p = new Pregunta(idPregunta, textPregunta);
+                break;
+            case QUALITATIVA_ORDENADA:
+                p = new Pregunta(idPregunta, textPregunta, tp, maxSeleccions);
+                if (opcions != null) {
+                    int i = 1;
+                    for (String opcioText : opcions) {
+                        p.afegirOpcio(new Opcio(i, opcioText, i));
+                        i++;
+                    }
+                }
+                break;
+            case QUALITATIVA_NO_ORDENADA_SIMPLE:
+            case QUALITATIVA_NO_ORDENADA_MULTIPLE:
+                p = new Pregunta(idPregunta, textPregunta, tp, maxSeleccions);
+                if (opcions != null) {
+                    int i = 1;
+                    for (String opcioText : opcions) {
+                        p.afegirOpcio(new Opcio(i++, opcioText));
+                    }
+                }
+                break;
+        }
+        return p;
     }
 
     /**
@@ -2582,7 +2796,8 @@ public class CtrlDomini {
                     preguntesText,
                     algoritmeNom);
 
-            // Afegir el perfil al sistema de persistència (sense guardar encara per eficiència)
+            // Afegir el perfil al sistema de persistència (sense guardar encara per
+            // eficiència)
             ctrlPersistencia.afegirPerfilSenseGuardar(perfilCluster);
 
             // Assignar perfil a cada usuari del cluster
@@ -2673,6 +2888,19 @@ public class CtrlDomini {
         }
 
         return "Cluster " + index;
+    }
+
+    /**
+     * Crea una nova instància de Pregunta amb tipus i màxim de seleccions.
+     * 
+     * @param idPregunta    L'ID de la pregunta.
+     * @param textPregunta  El text de la pregunta.
+     * @param tp            El tipus de pregunta.
+     * @param maxSeleccions El nombre màxim de seleccions.
+     * @return Una nova instància de Pregunta.
+     */
+    public Pregunta crearPregunta(String idPregunta, String textPregunta, TipusPregunta tp, int maxSeleccions) {
+        return new Pregunta(idPregunta, textPregunta, tp, maxSeleccions);
     }
 
     /**

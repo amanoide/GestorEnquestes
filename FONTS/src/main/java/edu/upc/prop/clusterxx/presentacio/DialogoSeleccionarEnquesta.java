@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.util.ArrayList;
-import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 
 /**
  * Diàleg modal per a la selecció d'una enquesta dins d'una llista.
@@ -146,13 +145,14 @@ public class DialogoSeleccionarEnquesta extends JDialog {
      */
     private void cargarEnquestes() {
         listModel.clear();
-        ArrayList<Enquesta> enquestes = iCtrlPresentacio.getAllEnquestes();
+        ArrayList<ArrayList<String>> enquestes = iCtrlPresentacio.getAllEnquestes();
         if (enquestes.isEmpty()) {
             listModel.addElement("(No hi ha enquestes disponibles)");
             listEnquestes.setEnabled(false);
         } else {
-            for (Enquesta e : enquestes) {
-                listModel.addElement(e.getId() + ": " + e.getTitol());
+            for (ArrayList<String> e : enquestes) {
+                // e.get(0) = ID, e.get(1) = Títol
+                listModel.addElement(e.get(0) + ": " + e.get(1));
             }
         }
     }

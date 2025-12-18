@@ -343,7 +343,7 @@ public class DialogoCrearPregunta extends JDialog {
      * @param maxSel  Nombre màxim de seleccions (preguntes múltiples).
      */
     public void setDades(String id, String text, String tipus, Double min, Double max,
-            ArrayList<edu.upc.prop.clusterxx.domini.classes.Opcio> opcions, int maxSel) {
+            ArrayList<String> opcions, int maxSel) {
         textId.setText(id);
         textId.setEditable(false);
         textPregunta.setText(text);
@@ -356,8 +356,8 @@ public class DialogoCrearPregunta extends JDialog {
 
         if (opcions != null && !opcions.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            for (edu.upc.prop.clusterxx.domini.classes.Opcio op : opcions) {
-                sb.append(op.getText()).append("\n");
+            for (String op : opcions) {
+                sb.append(op).append("\n");
             }
             areaOpcions.setText(sb.toString().trim());
         }

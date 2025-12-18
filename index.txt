@@ -1,0 +1,26 @@
+DIRECTORI: .
+
+Descripcio: Estructura del projecte segons les imatges proporcionades.
+
+Contingut:
+
+Capa de Dades
+  Conte la implementacio de la persistencia i gestio de dades.
+
+Capa de Domini
+  Conte la logica de negoci i controladors de domini.
+
+Capa de Presentacio
+  Conte les vistes i controladors d'interficie d'usuari.
+
+Membres.pdf
+  Document amb la informacio dels membres del grup.
+
+DESCRIPCIO DE LES CLASSES DE LA CAPA DE PRESENTACIO.pdf
+  Documentacio de les classes de la interficie grafica.
+
+DESCRIPCIO DE LES ESTRUCTURES DE DADES I ALGORISMES.pdf
+  Explicacio de les estructures de dades i algorismes utilitzats.
+
+Diagrama de la capa de presentacio.pdf
+  Diagrama UML o esquema de la capa de presentacio.

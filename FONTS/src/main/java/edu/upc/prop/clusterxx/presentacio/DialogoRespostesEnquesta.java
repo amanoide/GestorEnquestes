@@ -6,8 +6,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
-import edu.upc.prop.clusterxx.domini.classes.Enquesta;
-import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 
 /**
  * Diàleg que mostra totes les respostes d'una enquesta agrupades per pregunta.
@@ -21,7 +19,7 @@ public class DialogoRespostesEnquesta extends JDialog {
         super(parent, "Respostes de l'Enquesta: " + idEnquesta, true);
         this.ctrlPresentacio = ctrl;
         this.idEnquesta = idEnquesta;
-        
+
         inicialitzarComponents();
         pack();
         setLocationRelativeTo(parent);
@@ -38,27 +36,22 @@ public class DialogoRespostesEnquesta extends JDialog {
         mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         // Obtenir totes les respostes
-        HashMap<String, ArrayList<Resposta>> respostesPerPregunta = ctrlPresentacio.consultarRespostesEnquesta(idEnquesta);
-        
+        HashMap<String, ArrayList<Resposta>> respostesPerPregunta = ctrlPresentacio
+                .consultarRespostesEnquesta(idEnquesta);
+
         if (respostesPerPregunta.isEmpty()) {
             JLabel lblNoRespostes = new JLabel("Aquesta enquesta encara no té respostes.");
             lblNoRespostes.setFont(UIStyles.FONT_NORMAL);
             lblNoRespostes.setAlignmentX(Component.CENTER_ALIGNMENT);
             mainPanel.add(lblNoRespostes);
         } else {
-            // Obtenir l'enquesta per poder accedir a les preguntes amb el seu text
-            Enquesta enquesta = null;
-            for (Enquesta e : ctrlPresentacio.getAllEnquestes()) {
-                if (e.getId().equals(idEnquesta)) {
-                    enquesta = e;
-                    break;
-                }
-            }
+            // Obtenir les preguntes de l'enquesta
+            ArrayList<ArrayList<Object>> preguntes = ctrlPresentacio.getPreguntesEnquestaRaw(idEnquesta);
 
-            if (enquesta != null) {
+            if (preguntes != null && !preguntes.isEmpty()) {
                 // Per cada pregunta de l'enquesta
-                for (Pregunta pregunta : enquesta.getPreguntes()) {
-                    String idPregunta = pregunta.getId();
+                for (ArrayList<Object> pregunta : preguntes) {
+                    String idPregunta = (String) pregunta.get(0);
                     ArrayList<Resposta> respostes = respostesPerPregunta.get(idPregunta);
 
                     // Panel per aquesta pregunta
@@ -66,13 +59,12 @@ public class DialogoRespostesEnquesta extends JDialog {
                     preguntaPanel.setLayout(new BoxLayout(preguntaPanel, BoxLayout.Y_AXIS));
                     preguntaPanel.setBackground(Color.WHITE);
                     preguntaPanel.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(UIStyles.PRIMARY_COLOR, 2),
-                        new EmptyBorder(10, 10, 10, 10)
-                    ));
+                            BorderFactory.createLineBorder(UIStyles.PRIMARY_COLOR, 2),
+                            new EmptyBorder(10, 10, 10, 10)));
                     preguntaPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
                     // Títol de la pregunta
-                    JLabel lblPregunta = new JLabel("Pregunta: " + pregunta.getText());
+                    JLabel lblPregunta = new JLabel("Pregunta: " + pregunta.get(1));
                     lblPregunta.setFont(UIStyles.FONT_SUBTITLE);
                     lblPregunta.setForeground(UIStyles.PRIMARY_COLOR);
                     lblPregunta.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -97,7 +89,7 @@ public class DialogoRespostesEnquesta extends JDialog {
 
                             JLabel lblUsuari = new JLabel(resposta.getUsernameUsuari() + ":");
                             lblUsuari.setFont(UIStyles.FONT_NORMAL.deriveFont(Font.BOLD));
-                            
+
                             JLabel lblText = new JLabel(resposta.getTextResposta());
                             lblText.setFont(UIStyles.FONT_NORMAL);
 
@@ -129,11 +121,11 @@ public class DialogoRespostesEnquesta extends JDialog {
         // Botó tancar
         JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panelBotons.setBackground(UIStyles.BACKGROUND_COLOR);
-        
+
         JButton btnTancar = UIComponents.createColorButton("Tancar", UIStyles.SECONDARY_COLOR);
         btnTancar.addActionListener(e -> dispose());
         panelBotons.add(btnTancar);
-        
+
         add(panelBotons, BorderLayout.SOUTH);
     }
 }

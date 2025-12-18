@@ -134,10 +134,10 @@ public class DialogoGestionPreguntes extends JDialog {
      */
     void cargarPreguntes() {
         listModel.clear();
-        ArrayList<edu.upc.prop.clusterxx.domini.classes.Pregunta> preguntas = iCtrlPresentacio
-                .getPreguntesEnquestaObjects(idEnquesta);
-        for (edu.upc.prop.clusterxx.domini.classes.Pregunta p : preguntas) {
-            listModel.addElement(p.getId() + ": " + p.getText() + " [" + p.getTipus() + "]");
+        ArrayList<ArrayList<Object>> preguntas = iCtrlPresentacio.getPreguntesEnquestaRaw(idEnquesta);
+        for (ArrayList<Object> p : preguntas) {
+            // [0] ID, [1] Text, [2] Tipus
+            listModel.addElement(p.get(0) + ": " + p.get(1) + " [" + p.get(2) + "]");
         }
     }
 
@@ -147,9 +147,9 @@ public class DialogoGestionPreguntes extends JDialog {
 
     public String getSelectedPreguntaId() {
         String selected = listPreguntes.getSelectedValue();
-        if (selected == null) return null;
+        if (selected == null)
+            return null;
         return selected.split(":")[0].trim();
     }
-
 
 }

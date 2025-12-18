@@ -6,9 +6,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import edu.upc.prop.clusterxx.domini.classes.Pregunta;
-import edu.upc.prop.clusterxx.domini.classes.Opcio;
-import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
 
 /**
  * Diàleg interactiu per permetre a l'usuari respondre a una enquesta.
@@ -28,7 +25,7 @@ public class DialogoResponderEnquesta extends JDialog {
 
     private CtrlPresentacio iCtrlPresentacio;
     private String idEnquesta;
-    private ArrayList<Pregunta> preguntes;
+    private ArrayList<ArrayList<Object>> preguntes;
 
     // Map per guardar els components d'entrada per recuperar els valors després
     private Map<String, JComponent> inputComponents = new HashMap<>();
@@ -49,21 +46,12 @@ public class DialogoResponderEnquesta extends JDialog {
         super(owner, "Respondre Enquesta - " + idEnquesta, true);
         this.iCtrlPresentacio = ctrlPresentacio;
         this.idEnquesta = idEnquesta;
-        this.preguntes = iCtrlPresentacio.getPreguntesEnquestaObjects(idEnquesta);
+        this.preguntes = iCtrlPresentacio.getPreguntesEnquestaRaw(idEnquesta);
         inicializar();
     }
 
     /**
      * Mètode principal de construcció de la interfície.
-     * 
-     * Itera sobre la llista de preguntes carregades i, per a cadascuna:
-     * Crea un panell contenidor.
-     * Afegeix el text de la pregunta i les instruccions.
-     * Genera el component d'entrada adequat (Input field) mitjançant
-     * {@link #crearComponentInput(Pregunta)}.
-     * Afegeix el component a un mapa per referència posterior.
-     * 
-     * També afegeix els botons d'acció "Enviar" i "Cancel·lar" al peu del diàleg.
      */
     private void inicializar() {
         setLayout(new BorderLayout(10, 10));
@@ -83,7 +71,10 @@ public class DialogoResponderEnquesta extends JDialog {
         panelContent.setBackground(UIStyles.BACKGROUND_COLOR);
         panelContent.setBorder(new EmptyBorder(10, 5, 10, 5));
 
-        for (Pregunta p : preguntes) {
+        // [0] ID (String), [1] Text (String), [2] Tipus (String), [3] Min (Double),
+        // [4] Max (Double), [5] Opcions (ArrayList<ArrayList<String>>), [6] MaxSel
+        // (Integer)
+        for (ArrayList<Object> p : preguntes) {
             JPanel panelPregunta = new JPanel(new BorderLayout(5, 5));
             panelPregunta.setBackground(UIStyles.CARD_COLOR);
             panelPregunta.setBorder(new CompoundBorder(
@@ -93,9 +84,13 @@ public class DialogoResponderEnquesta extends JDialog {
 
             JComponent input = crearComponentInput(p);
 
+            String tipus = (String) p.get(2);
+            String text = (String) p.get(1);
+            String id = (String) p.get(0);
+
             // Pregunta con emoji según tipo
-            String emoji = getEmojiTipus(p.getTipus());
-            JLabel lblPregunta = new JLabel(emoji + " " + p.getText());
+            String emoji = getEmojiTipus(tipus);
+            JLabel lblPregunta = new JLabel(emoji + " " + text);
             lblPregunta.setFont(UIStyles.FONT_PREGUNTA_LABEL);
             lblPregunta.setForeground(UIStyles.TEXT_COLOR);
 
@@ -112,7 +107,7 @@ public class DialogoResponderEnquesta extends JDialog {
             panelPregunta.add(headerPanel, BorderLayout.NORTH);
             panelPregunta.add(input, BorderLayout.CENTER);
 
-            inputComponents.put(p.getId(), input);
+            inputComponents.put(id, input);
             panelContent.add(panelPregunta);
             panelContent.add(Box.createRigidArea(new Dimension(0, 10)));
         }
@@ -136,107 +131,79 @@ public class DialogoResponderEnquesta extends JDialog {
         add(panelBotons, BorderLayout.SOUTH);
     }
 
-    /**
-     * Retorna un emoji visual que representa gràficament el tipus de pregunta.
-     * Ajuda a l'usuari a identificar ràpidament com ha de respondre.
-     *
-     * @param tp El tipus de la pregunta (NUMERICA, TEXT_LLIURE, etc.).
-     * @return Un string que conté l'emoji corresponent.
-     */
-    private String getEmojiTipus(TipusPregunta tp) {
-        switch (tp) {
-            case NUMERICA:
-                return "🔢";
-            case TEXT_LLIURE:
-                return "✏️";
-            case QUALITATIVA_ORDENADA:
-            case QUALITATIVA_NO_ORDENADA_SIMPLE:
-                return "📋";
-            case QUALITATIVA_NO_ORDENADA_MULTIPLE:
-                return "☑️";
-            default:
-                return "❓";
-        }
+    private String getEmojiTipus(String tp) {
+        if ("NUMERICA".equals(tp))
+            return "🔢";
+        if ("TEXT_LLIURE".equals(tp))
+            return "✏️";
+        if ("QUALITATIVA_ORDENADA".equals(tp) || "QUALITATIVA_NO_ORDENADA_SIMPLE".equals(tp))
+            return "📋";
+        if ("QUALITATIVA_NO_ORDENADA_MULTIPLE".equals(tp))
+            return "☑️";
+        return "❓";
     }
 
-    /**
-     * Genera un text descriptiu amb instruccions sobre com respondre la pregunta.
-     * Per exemple, per a preguntes numèriques indica el rang permès.
-     *
-     * @param p La pregunta objecte de la qual extreure les restriccions.
-     * @return Una cadena amb les instruccions formatades.
-     */
-    private String getInstruccions(Pregunta p) {
-        switch (p.getTipus()) {
-            case NUMERICA:
-                return "Valor entre " + p.getValorMinim() + " i " + p.getValorMaxim();
-            case TEXT_LLIURE:
-                return "Text lliure";
-            case QUALITATIVA_ORDENADA:
-            case QUALITATIVA_NO_ORDENADA_SIMPLE:
-                return "Selecciona una opció";
-            case QUALITATIVA_NO_ORDENADA_MULTIPLE:
-                return "Selecciona fins a " + p.getMaxSeleccions() + " opcions";
-            default:
-                return "";
+    private String getInstruccions(ArrayList<Object> p) {
+        String tipus = (String) p.get(2);
+        if ("NUMERICA".equals(tipus)) {
+            return "Valor entre " + p.get(3) + " i " + p.get(4);
         }
+        if ("TEXT_LLIURE".equals(tipus))
+            return "Text lliure";
+        if ("QUALITATIVA_ORDENADA".equals(tipus) || "QUALITATIVA_NO_ORDENADA_SIMPLE".equals(tipus))
+            return "Selecciona una opció";
+        if ("QUALITATIVA_NO_ORDENADA_MULTIPLE".equals(tipus))
+            return "Selecciona fins a " + p.get(6) + " opcions";
+        return "";
     }
 
-    /**
-     * Fàbrica de components d'entrada: crea el widget de Swing adequat segons el
-     * tipus de pregunta.
-     * 
-     * JSpinner: per a preguntes numèriques (configurat amb min/max/step).
-     * JTextField: per a preguntes de text lliure.
-     * JComboBox: per a preguntes de selecció simple (opcions desplegables).
-     * JPanel amb JCheckBox: per a preguntes de selecció múltiple.
-     *
-     * @param p L'objecte Pregunta que defineix el tipus i les opcions disponibles.
-     * @return Un JComponent configurat i llest per ser afegit a la interfície.
-     */
-    private JComponent crearComponentInput(Pregunta p) {
-        TipusPregunta tp = p.getTipus();
-        switch (tp) {
-            case NUMERICA:
-                SpinnerNumberModel model = new SpinnerNumberModel(p.getValorMinim(), p.getValorMinim(),
-                        p.getValorMaxim(), Double.valueOf(1.0));
-                JSpinner spinner = new JSpinner(model);
-                spinner.setFont(UIStyles.FONT_INPUT);
-                return spinner;
+    private JComponent crearComponentInput(ArrayList<Object> p) {
+        String tp = (String) p.get(2);
 
-            case TEXT_LLIURE:
-                JTextField textField = new JTextField();
-                textField.setFont(UIStyles.FONT_INPUT);
-                textField.setBorder(new CompoundBorder(
-                        new LineBorder(UIStyles.BORDER_MEDIUM, 1, true),
-                        new EmptyBorder(8, 10, 8, 10)));
-                return textField;
-
-            case QUALITATIVA_ORDENADA:
-            case QUALITATIVA_NO_ORDENADA_SIMPLE:
-                JComboBox<String> combo = new JComboBox<>();
-                combo.setFont(UIStyles.FONT_INPUT);
-                for (Opcio o : p.getOpcions()) {
-                    combo.addItem(o.getText());
-                }
-                return combo;
-
-            case QUALITATIVA_NO_ORDENADA_MULTIPLE:
-                JPanel panelChecks = new JPanel(new GridLayout(0, 2, 5, 5));
-                panelChecks.setBackground(UIStyles.CARD_COLOR);
-                panelChecks.putClientProperty("isMultiple", true);
-                for (Opcio o : p.getOpcions()) {
-                    JCheckBox cb = new JCheckBox(o.getText());
-                    cb.setFont(UIStyles.FONT_CHECKBOX);
-                    cb.setBackground(UIStyles.CARD_COLOR);
-                    cb.setName(String.valueOf(o.getId()));
-                    panelChecks.add(cb);
-                }
-                return panelChecks;
-
-            default:
-                return new JLabel("Tipus no suportat");
+        if ("NUMERICA".equals(tp)) {
+            Double min = (Double) p.get(3);
+            Double max = (Double) p.get(4);
+            SpinnerNumberModel model = new SpinnerNumberModel(min, min, max, Double.valueOf(1.0));
+            JSpinner spinner = new JSpinner(model);
+            spinner.setFont(UIStyles.FONT_INPUT);
+            return spinner;
         }
+
+        if ("TEXT_LLIURE".equals(tp)) {
+            JTextField textField = new JTextField();
+            textField.setFont(UIStyles.FONT_INPUT);
+            textField.setBorder(new CompoundBorder(
+                    new LineBorder(UIStyles.BORDER_MEDIUM, 1, true),
+                    new EmptyBorder(8, 10, 8, 10)));
+            return textField;
+        }
+
+        if ("QUALITATIVA_ORDENADA".equals(tp) || "QUALITATIVA_NO_ORDENADA_SIMPLE".equals(tp)) {
+            JComboBox<String> combo = new JComboBox<>();
+            combo.setFont(UIStyles.FONT_INPUT);
+            ArrayList<ArrayList<String>> opcions = (ArrayList<ArrayList<String>>) p.get(5);
+            for (ArrayList<String> o : opcions) {
+                combo.addItem(o.get(1)); // Text
+            }
+            return combo;
+        }
+
+        if ("QUALITATIVA_NO_ORDENADA_MULTIPLE".equals(tp)) {
+            JPanel panelChecks = new JPanel(new GridLayout(0, 2, 5, 5));
+            panelChecks.setBackground(UIStyles.CARD_COLOR);
+            panelChecks.putClientProperty("isMultiple", true);
+            ArrayList<ArrayList<String>> opcions = (ArrayList<ArrayList<String>>) p.get(5);
+            for (ArrayList<String> o : opcions) {
+                JCheckBox cb = new JCheckBox(o.get(1)); // Text
+                cb.setFont(UIStyles.FONT_CHECKBOX);
+                cb.setBackground(UIStyles.CARD_COLOR);
+                cb.setName(o.get(0)); // ID
+                panelChecks.add(cb);
+            }
+            return panelChecks;
+        }
+
+        return new JLabel("Tipus no suportat");
     }
 
     /**
