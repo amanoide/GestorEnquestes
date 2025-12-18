@@ -483,6 +483,9 @@ public class CtrlPresentacio {
             int count = 1;
             for (java.util.Map.Entry<String, edu.upc.prop.clusterxx.domini.classes.Perfil> entry : perfils.entrySet()) {
                 edu.upc.prop.clusterxx.domini.classes.Perfil perfil = entry.getValue();
+                if (perfil == null)
+                    continue;
+
                 sb.append("--- PERFIL ").append(count++).append(" ---\n");
                 sb.append("Enquesta: ").append(perfil.getIdEnquesta()).append("\n");
                 sb.append("Cluster: ").append(perfil.getClusterNom()).append("\n");

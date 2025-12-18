@@ -111,7 +111,7 @@ public class VistaGestionarRespostes extends JPanel {
         panelBotons2.setBackground(UIStyles.BACKGROUND_COLOR);
 
         btnVeurePerfilEnquesta = UIComponents.createColorButton("👤 Veure el Meu Perfil", UIStyles.SUCCESS_COLOR);
-        btnVeureTotsPerfils = UIComponents.createColorButton("📋 Tots els Perfils", UIStyles.WARNING_COLOR);
+        btnVeureTotsPerfils = UIComponents.createColorButton("📋 Tots els Meus Perfils", UIStyles.WARNING_COLOR);
         btnTornar = UIComponents.createColorButton("← Tornar", UIStyles.SECONDARY_COLOR);
 
         panelBotons2.add(btnVeurePerfilEnquesta);
