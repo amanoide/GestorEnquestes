@@ -1,0 +1,48 @@
+JUSTIFICACIÓ DE LES ESTRUCTURES DE DADES I ALGORITMES (CAPA DE PRESENTACIÓ)
+
+1. ESTRUCTURES DE DADES
+
+1.1. ArrayList (Java Collections)
+   - Ús principal: Gestió de llistes dinàmiques d'objectes per a les vistes (ex: llistat d'enquestes, preguntes d'una enquesta, participants).
+   - Justificació: 
+     - S'ha escollit ArrayList per sobre de Vector o LinkedList perquè ofereix un accés posicional ràpid (O(1)) als elements, la qual cosa és crucial per pintar les llistes a la interfície (JList/JTable).
+     - La majoria d'operacions a la capa de presentació són de lectura i iteració per mostrar dades, on ArrayList és molt eficient.
+   - On es troba: `CtrlPresentacio.getEnquestesUsuari()`, `CtrlPresentacio.consultarRespostesPregunta()`.
+
+1.2. HashMap (Java Collections)
+   - Ús principal: Gestió de respostes agrupades i mapeig d'IDs.
+   - Justificació:
+     - Permet un accés immediat (O(1)) a les respostes associades a una pregunta o usuari específic sense haver d'iterar tota la col·lecció.
+     - Facilita la transferència de dades complexes (ex: `idPregunta -> textResposta`) entre les vistes i el controlador de domini.
+   - On es troba: `CtrlPresentacio.consultarRespostesEnquesta()`, transferència de dades en `CtrlPresentacio.contestarEnquesta()`.
+
+1.3. Enums (Enumeracions)
+   - Ús principal: Gestió d'esdeveniments i tipus (MyActionListener.Action, TipusPregunta).
+   - Justificació:
+     - Proporciona seguretat de tipus ("Type Safety") en la gestió d'esdeveniments, evitant errors comuns a l'usar "Magic Strings".
+     - Centralitza la definició de totes les accions possibles de la UI, facilitant el manteniment i l'escalabilitat del codi.
+
+2. ALGORITMES I PATRONS
+
+2.1. Patró Observer / Listener (ActionListener)
+   - Implementació: `MyActionListener`.
+   - Justificació:
+     - Desacobla la vista de la lògica de negoci. Les vistes només generen esdeveniments, i el Listener decideix què fer.
+     - Permet reutilitzar la lògica: un mateix Listener pot gestionar botons de diferents pantalles (ex: botó "Tancar" genèric).
+
+2.2. Validació d'Entrada (Algoritmes seqüencials simples)
+   - Implementació: Mètodes privats `handle...` a `MyActionListener`.
+   - Justificació:
+     - Abans de cridar al domini, es realitzen comprovacions seqüencials (camps buits, formats incorrectes, contrasenyes no coincidents).
+     - Això evita crides innecessàries a la capa de domini i millora la resposta immediata a l'usuari (Feedback ràpid).
+
+2.3. Gestió de Navegació (CardLayout)
+   - Implementació: `VistaPrincipal`.
+   - Justificació:
+     - Utilitza un algorisme de commutació de vistes basat en claus ("Strings"). Això permet carregar totes les vistes en memòria a l'inici i canviar entre elles instantàniament sense redibuixar finestres noves, oferint una experiència d'usuari més fluida que obrir/tancar JDialogs constantment.
+
+2.4. Conversió de Dades (Algoritmes de transformació)
+   - Implementació: Bucles `for-each` a `CtrlPresentacio`.
+   - Justificació:
+     - La capa de presentació sovint necessita transformar les estructures de domini (Objectes complexos) a formats visualitzables (Strings, Arrays simples per a ComboBoxes).
+     - S'utilitzen algorismes lineals (O(n)) per recórrer les col·leccions del domini i extreure només la informació necessària per a la vista (ex: extreure només els títols de les enquestes per a una llista).
