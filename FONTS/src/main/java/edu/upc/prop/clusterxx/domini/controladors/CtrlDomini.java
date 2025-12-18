@@ -393,6 +393,165 @@ public class CtrlDomini {
     }
 
     /**
+     * Obté les respostes d'un usuari a una enquesta en format cru.
+     * 
+     * @param idEnquesta ID de l'enquesta.
+     * @param username   Nom de l'usuari.
+     * @return Map amb idPregunta -> textResposta.
+     */
+    public HashMap<String, String> getRespostesUsuariEnquestaRaw(String idEnquesta, String username) {
+        HashMap<String, String> respostesUsuari = new HashMap<>();
+        try {
+            Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+            if (enquesta != null && username != null) {
+                for (Pregunta p : enquesta.getPreguntes()) {
+                    if (p.teResposta(username)) {
+                        respostesUsuari.put(p.getId(), p.getResposta(username).getTextResposta());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Retorna map buit si error
+        }
+        return respostesUsuari;
+    }
+
+    /**
+     * Obté les enquestes contestades per un usuari en format cru.
+     * 
+     * @param username Nom de l'usuari.
+     * @return Llista d'enquestes (ID, Títol).
+     */
+    public ArrayList<ArrayList<String>> getEnquestesContestadesRaw(String username) {
+        ArrayList<ArrayList<String>> resultat = new ArrayList<>();
+        try {
+            if (username != null) {
+                ArrayList<Enquesta> totes = ctrlEnquesta.llistarEnquestes();
+                for (Enquesta e : totes) {
+                    if (e.haRespostUsuari(username)) {
+                        ArrayList<String> dadesEnquesta = new ArrayList<>();
+                        dadesEnquesta.add(e.getId());
+                        dadesEnquesta.add(e.getTitol());
+                        resultat.add(dadesEnquesta);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Retorna llista buida si error
+        }
+        return resultat;
+    }
+
+    /**
+     * Genera un informe d'anàlisi de clustering per a una enquesta.
+     * 
+     * @param idEnquesta ID de l'enquesta
+     * @param modeK      Mode de selecció de K: "manual", "aleatori" o "automatic"
+     * @param kManual    Valor de K (només si modeK = "manual")
+     * @param algoritme  Algoritme: "kmeans", "kmeans++" o "kmedoids"
+     * @return Text amb els resultats de l'anàlisi
+     */
+    public String generarInformeAnalisi(String idEnquesta, String modeK, int kManual, String algoritme) {
+        try {
+            int k = 0;
+            String detallsK = "";
+
+            // Obtenir el número de participants
+            Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+            if (enquesta == null)
+                return "Error: L'enquesta no existeix.";
+            int numParticipants = enquesta.getNumParticipants();
+
+            // Determinar el valor de K segons el mode
+            if (modeK.equals("manual")) {
+                k = kManual;
+                detallsK = "K seleccionat manualment: " + k;
+            } else if (modeK.equals("aleatori")) {
+                k = this.escollirKAleatori(idEnquesta);
+                detallsK = "K escollit aleatòriament: " + k;
+            } else { // automatic
+                int kMax = Math.min(10, numParticipants);
+                if (kMax < 2) {
+                    return "Error: Es necessiten almenys 2 participants per fer l'anàlisi automàtic.";
+                }
+
+                CtrlAnalisi.OptimalKResult optResult = this.trobarMillorK(idEnquesta, 2, kMax, algoritme, 100);
+                k = optResult.bestK;
+                detallsK = "K òptim trobat (Silhouette): " + k + " (coeficient: " +
+                        String.format("%.4f", optResult.bestSilhouette) + ")";
+            }
+
+            // Executar l'anàlisi (utilitzant el mètode existent que ja gestiona
+            // persistència)
+            boolean usePlusPlus = algoritme.equals("kmeans++");
+            ResultatClustering resultat = this.analitzarEnquesta(idEnquesta, k, usePlusPlus, 100, algoritme);
+
+            // Formatar resultats
+            StringBuilder sb = new StringBuilder();
+            sb.append("=== RESULTATS DE L'ANÀLISI ===\n\n");
+            sb.append("Enquesta: ").append(idEnquesta).append("\n");
+            sb.append("Algoritme: ").append(algoritme.toUpperCase()).append("\n");
+            sb.append(detallsK).append("\n");
+            sb.append("Iteracions màximes: 100\n\n");
+
+            sb.append("--- MÈTRIQUES GLOBALS ---\n");
+            sb.append("Coeficient de Silhouette global: ").append(String.format("%.4f", resultat.silhouetteGlobal))
+                    .append("\n\n");
+
+            sb.append("--- CLUSTERS TROBATS ---\n");
+            for (int i = 0; i < resultat.clusters.size(); i++) {
+                Kluster cluster = resultat.clusters.get(i);
+                sb.append("Cluster ").append(i).append(":\n");
+                sb.append("  Mida: ").append(cluster.size()).append(" usuaris\n");
+                sb.append("  Silhouette: ").append(String.format("%.4f", resultat.silhouettePerCluster[i]))
+                        .append("\n");
+
+                // Obtenir representant
+                String usernameRep = resultat.getUsernameRepresentant(i);
+                if (usernameRep != null) {
+                    sb.append("  Representant: ").append(usernameRep).append("\n");
+
+                    // Obtenir perfil del representant
+                    try {
+                        Perfil perfil = getPerfil(usernameRep); // Utilitzar mètode que ja tenim (wrapper de ctrlPerfil)
+                        if (perfil == null) {
+                            // Si no el trobem per ID (que sembla ser username), busquem si l'usuari té
+                            // perfils assignats
+                            // Però el metode getPerfil(id) potser espera un ID de perfil, no un username.
+                            // Revisem: public Perfil getPerfil(String id) { return
+                            // ctrlPerfil.getPerfil(id); }
+                            // Normalment els perfils tenen un ID numèric o string.
+                            // En la lògica de generació (linia 2837), el perfil es crea amb IDs basats en
+                            // timestamp
+                            // i s'assigna a l'usuari.
+                            // 'usuari.assignarPerfil(perfil)'.
+
+                            // Mirem com obtenir la descripció del perfil assignat a l'usuari per aquesta
+                            // enquesta.
+                            Usuari u = ctrlUsuari.getUsuari(usernameRep);
+                            if (u != null) {
+                                Perfil pAssignat = u.getPerfil(idEnquesta);
+                                if (pAssignat != null) {
+                                    sb.append("  Descripció perfil: ").append(pAssignat.getDescripcion()).append("\n");
+                                }
+                            }
+                        } else {
+                            sb.append("  Descripció perfil: ").append(perfil.getDescripcion()).append("\n");
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+                sb.append("\n");
+            }
+
+            return sb.toString();
+
+        } catch (Exception e) {
+            return "Error en l'anàlisi: " + e.getMessage();
+        }
+    }
+
+    /**
      * Modifica la descripció d'una enquesta existent.
      * 
      * Aquest mètode permet canviar la descripció d'una enquesta ja creada. Només el

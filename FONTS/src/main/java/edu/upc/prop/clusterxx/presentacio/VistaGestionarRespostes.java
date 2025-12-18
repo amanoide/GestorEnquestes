@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.util.ArrayList;
-import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 
 /**
  * Vista per gestionar les respostes de l'usuari a les enquestes contestades.
@@ -140,19 +139,19 @@ public class VistaGestionarRespostes extends JPanel {
 
         btnModificar.setActionCommand(MyActionListener.Action.MODIFICAR_RESPOSTA.name());
         btnModificar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnEsborrar.setActionCommand(MyActionListener.Action.ELIMINAR_RESPOSTA.name());
         btnEsborrar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnImportar.setActionCommand(MyActionListener.Action.IMPORTAR_RESPOSTA.name());
         btnImportar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnVeurePerfilEnquesta.setActionCommand(MyActionListener.Action.VEURE_PERFIL_ENQUESTA.name());
         btnVeurePerfilEnquesta.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnVeureTotsPerfils.setActionCommand(MyActionListener.Action.VEURE_TOTS_PERFILS.name());
         btnVeureTotsPerfils.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnTornar.setActionCommand(MyActionListener.Action.TORNAR_MENU.name());
         btnTornar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
     }
@@ -171,14 +170,15 @@ public class VistaGestionarRespostes extends JPanel {
      */
     public void actualizarLista() {
         listModel.clear();
-        ArrayList<Enquesta> contestades = iCtrlPresentacio.getEnquestesContestades();
+        ArrayList<ArrayList<String>> contestades = iCtrlPresentacio.getEnquestesContestades();
         if (contestades.isEmpty()) {
             listModel.addElement("No has contestat cap enquesta encara.");
             listEnquestes.setEnabled(false);
         } else {
             listEnquestes.setEnabled(true);
-            for (Enquesta e : contestades) {
-                listModel.addElement(e.getId() + ": " + e.getTitol());
+            // [0] ID, [1] Title
+            for (ArrayList<String> e : contestades) {
+                listModel.addElement(e.get(0) + ": " + e.get(1));
             }
         }
     }

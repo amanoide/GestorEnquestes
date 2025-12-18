@@ -375,20 +375,12 @@ public class CtrlPresentacio {
      * @return Map amb idPregunta -> textResposta.
      */
     public java.util.HashMap<String, String> getRespostesUsuariEnquesta(String idEnquesta) {
-        java.util.HashMap<String, String> respostesUsuari = new java.util.HashMap<>();
         try {
-            Enquesta enquesta = ctrlDomini.getEnquesta(idEnquesta);
-            if (enquesta != null && currentUsername != null) {
-                for (Pregunta p : enquesta.getPreguntes()) {
-                    if (p.teResposta(currentUsername)) {
-                        respostesUsuari.put(p.getId(), p.getResposta(currentUsername).getTextResposta());
-                    }
-                }
-            }
+            return ctrlDomini.getRespostesUsuariEnquestaRaw(idEnquesta, currentUsername);
         } catch (Exception e) {
             System.out.println("Error recuperant respostes usuari: " + e.getMessage());
+            return new java.util.HashMap<>();
         }
-        return respostesUsuari;
     }
 
     /**
@@ -428,21 +420,18 @@ public class CtrlPresentacio {
      * 
      * @return Llista d'enquestes contestades.
      */
-    public java.util.ArrayList<Enquesta> getEnquestesContestades() {
-        java.util.ArrayList<Enquesta> contestades = new java.util.ArrayList<>();
+    /**
+     * Obté la llista d'enquestes que l'usuari actual ha contestat.
+     * 
+     * @return Llista d'enquestes contestades (ID, Títol).
+     */
+    public java.util.ArrayList<ArrayList<String>> getEnquestesContestades() {
         try {
-            java.util.ArrayList<Enquesta> totes = ctrlDomini.consultarEnquestes();
-            if (currentUsername != null) {
-                for (Enquesta e : totes) {
-                    if (e.haRespostUsuari(currentUsername)) {
-                        contestades.add(e);
-                    }
-                }
-            }
+            return ctrlDomini.getEnquestesContestadesRaw(currentUsername);
         } catch (Exception e) {
             System.out.println("Error filtrant enquestes contestades: " + e.getMessage());
+            return new java.util.ArrayList<>();
         }
-        return contestades;
     }
 
     /**
@@ -456,79 +445,7 @@ public class CtrlPresentacio {
      */
     public String analitzarEnquesta(String idEnquesta, String modeK, int kManual, String algoritme) {
         try {
-            int k;
-            String detallsK = "";
-
-            // Obtenir el número de participants per ajustar kMax
-            Enquesta enquesta = ctrlDomini.getEnquesta(idEnquesta);
-            int numParticipants = enquesta.getNumParticipants();
-
-            // Determinar el valor de K segons el mode
-            if (modeK.equals("manual")) {
-                k = kManual;
-                detallsK = "K seleccionat manualment: " + k;
-            } else if (modeK.equals("aleatori")) {
-                k = ctrlDomini.escollirKAleatori(idEnquesta);
-                detallsK = "K escollit aleatòriament: " + k;
-            } else { // automatic
-                // Ajustar kMax segons el número de participants (mínim 2, màxim
-                // numParticipants)
-                int kMax = Math.min(10, numParticipants);
-                if (kMax < 2) {
-                    return "Error: Es necessiten almenys 2 participants per fer l'anàlisi automàtic.";
-                }
-
-                edu.upc.prop.clusterxx.domini.controladors.CtrlAnalisi.OptimalKResult optResult = ctrlDomini
-                        .trobarMillorK(idEnquesta, 2, kMax, algoritme, 100);
-                k = optResult.bestK;
-                detallsK = "K òptim trobat (Silhouette): " + k + " (coeficient: " +
-                        String.format("%.4f", optResult.bestSilhouette) + ")";
-            }
-
-            // Executar l'anàlisi
-            boolean usePlusPlus = algoritme.equals("kmeans++");
-            edu.upc.prop.clusterxx.domini.controladors.CtrlDomini.ResultatClustering resultat = ctrlDomini
-                    .analitzarEnquesta(idEnquesta, k, usePlusPlus, 100, algoritme);
-
-            // Formatar resultats
-            StringBuilder sb = new StringBuilder();
-            sb.append("=== RESULTATS DE L'ANÀLISI ===\n\n");
-            sb.append("Enquesta: ").append(idEnquesta).append("\n");
-            sb.append("Algoritme: ").append(algoritme.toUpperCase()).append("\n");
-            sb.append(detallsK).append("\n");
-            sb.append("Iteracions màximes: 100\n\n");
-
-            sb.append("--- MÈTRIQUES GLOBALS ---\n");
-            sb.append("Coeficient de Silhouette global: ").append(String.format("%.4f", resultat.silhouetteGlobal))
-                    .append("\n\n");
-
-            sb.append("--- CLUSTERS TROBATS ---\n");
-            for (int i = 0; i < resultat.clusters.size(); i++) {
-                edu.upc.prop.clusterxx.domini.classes.Kluster cluster = resultat.clusters.get(i);
-                sb.append("Cluster ").append(i).append(":\n");
-                sb.append("  Mida: ").append(cluster.size()).append(" usuaris\n");
-                sb.append("  Silhouette: ").append(String.format("%.4f", resultat.silhouettePerCluster[i]))
-                        .append("\n");
-
-                // Obtenir representant
-                String usernameRep = resultat.getUsernameRepresentant(i);
-                if (usernameRep != null) {
-                    sb.append("  Representant: ").append(usernameRep).append("\n");
-
-                    // Obtenir perfil del representant
-                    try {
-                        edu.upc.prop.clusterxx.domini.classes.Perfil perfil = ctrlDomini.getPerfil(usernameRep);
-                        if (perfil != null) {
-                            sb.append("  Descripció perfil: ").append(perfil.getDescripcion()).append("\n");
-                        }
-                    } catch (Exception ignored) {
-                    }
-                }
-                sb.append("\n");
-            }
-
-            return sb.toString();
-
+            return ctrlDomini.generarInformeAnalisi(idEnquesta, modeK, kManual, algoritme);
         } catch (Exception e) {
             return "Error en l'anàlisi: " + e.getMessage();
         }
