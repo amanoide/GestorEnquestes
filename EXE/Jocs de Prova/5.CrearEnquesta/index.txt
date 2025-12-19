@@ -1,0 +1,54 @@
+# Joc de Prova - Cas d'ús #5 Crear Enquesta
+
+Objecte de la prova:
+Cas d'ús: Crear Enquesta.
+Es prova la funcionalitat de crear una nova enquesta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+
+Fitxers de dades necessaris:
+No es requereixen fitxers d'entrada específics per iniciar la prova, ja que les dades s'introdueixen manualment a través dels camps de text de la vista.
+El sistema utilitza internament per a la persistència:
+- enquestes/index.json: Per emmagatzemar la llista d'enquestes i verificar duplicats. Emmagatzema objectes de la classe Enquesta.
+- usuaris/{username}/usuari.json: Per emmagatzemar la llista d'enquestes creades per l'usuari. Emmagatzema objectes de la classe Usuari.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Creació vàlida (Cas d'èxit):
+   - ID: "enquesta1" (no buit, no existent)
+   - Títol: "La meva enquesta" (no buit)
+   - Descripció: "Descripció opcional" (pot ser buida)
+   - Resultat esperat: Creació de l'enquesta i missatge d'èxit.
+
+2. Descripció buida (Cas vàlid):
+   - ID: "enquesta3"
+   - Títol: "Enquesta sense descripció"
+   - Descripció: "" (buida, permès)
+   - Resultat esperat: Creació de l'enquesta correctament (la descripció és opcional).
+
+3. Validació d'ID buit (Valors límit/invàlids):
+   - ID: "" (buit)
+   - Títol: "Enquesta invàlida"
+   - Descripció: "Descripció"
+   - Resultat esperat: Error indicant que l'ID no pot estar buit.
+
+4. Validació de títol buit (Valors límit/invàlids):
+   - ID: "enquesta2"
+   - Títol: "" (buit)
+   - Descripció: "Descripció"
+   - Resultat esperat: Error indicant que el títol no pot estar buit.
+
+5. Enquesta ja existent (Validació de duplicats):
+   - ID: "enquesta1" (suposant que ja existeix al sistema, veure enquestes/index.json)
+   - Títol: "La mateixa enquesta que enquesta1"
+   - Descripció: "Descripció"
+   - Resultat esperat: Error indicant que ja existeix una enquesta amb aquest ID (EnquestaJaExisteixException).
+
+Efectes estudiats:
+- Interacció amb la GUI: Introducció de text als camps "ID", "Títol" i "Descripció".
+- Accions: Clic al botó "Crear Enquesta".
+- Feedback visual: 
+    - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Enquesta creada correctament!").
+    - Aparició de missatges d'error descriptius quan fallen les validacions.
+- Persistència: Verificació que la nova enquesta s'ha afegit correctament al fitxer de persistència i a la llista d'enquestes de l'usuari.
+- Navegació: Tornada a la pantalla principal o visualització de la nova enquesta creada.

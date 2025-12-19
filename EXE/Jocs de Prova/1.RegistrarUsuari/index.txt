@@ -1,0 +1,46 @@
+# Joc de Prova - Cas d'ús #1 Registrar Usuari
+
+Objecte de la prova:
+Cas d'ús: Registrar Usuari.
+Es prova la funcionalitat de crear un nou compte d'usuari al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+
+Fitxers de dades necessaris:
+No es requereixen fitxers d'entrada específics per iniciar la prova, ja que les dades s'introdueixen manualment a través dels camps de text de la vista.
+El sistema utilitza internament per a la persistència:
+- usuaris/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Registre vàlid (Cas d'èxit):
+   - Usuari: "TestUser1" (Longitud >= 3, caràcters vàlids, no existent)
+   - Contrasenya: "password123" (Longitud >= 4)
+   - Resultat esperat: Creació de l'usuari i missatge d'èxit.
+
+2. Validació de longitud d'usuari (Valors límit/invàlids):
+   - Usuari: "ab" (Longitud < 3)
+   - Contrasenya: "validPass"
+   - Resultat esperat: Error indicant que l'usuari ha de tenir almenys 3 caràcters.
+
+3. Validació de longitud de contrasenya (Valors límit/invàlids):
+   - Usuari: "TestUser2"
+   - Contrasenya: "123" (Longitud < 4)
+   - Resultat esperat: Error indicant que la contrasenya ha de tenir almenys 4 caràcters.
+
+4. Usuari ja existent (Validació de duplicats):
+   - Usuari: "jairo" (Suposant que ja existeix al sistema, veure usuaris/index.json)
+   - Contrasenya: "qualsevol"
+   - Resultat esperat: Error indicant que l'usuari ja existeix (UsuariJaExisteixException).
+
+5. Camps buits o nuls:
+   - Usuari: "" o Contrasenya: ""
+   - Resultat esperat: Error de paràmetre invàlid.
+
+Efectes estudiats:
+- Interacció amb la GUI: Introducció de text als camps "Usuari" i "Contrasenya".
+- Accions: Clic al botó "Registrar".
+- Feedback visual: 
+    - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Usuari registrat correctament!").
+    - Aparició de missatges d'error descriptius quan fallen les validacions.
+- Persistència: Verificació que el nou usuari s'ha afegit correctament al fitxer de persistència després de l'operació exitosa.
