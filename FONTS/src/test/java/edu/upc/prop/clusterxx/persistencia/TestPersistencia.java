@@ -105,8 +105,8 @@ public class TestPersistencia {
         gestor.guardarEnquesta(enquesta);
         
         // Verificar fitxer individual
-        File fitxer = new File(ENQUESTES_DIR + "/enq1.json");
-        assertTrue("El fitxer enq1.json hauria d'existir", fitxer.exists());
+        File fitxer = new File(ENQUESTES_DIR + "/enq1/enquesta.json");
+        assertTrue("El fitxer enq1/enquesta.json hauria d'existir", fitxer.exists());
     }
 
     @Test

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" tests="7" skipped="0" failures="0" errors="0" timestamp="2025-12-14T18:26:14" hostname="LAPTOP-LVPJG8BN" time="0.005">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" tests="7" skipped="0" failures="0" errors="0" timestamp="2025-12-19T08:41:28" hostname="DESKTOP-JJJGPR0" time="0.005">
   <properties/>
   <testcase name="testFitAmbClustersSeparats" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.002"/>
   <testcase name="testInitCentroidsSenseSpecs" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
   <testcase name="testInitCentroidsDataBuida" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
-  <testcase name="testInitCentroidsDeterminista" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.002"/>
-  <testcase name="testInitCentroidsDataNull" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.001"/>
+  <testcase name="testInitCentroidsDeterminista" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.001"/>
+  <testcase name="testInitCentroidsDataNull" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
   <testcase name="testInitCentroidsKMassaGran" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
-  <testcase name="testInitCentroidsKAmbZero" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
+  <testcase name="testInitCentroidsKAmbZero" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
