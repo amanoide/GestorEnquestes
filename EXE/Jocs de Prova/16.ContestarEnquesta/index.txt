@@ -1,0 +1,66 @@
+# Joc de Prova - Cas d'ús #16 Contestar Enquesta
+
+Objecte de la prova:
+Cas d'ús: Contestar Enquesta.
+Es prova la funcionalitat de contestar una enquesta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+
+Fitxers de dades necessaris:
+enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta.
+TestUser1.json: Es un usuari que durà a terme els tests. Password: password123
+TestUser2.json: Es un usuari que durà a terme els tests d'error. Password: password123
+El sistema utilitza internament per a la persistència:
+- respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Contestar enquesta vàlida (Cas d'èxit): 
+    - Alçada: "180"
+    - Quants anys tens?: "20"
+    - Com valoras la teva salut?: "Bona"
+    - Provincia: "Barcelona"
+- Quins esports practiques?: "Futbol, Baloncesto"
+   - Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit.
+
+2. Validació de no contestar 2 cops la mateixa enquesta (Valors límit/invàlids):
+    - Alçada: "200"
+    - Quants anys tens?: "21"
+    - Com valoras la teva salut?: "Bona"
+    - Provincia: "Barcelona"
+    - Quins esports practiques?: "Futbol"
+    - Resultat esperat: Error indicant que l'usuari ja ha contestat la enquesta.
+
+A partir d'aquí l'usuari es TestUser2.json:
+
+3. Contestacio pregunta tipus numerica invalida (Valors límit/invàlids):
+   - Alçada: "200"
+   - Quants anys tens?: "250"
+   - Com valoras la teva salut?: "Bona"
+   - Provincia: "Barcelona"
+   - Quins esports practiques?: "Futbol"
+   - Resultat esperat: Canvi de la reposta a Quants anys tens? al valor minim, 0 en aquest cas.
+
+4. Contestacio pregunta tipus qualitativa multiple invalida (Validació de duplicats):
+   - Alçada: "200"
+   - Quants anys tens?: "21"
+   - Com valoras la teva salut?: "Bona"
+   - Provincia: "Barcelona"
+   - Quins esports practiques?: "Futbol, Baloncesto, Quidditch"
+   - Resultat esperat: Error indicant que la pregunta tipus qualitativa multiple invalida.
+
+5. Camps buits o nuls:
+   - Alçada: ""
+   - Quants anys tens?: "0" (es el minim i per defecte ja té valor)
+   - Com valoras la teva salut?: "Dolenta" (es la resposta per defecte)
+   - Provincia: "Barcelona" (es la resposta per defecte)
+   - Quins esports practiques?: ""
+   - Resultat esperat: Error de paràmetre invàlid.
+
+Efectes estudiats:
+- Interacció amb la GUI: Introducció de text als camp "Alçada" i "Quants anys tens?".
+- Accions: Clic al botó "Enviar Respostes".
+- Feedback visual: 
+    - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Enquesta contestada correctament!").
+    - Aparició de missatges d'error descriptius quan fallen les validacions.
+- Persistència: Verificació que la nova resposta s'ha afegit correctament al fitxer de persistència després de l'operació exitosa.

@@ -1,0 +1,67 @@
+# Joc de Prova - Cas d'ús #17 Modificar Resposta
+
+Objecte de la prova:
+Cas d'ús: Modificar Resposta.
+Es prova la funcionalitat de modificar una resposta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+
+Fitxers de dades necessaris:
+enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta.
+TestUser1.json: Es un usuari que durà a terme els tests. Password: password123
+El sistema utilitza internament per a la persistència:
+- respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Modificar resposta tipus text vàlida (Cas d'èxit): 
+   - Alçada: "190"
+   - Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit.
+
+2. Modificar resposta tipus numerica vàlida (Cas d'èxit): 
+   - Quants anys tens?: "21"
+   - Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit.
+
+3. Modificar resposta tipus ordenada vàlida (Cas d'èxit): 
+   - Com valoras la teva salut?: "Excelent"
+   - Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit.
+
+4. Modificar resposta tipus qualitativa simple vàlida (Cas d'èxit): 
+   - Provincia: "Tarragona"
+   - Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit.
+
+5. Modificar resposta tipus qualitativa multiple vàlida (Cas d'èxit): 
+   - Quins esports practiques?: "Futbol"
+   - Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit.
+
+6. Modificar resposta pregunta tipus numerica invalida (Valors límit/invàlids):
+   - Quants anys tens?: "250"
+   - Resultat esperat: Aparició de finestra amb missatge d'error.
+
+7. Modificar resposta pregunta tipus qualitativa multiple invalida (Valors límit/invàlids):
+   - Quins esports practiques?: "1,2,5" (Futbol, Baloncesto, Quidditch)
+   - Resultat esperat: Aparició de finestra amb missatge d'error.
+
+8. Modificar resposta pregunta tipus qualitativa multiple amb format erroni (Valors límit/invàlids):
+   - Quins esports practiques?: "1 2" (Futbol, Baloncesto)
+   - Resultat esperat: Aparició de finestra amb missatge d'error.
+
+9. Modificar resposta pregunta tipus qualitativa multiple fora de límit (Valors límit/invàlids):
+   - Quins esports practiques?: "24, 12" 
+   - Resultat esperat: Aparició de finestra amb missatge d'error.
+
+10. Camps buits o nuls:
+   - Alçada: ""
+   - Quants anys tens?: "21" 
+   - Com valoras la teva salut?: "Excelent" 
+   - Provincia: "Tarragona" 
+   - Quins esports practiques?: ""
+   - Resultat esperat: No canvi de la resposta.
+
+Efectes estudiats:
+- Interacció amb la GUI: Introducció de text als camp "Alçada", "Quants anys tens?" i "Quins esports practiques?".
+- Accions: Clic al botó "Modificar".
+- Feedback visual: 
+    - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Resposta modificada correctament!").
+    - Aparició de missatges d'error descriptius quan fallen les validacions.
+- Persistència: Verificació que la nova resposta s'ha afegit correctament al fitxer de persistència després de l'operació exitosa.
