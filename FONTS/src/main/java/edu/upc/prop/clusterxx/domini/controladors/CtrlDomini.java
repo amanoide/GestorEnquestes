@@ -346,6 +346,49 @@ public class CtrlDomini {
     }
 
     /**
+     * Obté les enquestes de l'usuari actual en format cru.
+     * 
+     * @return Llista de llistes amb [id, titol, descripcio].
+     */
+    public ArrayList<ArrayList<String>> getEnquestesUsuariRaw() {
+        ArrayList<ArrayList<String>> resultat = new ArrayList<>();
+        try {
+            List<Enquesta> enquestes = ctrlUsuari.getUsuariActual().getEnquestesCreades();
+            for (Enquesta e : enquestes) {
+                ArrayList<String> dadesEnquesta = new ArrayList<>();
+                dadesEnquesta.add(e.getId());
+                dadesEnquesta.add(e.getTitol());
+                dadesEnquesta.add(e.getDescripcio());
+                resultat.add(dadesEnquesta);
+            }
+        } catch (Exception e) {
+            // Retorna llista buida si error
+        }
+        return resultat;
+    }
+
+    /**
+     * Obté els participants d'una enquesta en format cru.
+     * 
+     * @param idEnquesta ID de l'enquesta.
+     * @return Llista de noms d'usuari dels participants.
+     */
+    public ArrayList<String> getParticipantsEnquestaRaw(String idEnquesta) {
+        ArrayList<String> participants = new ArrayList<>();
+        try {
+            Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
+            if (enquesta != null) {
+                for (String p : enquesta.getParticipants()) {
+                    participants.add(p);
+                }
+            }
+        } catch (Exception e) {
+            // Retorna llista buida si error
+        }
+        return participants;
+    }
+
+    /**
      * Obté les preguntes d'una enquesta en format cru.
      * 
      * Retorna una llista on cada element és una llista amb:
@@ -2119,6 +2162,18 @@ public class CtrlDomini {
     }
 
     /**
+     * Consulta totes les respostes d'una pregunta en format cru.
+     * 
+     * @param idPregunta L'ID de la pregunta.
+     * @return Llista de [username, textResposta].
+     */
+    public ArrayList<ArrayList<String>> consultarRespostesPreguntaRaw(String idPregunta)
+            throws ParametreInvalidException, PreguntaNoExisteixException, UsuariNoAutenticatException {
+        ArrayList<Resposta> respostes = consultarRespostesPregunta(idPregunta);
+        return formatejarRespostes(respostes);
+    }
+
+    /**
      * Consulta totes les respostes d'una enquesta.
      * Per cada pregunta de l'enquesta, retorna totes les seves respostes.
      * 
@@ -2161,6 +2216,43 @@ public class CtrlDomini {
         }
 
         return respostesPerPregunta;
+    }
+
+    /**
+     * Consulta totes les respostes d'una enquesta en format cru.
+     * 
+     * @param idEnquesta L'ID de l'enquesta.
+     * @return Map amb idPregunta -> Llista de [username, textResposta].
+     */
+    public HashMap<String, ArrayList<ArrayList<String>>> consultarRespostesEnquestaRaw(String idEnquesta)
+            throws ParametreInvalidException, EnquestaNoExisteixException, UsuariNoAutenticatException {
+
+        HashMap<String, ArrayList<Resposta>> respostesOriginal = consultarRespostesEnquesta(idEnquesta);
+        HashMap<String, ArrayList<ArrayList<String>>> respostesRaw = new HashMap<>();
+
+        for (String idPregunta : respostesOriginal.keySet()) {
+            respostesRaw.put(idPregunta, formatejarRespostes(respostesOriginal.get(idPregunta)));
+        }
+        return respostesRaw;
+    }
+
+    /**
+     * Mètode auxiliar per formatejar una llista de respostes a format cru.
+     * 
+     * @param respostes Llista de respostes.
+     * @return Llista de [username, text].
+     */
+    private ArrayList<ArrayList<String>> formatejarRespostes(ArrayList<Resposta> respostes) {
+        ArrayList<ArrayList<String>> llistaRaw = new ArrayList<>();
+        if (respostes != null) {
+            for (Resposta r : respostes) {
+                ArrayList<String> dadaResposta = new ArrayList<>();
+                dadaResposta.add(r.getUsernameUsuari());
+                dadaResposta.add(r.getTextResposta());
+                llistaRaw.add(dadaResposta);
+            }
+        }
+        return llistaRaw;
     }
 
     /**
@@ -3101,7 +3193,7 @@ public class CtrlDomini {
      * 
      * @return Text amb la informació dels perfils de l'usuari.
      * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
-     * @throws PerfilNoTrobatException Si l'usuari no té cap perfil.
+     * @throws PerfilNoTrobatException     Si l'usuari no té cap perfil.
      */
     public String consultarPerfilsUsuari() throws UsuariNoAutenticatException, PerfilNoTrobatException {
         Usuari usuari = ctrlUsuari.getUsuariActual();
@@ -3114,7 +3206,8 @@ public class CtrlDomini {
         HashMap<String, Perfil> perfils = usuari.getPerfils();
 
         if (perfils == null || perfils.isEmpty()) {
-            throw new PerfilNoTrobatException("No tens cap perfil generat encara.\n\nPer generar un perfil:\n1. Respon una enquesta\n2. Espera que el creador de l'enquesta faci l'anàlisi de clustering\n3. Se t'assignarà automàticament un perfil basat en les teves respostes");
+            throw new PerfilNoTrobatException(
+                    "No tens cap perfil generat encara.\n\nPer generar un perfil:\n1. Respon una enquesta\n2. Espera que el creador de l'enquesta faci l'anàlisi de clustering\n3. Se t'assignarà automàticament un perfil basat en les teves respostes");
         }
 
         StringBuilder sb = new StringBuilder();
@@ -3153,9 +3246,10 @@ public class CtrlDomini {
      * @param idEnquesta L'ID de l'enquesta
      * @return Text amb la informació del perfil
      * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
-     * @throws PerfilNoTrobatException Si no es troba el perfil.
+     * @throws PerfilNoTrobatException     Si no es troba el perfil.
      */
-    public String consultarPerfilUsuariEnquesta(String idEnquesta) throws UsuariNoAutenticatException, PerfilNoTrobatException {
+    public String consultarPerfilUsuariEnquesta(String idEnquesta)
+            throws UsuariNoAutenticatException, PerfilNoTrobatException {
         Usuari usuari = ctrlUsuari.getUsuariActual();
         if (usuari == null) {
             throw new UsuariNoAutenticatException("No hi ha cap usuari autenticat.");

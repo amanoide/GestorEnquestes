@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.util.ArrayList;
-import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 
 /**
  * Vista per a l'anàlisi de clustering de les enquestes de l'usuari.
@@ -118,10 +117,10 @@ public class VistaAnalisi extends JPanel {
 
         btnAnalitzar.setActionCommand(MyActionListener.Action.ANALITZAR_ENQUESTA.name());
         btnAnalitzar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnVeureAnalisi.setActionCommand(MyActionListener.Action.VEURE_ANALISI_ENQUESTA.name());
         btnVeureAnalisi.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnTornar.setActionCommand(MyActionListener.Action.TORNAR_MENU.name());
         btnTornar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
     }
@@ -139,14 +138,14 @@ public class VistaAnalisi extends JPanel {
      */
     public void actualizarLista() {
         listModel.clear();
-        ArrayList<Enquesta> enquestes = iCtrlPresentacio.getEnquestesUsuari();
+        ArrayList<ArrayList<String>> enquestes = iCtrlPresentacio.getEnquestesUsuari();
         if (enquestes.isEmpty()) {
             listModel.addElement("No tens enquestes creades.");
             listEnquestes.setEnabled(false);
         } else {
             listEnquestes.setEnabled(true);
-            for (Enquesta e : enquestes) {
-                listModel.addElement(e.getId() + ": " + e.getTitol());
+            for (ArrayList<String> e : enquestes) {
+                listModel.addElement(e.get(0) + ": " + e.get(1));
             }
         }
     }

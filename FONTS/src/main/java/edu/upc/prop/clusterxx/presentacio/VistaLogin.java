@@ -1,9 +1,7 @@
 package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * Vista d'autenticació i punt d'entrada principal per als usuaris de
@@ -112,10 +110,10 @@ public class VistaLogin extends JPanel {
         // Listeners
         btnLogin.setActionCommand(MyActionListener.Action.LOGIN.name());
         btnLogin.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnGoToRegister.setActionCommand(MyActionListener.Action.MOSTRAR_REGISTER.name());
         btnGoToRegister.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         textPass.setActionCommand(MyActionListener.Action.LOGIN.name());
         textPass.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
 
@@ -139,6 +137,7 @@ public class VistaLogin extends JPanel {
     String getPassword() {
         return new String(textPass.getPassword());
     }
+
     /**
      * Mostra un missatge d'error a la interfície.
      *
@@ -154,4 +153,5 @@ public class VistaLogin extends JPanel {
      */
     void netejarError() {
         labelStatusLogin.setText(" ");
-    }}
+    }
+}

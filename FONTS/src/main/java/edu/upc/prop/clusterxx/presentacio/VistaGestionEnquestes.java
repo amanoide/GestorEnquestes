@@ -3,6 +3,7 @@ package edu.upc.prop.clusterxx.presentacio;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.util.List;
 
 /**
  * Vista per gestionar (modificar, eliminar i veure) les enquestes creades per
@@ -75,7 +76,7 @@ public class VistaGestionEnquestes extends JPanel {
      * Adalt: Títol amb icona de gestió (📋).
      * MIG: Llista desplaçable d'enquestes de l'usuari.
      * Abaix: Botons d'acció (Modificar, Gestionar Preguntes, Veure
-     *   Participants, Eliminar, Tornar).
+     * Participants, Eliminar, Tornar).
      * 
      * 
      * Configura els listeners per habilitar/deshabilitar els botons segons la
@@ -136,19 +137,19 @@ public class VistaGestionEnquestes extends JPanel {
         // Listeners
         btnEditar.setActionCommand(MyActionListener.Action.MODIFICAR_ENQUESTA.name());
         btnEditar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnGestionarPreguntes.setActionCommand(MyActionListener.Action.GESTIONAR_PREGUNTES.name());
         btnGestionarPreguntes.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnVeureParticipants.setActionCommand(MyActionListener.Action.VEURE_PARTICIPANTS.name());
         btnVeureParticipants.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnVeureRespostes.setActionCommand(MyActionListener.Action.VEURE_RESPOSTES_ENQUESTA.name());
         btnVeureRespostes.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnEliminar.setActionCommand(MyActionListener.Action.ELIMINAR_ENQUESTA.name());
         btnEliminar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnVolver.setActionCommand(MyActionListener.Action.TORNAR_MENU.name());
         btnVolver.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
 
@@ -191,8 +192,8 @@ public class VistaGestionEnquestes extends JPanel {
      */
     void refreshEnquestesList() {
         listModelEnquestes.clear();
-        for (edu.upc.prop.clusterxx.domini.classes.Enquesta e : iCtrlPresentacio.getEnquestesUsuari()) {
-            listModelEnquestes.addElement(e.getId() + ": " + e.getTitol());
+        for (List<String> e : iCtrlPresentacio.getEnquestesUsuari()) {
+            listModelEnquestes.addElement(e.get(0) + ": " + e.get(1));
         }
     }
 }

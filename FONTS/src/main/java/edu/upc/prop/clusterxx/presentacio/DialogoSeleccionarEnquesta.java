@@ -3,6 +3,8 @@ package edu.upc.prop.clusterxx.presentacio;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
@@ -129,8 +131,8 @@ public class DialogoSeleccionarEnquesta extends JDialog {
         btnCancel.addActionListener(e -> setVisible(false));
 
         // Doble clic para seleccionar
-        listEnquestes.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent e) {
+        listEnquestes.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     btnOk.doClick();
                 }
