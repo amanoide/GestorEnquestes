@@ -198,6 +198,10 @@ public final class Exceptions {
      * Excepció llançada quan no es troba cap perfil per a l'usuari.
      */
     public static class PerfilNoTrobatException extends Exception {
+        /**
+         * Construeix una nova excepció amb un missatge detallat.
+         * @param missatge El missatge que descriu per què no s'ha trobat el perfil.
+         */
         public PerfilNoTrobatException(String missatge) {
             super(missatge);
         }
@@ -207,6 +211,10 @@ public final class Exceptions {
      * Excepció llançada quan es consulta una anàlisi que no existeix.
      */
     public static class AnalisiNoRealitzatException extends Exception {
+        /**
+         * Construeix una nova excepció per a una anàlisi no realitzada.
+         * @param idEnquesta L'ID de l'enquesta per a la qual no s'ha realitzat l'anàlisi.
+         */
         public AnalisiNoRealitzatException(String idEnquesta) {
             super("No s'ha realitzat cap anàlisi de clustering per a l'enquesta: " + idEnquesta);
         }

@@ -76,42 +76,93 @@ public class Perfil {
     }
 
     // ========== Getters per a persistència ==========
+    
+    /**
+     * Retorna l'identificador únic del perfil.
+     * 
+     * @return ID del perfil
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     * Retorna la descripció del perfil.
+     * 
+     * @return Descripció textual del perfil
+     */
     public String getDescripcion() {
         return descripcion;
     }
 
+    /**
+     * Retorna l'ID de l'enquesta sobre la qual es va fer l'anàlisi.
+     * 
+     * @return ID de l'enquesta
+     */
     public String getIdEnquesta() {
         return idEnquesta;
     }
 
+    /**
+     * Retorna l'índex del cluster al qual pertany aquest perfil.
+     * 
+     * @return Índex del cluster (0, 1, 2, ...)
+     */
     public Integer getClusterIndex() {
         return clusterIndex;
     }
 
+    /**
+     * Retorna el nom descriptiu del cluster.
+     * 
+     * @return Nom del cluster
+     */
     public String getClusterNom() {
         return clusterNom;
     }
 
+    /**
+     * Retorna la mida del cluster (nombre de membres).
+     * 
+     * @return Nombre de membres del cluster
+     */
     public Integer getClusterMida() {
         return clusterMida;
     }
 
+    /**
+     * Retorna el coeficient Silhouette del cluster.
+     * 
+     * @return Valor Silhouette (qualitat del cluster)
+     */
     public Double getClusterSilhouette() {
         return clusterSilhouette;
     }
 
+    /**
+     * Retorna el vector característic del perfil (centroide del cluster).
+     * 
+     * @return Array de strings amb els valors característics
+     */
     public String[] getVectorCaracteristic() {
         return vectorCaracteristic;
     }
 
+    /**
+     * Retorna una còpia de la llista de noms de preguntes.
+     * 
+     * @return Llista amb els noms de les preguntes
+     */
     public List<String> getNomsPreguntes() {
         return new ArrayList<>(nomsPreguntes);
     }
 
+    /**
+     * Retorna l'algoritme utilitzat per generar el perfil.
+     * 
+     * @return Nom de l'algoritme (KMeans, KMeans++, KMedoids)
+     */
     public String getAlgoritme() {
         return algoritme;
     }

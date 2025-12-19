@@ -9,7 +9,12 @@ import java.util.List;
  */
 public class FeatureSpecFactory {
 
-    /** Construye un FeatureSpec por cada Pregunta, en el mismo orden. */
+    /**
+     * Construeix un FeatureSpec per cada Pregunta, en el mateix ordre.
+     * 
+     * @param preguntas Llista de preguntes a convertir en especificacions
+     * @return Array de FeatureSpec corresponent a cada pregunta
+     */
     public static DistanceCalculator.FeatureSpec[] fromPreguntas(List<Pregunta> preguntas) {
         if (preguntas == null) return new DistanceCalculator.FeatureSpec[0];
         DistanceCalculator.FeatureSpec[] specs = new DistanceCalculator.FeatureSpec[preguntas.size()];
@@ -17,7 +22,20 @@ public class FeatureSpecFactory {
         return specs;
     }
 
-    /** Construye el FeatureSpec para una única Pregunta. */
+    /**
+     * Construeix el FeatureSpec per a una única Pregunta.
+     * 
+     * Mapeja el tipus de pregunta i els seus metadatos a l'especificació corresponent:
+     * - NUMERICA: Utilitza els valors mínim i màxim
+     * - QUALITATIVA_ORDENADA: Utilitza l'ordre de les opcions i la cardinalitat
+     * - QUALITATIVA_NO_ORDENADA_SIMPLE: Especificació nominal simple
+     * - QUALITATIVA_NO_ORDENADA_MULTIPLE: Especificació nominal múltiple amb màxim de seleccions
+     * - TEXT_LLIURE: Especificació de text lliure
+     * 
+     * @param p La pregunta a convertir en especificació
+     * @return FeatureSpec corresponent al tipus de pregunta
+     * @throws IllegalArgumentException si la pregunta és null
+     */
     public static DistanceCalculator.FeatureSpec fromPregunta(Pregunta p) {
         if (p == null) throw new IllegalArgumentException("Pregunta cannot be null");
         switch (p.getTipus()) {
