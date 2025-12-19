@@ -4,6 +4,9 @@ import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
 import edu.upc.prop.clusterxx.domini.classes.Enquesta;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
 import edu.upc.prop.clusterxx.domini.classes.Resposta;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.PerfilNoTrobatException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.AnalisiNoRealitzatException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariNoAutenticatException;
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -458,52 +461,9 @@ public class CtrlPresentacio {
      */
     public String consultarMeuPerfil() {
         try {
-            if (currentUsername == null) {
-                return "No hi ha cap usuari autenticat.";
-            }
-
-            // Obtenir l'usuari actual
-            edu.upc.prop.clusterxx.domini.classes.Usuari usuari = ctrlDomini.getUsuariActual();
-            if (usuari == null) {
-                return "No s'ha trobat l'usuari: " + currentUsername;
-            }
-
-            // Obtenir tots els perfils de l'usuari
-            java.util.HashMap<String, edu.upc.prop.clusterxx.domini.classes.Perfil> perfils = usuari.getPerfils();
-
-            if (perfils == null || perfils.isEmpty()) {
-                return "No tens cap perfil generat encara.\n\nPer generar un perfil:\n1. Respon una enquesta\n2. Espera que el creador de l'enquesta faci l'anàlisi de clustering\n3. Se t'assignarà automàticament un perfil basat en les teves respostes";
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("=== ELS MEUS PERFILS ===\n\n");
-            sb.append("Usuari: ").append(currentUsername).append("\n");
-            sb.append("Total de perfils: ").append(perfils.size()).append("\n\n");
-
-            int count = 1;
-            for (java.util.Map.Entry<String, edu.upc.prop.clusterxx.domini.classes.Perfil> entry : perfils.entrySet()) {
-                edu.upc.prop.clusterxx.domini.classes.Perfil perfil = entry.getValue();
-                if (perfil == null)
-                    continue;
-
-                sb.append("--- PERFIL ").append(count++).append(" ---\n");
-                sb.append("Enquesta: ").append(perfil.getIdEnquesta()).append("\n");
-                sb.append("Cluster: ").append(perfil.getClusterNom()).append("\n");
-                sb.append("Descripció: ").append(perfil.getDescripcion()).append("\n");
-
-                if (perfil.getClusterMida() != null) {
-                    sb.append("Membres del grup: ").append(perfil.getClusterMida()).append(" persones\n");
-                }
-
-                if (perfil.getAlgoritme() != null) {
-                    sb.append("Algoritme utilitzat: ").append(perfil.getAlgoritme()).append("\n");
-                }
-
-                sb.append("\n");
-            }
-
-            return sb.toString();
-
+            return ctrlDomini.consultarPerfilsUsuari();
+        } catch (PerfilNoTrobatException e) {
+            return e.getMessage();
         } catch (Exception e) {
             return "Error consultant el perfil: " + e.getMessage();
         }
@@ -517,96 +477,9 @@ public class CtrlPresentacio {
      */
     public String consultarPerfilEnquesta(String idEnquesta) {
         try {
-            if (currentUsername == null) {
-                return "No hi ha cap usuari autenticat.";
-            }
-
-            // Obtenir l'usuari actual
-            edu.upc.prop.clusterxx.domini.classes.Usuari usuari = ctrlDomini.getUsuariActual();
-            if (usuari == null) {
-                return "No s'ha trobat l'usuari: " + currentUsername;
-            }
-
-            // Obtenir el perfil específic de l'enquesta
-            java.util.HashMap<String, edu.upc.prop.clusterxx.domini.classes.Perfil> perfils = usuari.getPerfils();
-
-            // Comprovar si existeix algun perfil per a aquesta enquesta en el sistema
-            boolean existeixAnalisi = false;
-            java.util.HashMap<String, edu.upc.prop.clusterxx.domini.classes.Perfil> totsPerfils = ctrlDomini
-                    .getAllPerfils();
-            if (totsPerfils != null) {
-                for (edu.upc.prop.clusterxx.domini.classes.Perfil p : totsPerfils.values()) {
-                    if (p.teClustering() && idEnquesta.equals(p.getIdEnquesta())) {
-                        existeixAnalisi = true;
-                        break;
-                    }
-                }
-            }
-
-            if (perfils == null || !perfils.containsKey(idEnquesta)) {
-                if (existeixAnalisi) {
-                    // Hi ha anàlisi però l'usuari no té perfil = va contestar després
-                    return "⚠️ NO TENS PERFIL ASSIGNAT ⚠️\n\n" +
-                            "Has contestat aquesta enquesta DESPRÉS que el creador fes l'anàlisi de clustering.\n\n" +
-                            "Per obtenir el teu perfil:\n" +
-                            "• Espera que el creador torni a fer un nou anàlisi de clustering\n" +
-                            "• El nou anàlisi inclourà les teves respostes\n" +
-                            "• Aleshores se t'assignarà un perfil automàticament";
-                } else {
-                    // No hi ha anàlisi encara
-                    return "No tens cap perfil per a l'enquesta: " + idEnquesta + "\n\n" +
-                            "Per generar un perfil:\n" +
-                            "1. Respon l'enquesta si encara no ho has fet\n" +
-                            "2. Espera que el creador de l'enquesta faci l'anàlisi de clustering\n" +
-                            "3. Se t'assignarà automàticament un perfil basat en les teves respostes";
-                }
-            }
-
-            edu.upc.prop.clusterxx.domini.classes.Perfil perfil = perfils.get(idEnquesta);
-
-            if (perfil == null) {
-                if (existeixAnalisi) {
-                    // Hi ha anàlisi però el perfil és null
-                    return "⚠️ NO TENS PERFIL ASSIGNAT ⚠️\n\n" +
-                            "Has contestat aquesta enquesta DESPRÉS que el creador fes l'anàlisi de clustering.\n\n" +
-                            "Per obtenir el teu perfil:\n" +
-                            "• Espera que el creador torni a fer un nou anàlisi de clustering\n" +
-                            "• El nou anàlisi inclourà les teves respostes\n" +
-                            "• Aleshores se t'assignarà un perfil automàticament";
-                } else {
-                    return "El perfil per a aquesta enquesta encara no s'ha generat.";
-                }
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("=== EL MEU PERFIL ===\n\n");
-            sb.append("Usuari: ").append(currentUsername).append("\n");
-            sb.append("Enquesta: ").append(perfil.getIdEnquesta()).append("\n\n");
-
-            sb.append("Cluster: ").append(perfil.getClusterNom()).append("\n");
-            sb.append("Descripció: ").append(perfil.getDescripcion()).append("\n");
-
-            if (perfil.getClusterMida() != null) {
-                sb.append("Membres del grup: ").append(perfil.getClusterMida()).append(" persones\n");
-            }
-
-            if (perfil.getAlgoritme() != null) {
-                sb.append("Algoritme utilitzat: ").append(perfil.getAlgoritme()).append("\n");
-            }
-
-            // Mostrar el vector característic si està disponible
-            if (perfil.getVectorCaracteristic() != null && perfil.getNomsPreguntes() != null) {
-                sb.append("\n--- Característiques del teu perfil ---\n");
-                String[] vector = perfil.getVectorCaracteristic();
-                java.util.List<String> preguntes = perfil.getNomsPreguntes();
-
-                for (int i = 0; i < Math.min(vector.length, preguntes.size()); i++) {
-                    sb.append(preguntes.get(i)).append(": ").append(vector[i]).append("\n");
-                }
-            }
-
-            return sb.toString();
-
+            return ctrlDomini.consultarPerfilUsuariEnquesta(idEnquesta);
+        } catch (PerfilNoTrobatException e) {
+            return e.getMessage();
         } catch (Exception e) {
             return "Error consultant el perfil: " + e.getMessage();
         }
@@ -621,102 +494,9 @@ public class CtrlPresentacio {
      */
     public String consultarAnalisiEnquesta(String idEnquesta) {
         try {
-            // Obtenir tots els perfils del sistema
-            java.util.HashMap<String, edu.upc.prop.clusterxx.domini.classes.Perfil> totsPerfils = ctrlDomini
-                    .getAllPerfils();
-
-            if (totsPerfils == null || totsPerfils.isEmpty()) {
-                return "No hi ha cap anàlisi de clustering al sistema.";
-            }
-
-            // Filtrar perfils per aquesta enquesta
-            java.util.List<edu.upc.prop.clusterxx.domini.classes.Perfil> perfilsEnquesta = new java.util.ArrayList<>();
-            for (edu.upc.prop.clusterxx.domini.classes.Perfil perfil : totsPerfils.values()) {
-                if (perfil.teClustering() && idEnquesta.equals(perfil.getIdEnquesta())) {
-                    perfilsEnquesta.add(perfil);
-                }
-            }
-
-            if (perfilsEnquesta.isEmpty()) {
-                return "No s'ha realitzat cap anàlisi de clustering per a l'enquesta: " + idEnquesta + "\n\n" +
-                        "Per generar l'anàlisi:\n" +
-                        "1. Assegura't que l'enquesta té respostes\n" +
-                        "2. Fes clic a 'Analitzar Enquesta'\n" +
-                        "3. Selecciona els paràmetres de clustering";
-            }
-
-            // Ordenar per índex de cluster
-            perfilsEnquesta.sort((p1, p2) -> Integer.compare(p1.getClusterIndex(), p2.getClusterIndex()));
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("=== ANÀLISI DE CLUSTERING ===\n\n");
-            sb.append("Enquesta: ").append(idEnquesta).append("\n");
-            sb.append("Total de clusters: ").append(perfilsEnquesta.size()).append("\n");
-
-            if (!perfilsEnquesta.isEmpty()) {
-                edu.upc.prop.clusterxx.domini.classes.Perfil primer = perfilsEnquesta.get(0);
-                if (primer.getAlgoritme() != null) {
-                    sb.append("Algoritme utilitzat: ").append(primer.getAlgoritme()).append("\n");
-                }
-            }
-
-            sb.append("\n");
-
-            // Mostrar cada cluster
-            for (edu.upc.prop.clusterxx.domini.classes.Perfil perfil : perfilsEnquesta) {
-                sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-                sb.append("CLUSTER ").append(perfil.getClusterIndex() + 1)
-                        .append(": ").append(perfil.getClusterNom()).append("\n");
-                sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
-
-                sb.append("Descripció: ").append(perfil.getDescripcion()).append("\n");
-
-                if (perfil.getClusterMida() != null) {
-                    sb.append("Membres: ").append(perfil.getClusterMida()).append(" persones\n");
-                }
-
-                if (perfil.getClusterSilhouette() != null) {
-                    sb.append("Qualitat: ").append(perfil.getQualitatText()).append("\n");
-                    sb.append("Coeficient Silhouette: ")
-                            .append(String.format("%.3f", perfil.getClusterSilhouette())).append("\n");
-                }
-
-                // Mostrar el vector característic
-                if (perfil.getVectorCaracteristic() != null && perfil.getNomsPreguntes() != null) {
-                    sb.append("\nCaracterístiques representatives:\n");
-                    String[] vector = perfil.getVectorCaracteristic();
-                    java.util.List<String> preguntes = perfil.getNomsPreguntes();
-
-                    for (int i = 0; i < Math.min(vector.length, preguntes.size()); i++) {
-                        sb.append("  • ").append(preguntes.get(i))
-                                .append(": ").append(vector[i]).append("\n");
-                    }
-                }
-
-                sb.append("\n");
-            }
-
-            // Calcular i mostrar estadístiques generals
-            double silhouetteMitja = perfilsEnquesta.stream()
-                    .filter(p -> p.getClusterSilhouette() != null)
-                    .mapToDouble(edu.upc.prop.clusterxx.domini.classes.Perfil::getClusterSilhouette)
-                    .average()
-                    .orElse(0.0);
-
-            int totalMembres = perfilsEnquesta.stream()
-                    .filter(p -> p.getClusterMida() != null)
-                    .mapToInt(edu.upc.prop.clusterxx.domini.classes.Perfil::getClusterMida)
-                    .sum();
-
-            sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-            sb.append("ESTADÍSTIQUES GENERALS\n");
-            sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-            sb.append("Total de participants analitzats: ").append(totalMembres).append("\n");
-            sb.append("Qualitat mitjana dels clusters: ")
-                    .append(String.format("%.3f", silhouetteMitja)).append("\n");
-
-            return sb.toString();
-
+            return ctrlDomini.consultarAnalisiEnquesta(idEnquesta);
+        } catch (AnalisiNoRealitzatException e) {
+            return e.getMessage();
         } catch (Exception e) {
             return "Error consultant l'anàlisi: " + e.getMessage();
         }

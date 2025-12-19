@@ -22,6 +22,8 @@ import edu.upc.prop.clusterxx.domini.classes.Exceptions.RespostaInvalidaExceptio
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.RespostaNoExisteixException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariJaExisteixException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariNoAutenticatException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.PerfilNoTrobatException;
+import edu.upc.prop.clusterxx.domini.classes.Exceptions.AnalisiNoRealitzatException;
 import edu.upc.prop.clusterxx.domini.classes.Opcio;
 import edu.upc.prop.clusterxx.domini.classes.Perfil;
 import edu.upc.prop.clusterxx.domini.classes.Pregunta;
@@ -3094,6 +3096,253 @@ public class CtrlDomini {
      * Tots els camps són finals (immutables) per garantir la consistència de les
      * dades.
      */
+    /**
+     * Consulta els perfils de l'usuari actual.
+     * 
+     * @return Text amb la informació dels perfils de l'usuari.
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
+     * @throws PerfilNoTrobatException Si l'usuari no té cap perfil.
+     */
+    public String consultarPerfilsUsuari() throws UsuariNoAutenticatException, PerfilNoTrobatException {
+        Usuari usuari = ctrlUsuari.getUsuariActual();
+        if (usuari == null) {
+            throw new UsuariNoAutenticatException("No hi ha cap usuari autenticat.");
+        }
+        String username = usuari.getUsername();
+
+        // Obtenir tots els perfils de l'usuari
+        HashMap<String, Perfil> perfils = usuari.getPerfils();
+
+        if (perfils == null || perfils.isEmpty()) {
+            throw new PerfilNoTrobatException("No tens cap perfil generat encara.\n\nPer generar un perfil:\n1. Respon una enquesta\n2. Espera que el creador de l'enquesta faci l'anàlisi de clustering\n3. Se t'assignarà automàticament un perfil basat en les teves respostes");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== ELS MEUS PERFILS ===\n\n");
+        sb.append("Usuari: ").append(username).append("\n");
+        sb.append("Total de perfils: ").append(perfils.size()).append("\n\n");
+
+        int count = 1;
+        for (java.util.Map.Entry<String, Perfil> entry : perfils.entrySet()) {
+            Perfil perfil = entry.getValue();
+            if (perfil == null)
+                continue;
+
+            sb.append("--- PERFIL ").append(count++).append(" ---\n");
+            sb.append("Enquesta: ").append(perfil.getIdEnquesta()).append("\n");
+            sb.append("Cluster: ").append(perfil.getClusterNom()).append("\n");
+            sb.append("Descripció: ").append(perfil.getDescripcion()).append("\n");
+
+            if (perfil.getClusterMida() != null) {
+                sb.append("Membres del grup: ").append(perfil.getClusterMida()).append(" persones\n");
+            }
+
+            if (perfil.getAlgoritme() != null) {
+                sb.append("Algoritme utilitzat: ").append(perfil.getAlgoritme()).append("\n");
+            }
+
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Consulta el perfil de l'usuari actual per a una enquesta específica.
+     * 
+     * @param idEnquesta L'ID de l'enquesta
+     * @return Text amb la informació del perfil
+     * @throws UsuariNoAutenticatException Si no hi ha cap usuari autenticat.
+     * @throws PerfilNoTrobatException Si no es troba el perfil.
+     */
+    public String consultarPerfilUsuariEnquesta(String idEnquesta) throws UsuariNoAutenticatException, PerfilNoTrobatException {
+        Usuari usuari = ctrlUsuari.getUsuariActual();
+        if (usuari == null) {
+            throw new UsuariNoAutenticatException("No hi ha cap usuari autenticat.");
+        }
+        String username = usuari.getUsername();
+
+        // Obtenir el perfil específic de l'enquesta
+        HashMap<String, Perfil> perfils = usuari.getPerfils();
+
+        // Comprovar si existeix algun perfil per a aquesta enquesta en el sistema
+        boolean existeixAnalisi = false;
+        HashMap<String, Perfil> totsPerfils = ctrlPersistencia.getAllPerfils();
+        if (totsPerfils != null) {
+            for (Perfil p : totsPerfils.values()) {
+                if (p.teClustering() && idEnquesta.equals(p.getIdEnquesta())) {
+                    existeixAnalisi = true;
+                    break;
+                }
+            }
+        }
+
+        if (perfils == null || !perfils.containsKey(idEnquesta)) {
+            if (existeixAnalisi) {
+                // Hi ha anàlisi però l'usuari no té perfil = va contestar després
+                throw new PerfilNoTrobatException("⚠️ NO TENS PERFIL ASSIGNAT ⚠️\n\n" +
+                        "Has contestat aquesta enquesta DESPRÉS que el creador fes l'anàlisi de clustering.\n\n" +
+                        "Per obtenir el teu perfil:\n" +
+                        "• Espera que el creador torni a fer un nou anàlisi de clustering\n" +
+                        "• El nou anàlisi inclourà les teves respostes\n" +
+                        "• Aleshores se t'assignarà un perfil automàticament");
+            } else {
+                // No hi ha anàlisi encara
+                throw new PerfilNoTrobatException("No tens cap perfil per a l'enquesta: " + idEnquesta + "\n\n" +
+                        "Per generar un perfil:\n" +
+                        "1. Respon l'enquesta si encara no ho has fet\n" +
+                        "2. Espera que el creador de l'enquesta faci l'anàlisi de clustering\n" +
+                        "3. Se t'assignarà automàticament un perfil basat en les teves respostes");
+            }
+        }
+
+        Perfil perfil = perfils.get(idEnquesta);
+
+        if (perfil == null) {
+            if (existeixAnalisi) {
+                // Hi ha anàlisi però el perfil és null
+                throw new PerfilNoTrobatException("⚠️ NO TENS PERFIL ASSIGNAT ⚠️\n\n" +
+                        "Has contestat aquesta enquesta DESPRÉS que el creador fes l'anàlisi de clustering.\n\n" +
+                        "Per obtenir el teu perfil:\n" +
+                        "• Espera que el creador torni a fer un nou anàlisi de clustering\n" +
+                        "• El nou anàlisi inclourà les teves respostes\n" +
+                        "• Aleshores se t'assignarà un perfil automàticament");
+            } else {
+                throw new PerfilNoTrobatException("El perfil per a aquesta enquesta encara no s'ha generat.");
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== EL MEU PERFIL ===\n\n");
+        sb.append("Usuari: ").append(username).append("\n");
+        sb.append("Enquesta: ").append(perfil.getIdEnquesta()).append("\n\n");
+
+        sb.append("Cluster: ").append(perfil.getClusterNom()).append("\n");
+        sb.append("Descripció: ").append(perfil.getDescripcion()).append("\n");
+
+        if (perfil.getClusterMida() != null) {
+            sb.append("Membres del grup: ").append(perfil.getClusterMida()).append(" persones\n");
+        }
+
+        if (perfil.getAlgoritme() != null) {
+            sb.append("Algoritme utilitzat: ").append(perfil.getAlgoritme()).append("\n");
+        }
+
+        // Mostrar el vector característic si està disponible
+        if (perfil.getVectorCaracteristic() != null && perfil.getNomsPreguntes() != null) {
+            sb.append("\n--- Característiques del teu perfil ---\n");
+            String[] vector = perfil.getVectorCaracteristic();
+            java.util.List<String> preguntes = perfil.getNomsPreguntes();
+
+            for (int i = 0; i < Math.min(vector.length, preguntes.size()); i++) {
+                sb.append(preguntes.get(i)).append(": ").append(vector[i]).append("\n");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Consulta l'anàlisi de clustering d'una enquesta.
+     * Mostra tots els perfils/clusters generats per a aquesta enquesta.
+     * 
+     * @param idEnquesta L'ID de l'enquesta
+     * @return Text amb la informació de tots els clusters
+     * @throws AnalisiNoRealitzatException Si no s'ha realitzat l'anàlisi.
+     */
+    public String consultarAnalisiEnquesta(String idEnquesta) throws AnalisiNoRealitzatException {
+        // Obtenir tots els perfils del sistema
+        HashMap<String, Perfil> totsPerfils = ctrlPersistencia.getAllPerfils();
+
+        if (totsPerfils == null || totsPerfils.isEmpty()) {
+            throw new AnalisiNoRealitzatException(idEnquesta);
+        }
+
+        // Filtrar perfils per aquesta enquesta
+        List<Perfil> perfilsEnquesta = new ArrayList<>();
+        for (Perfil perfil : totsPerfils.values()) {
+            if (perfil.teClustering() && idEnquesta.equals(perfil.getIdEnquesta())) {
+                perfilsEnquesta.add(perfil);
+            }
+        }
+
+        if (perfilsEnquesta.isEmpty()) {
+            throw new AnalisiNoRealitzatException(idEnquesta);
+        }
+
+        // Ordenar per índex de cluster
+        perfilsEnquesta.sort((p1, p2) -> Integer.compare(p1.getClusterIndex(), p2.getClusterIndex()));
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== ANÀLISI DE CLUSTERING ===\n\n");
+        sb.append("Enquesta: ").append(idEnquesta).append("\n");
+        sb.append("Total de clusters: ").append(perfilsEnquesta.size()).append("\n");
+
+        if (!perfilsEnquesta.isEmpty()) {
+            Perfil primer = perfilsEnquesta.get(0);
+            if (primer.getAlgoritme() != null) {
+                sb.append("Algoritme utilitzat: ").append(primer.getAlgoritme()).append("\n");
+            }
+        }
+
+        sb.append("\n");
+
+        // Mostrar cada cluster
+        for (Perfil perfil : perfilsEnquesta) {
+            sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+            sb.append("CLUSTER ").append(perfil.getClusterIndex() + 1)
+                    .append(": ").append(perfil.getClusterNom()).append("\n");
+            sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
+
+            sb.append("Descripció: ").append(perfil.getDescripcion()).append("\n");
+
+            if (perfil.getClusterMida() != null) {
+                sb.append("Membres: ").append(perfil.getClusterMida()).append(" persones\n");
+            }
+
+            if (perfil.getClusterSilhouette() != null) {
+                sb.append("Qualitat: ").append(perfil.getQualitatText()).append("\n");
+                sb.append("Coeficient Silhouette: ")
+                        .append(String.format("%.3f", perfil.getClusterSilhouette())).append("\n");
+            }
+
+            // Mostrar el vector característic
+            if (perfil.getVectorCaracteristic() != null && perfil.getNomsPreguntes() != null) {
+                sb.append("\nCaracterístiques representatives:\n");
+                String[] vector = perfil.getVectorCaracteristic();
+                List<String> preguntes = perfil.getNomsPreguntes();
+
+                for (int i = 0; i < Math.min(vector.length, preguntes.size()); i++) {
+                    sb.append("  • ").append(preguntes.get(i))
+                            .append(": ").append(vector[i]).append("\n");
+                }
+            }
+
+            sb.append("\n");
+        }
+
+        // Calcular i mostrar estadístiques generals
+        double silhouetteMitja = perfilsEnquesta.stream()
+                .filter(p -> p.getClusterSilhouette() != null)
+                .mapToDouble(Perfil::getClusterSilhouette)
+                .average()
+                .orElse(0.0);
+
+        int totalMembres = perfilsEnquesta.stream()
+                .filter(p -> p.getClusterMida() != null)
+                .mapToInt(Perfil::getClusterMida)
+                .sum();
+
+        sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+        sb.append("ESTADÍSTIQUES GENERALS\n");
+        sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+        sb.append("Total de participants analitzats: ").append(totalMembres).append("\n");
+        sb.append("Qualitat mitjana dels clusters: ")
+                .append(String.format("%.3f", silhouetteMitja)).append("\n");
+
+        return sb.toString();
+    }
+
     public static class ResultatClustering {
         public final List<Kluster> clusters;
         public final double silhouetteGlobal;
