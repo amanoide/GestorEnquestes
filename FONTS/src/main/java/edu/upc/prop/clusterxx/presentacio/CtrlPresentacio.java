@@ -20,11 +20,18 @@ public class CtrlPresentacio {
 
     private String currentUsername;
 
+    /**
+     * Constructor del controlador de presentació.
+     * Inicialitza el controlador de domini i la vista principal.
+     */
     public CtrlPresentacio() {
         ctrlDomini = new CtrlDomini();
         vistaPrincipal = new VistaPrincipal(this);
     }
 
+    /**
+     * Inicialitza la presentació fent visible la finestra principal.
+     */
     public void inicializarPresentacio() {
         vistaPrincipal.hacerVisible();
     }
@@ -418,11 +425,6 @@ public class CtrlPresentacio {
         }
     }
 
-    /**
-     * Obté la llista d'enquestes que l'usuari actual ha contestat.
-     * 
-     * @return Llista d'enquestes contestades.
-     */
     /**
      * Obté la llista d'enquestes que l'usuari actual ha contestat.
      * 

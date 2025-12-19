@@ -52,6 +52,16 @@ public class DialogoResponderEnquesta extends JDialog {
 
     /**
      * Mètode principal de construcció de la interfície.
+     * 
+     * Crea el layout del diàleg amb tres seccions:
+     * 
+     * Adalt: Títol de l'enquesta.
+     * Mig: Panel amb scroll que conté els camps de formulari generats
+     * dinàmicament.
+     * Abaix: Botons d'acció (Enviar i Cancel·lar).
+     * 
+     * 
+     * Genera dinàmicament un component d'entrada per cada pregunta de l'enquesta.
      */
     private void inicializar() {
         setLayout(new BorderLayout(10, 10));
@@ -131,6 +141,12 @@ public class DialogoResponderEnquesta extends JDialog {
         add(panelBotons, BorderLayout.SOUTH);
     }
 
+    /**
+     * Obté l'emoji corresponent segons el tipus de pregunta.
+     * 
+     * @param tp Tipus de pregunta (NUMERICA, TEXT_LLIURE, QUALITATIVA_*).
+     * @return Emoji representatiu del tipus de pregunta.
+     */
     private String getEmojiTipus(String tp) {
         if ("NUMERICA".equals(tp))
             return "🔢";
@@ -143,6 +159,16 @@ public class DialogoResponderEnquesta extends JDialog {
         return "❓";
     }
 
+    /**
+     * Genera el text d'instruccions específic per a cada tipus de pregunta.
+     * 
+     * Mostra informació útil per a l'usuari com rangs numèrics, nombre màxim de
+     * seleccions, etc.
+     * 
+     * @param p ArrayList amb les dades de la pregunta ([0]=ID, [1]=Text,
+     *          [2]=Tipus, etc.).
+     * @return Text d'instruccions per a la pregunta.
+     */
     private String getInstruccions(ArrayList<Object> p) {
         String tipus = (String) p.get(2);
         if ("NUMERICA".equals(tipus)) {
@@ -157,6 +183,21 @@ public class DialogoResponderEnquesta extends JDialog {
         return "";
     }
 
+    /**
+     * Crea el component d'entrada adequat segons el tipus de pregunta.
+     * 
+     * Tipus de components generats:
+     * 
+     * NUMERICA: JSpinner amb rang mínim-màxim.
+     * TEXT_LLIURE: JTextField.
+     * QUALITATIVA_ORDENADA/SIMPLE: JComboBox amb opcions.
+     * QUALITATIVA_MULTIPLE: JPanel amb JCheckBox per cada opció.
+     * 
+     * 
+     * @param p ArrayList amb les dades de la pregunta ([0]=ID, [1]=Text,
+     *          [2]=Tipus, [3]=Min, [4]=Max, [5]=Opcions, [6]=MaxSel).
+     * @return Component d'entrada configurat per a la pregunta.
+     */
     private JComponent crearComponentInput(ArrayList<Object> p) {
         String tp = (String) p.get(2);
 

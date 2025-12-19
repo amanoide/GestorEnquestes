@@ -280,6 +280,8 @@ public class CtrlPersistencia {
 
     /**
      * Obté el nombre total d'enquestes.
+     * 
+     * @return El nombre d'enquestes al sistema
      */
     public int getNumEnquestes() {
         return enquestes.size();
@@ -405,6 +407,8 @@ public class CtrlPersistencia {
 
     /**
      * Obté totes les respostes.
+     * 
+     * @return HashMap amb totes les respostes indexades per ID
      */
     public HashMap<String, Resposta> getAllRespostes() {
         return new HashMap<>(respostes);
@@ -416,6 +420,8 @@ public class CtrlPersistencia {
 
     /**
      * Guarda un conjunt d'usuaris substituint els existents.
+     * 
+     * @param usuaris HashMap amb els usuaris a guardar
      */
     public void saveUsuaris(HashMap<String, Usuari> usuaris) {
         this.usuaris = new HashMap<>(usuaris);
@@ -438,6 +444,9 @@ public class CtrlPersistencia {
      * - Elimina totes les respostes de l'usuari en altres enquestes
      * - Elimina l'usuari de les participacions en enquestes
      * - Elimina el fitxer de l'usuari i l'actualitza de l'índex
+     * 
+     * @param username El nom d'usuari a eliminar
+     * @return L'usuari eliminat o null si no existia
      */
     public Usuari eliminarUsuari(String username) {
         Usuari u = usuaris.get(username);
@@ -495,6 +504,9 @@ public class CtrlPersistencia {
 
     /**
      * Obté un usuari pel seu username.
+     * 
+     * @param username El nom d'usuari a buscar
+     * @return L'usuari o null si no existeix
      */
     public Usuari getUsuari(String username) {
         return usuaris.get(username);
@@ -502,6 +514,9 @@ public class CtrlPersistencia {
 
     /**
      * Comprova si un usuari existeix.
+     * 
+     * @param username El nom d'usuari a comprovar
+     * @return true si l'usuari existeix, false altrament
      */
     public boolean existeixUsuari(String username) {
         return usuaris.containsKey(username);
@@ -509,6 +524,8 @@ public class CtrlPersistencia {
 
     /**
      * Obté tots els usuaris.
+     * 
+     * @return HashMap amb tots els usuaris indexats per username
      */
     public HashMap<String, Usuari> getAllUsuaris() {
         return new HashMap<>(usuaris);
@@ -516,6 +533,8 @@ public class CtrlPersistencia {
 
     /**
      * Obté el nombre total d'usuaris.
+     * 
+     * @return El nombre d'usuaris al sistema
      */
     public int getNumUsuaris() {
         return usuaris.size();
@@ -527,6 +546,8 @@ public class CtrlPersistencia {
 
     /**
      * Guarda un conjunt de perfils substituint els existents.
+     * 
+     * @param perfils HashMap amb els perfils a guardar
      */
     public void savePerfils(HashMap<String, Perfil> perfils) {
         this.perfils = new HashMap<>(perfils);
@@ -554,6 +575,9 @@ public class CtrlPersistencia {
 
     /**
      * Elimina un perfil.
+     * 
+     * @param id L'ID del perfil a eliminar
+     * @return El perfil eliminat o null si no existia
      */
     public Perfil eliminarPerfil(String id) {
         Perfil p = perfils.remove(id);
@@ -602,6 +626,9 @@ public class CtrlPersistencia {
 
     /**
      * Obté un perfil pel seu ID.
+     * 
+     * @param id L'ID del perfil a buscar
+     * @return El perfil o null si no existeix
      */
     public Perfil getPerfil(String id) {
         return perfils.get(id);
@@ -609,6 +636,8 @@ public class CtrlPersistencia {
 
     /**
      * Obté tots els perfils.
+     * 
+     * @return HashMap amb tots els perfils indexats per ID
      */
     public HashMap<String, Perfil> getAllPerfils() {
         return new HashMap<>(perfils);
@@ -621,6 +650,9 @@ public class CtrlPersistencia {
     /**
      * Afegeix una pregunta a la cache global.
      * Nota: La pregunta ha d'estar prèviament vinculada a una enquesta.
+     * 
+     * @param id L'ID de la pregunta
+     * @param pregunta La pregunta a afegir
      */
     public void afegirPregunta(String id, Pregunta pregunta) {
         preguntes.put(id, pregunta);
@@ -629,6 +661,10 @@ public class CtrlPersistencia {
 
     /**
      * Elimina una pregunta de la cache global.
+     * 
+     * @param idEnquesta L'ID de l'enquesta que conté la pregunta
+     * @param idPregunta L'ID de la pregunta a eliminar
+     * @return La pregunta eliminada o null si no existia
      */
     public Pregunta eliminarPregunta(String idEnquesta, String idPregunta) {
         Pregunta p = preguntes.remove(idPregunta);
@@ -644,6 +680,9 @@ public class CtrlPersistencia {
 
     /**
      * Obté una pregunta pel seu ID.
+     * 
+     * @param id L'ID de la pregunta a buscar
+     * @return La pregunta o null si no existeix
      */
     public Pregunta getPregunta(String id) {
         return preguntes.get(id);

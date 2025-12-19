@@ -81,7 +81,7 @@ public class GestorPerfils {
      * Guarda l'índex amb les dades bàsiques de tots els perfils.
      * Format: [{ id, descripcio, idEnquesta }]
      * 
-     * @param perfils Mapa de perfils
+     * @param perfils Mapa de perfils a incloure a l'índex
      * @throws IOException Si hi ha error d'escriptura
      */
     private void guardarIndex(HashMap<String, Perfil> perfils) throws IOException {

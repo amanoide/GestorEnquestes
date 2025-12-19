@@ -8,12 +8,35 @@ import edu.upc.prop.clusterxx.domini.classes.Resposta;
 
 /**
  * Diàleg que mostra totes les respostes d'una pregunta específica.
- * Mostra qui ha respost i quin text ha proporcionat.
+ * 
+ * Aquest diàleg permet visualitzar qui ha respost una pregunta concreta i quin
+ * text ha proporcionat cada usuari. És útil per analitzar les respostes
+ * individuals d'una pregunta dins d'una enquesta.
+ * 
+ * Funcionalitats:
+ * 
+ * Mostra el nombre total de respostes rebudes.
+ * Lista cada resposta amb l'usuari que l'ha donat.
+ * Indica quan no hi ha respostes disponibles.
+ * Interfície amb scroll per acomodar moltes respostes.
+ * 
  */
 public class DialogoRespostesPregunta extends JDialog {
+    /** Controlador de presentació per obtenir les dades de respostes. */
     private CtrlPresentacio ctrlPresentacio;
+    /** Identificador de la pregunta de la qual es mostren les respostes. */
     private String idPregunta;
 
+    /**
+     * Constructor del diàleg de visualització de respostes d'una pregunta.
+     * 
+     * Inicialitza el diàleg, carrega totes les respostes de la pregunta i
+     * construeix la interfície visual.
+     *
+     * @param parent     Diàleg propietari d'aquest diàleg.
+     * @param ctrl       Controlador de presentació per obtenir les respostes.
+     * @param idPregunta Identificador de la pregunta a consultar.
+     */
     public DialogoRespostesPregunta(Dialog parent, CtrlPresentacio ctrl, String idPregunta) {
         super(parent, "Respostes de la Pregunta: " + idPregunta, true);
         this.ctrlPresentacio = ctrl;
@@ -24,6 +47,20 @@ public class DialogoRespostesPregunta extends JDialog {
         setLocationRelativeTo(parent);
     }
 
+    /**
+     * Inicialitza i configura tots els components gràfics del diàleg.
+     * 
+     * Crea un panel amb scroll que conté:
+     * 
+     * Comptador del total de respostes rebudes.
+     * Llista de targetes amb cada resposta (usuari + text).
+     * Missatge informatiu si no hi ha respostes.
+     * Botó de tancament.
+     * 
+     * 
+     * Cada resposta es mostra en una targeta independent amb el nom de l'usuari
+     * en negreta i el text de la resposta.
+     */
     private void inicialitzarComponents() {
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(UIStyles.BACKGROUND_COLOR);

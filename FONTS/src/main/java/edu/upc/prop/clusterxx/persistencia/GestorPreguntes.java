@@ -150,6 +150,10 @@ public class GestorPreguntes {
      * Aquest mètode actua com a adaptador per a les crides que volen un mapa global de preguntes
      * a partir d'un mapa d'enquestes carregades.
      * </p>
+     * 
+     * @param enquestes Mapa d'enquestes de les quals carregar preguntes
+     * @return HashMap amb totes les preguntes indexades per ID
+     * @throws IOException Si hi ha error de lectura
      */
     public HashMap<String, Pregunta> carregarPreguntes(HashMap<String, Enquesta> enquestes) throws IOException {
         HashMap<String, Pregunta> all = new HashMap<>();
@@ -189,6 +193,10 @@ public class GestorPreguntes {
 
     /**
      * Carrega una pregunta des d'un fitxer específic.
+     * 
+     * @param fitxer El fitxer JSON del qual carregar la pregunta
+     * @return La pregunta carregada o null si el fitxer està buit
+     * @throws IOException Si hi ha error de lectura
      */
     private Pregunta carregarPregunta(File fitxer) throws IOException {
         StringBuilder content = new StringBuilder();
@@ -209,6 +217,9 @@ public class GestorPreguntes {
 
     /**
      * Converteix una pregunta a JSONObject.
+     * 
+     * @param pregunta La pregunta a convertir
+     * @return JSONObject amb les dades de la pregunta
      */
     private JSONObject preguntaAJson(Pregunta pregunta) {
         JSONObject jsonPregunta = new JSONObject();
@@ -246,6 +257,9 @@ public class GestorPreguntes {
 
     /**
      * Converteix un JSONObject a Pregunta.
+     * 
+     * @param jsonPregunta El JSONObject amb les dades de la pregunta
+     * @return La pregunta reconstruïda a partir del JSON
      */
     private Pregunta jsonAPregunta(JSONObject jsonPregunta) {
         String idPregunta = jsonPregunta.getString("id");
@@ -283,6 +297,9 @@ public class GestorPreguntes {
 
     /**
      * Obté el directori de preguntes per una enquesta.
+     * 
+     * @param idEnquesta L'ID de l'enquesta
+     * @return El File del directori de preguntes
      */
     private File getDirPreguntes(String idEnquesta) {
         return new File(DIRECTORI_BASE + File.separator + idEnquesta + File.separator + SUBDIR_PREGUNTES);

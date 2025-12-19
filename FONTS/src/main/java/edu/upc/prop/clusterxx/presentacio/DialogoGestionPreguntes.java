@@ -141,10 +141,23 @@ public class DialogoGestionPreguntes extends JDialog {
         }
     }
 
+    /**
+     * Obté l'identificador de l'enquesta que s'està gestionant.
+     * 
+     * @return Identificador de l'enquesta.
+     */
     public String getIdEnquesta() {
         return idEnquesta;
     }
 
+    /**
+     * Obté l'identificador de la pregunta seleccionada a la llista.
+     * 
+     * Extreu l'ID de la pregunta del text seleccionat (format: "ID: Text [Tipus]").
+     * 
+     * @return Identificador de la pregunta seleccionada, o null si no hi ha cap
+     *         pregunta seleccionada.
+     */
     public String getSelectedPreguntaId() {
         String selected = listPreguntes.getSelectedValue();
         if (selected == null)

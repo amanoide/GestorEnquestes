@@ -9,12 +9,34 @@ import edu.upc.prop.clusterxx.domini.classes.Resposta;
 
 /**
  * Diàleg que mostra totes les respostes d'una enquesta agrupades per pregunta.
- * Només accessible pel creador de l'enquesta.
+ * 
+ * Aquest diàleg és accessible només pel creador de l'enquesta i permet
+ * visualitzar totes les respostes rebudes organitzades per pregunta.
+ * 
+ * Funcionalitats:
+ * 
+ * Mostra cada pregunta amb totes les seves respostes.
+ * Indica el nombre de respostes per pregunta.
+ * Mostra l'usuari i el text de cada resposta.
+ * Indica quan no hi ha respostes disponibles.
+ * 
  */
 public class DialogoRespostesEnquesta extends JDialog {
+    /** Controlador de presentació per obtenir les dades de respostes. */
     private CtrlPresentacio ctrlPresentacio;
+    /** Identificador de l'enquesta de la qual es mostren les respostes. */
     private String idEnquesta;
 
+    /**
+     * Constructor del diàleg de visualització de respostes.
+     * 
+     * Inicialitza el diàleg, carrega totes les respostes de l'enquesta i
+     * construeix la interfície visual.
+     *
+     * @param parent          Finestra propietària del diàleg.
+     * @param ctrl            Controlador de presentació per obtenir les respostes.
+     * @param idEnquesta      Identificador de l'enquesta a consultar.
+     */
     public DialogoRespostesEnquesta(Frame parent, CtrlPresentacio ctrl, String idEnquesta) {
         super(parent, "Respostes de l'Enquesta: " + idEnquesta, true);
         this.ctrlPresentacio = ctrl;
@@ -25,6 +47,20 @@ public class DialogoRespostesEnquesta extends JDialog {
         setLocationRelativeTo(parent);
     }
 
+    /**
+     * Inicialitza i configura tots els components gràfics del diàleg.
+     * 
+     * Crea un panel amb scroll que conté:
+     * 
+     * Una targeta per cada pregunta de l'enquesta.
+     * Llista de respostes amb usuari i text dins de cada targeta.
+     * Indicador del nombre de respostes per pregunta.
+     * Missatge informatiu si no hi ha respostes.
+     * 
+     * 
+     * Les preguntes sense respostes també es mostren amb un missatge
+     * corresponent.
+     */
     private void inicialitzarComponents() {
         setLayout(new BorderLayout(10, 10));
         setBackground(UIStyles.BACKGROUND_COLOR);

@@ -269,6 +269,10 @@ public class GestorRespostes {
      * Aquest mètode actua com a adaptador per a crides que volen un mapa pla de respostes
      * a partir d'un mapa d'enquestes.
      * </p>
+     * 
+     * @param enquestes Mapa d'enquestes de les quals carregar respostes
+     * @return HashMap amb totes les respostes indexades per ID de resposta
+     * @throws IOException Si hi ha error de lectura
      */
     public HashMap<String, Resposta> carregarRespostes(HashMap<String, Enquesta> enquestes) throws IOException {
         HashMap<String, Resposta> all = new HashMap<>();

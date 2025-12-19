@@ -72,15 +72,34 @@ public class DialogoGestionarRespostes extends JDialog {
         this.respostesUsuari = iCtrlPresentacio.getRespostesUsuariEnquesta(idEnquesta);
     }
 
+    /**
+     * Obté l'identificador de l'enquesta que s'està gestionant.
+     * 
+     * @return Identificador de l'enquesta.
+     */
     public String getIdEnquesta() {
         return idEnquesta;
     }
 
+    /**
+     * Actualitza la vista recarregant les dades i refrescant el panel de
+     * contingut.
+     * 
+     * Aquest mètode s'ha d'invocar després de cada modificació o esborrat de
+     * respostes per reflectir els canvis visuals.
+     */
     public void actualizarVista() {
         cargarDatos();
         refrescarPanelContent();
     }
 
+    /**
+     * Obté la resposta actual de l'usuari per a una pregunta específica.
+     * 
+     * @param idPregunta Identificador de la pregunta.
+     * @return Text de la resposta, o null si no hi ha resposta per aquesta
+     *         pregunta.
+     */
     public String getResposta(String idPregunta) {
         return respostesUsuari.get(idPregunta);
     }
@@ -217,13 +236,8 @@ public class DialogoGestionarRespostes extends JDialog {
      * Botó "Modificar" (taronja) a la dreta.
      * 
      *
-     * @param p Pregunta de la qual es mostra la resposta.
-     * @return Panel JPanel amb la targeta completa.
-     */
-    /**
-     * Crea una targeta visual per a una resposta individual.
-     * 
-     * @param p Pregunta (ArrayList<Object>) de la qual es mostra la resposta.
+     * @param p Pregunta (ArrayList amb [0]=ID, [1]=Text, [2]=Tipus) de la qual
+     *          es mostra la resposta.
      * @return Panel JPanel amb la targeta completa.
      */
     private JPanel crearPanelResposta(ArrayList<Object> p) {

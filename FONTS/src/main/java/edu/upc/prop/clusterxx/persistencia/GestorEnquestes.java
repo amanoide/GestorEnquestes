@@ -210,6 +210,8 @@ public class GestorEnquestes {
     /**
      * Adaptador no-throw que elimina una enquesta completa. Alguns callers (p.ex. CtrlPersistencia)
      * esperen un mètode que no llenci excepcions; aquest envolta la versió que pot llençar IOException.
+     * 
+     * @param idEnquesta L'identificador únic de l'enquesta a eliminar
      */
     public void eliminarFitxerEnquesta(String idEnquesta) {
         try {
@@ -382,6 +384,8 @@ public class GestorEnquestes {
      * Guarda una única enquesta (adaptador). Els tests i altres callers poden cridar
      * aquest mètode senzill sense gestionar IOException.
      * També guarda les preguntes i respostes associades si existeixen.
+     * 
+     * @param enquesta L'enquesta a guardar
      */
     public void guardarEnquesta(Enquesta enquesta) {
         try {
