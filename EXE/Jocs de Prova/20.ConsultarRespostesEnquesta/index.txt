@@ -1,0 +1,50 @@
+# Joc de Prova - Cas d'ús #20 Consultar Respostes Enquesta
+
+Objecte de la prova:
+Cas d'ús: Consultar Respostes Enquesta.
+Es prova la funcionalitat de consultar les respostes a una enquesta al sistema a través de la interfície gràfica, verifiant tant l'èxit de l'operació com la gestió d'errors.
+
+Fitxers de dades necessaris:
+ES TROBEN A LA CARPETA: ENTREGA/EXE/Jocs De Prova/FitxersJocsDeProva
+- enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta.
+- resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
+
+El sistema utilitza internament per a la persistència:
+- respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
+
+Valors estudiats:
+- enquesta_completa.json: Es una enquesta completa amb tots els tipus de pregunta.
+Enquesta importada al joc de prova 16.
+Si no la tens, aquest fitxer es troba a aquesta carpeta, importa'l amb importar enquesta.
+
+- TestUser1.json: Es un usuari que durà a terme els tests. Password: password123
+Si no els tens ja, crea els usuari amb Contrasenya: password123.
+
+- resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
+Si tens ja la resposta pels jocs de prova, no cal importar-la.
+
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Consultar resposta a enquesta vàlida amb respostes(Cas d'èxit): 
+   - Precondicions: Existeix una resposta a una enquesta.
+   - Accions: 
+      1. Login amb TestUser1 i password123
+      2. Clic al botó "Gestionar les Meves Enquestes".
+      3. Selecciona la enquesta a consultar, en aquest cas 'enc_completa'.
+      4. Clic a "Veure Respostes.
+      5. Resultat esperat: Aparició de la finestra de respostes a la enquesta seleccionada per cada pregunta de l'enquesta.
+
+2. Consultar resposta a enquesta vàlida sense respostes(Cas d'error): 
+   - Accions: 
+      1. Login amb TestUser1 i password123
+      2. Clic al botó "Gestionar les Meves Enquestes".
+      3. Selecciona la enquesta a consultar, en aquest cas 'enc_completa'.
+      4. Cilc a "Veure Respostes".
+      5. Resultat esperat: Aparició de les preguntes amb un missatge indicant que no hi ha respostes per aquelles preguntes.
+
+
+Efectes estudiats:
+- Interacció amb la GUI: Clic a Gestionar les Meves Enquestes, clic a Veure Respostes.
+- Feedback visual: 
+    - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges indicant el resultat de la operació.

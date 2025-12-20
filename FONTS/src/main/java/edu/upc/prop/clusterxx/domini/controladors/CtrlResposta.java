@@ -23,16 +23,18 @@ public class CtrlResposta {
      * Registra una resposta individual.
      * Genera automàticament l'ID de la resposta com: idPregunta + "_" + username
      * 
+     * @param idEnquesta   ID de l'enquesta
      * @param idPregunta   ID de la pregunta
      * @param textResposta Text de la resposta
      * @param usuari       Usuari que respon
      */
-    public void registrarResposta(String idPregunta, String textResposta, Usuari usuari) {
+    public void registrarResposta(String idEnquesta, String idPregunta, String textResposta, Usuari usuari) {
         // Generar ID únic per la resposta
         String idResposta = idPregunta + "_" + usuari.getUsername();
 
         Resposta resposta = new Resposta(idResposta, idPregunta, textResposta, usuari);
-        persistencia.afegirResposta(resposta);
+        // Utilitzar el mètode que accepta l'enquesta explícita per evitar ambigüitats
+        persistencia.afegirResposta(resposta, idEnquesta);
     }
 
     /**

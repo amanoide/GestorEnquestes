@@ -1880,7 +1880,7 @@ public class CtrlDomini {
             String idPregunta = idsPreguntaPerResposta.get(idResposta);
 
             // Registrar la resposta (l'ID es genera automàticament dins)
-            ctrlResposta.registrarResposta(idPregunta, textResposta, usuari);
+            ctrlResposta.registrarResposta(idEnquesta, idPregunta, textResposta, usuari);
         }
 
         // PASO 3: Registrar participación
@@ -2378,7 +2378,7 @@ public class CtrlDomini {
         }
 
         // Registrar la resposta (l'ID es genera automàticament dins de CtrlResposta)
-        ctrlResposta.registrarResposta(idPregunta, textResposta, usuari);
+        ctrlResposta.registrarResposta(idEnquesta, idPregunta, textResposta, usuari);
     }
 
     // --- Anàlisi i Clustering ---
