@@ -25,11 +25,29 @@ Conjunts de dades de comportament homogeni:
    - ID enquesta: "enquesta_propia" (existent, creada per l'usuari actual)
    - Nou títol: "Nou títol de l'enquesta" (no buit)
    - Resultat esperat: Modificació del títol i missatge d'èxit.
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
+      2. Iniciar sessió amb testuser / test1234
+      3. Clic al botó "Gestionar les meves enquestes"
+      4. Seleccionar l'enquesta "enquesta_test"
+      5. Clic al botó "Modificar"
+      6. Canviar el títol a "Nou títol de l'enquesta"
+      7. Clic al botó "Guardar canvis"
+      8. Verificar missatge d'èxit
 
 2. Títol buit (Valors límit/invàlids):
    - ID enquesta: "enquesta_propia" (existent)
    - Nou títol: "" (buit)
    - Resultat esperat: Error indicant que el títol no pot estar buit.
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
+      2. Iniciar sessió amb testuser / test1234
+      3. Clic al botó "Gestionar les meves enquestes"
+      4. Seleccionar l'enquesta "enquesta_test"
+      5. Clic al botó "Modificar"
+      6. Esborrar el títol (deixar-lo buit)
+      7. Clic al botó "Guardar canvis"
+      8. Verificar missatge d'error
 
 Efectes estudiats:
 - Interacció amb la GUI: Creació, selecció de l'enquesta a modificar i introducció del nou títol.

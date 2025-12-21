@@ -25,11 +25,29 @@ Conjunts de dades de comportament homogeni:
    - ID enquesta: "enquesta_propia" (existent, creada per l'usuari actual)
    - Nova descripció: "Nova descripció de l'enquesta" (no buida)
    - Resultat esperat: Modificació de la descripció i missatge d'èxit.
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
+      2. Iniciar sessió amb testuser / test1234
+      3. Clic al botó "Gestionar les meves enquestes"
+      4. Seleccionar l'enquesta "enquesta_test"
+      5. Clic al botó "Modificar"
+      6. Canviar la descripció a "Nova descripció de l'enquesta"
+      7. Clic al botó "Guardar canvis"
+      8. Verificar missatge d'èxit
 
 2. Descripció buida (Cas vàlid):
    - ID enquesta: "enquesta_propia" (existent)
    - Nova descripció: "" (buida, permès)
    - Resultat esperat: Modificació de la descripció correctament (la descripció pot ser buida).
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
+      2. Iniciar sessió amb testuser / test1234
+      3. Clic al botó "Gestionar les meves enquestes"
+      4. Seleccionar l'enquesta "enquesta_test"
+      5. Clic al botó "Modificar"
+      6. Esborrar la descripció (deixar-la buida)
+      7. Clic al botó "Guardar canvis"
+      8. Verificar que es guarda correctament
 
 Efectes estudiats:
 - Interacció amb la GUI: Creació, selecció de l'enquesta a modificar i introducció de la nova descripció.
