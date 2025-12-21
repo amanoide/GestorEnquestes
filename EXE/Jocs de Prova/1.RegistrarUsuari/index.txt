@@ -1,50 +1,111 @@
-# Joc de Prova - Cas d'ús #1 Registrar Usuari
+# Joc de Prova - Cas d'us #1 Registrar Usuari
 
 Objecte de la prova:
-Cas d'ús: Registrar Usuari.
-Es prova la funcionalitat de crear un nou compte d'usuari al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+Cas d'us: Registrar Usuari.
+Es prova la funcionalitat de crear un nou compte d'usuari al sistema a traves de la interficie grafica, verificant tant l'exit de l'operacio com la gestio d'errors.
 
 Fitxers de dades necessaris:
-No es requereixen fitxers d'entrada específics per iniciar la prova, ja que les dades s'introdueixen manualment a través dels camps de text de la vista.
+No es requereixen fitxers d'entrada especifics per iniciar la prova, ja que les dades s'introdueixen manualment a traves dels camps de text de la vista.
 
-El sistema utilitza internament per a la persistència:
+El sistema utilitza internament per a la persistencia:
 - usuaris/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
 
 Valors estudiats:
-Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalencia i valors limit definits per les regles de negoci del domini.
 
 Conjunts de dades de comportament homogeni:
-1. Registre vàlid (Cas d'èxit):
-   - Usuari: "TestUser1" (Longitud >= 3, caràcters vàlids, no existent)
+1. Registre valid (Cas d'exit):
+   - Usuari: "TestUser1" (Longitud >= 3, caracters valids, no existent)
    - Contrasenya: "password123" (Longitud >= 4)
-   - Resultat esperat: Creació de l'usuari i missatge d'èxit.
+   - Resultat esperat: Creacio de l'usuari i missatge d'exit.
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: TestUser1.
+      4. Introduir contrasenya: password123.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'exit "Usuari registrat correctament!".
 
-2. Validació de longitud d'usuari (Valors límit/invàlids):
+2. Validacio de longitud d'usuari (Valors limit/invalids):
    - Usuari: "ab" (Longitud < 3)
    - Contrasenya: "validPass"
-   - Resultat esperat: Error indicant que l'usuari ha de tenir almenys 3 caràcters.
+   - Resultat esperat: Error indicant que l'usuari ha de tenir almenys 3 caracters.
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: ab.
+      4. Introduir contrasenya: validPass.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'error.
 
-3. Validació de longitud de contrasenya (Valors límit/invàlids):
+3. Validacio de longitud de contrasenya (Valors limit/invalids):
    - Usuari: "TestUser2"
    - Contrasenya: "123" (Longitud < 4)
-   - Resultat esperat: Error indicant que la contrasenya ha de tenir almenys 4 caràcters.
+   - Resultat esperat: Error indicant que la contrasenya ha de tenir almenys 4 caracters.
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: TestUser2.
+      4. Introduir contrasenya: 123.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'error.
 
-4. Usuari ja existent (Validació de duplicats):
-   - Usuari: "jairo" (Suposant que ja existeix al sistema, veure usuaris/index.json)
+4. Usuari ja existent (Validacio de duplicats):
+   - Usuari: "testuser" (ja existent al sistema)
    - Contrasenya: "qualsevol"
-   - Resultat esperat: Error indicant que l'usuari ja existeix (UsuariJaExisteixException).
+   - Resultat esperat: Error indicant que l'usuari ja existeix.
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: testuser.
+      4. Introduir contrasenya: qualsevol.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'error "L'usuari ja existeix".
 
-5. Camps buits o nuls:
-   - Usuari: "" o Contrasenya: ""
-   - Resultat esperat: Error de paràmetre invàlid.
+5. Camps buits (Valors limit/invalids):
+   - Usuari: "" (buit)
+   - Contrasenya: "" (buit)
+   - Resultat esperat: Error de parametre invalid.
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Deixar el camp usuari buit.
+      4. Deixar el camp contrasenya buit.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'error.
+
+6. Validacio de longitud minima d'usuari (Valor limit):
+   - Usuari: "abc" (Longitud = 3, valor minim valid)
+   - Contrasenya: "pass1234"
+   - Resultat esperat: Creacio de l'usuari i missatge d'exit.
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: abc.
+      4. Introduir contrasenya: pass1234.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'exit.
+
+7. Validacio de longitud minima de contrasenya (Valor limit):
+   - Usuari: "TestUser3"
+   - Contrasenya: "1234" (Longitud = 4, valor minim valid)
+   - Resultat esperat: Creacio de l'usuari i missatge d'exit.
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: TestUser3.
+      4. Introduir contrasenya: 1234.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'exit.
 
 Efectes estudiats:
-- Interacció amb la GUI: Introducció de text als camps "Usuari" i "Contrasenya".
+- Interaccio amb la GUI: Introduccio de text als camps "Usuari" i "Contrasenya".
 - Accions: 
-   - Clic al botó "Crear compte nou".
-   - Clic al botó "Crear compte".
-   - Clic al botó "Iniciar sessió".
+   - Clic al boto "Crear compte nou".
+   - Clic al boto "Crear compte".
+   - Clic al boto "Iniciar sessio" (per tornar a la pantalla d'inici).
 - Feedback visual: 
-    - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Usuari registrat correctament!").
-    - Aparició de missatges d'error descriptius quan fallen les validacions.
-- Persistència: Verificació que el nou usuari s'ha afegit correctament al fitxer de persistència després de l'operació exitosa.
+    - Aparicio de finestres emergents (pop-ups) amb missatges d'exit ("Usuari registrat correctament!").
+    - Aparicio de missatges d'error descriptius quan fallen les validacions (usuari massa curt, contrasenya massa curta, usuari ja existent, camps buits).
+- Persistencia: Verificacio que el nou usuari s'ha afegit correctament al fitxer usuaris/index.json despres de l'operacio exitosa.
+- Validacions: El sistema valida correctament les regles de negoci (longitud minima, duplicats, camps obligatoris).
