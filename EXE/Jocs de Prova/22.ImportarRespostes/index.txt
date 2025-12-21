@@ -5,7 +5,7 @@ Cas d'ús: Importar Respostes.
 Es prova la funcionalitat de importar les respostes a una enquesta al sistema a través de la interfície gràfica, verifiant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades/ a ../../../dades/.
+Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades/ a ../../../../dades/.
 - fitxers_dades/enquestes/enc_completa/enquesta.json: Es una enquesta amb tots els tipus de pregunta. El fitxer es troba a aquesta carpeta, si no el tens ja importa'l amb importar enquesta.
 - fitxers_dades/usuaris/TestUser2.json: Usuari "TestUser2", amb contrasenya: "password123". 
 
