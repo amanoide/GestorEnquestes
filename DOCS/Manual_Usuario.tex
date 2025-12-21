@@ -1,0 +1,217 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{longtable}
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+\title{\textbf{Manual de Usuario} \\ \large Aplicación de Gestión y Análisis de Encuestas (ClusterXX)}
+\author{Equipo de Desarrollo}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introducción}
+Este documento constituye el manual de usuario completo para la aplicación de escritorio \textbf{ClusterXX}. Esta herramienta permite la gestión integral de encuestas, desde su creación y publicación hasta la recopilación de respuestas y el análisis avanzado de datos mediante algoritmos de clustering.
+
+El manual está estructurado siguiendo el flujo natural de uso de la aplicación, detallando cada pantalla, diálogo y funcionalidad disponible.
+
+\section{Acceso y Registro}
+
+\subsection{Pantalla de Inicio de Sesión (VistaLogin)}
+Al abrir la aplicación, el usuario se encuentra con la pantalla de autenticación. Esta vista actúa como barrera de seguridad para proteger los datos de usuario.
+
+\textbf{Elementos de la interfaz:}
+\begin{itemize}
+    \item \textbf{Icono de seguridad (🔐)}: Indicador visual de la pantalla de login.
+    \item \textbf{Campo "Usuari"}: Cuadro de texto donde debe introducir su nombre de usuario existente.
+    \item \textbf{Campo "Contrasenya"}: Cuadro de texto oculto para su clave de acceso.
+    \item \textbf{Botón "Iniciar sessió"}: Valida las credenciales introducidas. Si son correctas, redirige al Menú Principal. Si son incorrectas, muestra un mensaje de error en rojo.
+    \item \textbf{Botón "Crear compte nou"}: Redirige a la pantalla de registro si aún no dispone de credenciales.
+\end{itemize}
+
+[Figura 1: Pantalla de Login]
+
+\subsection{Pantalla de Registro (VistaRegistro)}
+Accesible desde el login, permite dar de alta nuevos usuarios en el sistema.
+
+\textbf{Elementos de la interfaz:}
+\begin{itemize}
+    \item \textbf{Campo "Nom d'usuari"}: Debe tener un mínimo de 3 caracteres.
+    \item \textbf{Campo "Contrasenya"}: Debe tener un mínimo de 4 caracteres.
+    \item \textbf{Campo "Confirmar Contrasenya"}: Debe coincidir exactamente con la contraseña anterior.
+    \item \textbf{Botón "Crear Compte"}: Intenta registrar al usuario.
+        \begin{itemize}
+            \item \textit{Éxito}: El usuario se crea y la sesión se inicia automáticamente.
+            \item \textit{Error}: Si el usuario ya existe o las contraseñas no coinciden, se muestra un mensaje de error.
+        \end{itemize}
+    \item \textbf{Botón "Ja tinc un compte"}: Vuelve a la pantalla de login sin realizar cambios.
+\end{itemize}
+
+[Figura 2: Pantalla de Registro]
+
+\section{Menú Principal (VistaMenuPrincipal)}
+El "Hub" central de la aplicación. Desde aquí se bifurcan todas las funcionalidades. La interfaz utiliza un diseño de tarjetas con botones grandes clasificados por colores según su función.
+
+[Figura 3: Menú Principal]
+
+\textbf{Secciones y Botones:}
+\begin{enumerate}
+    \item \textbf{Sección "Crear" (Azul)}:
+        \begin{itemize}
+            \item \textbf{Nova enquesta}: Abre el diálogo para crear una encuesta desde cero.
+            \item \textbf{Importar enquesta}: Permite cargar una encuesta desde un archivo JSON externo.
+        \end{itemize}
+    \item \textbf{Sección "Gestionar" (Verde)}:
+        \begin{itemize}
+            \item \textbf{Gestionar les meves enquestes}: Accede al listado de encuestas creadas por el usuario para su edición o eliminación.
+            \item \textbf{Anàlisi de Clustering}: Accede al módulo de análisis estadístico.
+        \end{itemize}
+    \item \textbf{Sección "Respondre" (Naranja)}:
+        \begin{itemize}
+            \item \textbf{Respondre Enquesta}: Permite buscar y contestar encuestas disponibles.
+            \item \textbf{Gestionar Les Meves Respostes}: Permite ver y modificar las respuestas que ha enviado anteriormente.
+        \end{itemize}
+    \item \textbf{Zona Inferior (Rojo/Gris)}:
+        \begin{itemize}
+            \item \textbf{Tancar sessió}: Cierra la sesión y vuelve al Login.
+            \item \textbf{Eliminar el meu compte}: Borra permanentemente el usuario y todos sus datos (encuestas y respuestas). Requiere confirmación.
+        \end{itemize}
+\end{enumerate}
+
+\section{Creación y Gestión de Encuestas}
+
+\subsection{Crear/Editar Encuesta (DialogoEnquesta)}
+Este diálogo modal se utiliza tanto para crear una nueva encuesta como para editar los metadatos de una existente.
+
+\textbf{Campos:}
+\begin{itemize}
+    \item \textbf{Identificador}: Código único para la encuesta. Editable solo al crear. En modo edición aparece con fondo gris (no editable).
+    \item \textbf{Títol}: Nombre descriptivo de la encuesta.
+    \item \textbf{Descripció}: Texto explicativo detallado sobre el propósito de la encuesta.
+\end{itemize}
+
+\textbf{Acciones:}
+\begin{itemize}
+    \item \textbf{Crear Enquesta / Guardar Canvis}: Valida que ID y Título no estén vacíos y guarda los datos.
+    \item \textbf{Cancel·lar}: Cierra la ventana sin guardar.
+\end{itemize}
+[Figura 4: Diálogo de Encuesta]
+
+\subsection{Lista de Mis Encuestas (VistaGestionEnquestes)}
+Muestra todas las encuestas creadas por el usuario.
+
+\textbf{Funcionalidad:}
+\begin{itemize}
+    \item \textbf{Bofón "✏️ Modificar"}: Abre \textit{DialogoEnquesta} en modo edición.
+    \item \textbf{Botón "📝 Gestionar Preguntes"}: Abre \textit{DialogoGestionPreguntes} para añadir/quitar preguntas.
+    \item \textbf{Botón "👥 Veure Participants"}: Abre \textit{DialogoParticipants}, mostrando una lista de usuarios que han respondido.
+    \item \textbf{Botón "📊 Veure Respostes"}: Abre \textit{DialogoRespostesEnquesta} con todas las respuestas recopiladas.
+    \item \textbf{Botón "🗑️ Eliminar"}: Borra la encuesta permanentemente.
+\end{itemize}
+[Figura 5: Vista Gestión de Encuestas]
+
+\subsection{Gestión de Preguntas (DialogoGestionPreguntes)}
+Permite construir el contenido de la encuesta. Muestra una lista de las preguntas actuales.
+
+\textbf{Acciones:}
+\begin{itemize}
+    \item \textbf{➕ Afegir}: Abre \textit{DialogoCrearPregunta} para una nueva pregunta.
+    \item \textbf{✏️ Modificar}: Edita la pregunta seleccionada.
+    \item \textbf{🗑️ Eliminar}: Borra la pregunta seleccionada.
+    \item \textbf{📊 Veure Respostes}: Abre \textit{DialogoRespostesPregunta} para ver respuestas específicas a esa pregunta.
+\end{itemize}
+
+\subsection{Editor de Preguntas (DialogoCrearPregunta)}
+Formulario dinámico que cambia según el tipo de pregunta seleccionado.
+
+\textbf{Campos Comunes:}
+\begin{itemize}
+    \item \textbf{Identificador}: ID único de la pregunta.
+    \item \textbf{Text de la pregunta}: El enunciado.
+    \item \textbf{Tipus}: Selector desplegable (ComboBox) con los tipos disponibles.
+\end{itemize}
+
+\textbf{Tipos y Campos Específicos:}
+\begin{itemize}
+    \item \textbf{TEXT\_LLIURE}: Solo requiere el enunciado.
+    \item \textbf{NUMERICA}: Muestra campos "Mínim" y "Màxim" para definir el rango válido.
+    \item \textbf{QUALITATIVA\_ORDENADA / SIMPLE}: Muestra un área de texto para introducir las opciones (una por línea).
+    \item \textbf{QUALITATIVA\_MULTIPLE}: Muestra el área de opciones y un "Spinner" para definir el máximo de selecciones permitidas.
+\end{itemize}
+\textbf{Nota}: Las preguntas cualitativas deben tener obligatoriamente al menos 2 opciones para ser válidas.
+[Figura 6: Editor de Preguntas Dinámico]
+
+\section{Participación y Respuestas}
+
+\subsection{Selección de Encuesta (DialogoSeleccionarEnquesta)}
+Muestra una lista simple de todas las encuestas del sistema. El usuario debe seleccionar una y pulsar "Seleccionar" (o doble clic).
+
+\subsection{Responder Encuesta (DialogoResponderEnquesta)}
+Un formulario generado dinámicamente basado en las preguntas de la encuesta seleccionada.
+\begin{itemize}
+    \item \textbf{Preguntas Numéricas}: Se muestran como selectores numéricos (Spinners) restringidos al rango definido.
+    \item \textbf{Preguntas de Texto}: Se muestran como campos de texto.
+    \item \textbf{Preguntas de Opción Única}: Se muestran como listas desplegables (ComboBox).
+    \item \textbf{Preguntas Múltiples}: Se muestran como grupos de casillas de verificación (CheckBoxes).
+\end{itemize}
+El botón \textbf{✅ Enviar Respostes} guarda las respuestas en el sistema. Es obligatorio responder a todas las preguntas.
+[Figura 7: Respondiendo una Encuesta]
+
+\subsection{Mis Respuestas (VistaGestionarRespostes)}
+Permite al usuario gestionar sus interacciones pasadas.
+\begin{itemize}
+    \item \textbf{Botón "👁️ Veure/Modificar"}: Abre \textit{DialogoGestionarRespostes}, donde se pueden cambiar respuestas individuales.
+    \item \textbf{Botón "🗑️ Esborrar Totes"}: Elimina todas las respuestas del usuario a la encuesta seleccionada.
+    \item \textbf{Botón "👤 Veure el Meu Perfil"}: Muestra el perfil asignado al usuario en esa encuesta (si se ha realizado un análisis).
+\end{itemize}
+
+\section{Análisis y Clustering}
+
+\subsection{Panel de Análisis (VistaAnalisi)}
+Permite ejecutar algoritmos de clustering sobre las encuestas propias.
+
+\textbf{Flujo de uso:}
+1. Seleccionar una encuesta de la lista.
+2. Pulsar \textbf{📈 Analitzar Enquesta}.
+3. Configurar el análisis en \textbf{DialogoAnalisi}.
+4. Pulsar \textbf{📁 Veure Anàlisi} para ver el informe textual detallado.
+
+\subsection{Configuración del Análisis (DialogoAnalisi)}
+Permite personalizar parámetros técnicos del algoritmo:
+\begin{itemize}
+    \item \textbf{Selección de K (Clusters)}:
+        \begin{itemize}
+            \item \textit{Manual}: El usuario define el número de grupos.
+            \item \textit{Aleatori}: El sistema elige un K al azar.
+            \item \textit{Automàtic}: El sistema calcula el K óptimo usando el coeficiente de Silhouette.
+        \end{itemize}
+    \item \textbf{Algoritmo}:
+        \begin{itemize}
+            \item \textit{KMeans}: Estándar.
+            \item \textit{KMeans++}: Inicialización optimizada (Recomendado).
+            \item \textit{KMedoids}: Más robusto frente a ruido.
+        \end{itemize}
+\end{itemize}
+[Figura 8: Configuración de Análisis]
+
+\subsection{Resultados y Perfiles (DialogoPerfil)}
+Muestra una ventana con el texto completo del perfil generado o del análisis, explicando las características de cada cluster identificado.
+
+\section{Solución de Problemas}
+\begin{itemize}
+    \item \textbf{No puedo modificar el ID de una encuesta}: Es un comportamiento esperado. Los identificadores son inmutables una vez creados para mantener la integridad de las referencias.
+    \item \textbf{Error al crear pregunta numérica}: Asegúrese de que el valor "Mínim" sea estrictamente menor que el valor "Màxim".
+    \item \textbf{No aparecen gráficos}: Esta versión de la aplicación genera informes textuales detallados, no gráficos visuales.
+    \item \textbf{El análisis tarda mucho}: Con un gran volumen de datos, la opción "Automàtic" puede requerir tiempo de cálculo intensivo para evaluar múltiples valores de K.
+\end{itemize}
+
+\end{document}

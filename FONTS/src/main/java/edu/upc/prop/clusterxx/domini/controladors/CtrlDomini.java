@@ -979,6 +979,19 @@ public class CtrlDomini {
                             + "') ha de coincidir amb l'ID de la pregunta a modificar ('" + idPregunta + "').");
         }
 
+        // Validar que si és qualitativa tingui almenys 2 opcions
+        if (nova.tipusAdmetOpcions() && nova.getOpcions().size() < 2) {
+            throw new ParametreInvalidException("Les preguntes qualitatives han de tenir almenys 2 opcions.");
+        }
+
+        // Validar que maxSeleccions no superi el nombre d'opcions per a preguntes
+        // múltiples
+        if (nova.getTipus() == TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE
+                && nova.getMaxSeleccions() > nova.getOpcions().size()) {
+            throw new ParametreInvalidException(
+                    "El nombre màxim de seleccions no pot ser superior al nombre d'opcions.");
+        }
+
         // CRÍTICO: Si hi ha respostes, NO es pot modificar RES
         HashMap<String, Resposta> respostesExistents = preguntaActual.getRespostes();
         if (!respostesExistents.isEmpty()) {
