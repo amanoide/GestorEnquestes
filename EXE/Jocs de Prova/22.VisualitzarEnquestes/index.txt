@@ -1,0 +1,49 @@
+# Joc de Prova - Cas d'ús #22 Visualitzar Enquestes
+
+Objecte de la prova:
+Cas d'ús: Visualitzar Enquestes.
+Es prova la funcionalitat de visualitzar el conjunt d'enquestes del sistema a través de la interfície gràfica.
+
+Fitxers de dades necessaris:
+Per executar les proves, cal copiar manualment el contingut de fitxers_dades/ a FONTS/dades/.
+- fitxers_dades/usuaris/: Conté l'usuari "testuser" amb contrasenya "test1234"
+- fitxers_dades/enquestes/: Conté l'enquesta "enquesta_test" creada per "testuser"
+
+Credencials d'accés:
+- Usuari: testuser
+- Contrasenya: test1234
+
+El sistema utilitza internament per a la persistència:
+- enquestes/index.json: Per emmagatzemar la llista d'enquestes. Emmagatzema objectes de la classe Enquesta.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència definides per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Visualització amb enquestes existents (Cas d'èxit):
+   - Pre-condició: Existeixen enquestes al sistema
+   - Resultat esperat: Es mostra la llista d'enquestes disponibles.
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
+      2. Iniciar sessió amb testuser / test1234
+      3. Clic al botó "Veure enquestes" o equivalent
+      4. Verificar que apareix la llista d'enquestes
+      5. Verificar que es mostra "enquesta_test" a la llista
+
+2. Visualització sense enquestes:
+   - Pre-condició: No existeix cap enquesta al sistema
+   - Resultat esperat: Es mostra un missatge informant que no existeixen enquestes per visualitzar.
+   - Accions:
+      1. Assegurar que FONTS/dades/enquestes/ està buit (sense enquestes)
+      2. Iniciar sessió amb un usuari registrat
+      3. Clic al botó "Veure enquestes" o equivalent
+      4. Verificar que es mostra missatge informatiu "No hi ha enquestes"
+
+Efectes estudiats:
+- Interacció amb la GUI: Navegació a la vista de llista d'enquestes.
+- Accions: 
+   - Clic al botó "Veure enquestes" o equivalent.
+- Feedback visual: 
+    - Llista d'enquestes amb els seus títols i identificadors.
+    - Missatge informatiu quan no hi ha enquestes disponibles.
+- Navegació: Possibilitat de seleccionar una enquesta per veure'n els detalls.

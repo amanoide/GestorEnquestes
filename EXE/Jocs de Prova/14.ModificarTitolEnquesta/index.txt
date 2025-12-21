@@ -1,0 +1,64 @@
+# Joc de Prova - Cas d'ús #14 Modificar Títol Enquesta
+
+Objecte de la prova:
+Cas d'ús: Modificar Títol Enquesta.
+Es prova la funcionalitat de modificar el títol d'una enquesta existent a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+
+Fitxers de dades necessaris:
+Per executar les proves, cal copiar manualment el contingut de fitxers_dades/ a FONTS/dades/.
+- fitxers_dades/usuaris/: Conté l'usuari "testuser" amb contrasenya "test1234"
+- fitxers_dades/enquestes/: Conté l'enquesta "enquesta_test" creada per "testuser"
+
+Credencials d'accés:
+- Usuari: testuser
+- Contrasenya: test1234
+
+El sistema utilitza internament per a la persistència:
+- enquestes/index.json: Per emmagatzemar la llista d'enquestes. Emmagatzema objectes de la classe Enquesta.
+- usuaris/{username}/usuari.json: Per emmagatzemar la llista d'enquestes creades per l'usuari. Emmagatzema objectes de la classe Usuari.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Modificació vàlida (Cas d'èxit):
+   - ID enquesta: "enquesta_propia" (existent, creada per l'usuari actual)
+   - Nou títol: "Nou títol de l'enquesta" (no buit)
+   - Resultat esperat: Modificació del títol i missatge d'èxit.
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
+      2. Iniciar sessió amb testuser / test1234
+      3. Clic al botó "Gestionar les meves enquestes"
+      4. Seleccionar l'enquesta "enquesta_test"
+      5. Clic al botó "Modificar"
+      6. Canviar el títol a "Nou títol de l'enquesta"
+      7. Clic al botó "Guardar canvis"
+      8. Verificar missatge d'èxit
+
+2. Títol buit (Valors límit/invàlids):
+   - ID enquesta: "enquesta_propia" (existent)
+   - Nou títol: "" (buit)
+   - Resultat esperat: Error indicant que el títol no pot estar buit.
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
+      2. Iniciar sessió amb testuser / test1234
+      3. Clic al botó "Gestionar les meves enquestes"
+      4. Seleccionar l'enquesta "enquesta_test"
+      5. Clic al botó "Modificar"
+      6. Esborrar el títol (deixar-lo buit)
+      7. Clic al botó "Guardar canvis"
+      8. Verificar missatge d'error
+
+Efectes estudiats:
+- Interacció amb la GUI: Creació, selecció de l'enquesta a modificar i introducció del nou títol.
+- Accions: 
+   - Clic al botó "Nova Enquesta".
+   - Clic al botó "Crear Enquesta".
+   - Clic al botó "Gestionar les meves enquestes".
+   - Clic al botó "Modificar".
+   - Clic al botó "Guardar canvis".
+- Feedback visual: 
+    - Aparició de finestres emergents (pop-ups) amb missatges d'èxit ("Enquesta modificada correctament!").
+    - Aparició de missatges d'error descriptius quan fallen les validacions.
+- Persistència: Verificació que el nou títol s'ha guardat correctament al fitxer de persistència.
+- Actualització visual: El nou títol es mostra correctament a la llista d'enquestes.

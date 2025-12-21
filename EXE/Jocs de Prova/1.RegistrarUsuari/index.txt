@@ -6,6 +6,7 @@ Es prova la funcionalitat de crear un nou compte d'usuari al sistema a través d
 
 Fitxers de dades necessaris:
 No es requereixen fitxers d'entrada específics per iniciar la prova, ja que les dades s'introdueixen manualment a través dels camps de text de la vista.
+
 El sistema utilitza internament per a la persistència:
 - usuaris/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
 
@@ -39,7 +40,10 @@ Conjunts de dades de comportament homogeni:
 
 Efectes estudiats:
 - Interacció amb la GUI: Introducció de text als camps "Usuari" i "Contrasenya".
-- Accions: Clic al botó "Registrar".
+- Accions: 
+   - Clic al botó "Crear compte nou".
+   - Clic al botó "Crear compte".
+   - Clic al botó "Iniciar sessió".
 - Feedback visual: 
     - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Usuari registrat correctament!").
     - Aparició de missatges d'error descriptius quan fallen les validacions.
