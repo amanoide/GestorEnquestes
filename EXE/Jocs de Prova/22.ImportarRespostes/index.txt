@@ -5,16 +5,16 @@ Cas d'ús: Importar Respostes.
 Es prova la funcionalitat de importar les respostes a una enquesta al sistema a través de la interfície gràfica, verifiant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-Per executar les proves, cal copiar manualment el contingut de fitxers_dades/ a FONTS/dades/.
-- fitxers_dades/enquestes/enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta. El fitxer es troba a aquesta carpeta, si no el tens ja importa'l amb importar enquesta.
+Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades/ a ../../../dades/.
+- fitxers_dades/enquestes/enc_completa/enquesta.json: Es una enquesta amb tots els tipus de pregunta. El fitxer es troba a aquesta carpeta, si no el tens ja importa'l amb importar enquesta.
 - fitxers_dades/usuaris/TestUser2.json: Usuari "TestUser2", amb contrasenya: "password123". 
 
 AQUESTS S'HAN D'IMPORTAR MANUALMENT, NO ELS COPIES A FONTS/DADES:
-- fitxers_dades/respostes/resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
-- fitxers_dades/respostes/T2_resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser2' al joc de prova 22.
-- fitxers_dades/respostes/T3_resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser2' al joc de prova 22.
-- fitxers_dades/respostes/T4_resposta_enquesta_completa_format_errorni.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser2' al joc de prova 22.
-- fitxers_dades/respostes/T5_resposta_enquesta_completa_preguntes_extra.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser2' al joc de prova 22.
+- fitxers_dades/importacions/T2_resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser2' al joc de prova 22.
+- fitxers_dades/importacions/T3_resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser2' al joc de prova 22.
+- fitxers_dades/importacions/T4_resposta_enquesta_completa_format_errorni.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser2' al joc de prova 22.
+- fitxers_dades/importacions/T5_resposta_enquesta_completa_preguntes_extra.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser2' al joc de prova 22.
+- fitxers_dades/importacions/exemple_resposta_clustering.json: Exemple de resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser2' al joc de prova 22.
 
 Credencials de login:
 - Usuari: TestUser2

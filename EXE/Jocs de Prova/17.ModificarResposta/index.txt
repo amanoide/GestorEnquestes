@@ -5,10 +5,10 @@ Cas d'ús: Modificar Resposta.
 Es prova la funcionalitat de modificar una resposta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-Per executar les proves, cal copiar manualment el contingut de fitxers_dades/ a FONTS/dades/.
-- fitxers_dades/enquestes/enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta. El fitxer es troba a aquesta carpeta, si no el tens ja importa'l amb importar enquesta.
+Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades/ a ../../../dades/.
+- fitxers_dades/enquestes/enc_completa/enquesta.json: Es una enquesta amb tots els tipus de pregunta. El fitxer es troba a aquesta carpeta, si no el tens ja importa'l amb importar enquesta.
 - fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1", amb contrasenya: "password123". 
-- fitxers_dades/respostes/resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
+- fitxers_dades/enquestes/enc_completa/respostes/TestUser1.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
 
 Credencials de login:
 - Usuari: TestUser1

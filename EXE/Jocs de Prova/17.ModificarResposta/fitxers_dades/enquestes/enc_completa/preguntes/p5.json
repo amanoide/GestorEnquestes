@@ -1,0 +1,28 @@
+{
+    "id": "p5",
+    "text": "Quins esports practiques?",
+    "opcions": [
+        {
+            "id": 1,
+            "text": "Futbol"
+        },
+        {
+            "id": 2,
+            "text": "Baloncesto"
+        },
+        {
+            "id": 3,
+            "text": "Tenis"
+        },
+        {
+            "id": 4,
+            "text": "Voleibol"
+        },
+        {
+            "id": 5,
+            "text": "Quidditch"
+        }
+    ],
+    "tipus": "QUALITATIVA_NO_ORDENADA_MULTIPLE",
+    "maxSeleccions": 2
+}

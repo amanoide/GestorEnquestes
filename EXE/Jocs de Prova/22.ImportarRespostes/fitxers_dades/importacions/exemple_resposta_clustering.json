@@ -1,0 +1,69 @@
+{
+  "enquesta_id": "enc_prog",
+  "respostes": [
+    {
+      "username": "maria",
+      "respostes": [
+        {"pregunta_id": "p1", "resposta": "15"},
+        {"pregunta_id": "p2", "resposta": "Excelente"},
+        {"pregunta_id": "p3", "resposta": "Java,Python"}
+      ]
+    },
+    {
+      "username": "joan",
+      "respostes": [
+        {"pregunta_id": "p1", "resposta": "12"},
+        {"pregunta_id": "p2", "resposta": "Bueno"},
+        {"pregunta_id": "p3", "resposta": "Python,C++"}
+      ]
+    },
+    {
+      "username": "anna",
+      "respostes": [
+        {"pregunta_id": "p1", "resposta": "20"},
+        {"pregunta_id": "p2", "resposta": "Excelente"},
+        {"pregunta_id": "p3", "resposta": "Java,Python,C++"}
+      ]
+    },
+    {
+      "username": "pere",
+      "respostes": [
+        {"pregunta_id": "p1", "resposta": "8"},
+        {"pregunta_id": "p2", "resposta": "Regular"},
+        {"pregunta_id": "p3", "resposta": "Python"}
+      ]
+    },
+    {
+      "username": "laura",
+      "respostes": [
+        {"pregunta_id": "p1", "resposta": "18"},
+        {"pregunta_id": "p2", "resposta": "Excelente"},
+        {"pregunta_id": "p3", "resposta": "Java,Python"}
+      ]
+    },
+    {
+      "username": "marc",
+      "respostes": [
+        {"pregunta_id": "p1", "resposta": "10"},
+        {"pregunta_id": "p2", "resposta": "Bueno"},
+        {"pregunta_id": "p3", "resposta": "C++"}
+      ]
+    },
+    {
+      "username": "sara",
+      "respostes": [
+        {"pregunta_id": "p1", "resposta": "6"},
+        {"pregunta_id": "p2", "resposta": "Regular"},
+        {"pregunta_id": "p3", "resposta": "Python"}
+      ]
+    },
+    {
+      "username": "david",
+      "respostes": [
+        {"pregunta_id": "p1", "resposta": "22"},
+        {"pregunta_id": "p2", "resposta": "Excelente"},
+        {"pregunta_id": "p3", "resposta": "Java,C++"}
+      ]
+    }
+  ]
+}
