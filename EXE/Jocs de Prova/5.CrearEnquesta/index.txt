@@ -5,7 +5,8 @@ Cas d'ús: Crear Enquesta.
 Es prova la funcionalitat de crear una nova enquesta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-No es requereixen fitxers d'entrada específics per iniciar la prova, ja que les dades s'introdueixen manualment a través dels camps de text de la vista.
+Per a la prova #5 (enquesta duplicada), es requereix que existeixi prèviament al sistema una enquesta amb ID "enquesta1".
+
 El sistema utilitza internament per a la persistència:
 - enquestes/index.json: Per emmagatzemar la llista d'enquestes i verificar duplicats. Emmagatzema objectes de la classe Enquesta.
 - usuaris/{username}/usuari.json: Per emmagatzemar la llista d'enquestes creades per l'usuari. Emmagatzema objectes de la classe Usuari.
@@ -15,13 +16,13 @@ Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equ
 
 Conjunts de dades de comportament homogeni:
 1. Creació vàlida (Cas d'èxit):
-   - ID: "enquesta1" (no buit, no existent)
+   - ID: "enquesta_nova" (no buit, no existent)
    - Títol: "La meva enquesta" (no buit)
    - Descripció: "Descripció opcional" (pot ser buida)
    - Resultat esperat: Creació de l'enquesta i missatge d'èxit.
 
 2. Descripció buida (Cas vàlid):
-   - ID: "enquesta3"
+   - ID: "enquesta2"
    - Títol: "Enquesta sense descripció"
    - Descripció: "" (buida, permès)
    - Resultat esperat: Creació de l'enquesta correctament (la descripció és opcional).
@@ -33,7 +34,7 @@ Conjunts de dades de comportament homogeni:
    - Resultat esperat: Error indicant que l'ID no pot estar buit.
 
 4. Validació de títol buit (Valors límit/invàlids):
-   - ID: "enquesta2"
+   - ID: "enquesta3"
    - Títol: "" (buit)
    - Descripció: "Descripció"
    - Resultat esperat: Error indicant que el títol no pot estar buit.
@@ -46,7 +47,9 @@ Conjunts de dades de comportament homogeni:
 
 Efectes estudiats:
 - Interacció amb la GUI: Introducció de text als camps "ID", "Títol" i "Descripció".
-- Accions: Clic al botó "Crear Enquesta".
+- Accions: 
+   - Clic al botó "Nova Enquesta".
+   - Clic al botó "Crear Enquesta".
 - Feedback visual: 
     - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Enquesta creada correctament!").
     - Aparició de missatges d'error descriptius quan fallen les validacions.
