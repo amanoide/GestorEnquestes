@@ -2,6 +2,8 @@ package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.*;
 
 /**
@@ -129,12 +131,12 @@ public class DialogoPerfil extends JDialog {
         btnTancar.addActionListener(e -> dispose());
 
         Color hoverColor = UIStyles.SUCCESS_COLOR.brighter();
-        btnTancar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
+        btnTancar.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
                 btnTancar.setBackground(hoverColor);
             }
 
-            public void mouseExited(java.awt.event.MouseEvent e) {
+            public void mouseExited(MouseEvent e) {
                 btnTancar.setBackground(UIStyles.SUCCESS_COLOR);
             }
         });

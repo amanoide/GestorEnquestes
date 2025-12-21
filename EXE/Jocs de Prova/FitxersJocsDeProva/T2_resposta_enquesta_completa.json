@@ -1,0 +1,30 @@
+{
+    "enquesta_id": "enc_completa",
+    "respostes": [
+        {
+            "username": "TestUser2",
+            "respostes": [
+                {
+                    "pregunta_id": "p1",
+                    "resposta": "180"
+                },
+                {
+                    "pregunta_id": "p2",
+                    "resposta": "20"
+                },
+                {
+                    "pregunta_id": "p3",
+                    "resposta": "Bona"
+                },
+                {
+                    "pregunta_id": "p4",
+                    "resposta": "Barcelona"
+                },
+                {
+                    "pregunta_id": "p5",
+                    "resposta": "Futbol,Baloncesto"
+                }
+            ]
+        }
+    ]
+}

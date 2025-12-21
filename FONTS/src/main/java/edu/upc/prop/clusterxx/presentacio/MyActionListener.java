@@ -4,10 +4,11 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Frame;
+import java.awt.Component;
 import java.util.ArrayList;
-import edu.upc.prop.clusterxx.domini.classes.Pregunta;
-import edu.upc.prop.clusterxx.domini.classes.Opcio;
-import edu.upc.prop.clusterxx.domini.classes.TipusPregunta;
+import java.util.List;
+
+import java.io.File;
 
 /**
  * Listener centralitzat per gestionar totes les accions dels botons de la
@@ -340,10 +341,10 @@ public class MyActionListener implements ActionListener {
             String id = selected.split(":")[0].trim();
             String currentTitle = "", currentDesc = "";
 
-            for (edu.upc.prop.clusterxx.domini.classes.Enquesta e : ctrlPresentacio.getEnquestesUsuari()) {
-                if (e.getId().equals(id)) {
-                    currentTitle = e.getTitol();
-                    currentDesc = e.getDescripcio();
+            for (List<String> e : ctrlPresentacio.getEnquestesUsuari()) {
+                if (e.get(0).equals(id)) {
+                    currentTitle = e.get(1);
+                    currentDesc = e.get(2);
                     break;
                 }
             }
@@ -399,7 +400,7 @@ public class MyActionListener implements ActionListener {
         int result = fileChooser.showOpenDialog(parent);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            java.io.File selectedFile = fileChooser.getSelectedFile();
+            File selectedFile = fileChooser.getSelectedFile();
             String resultado = ctrlPresentacio.importarEnquesta(selectedFile.getAbsolutePath());
             JOptionPane.showMessageDialog(parent, resultado);
         }
@@ -420,18 +421,19 @@ public class MyActionListener implements ActionListener {
             String id = selected.split(":")[0].trim();
 
             // Buscar l'enquesta per obtenir participants
-            edu.upc.prop.clusterxx.domini.classes.Enquesta enquesta = null;
-            for (edu.upc.prop.clusterxx.domini.classes.Enquesta e : ctrlPresentacio.getEnquestesUsuari()) {
-                if (e.getId().equals(id)) {
-                    enquesta = e;
+            List<String> participants = ctrlPresentacio.getParticipantsEnquesta(id);
+
+            // Obtenir titol
+            String titol = id;
+            for (List<String> e : ctrlPresentacio.getEnquestesUsuari()) {
+                if (e.get(0).equals(id)) {
+                    titol = e.get(1);
                     break;
                 }
             }
 
-            if (enquesta != null) {
-                Frame parent = getParentFrame();
-                new DialogoParticipants(parent, enquesta.getTitol(), enquesta.getParticipants()).setVisible(true);
-            }
+            Frame parent = getParentFrame();
+            new DialogoParticipants(parent, titol, new ArrayList<>(participants)).setVisible(true);
         }
     }
 
@@ -638,26 +640,38 @@ public class MyActionListener implements ActionListener {
     /**
      * Gestiona la modificació d'una resposta individual.
      */
+    /**
+     * Gestiona la modificació d'una resposta individual.
+     */
+    @SuppressWarnings("unchecked")
     private void handleModificarRespostaIndividual() {
         if (context instanceof Object[]) {
             Object[] ctx = (Object[]) context;
-            if (ctx.length == 2 && ctx[0] instanceof DialogoGestionarRespostes && ctx[1] instanceof Pregunta) {
+            if (ctx.length == 2 && ctx[0] instanceof DialogoGestionarRespostes && ctx[1] instanceof ArrayList) {
                 DialogoGestionarRespostes dialogo = (DialogoGestionarRespostes) ctx[0];
-                Pregunta p = (Pregunta) ctx[1];
+                ArrayList<Object> p = (ArrayList<Object>) ctx[1];
 
-                String currentAnswer = dialogo.getResposta(p.getId());
+                String idPregunta = (String) p.get(0);
+                String textPregunta = (String) p.get(1);
+                String tipusPregunta = (String) p.get(2);
+
+                String currentAnswer = dialogo.getResposta(idPregunta);
                 String novaResposta = null;
 
-                if (p.tipusAdmetOpcions() && p.getTipus() != TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE) {
+                boolean tipusAdmetOpcions = "QUALITATIVA_ORDENADA".equals(tipusPregunta) ||
+                        "QUALITATIVA_NO_ORDENADA_SIMPLE".equals(tipusPregunta) ||
+                        "QUALITATIVA_NO_ORDENADA_MULTIPLE".equals(tipusPregunta);
+
+                if (tipusAdmetOpcions && !"QUALITATIVA_NO_ORDENADA_MULTIPLE".equals(tipusPregunta)) {
                     // Mostrar ComboBox para opciones simples/ordenadas
-                    java.util.ArrayList<Opcio> opcions = p.getOpcions();
+                    ArrayList<ArrayList<String>> opcions = (ArrayList<ArrayList<String>>) p.get(5);
                     String[] opcionsText = new String[opcions.size()];
                     for (int i = 0; i < opcions.size(); i++) {
-                        opcionsText[i] = opcions.get(i).getText();
+                        opcionsText[i] = opcions.get(i).get(1); // Index 1 is the text of the option
                     }
 
                     Object selected = JOptionPane.showInputDialog(dialogo,
-                            "Selecciona la nova resposta per a:\n\n" + p.getText(),
+                            "Selecciona la nova resposta per a:\n\n" + textPregunta,
                             "Modificar Resposta",
                             JOptionPane.QUESTION_MESSAGE,
                             null,
@@ -669,15 +683,16 @@ public class MyActionListener implements ActionListener {
                     }
                 } else {
                     // Input de texto normal para otros tipos
-                    String message = "Introdueix la nova resposta per a:\n\n" + p.getText() + "\n\n" +
-                            "Format esperat: " + p.getTipus();
+                    String message = "Introdueix la nova resposta per a:\n\n" + textPregunta + "\n\n" +
+                            "Format esperat: " + tipusPregunta;
 
-                    if (p.getTipus() == TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE) {
+                    if ("QUALITATIVA_NO_ORDENADA_MULTIPLE".equals(tipusPregunta)) {
                         message += "\n(Opcions vàlides: ";
-                        for (Opcio o : p.getOpcions()) {
-                            message += o.getText() + ", ";
+                        ArrayList<ArrayList<String>> opcions = (ArrayList<ArrayList<String>>) p.get(5);
+                        for (ArrayList<String> o : opcions) {
+                            message += o.get(1) + ", ";
                         }
-                        if (!p.getOpcions().isEmpty()) {
+                        if (!opcions.isEmpty()) {
                             message = message.substring(0, message.length() - 2);
                         }
                         message += ")";
@@ -687,7 +702,7 @@ public class MyActionListener implements ActionListener {
                 }
 
                 if (novaResposta != null && !novaResposta.trim().isEmpty()) {
-                    String resultat = ctrlPresentacio.modificarResposta(dialogo.getIdEnquesta(), p.getId(),
+                    String resultat = ctrlPresentacio.modificarResposta(dialogo.getIdEnquesta(), idPregunta,
                             novaResposta);
                     JOptionPane.showMessageDialog(dialogo, resultat);
                     if (resultat.contains("correctament")) {
@@ -749,7 +764,7 @@ public class MyActionListener implements ActionListener {
         int result = fileChooser.showOpenDialog(parent);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            java.io.File selectedFile = fileChooser.getSelectedFile();
+            File selectedFile = fileChooser.getSelectedFile();
             String resultado = ctrlPresentacio.importarResposta(selectedFile.getAbsolutePath());
             JOptionPane.showMessageDialog(parent, resultado);
 
@@ -917,8 +932,8 @@ public class MyActionListener implements ActionListener {
         if (context instanceof Frame) {
             return (Frame) context;
         }
-        if (context instanceof java.awt.Component) {
-            return (Frame) SwingUtilities.getWindowAncestor((java.awt.Component) context);
+        if (context instanceof Component) {
+            return (Frame) SwingUtilities.getWindowAncestor((Component) context);
         }
         return null;
     }

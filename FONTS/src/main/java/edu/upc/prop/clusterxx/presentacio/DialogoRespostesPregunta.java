@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
-import edu.upc.prop.clusterxx.domini.classes.Resposta;
 
 /**
  * Diàleg que mostra totes les respostes d'una pregunta específica.
@@ -41,7 +40,7 @@ public class DialogoRespostesPregunta extends JDialog {
         super(parent, "Respostes de la Pregunta: " + idPregunta, true);
         this.ctrlPresentacio = ctrl;
         this.idPregunta = idPregunta;
-        
+
         inicialitzarComponents();
         setSize(600, 400);
         setLocationRelativeTo(parent);
@@ -79,8 +78,8 @@ public class DialogoRespostesPregunta extends JDialog {
         mainPanel.setBorder(new EmptyBorder(10, 15, 10, 15));
 
         // Obtenir les respostes
-        ArrayList<Resposta> respostes = ctrlPresentacio.consultarRespostesPregunta(idPregunta);
-        
+        ArrayList<ArrayList<String>> respostes = ctrlPresentacio.consultarRespostesPregunta(idPregunta);
+
         if (respostes.isEmpty()) {
             JLabel lblNoRespostes = new JLabel("Aquesta pregunta encara no té respostes.");
             lblNoRespostes.setFont(UIStyles.FONT_NORMAL);
@@ -98,23 +97,22 @@ public class DialogoRespostesPregunta extends JDialog {
             mainPanel.add(Box.createVerticalStrut(10));
 
             // Mostrar cada resposta
-            for (Resposta resposta : respostes) {
+            for (ArrayList<String> resposta : respostes) {
                 JPanel respostaPanel = new JPanel(new BorderLayout(10, 5));
                 respostaPanel.setBackground(UIStyles.RESPONSE_BACKGROUND);
                 respostaPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(UIStyles.BORDER_LIGHT, 1),
-                    new EmptyBorder(8, 12, 8, 12)
-                ));
+                        BorderFactory.createLineBorder(UIStyles.BORDER_LIGHT, 1),
+                        new EmptyBorder(8, 12, 8, 12)));
                 respostaPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
                 respostaPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
                 // Usuari
-                JLabel lblUsuari = new JLabel(resposta.getUsernameUsuari());
+                JLabel lblUsuari = new JLabel(resposta.get(0));
                 lblUsuari.setFont(UIStyles.FONT_NORMAL.deriveFont(Font.BOLD));
                 lblUsuari.setForeground(UIStyles.TEXT_COLOR);
-                
+
                 // Text de la resposta
-                JLabel lblText = new JLabel(resposta.getTextResposta());
+                JLabel lblText = new JLabel(resposta.get(1));
                 lblText.setFont(UIStyles.FONT_NORMAL);
                 lblText.setForeground(UIStyles.TEXT_COLOR);
 
@@ -134,11 +132,11 @@ public class DialogoRespostesPregunta extends JDialog {
         // Botó tancar
         JPanel panelBotons = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panelBotons.setBackground(UIStyles.BACKGROUND_COLOR);
-        
+
         JButton btnTancar = UIComponents.createColorButton("✖ Tancar", UIStyles.SECONDARY_COLOR);
         btnTancar.addActionListener(e -> dispose());
         panelBotons.add(btnTancar);
-        
+
         add(panelBotons, BorderLayout.SOUTH);
     }
 }

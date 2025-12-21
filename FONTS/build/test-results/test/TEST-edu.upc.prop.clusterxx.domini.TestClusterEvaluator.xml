@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-12-19T08:41:28" hostname="DESKTOP-JJJGPR0" time="0.01">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-12-21T12:23:56" hostname="MacBook-Air-de-Joan.local" time="0.004">
   <properties/>
-  <testcase name="testSilhouetteScoreUnSolCluster" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.005"/>
-  <testcase name="testSilhouettePerClusterValors" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.001"/>
+  <testcase name="testSilhouetteScoreUnSolCluster" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.002"/>
+  <testcase name="testSilhouettePerClusterValors" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
   <testcase name="testSilhouettePerClusterBuit" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>
   <testcase name="testSilhouettePerClusterNull" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.001"/>
   <testcase name="testSilhouetteScoreClustersBuits" classname="edu.upc.prop.clusterxx.domini.TestClusterEvaluator" time="0.0"/>

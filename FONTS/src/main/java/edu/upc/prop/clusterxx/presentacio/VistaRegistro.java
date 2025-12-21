@@ -1,9 +1,7 @@
 package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * Vista encarregada de la gestió del registre de nous usuaris dins l'aplicació.
@@ -122,10 +120,10 @@ public class VistaRegistro extends JPanel {
         // Listeners
         btnRegistrar.setActionCommand(MyActionListener.Action.REGISTER.name());
         btnRegistrar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnBackToLogin.setActionCommand(MyActionListener.Action.MOSTRAR_LOGIN.name());
         btnBackToLogin.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         textRegPassConfirm.setActionCommand(MyActionListener.Action.REGISTER.name());
         textRegPassConfirm.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
 

@@ -71,7 +71,8 @@ public class CtrlPersistencia {
             // Vincular perfils amb usuaris
             vincularPerfilsAmbUsuaris();
 
-            // Inicialitzar cache de preguntes i respostes a partir de les enquestes carregades
+            // Inicialitzar cache de preguntes i respostes a partir de les enquestes
+            // carregades
             inicialitzarCache();
         } catch (IOException e) {
             System.err.println("Error carregant dades: " + e.getMessage());
@@ -80,24 +81,25 @@ public class CtrlPersistencia {
 
     /**
      * Vincula els perfils carregats amb els usuaris que els tenen assignats.
-     * Busca per cada perfil quins usuaris pertanyen al cluster i els assigna el perfil.
+     * Busca per cada perfil quins usuaris pertanyen al cluster i els assigna el
+     * perfil.
      */
     private void vincularPerfilsAmbUsuaris() {
         // Obtenir el mapa temporal d'IDs de perfils del gestor d'usuaris
         HashMap<String, HashMap<String, Long>> perfilsTemporals = gestorUsuaris.getPerfilsTemporals();
-        
+
         // Vincular els usuaris amb els seus perfils específics
         for (Usuari usuari : usuaris.values()) {
             String username = usuari.getUsername();
-            
+
             // Comprovar si aquest usuari té perfils assignats
             if (perfilsTemporals.containsKey(username)) {
                 HashMap<String, Long> perfilsUsuari = perfilsTemporals.get(username);
-                
+
                 for (java.util.Map.Entry<String, Long> entry : perfilsUsuari.entrySet()) {
                     String idEnquesta = entry.getKey();
                     Long perfilId = entry.getValue();
-                    
+
                     // Buscar el perfil corresponent per ID (convertir Long a String)
                     Perfil perfil = perfils.get(String.valueOf(perfilId));
                     if (perfil != null) {
@@ -106,7 +108,7 @@ public class CtrlPersistencia {
                 }
             }
         }
-        
+
         // Netejar el mapa temporal després de la vinculació
         gestorUsuaris.netejarPerfilsTemporals();
     }
@@ -140,7 +142,6 @@ public class CtrlPersistencia {
             System.err.println("Error guardant dades: " + e.getMessage());
         }
     }
-        
 
     /**
      * Força el guardado de totes les dades (mètode públic per ús extern).
@@ -242,7 +243,7 @@ public class CtrlPersistencia {
         if (removed != null) {
             // 1. Eliminar tots els perfils/clusters associats a aquesta enquesta
             eliminarPerfilsEnquesta(id);
-            
+
             // 2. Eliminar preguntes i respostes específiques de l'enquesta eliminada
             for (Pregunta p : removed.getPreguntes()) {
                 preguntes.remove(p.getId());
@@ -250,7 +251,7 @@ public class CtrlPersistencia {
                     respostes.remove(idResposta);
                 }
             }
-            
+
             // 3. Eliminar el fitxer de l'enquesta
             gestorEnquestes.eliminarFitxerEnquesta(id);
             guardarEnquestes();
@@ -292,27 +293,22 @@ public class CtrlPersistencia {
     // ===========================================
 
     /**
-     * Afegeix una resposta al sistema.
+     * Afegeix una resposta al sistema vinculant-la explícitament a una enquesta.
      * 
-     * @param resposta La resposta a afegir
+     * @param resposta   La resposta a afegir
+     * @param idEnquesta L'ID de l'enquesta a la qual pertany
      */
-    public void afegirResposta(Resposta resposta) {
+    public void afegirResposta(Resposta resposta, String idEnquesta) {
         respostes.put(resposta.getId(), resposta);
 
-        String idEnquestaTrobada = null;
+        Enquesta enquesta = enquestes.get(idEnquesta);
+        if (enquesta != null) {
+            // Buscar la pregunta DINS d'aquesta enquesta específica
+            Pregunta pregunta = enquesta.getPregunta(resposta.getIdPregunta());
 
-        // Afegir a la pregunta corresponent
-        Pregunta pregunta = getPregunta(resposta.getIdPregunta());
-        if (pregunta != null) {
-            pregunta.afegirResposta(resposta.getUsernameUsuari(), resposta);
-
-            // Actualitzar participació a l'enquesta
-            for (Enquesta e : enquestes.values()) {
-                if (e.getPregunta(pregunta.getId()) != null) {
-                    e.registrarParticipacio(resposta.getUsernameUsuari());
-                    idEnquestaTrobada = e.getId();
-                    break;
-                }
+            if (pregunta != null) {
+                pregunta.afegirResposta(resposta.getUsernameUsuari(), resposta);
+                enquesta.registrarParticipacio(resposta.getUsernameUsuari());
             }
         }
 
@@ -320,10 +316,10 @@ public class CtrlPersistencia {
         Usuari usuari = getUsuari(resposta.getUsernameUsuari());
         if (usuari != null) {
             usuari.afegirResposta(resposta.getId(), resposta);
-            
+
             // Actualitzar llista d'enquestes participades (via perfils)
-            if (idEnquestaTrobada != null && !usuari.tePerfil(idEnquestaTrobada)) {
-                usuari.assignarPerfil(idEnquestaTrobada, null);
+            if (enquesta != null && !usuari.tePerfil(idEnquesta)) {
+                usuari.assignarPerfil(idEnquesta, null);
                 try {
                     gestorUsuaris.guardarUsuari(usuari);
                 } catch (IOException e) {
@@ -331,10 +327,10 @@ public class CtrlPersistencia {
                 }
             }
         }
-        
-        // Només guardar l'enquesta específica on s'ha afegit la resposta
-        if (idEnquestaTrobada != null) {
-            guardarEnquesta(enquestes.get(idEnquestaTrobada));
+
+        // Guardar l'enquesta específica
+        if (enquesta != null) {
+            guardarEnquesta(enquesta);
         }
     }
 
@@ -365,7 +361,7 @@ public class CtrlPersistencia {
             Pregunta p = getPregunta(resposta.getIdPregunta());
             if (p != null) {
                 p.eliminarResposta(resposta.getUsernameUsuari());
-                
+
                 // Actualitzar llista de participants de l'enquesta
                 for (Enquesta e : enquestes.values()) {
                     if (e.getPregunta(p.getId()) != null) {
@@ -378,7 +374,7 @@ public class CtrlPersistencia {
                         }
                         if (!hasOtherAnswers) {
                             e.eliminarParticipacio(resposta.getUsernameUsuari());
-                            
+
                             // Actualitzar llista d'enquestes participades de l'usuari
                             if (usuari != null) {
                                 usuari.eliminarPerfil(e.getId());
@@ -597,27 +593,27 @@ public class CtrlPersistencia {
     public void eliminarPerfilsEnquesta(String idEnquesta) {
         // Obtenir tots els perfils que pertanyen a aquesta enquesta
         java.util.List<String> perfilsAEliminar = new java.util.ArrayList<>();
-        
+
         for (java.util.Map.Entry<String, Perfil> entry : perfils.entrySet()) {
             Perfil perfil = entry.getValue();
             if (perfil.teClustering() && idEnquesta.equals(perfil.getIdEnquesta())) {
                 perfilsAEliminar.add(entry.getKey());
             }
         }
-        
+
         // Eliminar els perfils del mapa i dels fitxers
         for (String perfilId : perfilsAEliminar) {
             perfils.remove(perfilId);
             gestorPerfils.eliminarFitxerPerfil(perfilId);
         }
-        
+
         // Eliminar les assignacions d'aquests perfils dels usuaris
         for (Usuari usuari : usuaris.values()) {
             if (usuari.getPerfils().containsKey(idEnquesta)) {
                 usuari.eliminarPerfil(idEnquesta);
             }
         }
-        
+
         // Guardar els canvis
         if (!perfilsAEliminar.isEmpty()) {
             guardarPerfils();
@@ -651,7 +647,7 @@ public class CtrlPersistencia {
      * Afegeix una pregunta a la cache global.
      * Nota: La pregunta ha d'estar prèviament vinculada a una enquesta.
      * 
-     * @param id L'ID de la pregunta
+     * @param id       L'ID de la pregunta
      * @param pregunta La pregunta a afegir
      */
     public void afegirPregunta(String id, Pregunta pregunta) {

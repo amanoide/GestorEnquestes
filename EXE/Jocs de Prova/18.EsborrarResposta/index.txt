@@ -1,0 +1,48 @@
+# Joc de Prova - Cas d'ús #18 Esborrar Resposta
+
+Objecte de la prova:
+Cas d'ús: Esborrar Resposta.
+També importarResposta i importarEnquesta si son necessaris.
+Es prova la funcionalitat de esborrar una resposta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+
+Fitxers de dades necessaris:
+ES TROBEN A LA CARPETA: ENTREGA/EXE/Jocs De Prova/FitxersJocsDeProva
+- enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta.
+- resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
+
+El sistema utilitza internament per a la persistència:
+- respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
+
+Valors estudiats:
+- enquesta_completa.json: Es una enquesta completa amb tots els tipus de pregunta.
+Enquesta importada al joc de prova 16.
+Si no la tens, aquest fitxer es troba a aquesta carpeta, importa'l amb importar enquesta.
+
+- TestUser1.json: Es un usuari que durà a terme els tests. Password: password123
+Si no els tens ja, crea els usuari amb Contrasenya: password123.
+
+- resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
+Si tens ja la resposta pels jocs de prova, no cal importar-la.
+
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Esborrar resposta vàlida (Cas d'èxit): 
+   - Precondicions: Existeix una resposta a una enquesta.
+   - Accions: 
+      1. Login amb TestUser1 i password123
+      2. Clic al botó "Gestionar les Meves Respostes".
+      3. Seleccioa la resposta "enc_completa" a esborrar.
+      4. Clic al botó "Esborrar Totes".
+      5. Clic al botó "Acceptar".
+      6. Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit.
+
+No hi ha casos d'error ja que el sistema no permet esborrar respostes sense seleccionar cap resposta i sense que l'usuari sigui el seu autor.
+
+Efectes estudiats:
+- Interacció amb la GUI: Clic a Gestionar les Meves Respostes, clic al botó "Esborrar Totes".
+- Accions: Clic al botó "Esborrar Totes".
+- Feedback visual: 
+    - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Resposta esborrada correctament!").
+    - Aparició de missatges d'error descriptius quan fallen les validacions.
+- Persistència: Verificació que la resposta s'ha esborrat correctament del fitxer de persistència després de l'operació exitosa.

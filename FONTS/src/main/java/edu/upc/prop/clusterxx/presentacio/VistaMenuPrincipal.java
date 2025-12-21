@@ -1,7 +1,6 @@
 package edu.upc.prop.clusterxx.presentacio;
 
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 
 /**
@@ -130,7 +129,7 @@ public class VistaMenuPrincipal extends JPanel {
         btnLogout.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(btnLogout);
         cardPanel.add(Box.createVerticalStrut(8));
-        
+
         // Botón eliminar compte
         UIComponents.styleButton(btnEliminarCompte, UIStyles.DARK_RED);
         btnEliminarCompte.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -139,23 +138,23 @@ public class VistaMenuPrincipal extends JPanel {
         // Listeners
         btnNueva.setActionCommand(MyActionListener.Action.CREAR_ENQUESTA.name());
         btnNueva.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnImportar.setActionCommand(MyActionListener.Action.IMPORTAR_ENQUESTA.name());
         btnImportar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnGestionar.setActionCommand(MyActionListener.Action.GESTIONAR_ENQUESTES.name());
         btnGestionar.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnAnalisi.addActionListener(e -> vistaPrincipal.mostrarVista("ANALISI"));
-        
+
         btnRespondre.setActionCommand(MyActionListener.Action.RESPONDRE_ENQUESTA.name());
         btnRespondre.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnGestionarRespostes.addActionListener(e -> vistaPrincipal.mostrarVista("GESTION_RESPOSTES"));
-        
+
         btnLogout.setActionCommand(MyActionListener.Action.LOGOUT.name());
         btnLogout.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
-        
+
         btnEliminarCompte.setActionCommand(MyActionListener.Action.ELIMINAR_COMPTE.name());
         btnEliminarCompte.addActionListener(new MyActionListener(iCtrlPresentacio, vistaPrincipal, this));
 

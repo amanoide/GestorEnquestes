@@ -22,5 +22,13 @@
         "numPreguntes": 0,
         "id": "enq1",
         "numParticipants": 0
+    },
+    {
+        "creador": "testUser",
+        "descripcio": "Desc",
+        "titol": "Test Enquesta",
+        "numPreguntes": 1,
+        "id": "encTest",
+        "numParticipants": 0
     }
 ]

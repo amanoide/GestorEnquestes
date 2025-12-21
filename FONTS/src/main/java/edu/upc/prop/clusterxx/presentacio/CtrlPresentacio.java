@@ -1,13 +1,11 @@
 package edu.upc.prop.clusterxx.presentacio;
 
 import edu.upc.prop.clusterxx.domini.controladors.CtrlDomini;
-import edu.upc.prop.clusterxx.domini.classes.Enquesta;
-import edu.upc.prop.clusterxx.domini.classes.Pregunta;
-import edu.upc.prop.clusterxx.domini.classes.Resposta;
+
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.PerfilNoTrobatException;
 import edu.upc.prop.clusterxx.domini.classes.Exceptions.AnalisiNoRealitzatException;
-import edu.upc.prop.clusterxx.domini.classes.Exceptions.UsuariNoAutenticatException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 
 /**
@@ -92,14 +90,28 @@ public class CtrlPresentacio {
     /**
      * Obté la llista d'enquestes creades per l'usuari actualment autenticat.
      * 
-     * @return Una llista d'objectes Enquesta. Si hi ha un error, retorna una llista
-     *         buida.
+     * @return Una llista de llistes amb [id, titol, descripcio]. Si hi ha un error,
+     *         retorna una llista buida.
      */
-    public ArrayList<Enquesta> getEnquestesUsuari() {
+    public ArrayList<ArrayList<String>> getEnquestesUsuari() {
         try {
-            return new ArrayList<>(ctrlDomini.consultarEnquestesDelUsuari());
+            return ctrlDomini.getEnquestesUsuariRaw();
         } catch (Exception e) {
             System.out.println("Error al consultar enquestes: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Obté els participants d'una enquesta.
+     * 
+     * @param idEnquesta ID de l'enquesta.
+     * @return Llista de noms d'usuari.
+     */
+    public ArrayList<String> getParticipantsEnquesta(String idEnquesta) {
+        try {
+            return ctrlDomini.getParticipantsEnquestaRaw(idEnquesta);
+        } catch (Exception e) {
             return new ArrayList<>();
         }
     }
@@ -179,13 +191,21 @@ public class CtrlPresentacio {
      * @param idEnquesta L'ID de l'enquesta
      * @return HashMap amb clau=idPregunta i valor=ArrayList de totes les respostes
      */
-    public HashMap<String, ArrayList<edu.upc.prop.clusterxx.domini.classes.Resposta>> consultarRespostesEnquesta(
+    /**
+     * Consulta totes les respostes d'una enquesta.
+     * Només el creador de l'enquesta pot consultar-les.
+     * 
+     * @param idEnquesta L'ID de l'enquesta
+     * @return HashMap amb clau=idPregunta i valor=ArrayList de respostes [username,
+     *         text]
+     */
+    public HashMap<String, ArrayList<ArrayList<String>>> consultarRespostesEnquesta(
             String idEnquesta) {
         try {
-            return ctrlDomini.consultarRespostesEnquesta(idEnquesta);
+            return ctrlDomini.consultarRespostesEnquestaRaw(idEnquesta);
         } catch (Exception e) {
             System.err.println("Error consultant respostes: " + e.getMessage());
-            return new java.util.HashMap<>();
+            return new HashMap<>();
         }
     }
 
@@ -195,9 +215,16 @@ public class CtrlPresentacio {
      * @param idPregunta L'ID de la pregunta
      * @return ArrayList de totes les respostes de la pregunta
      */
-    public ArrayList<Resposta> consultarRespostesPregunta(String idPregunta) {
+    /**
+     * Consulta totes les respostes d'una pregunta específica.
+     * 
+     * @param idPregunta L'ID de la pregunta
+     * @return ArrayList de totes les respostes de la pregunta en format [username,
+     *         text]
+     */
+    public ArrayList<ArrayList<String>> consultarRespostesPregunta(String idPregunta) {
         try {
-            return ctrlDomini.consultarRespostesPregunta(idPregunta);
+            return ctrlDomini.consultarRespostesPreguntaRaw(idPregunta);
         } catch (Exception e) {
             System.err.println("Error consultant respostes de la pregunta: " + e.getMessage());
             return new ArrayList<>();
@@ -353,14 +380,14 @@ public class CtrlPresentacio {
      * @param respostes  Map amb les respostes (idPregunta -> textResposta).
      * @return Missatge de resultat.
      */
-    public String contestarEnquesta(String idEnquesta, java.util.HashMap<String, String> respostes) {
+    public String contestarEnquesta(String idEnquesta, HashMap<String, String> respostes) {
         try {
-            java.util.HashMap<String, String> mapRespostes = new java.util.HashMap<>();
-            java.util.HashMap<String, String> mapIds = new java.util.HashMap<>();
+            HashMap<String, String> mapRespostes = new HashMap<>();
+            HashMap<String, String> mapIds = new HashMap<>();
 
             String username = currentUsername;
 
-            for (java.util.Map.Entry<String, String> entry : respostes.entrySet()) {
+            for (Map.Entry<String, String> entry : respostes.entrySet()) {
                 String idPregunta = entry.getKey();
                 String text = entry.getValue();
 
@@ -384,12 +411,12 @@ public class CtrlPresentacio {
      * @param idEnquesta ID de l'enquesta.
      * @return Map amb idPregunta -> textResposta.
      */
-    public java.util.HashMap<String, String> getRespostesUsuariEnquesta(String idEnquesta) {
+    public HashMap<String, String> getRespostesUsuariEnquesta(String idEnquesta) {
         try {
             return ctrlDomini.getRespostesUsuariEnquestaRaw(idEnquesta, currentUsername);
         } catch (Exception e) {
             System.out.println("Error recuperant respostes usuari: " + e.getMessage());
-            return new java.util.HashMap<>();
+            return new HashMap<>();
         }
     }
 
@@ -430,12 +457,12 @@ public class CtrlPresentacio {
      * 
      * @return Llista d'enquestes contestades (ID, Títol).
      */
-    public java.util.ArrayList<ArrayList<String>> getEnquestesContestades() {
+    public ArrayList<ArrayList<String>> getEnquestesContestades() {
         try {
             return ctrlDomini.getEnquestesContestadesRaw(currentUsername);
         } catch (Exception e) {
             System.out.println("Error filtrant enquestes contestades: " + e.getMessage());
-            return new java.util.ArrayList<>();
+            return new ArrayList<>();
         }
     }
 

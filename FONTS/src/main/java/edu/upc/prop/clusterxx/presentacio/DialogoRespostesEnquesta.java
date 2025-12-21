@@ -5,7 +5,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import edu.upc.prop.clusterxx.domini.classes.Resposta;
 
 /**
  * Diàleg que mostra totes les respostes d'una enquesta agrupades per pregunta.
@@ -33,9 +32,9 @@ public class DialogoRespostesEnquesta extends JDialog {
      * Inicialitza el diàleg, carrega totes les respostes de l'enquesta i
      * construeix la interfície visual.
      *
-     * @param parent          Finestra propietària del diàleg.
-     * @param ctrl            Controlador de presentació per obtenir les respostes.
-     * @param idEnquesta      Identificador de l'enquesta a consultar.
+     * @param parent     Finestra propietària del diàleg.
+     * @param ctrl       Controlador de presentació per obtenir les respostes.
+     * @param idEnquesta Identificador de l'enquesta a consultar.
      */
     public DialogoRespostesEnquesta(Frame parent, CtrlPresentacio ctrl, String idEnquesta) {
         super(parent, "Respostes de l'Enquesta: " + idEnquesta, true);
@@ -71,8 +70,8 @@ public class DialogoRespostesEnquesta extends JDialog {
         mainPanel.setBackground(UIStyles.BACKGROUND_COLOR);
         mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        // Obtenir totes les respostes
-        HashMap<String, ArrayList<Resposta>> respostesPerPregunta = ctrlPresentacio
+        // Obtenir totes les respostes (Map<idPregunta, List<[username, text]>>)
+        HashMap<String, ArrayList<ArrayList<String>>> respostesPerPregunta = ctrlPresentacio
                 .consultarRespostesEnquesta(idEnquesta);
 
         if (respostesPerPregunta.isEmpty()) {
@@ -88,7 +87,7 @@ public class DialogoRespostesEnquesta extends JDialog {
                 // Per cada pregunta de l'enquesta
                 for (ArrayList<Object> pregunta : preguntes) {
                     String idPregunta = (String) pregunta.get(0);
-                    ArrayList<Resposta> respostes = respostesPerPregunta.get(idPregunta);
+                    ArrayList<ArrayList<String>> respostes = respostesPerPregunta.get(idPregunta);
 
                     // Panel per aquesta pregunta
                     JPanel preguntaPanel = new JPanel();
@@ -117,16 +116,16 @@ public class DialogoRespostesEnquesta extends JDialog {
 
                         preguntaPanel.add(Box.createVerticalStrut(5));
 
-                        for (Resposta resposta : respostes) {
+                        for (ArrayList<String> resposta : respostes) {
                             JPanel respostaPanel = new JPanel(new BorderLayout(5, 5));
                             respostaPanel.setBackground(UIStyles.RESPONSE_BACKGROUND);
                             respostaPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
                             respostaPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
-                            JLabel lblUsuari = new JLabel(resposta.getUsernameUsuari() + ":");
+                            JLabel lblUsuari = new JLabel(resposta.get(0) + ":");
                             lblUsuari.setFont(UIStyles.FONT_NORMAL.deriveFont(Font.BOLD));
 
-                            JLabel lblText = new JLabel(resposta.getTextResposta());
+                            JLabel lblText = new JLabel(resposta.get(1));
                             lblText.setFont(UIStyles.FONT_NORMAL);
 
                             respostaPanel.add(lblUsuari, BorderLayout.WEST);
