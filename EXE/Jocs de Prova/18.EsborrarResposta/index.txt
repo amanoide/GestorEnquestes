@@ -10,6 +10,9 @@ ES TROBEN A LA CARPETA: ENTREGA/EXE/Jocs De Prova/FitxersJocsDeProva
 - enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta.
 - resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
 
+TestUser1.json: Es un usuari que durà a terme els tests. Password: password123
+Si no els tens ja, crea els dos usuaris amb Contrasenya: password123.
+
 El sistema utilitza internament per a la persistència:
 - respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
 
@@ -41,8 +44,8 @@ No hi ha casos d'error ja que el sistema no permet esborrar respostes sense sele
 
 Efectes estudiats:
 - Interacció amb la GUI: Clic a Gestionar les Meves Respostes, clic al botó "Esborrar Totes".
-- Accions: Clic al botó "Esborrar Totes".
+
 - Feedback visual: 
     - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Resposta esborrada correctament!").
-    - Aparició de missatges d'error descriptius quan fallen les validacions.
+
 - Persistència: Verificació que la resposta s'ha esborrat correctament del fitxer de persistència després de l'operació exitosa.

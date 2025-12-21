@@ -8,6 +8,9 @@ Es prova la funcionalitat de contestar una enquesta al sistema a través de la i
 Fitxers de dades necessaris:
 ES TROBEN A LA CARPETA: ENTREGA/EXE/Jocs De Prova/FitxersJocsDeProva
 - enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta. El fitxer es troba a aquesta carpeta, si no el tens ja importa'l amb importar enquesta.
+- TestUser1.json: Es un usuari que durà a terme els tests. 
+- TestUser2.json: Es un usuari que durà a terme els tests d'error.
+Si no els tens ja, crea els dos usuaris amb Contrasenya: password123.
 
 El sistema utilitza internament per a la persistència:
 - respostes/index.json: Per emmagatzemar la llista de respostes i verificar duplicats. Emmagatzema objectes de la classe Resposta.
@@ -105,9 +108,14 @@ A partir d'aquí l'usuari es TestUser2.json:
    6. Resultat esperat: Error indicant que s'han de contestar a totes les preguntes i no s'ha registrat la resposta.
 
 Efectes estudiats:
-- Interacció amb la GUI: Introducció de text als camp "Alçada" i "Quants anys tens?".
-- Accions: Clic al botó "Enviar Respostes".
+- Interacció amb la GUI: 
+    - Introducció de text als camp "Alçada" i "Quants anys tens?".
+    - Selecció d'opcions als camps "Com valoras la teva salut?", "Provincia" i "Quins esports practiques?".
+
+- Accions: Clic al botó "Respondre Enquesta", "Enviar Respostes", "Cancel·lar" i "Acceptar".
+
 - Feedback visual: 
     - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Enquesta contestada correctament!").
     - Aparició de missatges d'error descriptius quan fallen les validacions.
+
 - Persistència: Verificació que la nova resposta s'ha afegit correctament al fitxer de persistència després de l'operació exitosa.

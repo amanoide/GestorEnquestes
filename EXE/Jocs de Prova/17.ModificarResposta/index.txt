@@ -9,6 +9,9 @@ ES TROBEN A LA CARPETA: ENTREGA/EXE/Jocs De Prova/FitxersJocsDeProva
 - enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta.
 - resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
 
+TestUser1.json: Es un usuari que durà a terme els tests. Password: password123
+Si no els tens ja, crea els dos usuaris amb Contrasenya: password123.
+
 El sistema utilitza internament per a la persistència:
 - respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
 
@@ -129,9 +132,13 @@ Conjunts de dades de comportament homogeni:
    7. Resultat esperat: No canvi de la resposta.
 
 Efectes estudiats:
-- Interacció amb la GUI: Introducció de text als camp "Alçada", "Quants anys tens?" i "Quins esports practiques?".
-- Accions: Clic al botó "Modificar".
+- Interacció amb la GUI: 
+    - Introducció de text als camp "Alçada", "Quants anys tens?" i "Quins esports practiques?".
+    - Selecció d'opcions als camps "Com valoras la teva salut?" i "Provincia".
+
+- Accions: Clic al botó "Gestionar Les Meves Respostes", "Veure/Modificar", "Modificar".
 - Feedback visual: 
     - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Resposta modificada correctament!").
     - Aparició de missatges d'error descriptius quan fallen les validacions.
-- Persistència: Verificació que la nova resposta s'ha afegit correctament al fitxer de persistència després de l'operació exitosa.
+
+- Persistència: Verificació que la modificació de la resposta s'ha afegit correctament al fitxer de persistència corresponent després de l'operació exitosa.
