@@ -726,6 +726,19 @@ public class CtrlDomini {
             throw new ParametreInvalidException("El text de la pregunta no pot estar buit.");
         }
 
+        // Validar que si és qualitativa tingui almenys 2 opcions
+        if (p.tipusAdmetOpcions() && p.getOpcions().size() < 2) {
+            throw new ParametreInvalidException("Les preguntes qualitatives han de tenir almenys 2 opcions.");
+        }
+
+        // Validar que maxSeleccions no superi el nombre d'opcions per a preguntes
+        // múltiples
+        if (p.getTipus() == TipusPregunta.QUALITATIVA_NO_ORDENADA_MULTIPLE
+                && p.getMaxSeleccions() > p.getOpcions().size()) {
+            throw new ParametreInvalidException(
+                    "El nombre màxim de seleccions no pot ser superior al nombre d'opcions.");
+        }
+
         // Verificar que l'enquesta existeix
         Enquesta enquesta = ctrlEnquesta.getEnquesta(idEnquesta);
         if (enquesta == null) {

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" tests="7" skipped="0" failures="0" errors="0" timestamp="2025-12-19T17:40:52" hostname="MacBook-Air-de-Joan.local" time="0.001">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" tests="7" skipped="0" failures="0" errors="0" timestamp="2025-12-21T12:23:56" hostname="MacBook-Air-de-Joan.local" time="0.001">
   <properties/>
   <testcase name="testFitAmbClustersSeparats" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
   <testcase name="testInitCentroidsSenseSpecs" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
   <testcase name="testInitCentroidsDataBuida" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
-  <testcase name="testInitCentroidsDeterminista" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
+  <testcase name="testInitCentroidsDeterminista" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.001"/>
   <testcase name="testInitCentroidsDataNull" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
   <testcase name="testInitCentroidsKMassaGran" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>
   <testcase name="testInitCentroidsKAmbZero" classname="edu.upc.prop.clusterxx.domini.TestKMeansPlusPlus" time="0.0"/>

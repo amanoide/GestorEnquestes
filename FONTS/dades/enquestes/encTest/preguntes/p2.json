@@ -1,0 +1,15 @@
+{
+    "id": "p2",
+    "text": "Pregunta amb opcions",
+    "opcions": [
+        {
+            "id": 1,
+            "text": "Opció 1"
+        },
+        {
+            "id": 2,
+            "text": "Opció 2"
+        }
+    ],
+    "tipus": "QUALITATIVA_NO_ORDENADA_SIMPLE"
+}
