@@ -1,4 +1,4 @@
-# Joc de Prova - Cas d'ús #17 Modificar Resposta
+# Joc de Prova - Cas d'ús #16 Modificar Resposta
 
 Objecte de la prova:
 Cas d'ús: Modificar Resposta.

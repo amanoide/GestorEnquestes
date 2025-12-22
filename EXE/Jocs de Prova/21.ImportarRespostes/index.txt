@@ -1,4 +1,4 @@
-# Joc de Prova - Cas d'ús #22 Importar Respostes
+# Joc de Prova - Cas d'ús #21 Importar Respostes
 
 Objecte de la prova:
 Cas d'ús: Importar Respostes.

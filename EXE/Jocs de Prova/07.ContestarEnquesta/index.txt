@@ -1,4 +1,4 @@
-# Joc de Prova - Cas d'ús #16 Contestar Enquesta
+# Joc de Prova - Cas d'ús #7 Contestar Enquesta
 
 Objecte de la prova:
 Cas d'ús: Contestar Enquesta.

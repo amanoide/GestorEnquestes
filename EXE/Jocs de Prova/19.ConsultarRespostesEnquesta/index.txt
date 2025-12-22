@@ -1,8 +1,8 @@
-# Joc de Prova - Cas d'ús #19 Consultar Respostes Pregunta
+# Joc de Prova - Cas d'ús #19 Consultar Respostes Enquesta
 
 Objecte de la prova:
-Cas d'ús: Consultar Respostes Pregunta.
-Es prova la funcionalitat de consultar les respostes a una pregunta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+Cas d'ús: Consultar Respostes Enquesta.
+Es prova la funcionalitat de consultar les respostes a una enquesta al sistema a través de la interfície gràfica, verifiant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
 PREPARACIÓ DE L'ENTORN (OBLIGATORI):
@@ -34,6 +34,7 @@ Estructura dels fitxers de dades preparats:
 - dades/usuaris/index.json: Índex amb l'usuari "TestUser1" i "TestUser2"
 - dades/usuaris/TestUser1.json: Fitxer de l'usuari preexistent per iniciar sessió
 - dades/usuaris/TestUser2.json: Fitxer de l'usuari preexistent per iniciar sessió
+
 El sistema utilitza internament per a la persistència:
 - respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
 
@@ -42,37 +43,29 @@ Valors estudiats:
 Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
 
 Conjunts de dades de comportament homogeni:
-1. Consultar resposta a pregunta vàlida amb respostes(Cas d'èxit): 
-   - Precondicions: Existeix una resposta a una enquesta i TestUser1 es el propietari de l'enquesta.
+1. Consultar resposta a enquesta vàlida amb respostes(Cas d'èxit): 
+   - Precondicions: Existeix una resposta a una enquesta.
    - Accions: 
       1. Login amb TestUser1 i password123
       2. Clic al botó "Gestionar les Meves Enquestes".
-      3. Selecciona la enquesta a consultar "enc_completa".
-      4. Clic a Gestionar Preguntes.
-      5. Selecciona la pregunta a consultar "Quants anys tens?".
-      6. Cilc a Veure Respostes.
-      7. Resultat esperat: Aparició de la finestra de respostes a la pregunta seleccionada.
+      3. Selecciona la enquesta a consultar, en aquest cas 'enc_completa'.
+      4. Clic a "Veure Respostes.
+      5. Resultat esperat: Aparició de la finestra de respostes a la enquesta seleccionada per cada pregunta de l'enquesta.
 
-2. Consultar resposta a pregunta vàlida sense respostes(Cas d'error): 
-   - Precondicions: Existeix una resposta a una enquesta i TestUser1 es el propietari de l'enquesta.
+2. Consultar resposta a enquesta vàlida sense respostes(Cas d'error): 
    - Accions: 
       1. Login amb TestUser1 i password123
       2. Clic al botó "Gestionar les Meves Enquestes".
-      3. Selecciona la enquesta a consultar "enc_completa".
-      4. Clic a Gestionar Preguntes.
-      5. Selecciona la pregunta a consultar "Quants anys tens?".
-      6. Cilc a Veure Respostes.
-      7. Resultat esperat: Aparició d'una pantalla indicant que no hi ha respostes a la pregunta seleccionada.
+      3. Selecciona la enquesta a consultar, en aquest cas 'enc_completa'.
+      4. Cilc a "Veure Respostes".
+      5. Resultat esperat: Aparició de les preguntes amb un missatge indicant que no hi ha respostes per aquelles preguntes.
 
 
 Efectes estudiats:
-- Interacció amb la GUI: Clic a Gestionar les Meves Enquestes, clic a Gestionar Preguntes, clic a Veure Respostes.
+- Interacció amb la GUI: Selecció de la enquesta a consultar i clic a botons.
 - Accions: 
     - Clic al botó "Gestionar les Meves Enquestes"
-    - Clic a "Gestionar Preguntes"
     - Clic a "Veure Respostes".
 - Feedback visual: 
     - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges indicant el resultat de la operació.
-    - Aparició de missatges d'error descriptius quan fallen les validacions.
-
-- Persistència: Ús dels fitxers de persistència per a la gestió de les respostes a les preguntes.
+- Persistència: Ús dels fitxers de persistència per a la gestió de les respostes a les enquestes.

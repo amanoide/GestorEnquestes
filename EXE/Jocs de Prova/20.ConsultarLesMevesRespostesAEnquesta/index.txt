@@ -1,4 +1,4 @@
-# Joc de Prova - Cas d'ús #21 Consultar Les Meves Respostes a Enquesta
+# Joc de Prova - Cas d'ús #20 Consultar Les Meves Respostes a Enquesta
 
 Objecte de la prova:
 Cas d'ús: Consultar Les Meves Respostes a Enquesta.

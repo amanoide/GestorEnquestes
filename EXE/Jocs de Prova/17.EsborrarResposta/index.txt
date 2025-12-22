@@ -1,8 +1,9 @@
-# Joc de Prova - Cas d'ús #20 Consultar Respostes Enquesta
+# Joc de Prova - Cas d'ús #17 Esborrar Resposta
 
 Objecte de la prova:
-Cas d'ús: Consultar Respostes Enquesta.
-Es prova la funcionalitat de consultar les respostes a una enquesta al sistema a través de la interfície gràfica, verifiant tant l'èxit de l'operació com la gestió d'errors.
+Cas d'ús: Esborrar Resposta.
+També importarResposta i importarEnquesta si son necessaris.
+Es prova la funcionalitat de esborrar una resposta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
 PREPARACIÓ DE L'ENTORN (OBLIGATORI):
@@ -35,6 +36,7 @@ Estructura dels fitxers de dades preparats:
 - dades/usuaris/TestUser1.json: Fitxer de l'usuari preexistent per iniciar sessió
 - dades/usuaris/TestUser2.json: Fitxer de l'usuari preexistent per iniciar sessió
 
+
 El sistema utilitza internament per a la persistència:
 - respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
 
@@ -43,29 +45,22 @@ Valors estudiats:
 Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
 
 Conjunts de dades de comportament homogeni:
-1. Consultar resposta a enquesta vàlida amb respostes(Cas d'èxit): 
+1. Esborrar resposta vàlida (Cas d'èxit): 
    - Precondicions: Existeix una resposta a una enquesta.
    - Accions: 
       1. Login amb TestUser1 i password123
-      2. Clic al botó "Gestionar les Meves Enquestes".
-      3. Selecciona la enquesta a consultar, en aquest cas 'enc_completa'.
-      4. Clic a "Veure Respostes.
-      5. Resultat esperat: Aparició de la finestra de respostes a la enquesta seleccionada per cada pregunta de l'enquesta.
+      2. Clic al botó "Gestionar les Meves Respostes".
+      3. Seleccioa la resposta "enc_completa" a esborrar.
+      4. Clic al botó "Esborrar Totes".
+      5. Clic al botó "Acceptar".
+      6. Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit.
 
-2. Consultar resposta a enquesta vàlida sense respostes(Cas d'error): 
-   - Accions: 
-      1. Login amb TestUser1 i password123
-      2. Clic al botó "Gestionar les Meves Enquestes".
-      3. Selecciona la enquesta a consultar, en aquest cas 'enc_completa'.
-      4. Cilc a "Veure Respostes".
-      5. Resultat esperat: Aparició de les preguntes amb un missatge indicant que no hi ha respostes per aquelles preguntes.
-
+No hi ha casos d'error ja que el sistema no permet esborrar respostes sense seleccionar cap resposta i sense que l'usuari sigui el seu autor.
 
 Efectes estudiats:
-- Interacció amb la GUI: Selecció de la enquesta a consultar i clic a botons.
-- Accions: 
-    - Clic al botó "Gestionar les Meves Enquestes"
-    - Clic a "Veure Respostes".
+- Interacció amb la GUI: Clic a Gestionar les Meves Respostes, clic al botó "Esborrar Totes".
+
 - Feedback visual: 
-    - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges indicant el resultat de la operació.
-- Persistència: Ús dels fitxers de persistència per a la gestió de les respostes a les enquestes.
+    - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges d'èxit ("Resposta esborrada correctament!").
+
+- Persistència: Verificació que la resposta s'ha esborrat correctament del fitxer de persistència després de l'operació exitosa.
