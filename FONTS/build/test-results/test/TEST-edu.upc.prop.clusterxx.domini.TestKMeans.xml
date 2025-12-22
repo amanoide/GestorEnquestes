@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeans" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:07:32" hostname="MacBook-Air-de-Joan.local" time="0.0">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestKMeans" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:29:45" hostname="DARI" time="0.001">
   <properties/>
-  <testcase name="testFitRebutjaKZero" classname="edu.upc.prop.clusterxx.domini.TestKMeans" time="0.0"/>
+  <testcase name="testFitRebutjaKZero" classname="edu.upc.prop.clusterxx.domini.TestKMeans" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

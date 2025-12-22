@@ -71,6 +71,15 @@ dependencies {
     
 }
 
+javadoc {
+    destinationDir = file("../DOCS/javadoc")
+    options.encoding = 'UTF-8'
+    options.docEncoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    failOnError = false
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
 tasks.named('run', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestPerfil" tests="12" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:07:32" hostname="MacBook-Air-de-Joan.local" time="0.003">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestPerfil" tests="12" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:29:45" hostname="DARI" time="0.014">
   <properties/>
-  <testcase name="testPerfilLlegibleTruncat" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
-  <testcase name="testQualitatSilhouetteDesconeguda" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
+  <testcase name="testPerfilLlegibleTruncat" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.004"/>
+  <testcase name="testQualitatSilhouetteDesconeguda" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.001"/>
   <testcase name="testConstructoraCompleta" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
-  <testcase name="testQualitatSilhouettePobra" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.001"/>
-  <testcase name="testQualitatSilhouetteExcelent" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
+  <testcase name="testQualitatSilhouettePobra" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
+  <testcase name="testQualitatSilhouetteExcelent" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.001"/>
   <testcase name="testQualitatSilhouetteAcceptable" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
-  <testcase name="testToStringAmbClustering" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.001"/>
+  <testcase name="testToStringAmbClustering" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.006"/>
   <testcase name="testQualitatSilhouetteBona" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
   <testcase name="testQualitatSilhouetteMoltPobra" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
   <testcase name="testTeClusteringSenseVector" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
   <testcase name="testConstructoraBasica" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.001"/>
-  <testcase name="testTeClusteringSenseIndex" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.0"/>
+  <testcase name="testTeClusteringSenseIndex" classname="edu.upc.prop.clusterxx.domini.TestPerfil" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

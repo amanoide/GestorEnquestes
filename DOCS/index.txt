@@ -1,6 +1,6 @@
 DIRECTORI: ENTREGA/DOCS
 
-Descripcio: Documentacio del projecte - Sistema de Gestio d'Enquestes amb Clustering
+Descripció: Documentació del projecte - Sistema de Gestió d'Enquestes amb Clustering
 
 Contingut:
 
@@ -8,28 +8,13 @@ index.txt
   Aquest fitxer. Índex del directori DOCS.
 
 membres.txt
-  Llista dels membres del grup amb informació de contacte.
+  Llista dels membres del grup amb els correus electrònics.
 
 Autoria.txt
   Documentació detallada de l'autoria de cada fitxer del projecte.
 
-INSTRUCCIONS_COMPILACIO.MD
-  Instruccions tècniques per a la compilació i execució del projecte amb Gradle.
+MANUAL D'USUARI.pdf
+  Manual d'usuari del sistema amb instruccions d'ús de l'aplicació.
 
-ALGORITMES IMPLEMENTATS.pdf
-  Document que descriu els algorismes implementats en el projecte.
-
-Descripció casos d'ús.pdf
-  Descripció textual dels casos d'ús del sistema.
-
-Descripció del diagrama conceptual de dades.pdf
-  Document que descriu el model conceptual de dades.
-
-Diagrama de casos d'ús.pdf
-  Diagrama gràfic dels casos d'ús del sistema.
-
-Diagrama del model conceptual de dades.pdf
-  Diagrama que mostra el model conceptual de dades del domini.
-
-ESTRUCTURES_DADES.pdf
-  Descripció de les estructures de dades utilitzades en el projecte.
+javadoc/
+  Documentació JavaDoc generada automàticament del codi font.

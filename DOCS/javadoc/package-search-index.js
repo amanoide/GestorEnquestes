@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"edu.upc.prop.clusterxx"},{"l":"edu.upc.prop.clusterxx.domini.classes"},{"l":"edu.upc.prop.clusterxx.domini.controladors"},{"l":"edu.upc.prop.clusterxx.persistencia"},{"l":"edu.upc.prop.clusterxx.presentacio"}];updateSearchResults();

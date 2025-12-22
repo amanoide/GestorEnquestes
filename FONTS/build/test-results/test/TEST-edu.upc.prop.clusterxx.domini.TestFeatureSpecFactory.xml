@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" tests="11" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:07:32" hostname="MacBook-Air-de-Joan.local" time="0.001">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" tests="11" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:29:45" hostname="DARI" time="0.013">
   <properties/>
-  <testcase name="testPreguntaNominalSimple" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
+  <testcase name="testPreguntaNominalSimple" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.003"/>
   <testcase name="testPreguntaNumericaAmbRang" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
   <testcase name="testFromPreguntaNull" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
   <testcase name="testFromPreguntasAmbElementNull" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.001"/>
   <testcase name="testFromPreguntasDiverses" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
   <testcase name="testPreguntaTextLliure" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
-  <testcase name="testPreguntaOrdenada" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
+  <testcase name="testPreguntaOrdenada" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.008"/>
   <testcase name="testFromPreguntasNull" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
-  <testcase name="testPreguntaNominalMultiple" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
+  <testcase name="testPreguntaNominalMultiple" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.001"/>
   <testcase name="testPreguntaNumericaSenseRang" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
   <testcase name="testPreguntaNominalSenseOpcions" classname="edu.upc.prop.clusterxx.domini.TestFeatureSpecFactory" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
