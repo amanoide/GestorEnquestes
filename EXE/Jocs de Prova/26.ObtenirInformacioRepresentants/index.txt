@@ -9,6 +9,12 @@ Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades
 - fitxers_dades/enquestes/enc_completa/enquesta.json: Enquesta amb 5 preguntes de diferents tipus i 5 participants.
 - fitxers_dades/enquestes/enc_completa/preguntes/: Directori amb les 5 preguntes (p1.json a p5.json).
 - fitxers_dades/enquestes/enc_completa/respostes/: Directori amb les respostes dels 5 usuaris (TestUser1.json a TestUser5.json).
+- fitxers_dades/enquestes/enc_un_participant/enquesta.json: Enquesta amb 2 preguntes i 1 sol participant (per proves d'error).
+- fitxers_dades/enquestes/enc_un_participant/preguntes/: Directori amb les 2 preguntes (p1.json i p2.json).
+- fitxers_dades/enquestes/enc_un_participant/respostes/: Directori amb la resposta de TestUser1.json.
+- fitxers_dades/enquestes/enc_buida/enquesta.json: Enquesta buida sense cap participant (per proves d'error).
+- fitxers_dades/enquestes/enc_buida/preguntes/: Directori amb les 2 preguntes (p1.json i p2.json).
+- fitxers_dades/enquestes/enc_buida/respostes/: Directori buit (sense cap resposta).
 - fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1" (creador de l'enquesta), amb contrasenya: "password123".
 - fitxers_dades/usuaris/TestUser2.json a TestUser5.json: Usuaris participants, amb contrasenya: "password123".
 
@@ -136,33 +142,6 @@ Conjunts de dades de comportament homogeni:
          - Si són molt llargues, es pot mostrar en múltiples línies amb format adequat.
          - El text manté la seva formatació original.
 
-9. Exportar informació detallada dels representants (Funcionalitat addicional):
-   - Precondicions: S'ha executat una anàlisi sobre 'enc_completa'.
-   - Accions:
-      1. Login amb TestUser1 i password123.
-      2. Consultar informació dels representants.
-      3. Clic al botó "Exportar Informació Detallada".
-      4. Resultat esperat:
-         - Es genera un fitxer (TXT, JSON o PDF) amb tota la informació.
-         - Format del fitxer inclou: per cada cluster (índex, representant, respostes completes, mida, Silhouette).
-         - El fitxer és fàcilment llegible i processable.
-
-10. Comparar respostes de representants entre diferents algorismes (Validació avançada):
-    - Precondicions:
-      * S'han executat dues anàlisis sobre la mateixa enquesta:
-        - Anàlisi 1: K=2, K-Means++
-        - Anàlisi 2: K=2, K-Medoids
-    - Accions:
-       1. Login amb TestUser1 i password123.
-       2. Consultar informació de representants de l'anàlisi 1.
-       3. Anotar les respostes dels representants.
-       4. Repetir l'anàlisi amb K-Medoids.
-       5. Consultar informació de representants de l'anàlisi 2.
-       6. Comparar.
-       7. Resultat esperat:
-          - Els representants poden ser diferents usuaris segons l'algorisme.
-          - K-Medoids tendeix a triar medoides (punts reals) que sovint són els mateixos representants.
-          - Es mostren les respostes actualitzades dels nous representants.
 
 Efectes estudiats:
 - Interacció amb la GUI:

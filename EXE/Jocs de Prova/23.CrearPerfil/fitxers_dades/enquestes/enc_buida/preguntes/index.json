@@ -1,0 +1,12 @@
+[
+    {
+        "id": "p1",
+        "text": "Edat?",
+        "tipus": "NUMERICA"
+    },
+    {
+        "id": "p2",
+        "text": "Nom?",
+        "tipus": "TEXT_LLIURE"
+    }
+]

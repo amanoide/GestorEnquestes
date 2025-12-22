@@ -1,19 +1,25 @@
 [
     {
         "id": "p5_TestUser5",
-        "text": "Tennis, Natació",
+        "text": "3,4",
         "idPregunta": "p5",
         "username": "TestUser5"
     },
     {
+        "id": "p4_TestUser5",
+        "text": "Tarragona",
+        "idPregunta": "p4",
+        "username": "TestUser5"
+    },
+    {
         "id": "p1_TestUser5",
-        "text": "182",
+        "text": "182.0",
         "idPregunta": "p1",
         "username": "TestUser5"
     },
     {
         "id": "p2_TestUser5",
-        "text": "28",
+        "text": "Advocat",
         "idPregunta": "p2",
         "username": "TestUser5"
     },

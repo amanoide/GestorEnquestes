@@ -7,25 +7,25 @@
     },
     {
         "id": "p5_TestUser2",
-        "text": "Futbol, Bàsquet",
+        "text": "1,2",
         "idPregunta": "p5",
         "username": "TestUser2"
     },
     {
         "id": "p2_TestUser2",
-        "text": "23",
+        "text": "Metge",
         "idPregunta": "p2",
         "username": "TestUser2"
     },
     {
         "id": "p1_TestUser2",
-        "text": "175",
+        "text": "175.0",
         "idPregunta": "p1",
         "username": "TestUser2"
     },
     {
         "id": "p3_TestUser2",
-        "text": "Excelente",
+        "text": "Excelent",
         "idPregunta": "p3",
         "username": "TestUser2"
     }

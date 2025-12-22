@@ -9,6 +9,9 @@ Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades
 - fitxers_dades/enquestes/enc_completa/enquesta.json: Enquesta amb tots els tipus de pregunta i respostes de múltiples usuaris.
 - fitxers_dades/enquestes/enc_completa/preguntes/: Directori amb les preguntes de l'enquesta (p1.json, p2.json, p3.json, p4.json, p5.json).
 - fitxers_dades/enquestes/enc_completa/respostes/: Directori amb les respostes dels usuaris (TestUser1.json, TestUser2.json, TestUser3.json, TestUser4.json, TestUser5.json).
+- fitxers_dades/enquestes/enc_buida/enquesta.json: Enquesta sense respostes per provar errors (cas 5).
+- fitxers_dades/enquestes/enc_buida/preguntes/: Directori amb les preguntes de l'enquesta buida (p1.json, p2.json).
+- fitxers_dades/enquestes/enc_buida/respostes/: Directori buit (sense respostes).
 - fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1", amb contrasenya: "password123".
 - fitxers_dades/usuaris/TestUser2.json: Usuari "TestUser2", amb contrasenya: "password123".
 - fitxers_dades/usuaris/TestUser3.json: Usuari "TestUser3", amb contrasenya: "password123".
@@ -38,13 +41,14 @@ Conjunts de dades de comportament homogeni:
      * Iteracions màximes: 100
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Gestionar Perfils".
-      3. Clic a "Crear Perfils amb Clustering".
-      4. Seleccionar l'enquesta 'enc_completa' de la llista.
-      5. Introduir nombre de clusters: 2
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista.
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Manual(tu esculls k)
+      5. Introduir valor de k (nobre de clusters): 2
       6. Seleccionar algorisme: K-Means++
-      7. Clic al botó "Generar Perfils".
-      8. Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit indicant que s'han creat 2 perfils.
+      7. Clic al botó "Analitzar".
+      8. Resultat esperat: Aparició de finestra amb els resultats de l'analisi on s'han creat 2 perfils.
       9. Els perfils apareixen a la llista de perfils amb noms descriptius generats automàticament.
 
 2. Crear perfils amb K-Medoids vàlid (Cas d'èxit):
@@ -55,27 +59,29 @@ Conjunts de dades de comportament homogeni:
      * Iteracions màximes: 100
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Gestionar Perfils".
-      3. Clic a "Crear Perfils amb Clustering".
-      4. Seleccionar l'enquesta 'enc_completa' de la llista.
-      5. Introduir nombre de clusters: 3
-      6. Seleccionar algorisme: K-Medoids
-      7. Clic al botó "Generar Perfils".
-      8. Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit indicant que s'han creat 3 perfils.
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista.
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Manual(tu esculls k)
+      6. Introduir valor de k (nombre de clusters): 3
+      7. Seleccionar algorisme: K-Medoids
+      8. Clic al botó "Analitzar".
+      9. Resultat esperat: Aparició de finestra amb els resultats de l'analisi on s'han creat 3 perfils.
+      10. Els perfils apareixen a la llista de perfils amb noms descriptius generats automàticament.
 
-3. Nombre de clusters invàlid - K=0 (Valors límit/invàlids):
+3. Nombre de clusters invàlid - K<2 (Valors límit/invàlids):
    - Precondicions: Mateix que cas 1.
    - Paràmetres:
-     * Nombre de clusters (K): 0
+     * Nombre de clusters (K): Menys de 2
      * Algorisme: K-Means++
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Gestionar Perfils".
-      3. Clic a "Crear Perfils amb Clustering".
-      4. Seleccionar l'enquesta 'enc_completa' de la llista.
-      5. Introduir nombre de clusters: 0
-      6. Clic al botó "Generar Perfils".
-      7. Resultat esperat: Missatge d'error indicant que el nombre de clusters ha de ser almenys 1.
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista.
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Manual(tu esculls k)
+      6. Intentar introduir un valor de k menor que 2 (0 o 1).
+      7. Resultat esperat: El programa no permet introduir un valor inferior a 2. La interfície valida automàticament que k ≥ 2.
 
 4. Nombre de clusters superior al nombre de respostes (Valors límit/invàlids):
    - Precondicions: Enquesta amb només 5 respostes.
@@ -84,48 +90,48 @@ Conjunts de dades de comportament homogeni:
      * Algorisme: K-Means++
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Gestionar Perfils".
-      3. Clic a "Crear Perfils amb Clustering".
-      4. Seleccionar l'enquesta 'enc_completa' de la llista.
-      5. Introduir nombre de clusters: 10
-      6. Clic al botó "Generar Perfils".
-      7. Resultat esperat: Missatge d'error indicant que el nombre de clusters no pot superar el nombre de respostes (K ≤ N).
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista.
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Manual(tu esculls k)
+      6. Introduir valor de k (nombre de clusters): 10
+      7. Seleccionar algorisme: K-Means++
+      8. Clic al botó "Analitzar".
+      9. Resultat esperat: Missatge d'error indicant que el nombre de clusters no pot superar el nombre de respostes (K ≤ N).
 
 5. Enquesta sense respostes (Cas d'error):
-   - Precondicions: Existeix una enquesta sense cap resposta.
+   - Precondicions: Existeix una enquesta 'enc_buida' sense cap resposta.
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Gestionar Perfils".
-      3. Clic a "Crear Perfils amb Clustering".
-      4. Seleccionar una enquesta sense respostes de la llista.
-      5. Introduir nombre de clusters: 2
-      6. Seleccionar algorisme: K-Means++
-      7. Clic al botó "Generar Perfils".
-      8. Resultat esperat: Missatge d'error indicant que l'enquesta no té suficients respostes per generar perfils (mínim 2 respostes).
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_buida' de la llista.
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Manual(tu esculls k)
+      6. Introduir valor de k (nombre de clusters): 10
+      7. Seleccionar algorisme: K-Means++
+      8. Clic al botó "Analitzar".
+      9. Resultat esperat: Missatge d'error indicant que l'enquesta no té suficients respostes per generar perfils (mínim 2 respostes).
 
 6. Usuari no autoritzat (Cas d'error):
    - Precondicions: L'usuari autenticat NO és el creador de l'enquesta.
    - Accions:
       1. Login amb TestUser2 i password123.
-      2. Clic al botó "Gestionar Perfils".
-      3. Clic a "Crear Perfils amb Clustering".
-      4. Seleccionar l'enquesta 'enc_completa' (creada per TestUser1) de la llista.
-      5. Resultat esperat: L'enquesta no apareix a la llista o apareix missatge d'error indicant que només el creador pot generar perfils.
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Resultat esperat: L'enquesta 'enc_completa' (creada per TestUser1) no apareix a la llista d'enquestes disponibles per analitzar, o apareix missatge d'error indicant que només el creador pot generar perfils.
 
 7. Verificar contingut dels perfils generats (Validació de dades):
-   - Precondicions: S'han generat perfils en els casos anteriors.
+   - Precondicions: S'han generat perfils en els casos anteriors (cas 1 o cas 2).
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Gestionar Perfils".
-      3. Seleccionar un perfil de la llista.
-      4. Clic a "Veure Detalls del Perfil".
-      5. Resultat esperat: 
-         - Es mostra el nom del cluster generat automàticament.
-         - Es mostra el vector característic (centroid/medoid del cluster).
-         - Es mostra el nombre d'usuaris al cluster.
-         - Es mostra la mètrica Silhouette (qualitat del clustering, rang [-1, 1]).
-         - Es mostra l'algorisme utilitzat (K-Means++, K-Medoids, etc.).
-         - Es mostra la llista de preguntes utilitzades per al clustering.
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista.
+      4. Clic al botó "Veure Analisi".
+      5. Observar la informació mostrada a la finestra de resultats.
+      6. Resultat esperat: 
+         Es mostra una finestra amb informació detallada de l'anàlisi de clustering que inclou:
+         - Informació general: nom de l'enquesta, nombre total de clusters i algorisme utilitzat
+         - Per cada cluster: nom automàtic, descripció, nombre de membres, qualitat interpretada, coeficient Silhouette i característiques representatives (valors del centroid/medoid per cada pregunta)
+         - Estadístiques generals: total de participants analitzats i qualitat mitjana dels clusters
 
 Efectes estudiats:
 - Interacció amb la GUI:

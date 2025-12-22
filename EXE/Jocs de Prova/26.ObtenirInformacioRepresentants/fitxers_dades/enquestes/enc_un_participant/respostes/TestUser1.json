@@ -1,0 +1,8 @@
+{
+    "id_enquesta": "enc_un_participant",
+    "id_usuari": "TestUser1",
+    "respostes": {
+        "p1": "25",
+        "p2": "Test User One"
+    }
+}

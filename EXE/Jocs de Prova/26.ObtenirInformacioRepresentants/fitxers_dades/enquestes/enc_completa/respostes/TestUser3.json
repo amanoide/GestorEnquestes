@@ -1,19 +1,19 @@
 [
     {
         "id": "p4_TestUser3",
-        "text": "Madrid",
+        "text": "Lleida",
         "idPregunta": "p4",
         "username": "TestUser3"
     },
     {
         "id": "p5_TestUser3",
-        "text": "Caminar",
+        "text": "5",
         "idPregunta": "p5",
         "username": "TestUser3"
     },
     {
         "id": "p1_TestUser3",
-        "text": "165",
+        "text": "165.0",
         "idPregunta": "p1",
         "username": "TestUser3"
     },

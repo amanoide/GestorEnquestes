@@ -1,0 +1,9 @@
+{
+    "creador": "TestUser1",
+    "descripcio": "Enquesta per provar clustering amb un sol participant",
+    "titol": "Enquesta amb un participant",
+    "numPreguntes": 2,
+    "id": "enc_un_participant",
+    "numParticipants": 1,
+    "participants": ["TestUser1"]
+}

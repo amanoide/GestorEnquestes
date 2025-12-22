@@ -9,6 +9,12 @@ Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades
 - fitxers_dades/enquestes/enc_completa/enquesta.json: Enquesta amb 5 preguntes de diferents tipus i 5 participants.
 - fitxers_dades/enquestes/enc_completa/preguntes/: Directori amb les 5 preguntes (p1.json a p5.json).
 - fitxers_dades/enquestes/enc_completa/respostes/: Directori amb les respostes dels 5 usuaris (TestUser1.json a TestUser5.json).
+- fitxers_dades/enquestes/enc_un_participant/enquesta.json: Enquesta amb 2 preguntes i 1 sol participant (per proves d'error).
+- fitxers_dades/enquestes/enc_un_participant/preguntes/: Directori amb les 2 preguntes (p1.json i p2.json).
+- fitxers_dades/enquestes/enc_un_participant/respostes/: Directori amb la resposta de TestUser1.json.
+- fitxers_dades/enquestes/enc_buida/enquesta.json: Enquesta buida sense cap participant (per proves d'error).
+- fitxers_dades/enquestes/enc_buida/preguntes/: Directori amb les 2 preguntes (p1.json i p2.json).
+- fitxers_dades/enquestes/enc_buida/respostes/: Directori buit (sense cap resposta).
 - fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1" (creador de l'enquesta), amb contrasenya: "password123".
 - fitxers_dades/usuaris/TestUser2.json a TestUser5.json: Usuaris participants, amb contrasenya: "password123".
 
@@ -37,12 +43,14 @@ Conjunts de dades de comportament homogeni:
      * Iteracions màximes: 100
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Analitzar Enquestes".
+      2. Clic al botó "Anàlisi de Clustering"
       3. Seleccionar l'enquesta 'enc_completa' de la llista.
-      4. Introduir nombre de clusters: 2
-      5. Seleccionar algorisme: K-Means++
-      6. Clic al botó "Executar Anàlisi".
-      7. Resultat esperat: 
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Manual(tu esculls k)
+      6. Introduir valor de k (nombre de clusters): 2
+      7. Seleccionar algorisme: K-Means++
+      8. Clic al botó "Analitzar".
+      9. Resultat esperat: 
          - Aparició de finestra amb els resultats del clustering.
          - Es mostren 2 clusters amb les seves característiques.
          - Es mostra el coeficient Silhouette global (entre -1 i 1).
@@ -57,85 +65,90 @@ Conjunts de dades de comportament homogeni:
      * Iteracions màximes: 100
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Analitzar Enquestes".
-      3. Seleccionar l'enquesta 'enc_completa'.
-      4. Introduir nombre de clusters: 3
-      5. Seleccionar algorisme: K-Medoids
-      6. Clic al botó "Executar Anàlisi".
-      7. Resultat esperat: Es generen 3 clusters amb medoides reals del dataset.
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista.
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Manual(tu esculls k)
+      6. Introduir valor de k (nombre de clusters): 3
+      7. Seleccionar algorisme: K-Medoids
+      8. Clic al botó "Analitzar".
+      9. Resultat esperat: Es generen 3 clusters amb medoides reals del dataset.
 
 3. Analitzar enquesta amb optimització automàtica de K (Cas d'èxit):
    - Precondicions: Mateix que cas 1.
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Analitzar Enquestes".
-      3. Seleccionar l'enquesta 'enc_completa'.
-      4. Seleccionar mode: "Automàtic (trobar millor K)"
-      5. Introduir rang de K: mínim=2, màxim=4
-      6. Seleccionar algorisme: K-Means++
-      7. Clic al botó "Executar Anàlisi".
-      8. Resultat esperat:
-         - El sistema prova K=2, K=3, K=4.
-         - Es mostra el Silhouette per cada valor de K.
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista.
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Automàtic(millor k segons silhouette)
+      6. Introduir rang de K: mínim=2, màxim=4
+      7. Seleccionar algorisme: K-Means++
+      8. Clic al botó "Analitzar".
+      9. Resultat esperat:
+         - El sistema prova diferents k.
          - Es selecciona automàticament el K amb millor Silhouette.
+         - Es mostra la k més optima per Silhouette.
          - S'executa l'anàlisi amb el K òptim.
 
 4. Consultar anàlisi prèviament realitzada (Cas d'èxit):
    - Precondicions: S'ha executat prèviament una anàlisi sobre 'enc_completa'.
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Analitzar Enquestes".
-      3. Seleccionar l'enquesta 'enc_completa'.
-      4. Clic al botó "Consultar Anàlisi Existent".
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista.
+      4. Clic al botó "Veure Analisi".
       5. Resultat esperat:
          - Es mostra l'anàlisi guardada sense recalcular.
          - Es mostra la mateixa informació: clusters, Silhouette, perfils.
          - Operació instantània (sense càlcul).
 
-5. K=0 o negatiu (Valors límit/invàlids):
+5. K<2 (Valors límit/invàlids):
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Analitzar Enquestes".
-      3. Seleccionar l'enquesta 'enc_completa'.
-      4. Introduir nombre de clusters: 0
-      5. Clic al botó "Executar Anàlisi".
-      6. Resultat esperat: Missatge d'error "El nombre de clusters ha de ser almenys 1".
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista.
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Manual(tu esculls k)
+      6. Intentar introduir un valor de k menor que 2 (0 o 1).
+      7. Resultat esperat: El programa no permet introduir un valor inferior a 2. La interfície valida automàticament que k ≥ 2.
 
 6. K superior al nombre de participants (Valors límit/invàlids):
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Analitzar Enquestes".
-      3. Seleccionar l'enquesta 'enc_completa' (5 participants).
-      4. Introduir nombre de clusters: 10
-      5. Clic al botó "Executar Anàlisi".
-      6. Resultat esperat: Missatge d'error "K no pot ser superior al nombre de participants (K ≤ 5)".
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_completa' de la llista (5 participants).
+      4. Clic al botó "Analitzar Enquesta".
+      5. Seleccionar: Manual(tu esculls k)
+      6. Introduir valor de k (nombre de clusters): 10
+      7. Seleccionar algorisme: K-Means++
+      8. Clic al botó "Analitzar".
+      9. Resultat esperat: Missatge d'error "K no pot ser superior al nombre de participants (K ≤ 5)".
 
 7. Enquesta sense respostes (Cas d'error):
-   - Precondicions: Existeix una enquesta sense cap resposta.
+   - Precondicions: Existeix una enquesta 'enc_buida' sense cap resposta.
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Analitzar Enquestes".
-      3. Seleccionar una enquesta sense respostes.
-      4. Introduir nombre de clusters: 2
-      5. Clic al botó "Executar Anàlisi".
-      6. Resultat esperat: Missatge d'error "Aquesta enquesta no té respostes. Necessites almenys 2 participants per fer clustering".
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Seleccionar l'enquesta 'enc_buida' de la llista.
+      4. Clic al botó "Analitzar Enquesta".
+      5. Resultat esperat: Missatge d'error "Aquesta enquesta no té respostes. Necessites almenys 2 participants per fer clustering".
 
 8. Enquesta amb només 1 participant (Cas d'error):
    - Precondicions: Existeix una enquesta amb només 1 resposta.
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Clic al botó "Analitzar Enquestes".
+      2. Clic al botó "Anàlisi de Clustering"
       3. Seleccionar l'enquesta amb 1 sol participant.
-      4. Introduir nombre de clusters: 2
-      5. Clic al botó "Executar Anàlisi".
-      6. Resultat esperat: Missatge d'error "Necessites almenys 2 participants per fer clustering. Aquesta enquesta només té 1 participant".
+      4. Clic al botó "Analitzar Enquesta".
+      5. Resultat esperat: Missatge d'error "Necessites almenys 2 participants per fer clustering. Aquesta enquesta només té 1 participant".
 
 9. Usuari no creador intenta analitzar (Cas d'error):
    - Precondicions: TestUser2 NO és el creador de 'enc_completa'.
    - Accions:
       1. Login amb TestUser2 i password123.
-      2. Clic al botó "Analitzar Enquestes".
-      3. Resultat esperat: L'enquesta 'enc_completa' no apareix a la llista (només les enquestes creades per TestUser2).
+      2. Clic al botó "Anàlisi de Clustering"
+      3. Resultat esperat: L'enquesta 'enc_completa' (creada per TestUser1) no apareix a la llista d'enquestes disponibles per analitzar.
 
 10. Verificar assignació de perfils als usuaris (Validació de dades):
     - Precondicions: S'ha executat una anàlisi sobre 'enc_completa' amb K=2.

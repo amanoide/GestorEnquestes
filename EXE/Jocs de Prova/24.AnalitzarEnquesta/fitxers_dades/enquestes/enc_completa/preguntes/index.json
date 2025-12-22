@@ -6,8 +6,8 @@
     },
     {
         "id": "p2",
-        "text": "Quants anys tens?",
-        "tipus": "NUMERICA"
+        "text": "Quina és la teva professió?",
+        "tipus": "TEXT_LLIURE"
     },
     {
         "id": "p3",
@@ -17,11 +17,11 @@
     {
         "id": "p4",
         "text": "Provincia",
-        "tipus": "TEXT_LLIURE"
+        "tipus": "QUALITATIVA_NO_ORDENADA_SIMPLE"
     },
     {
         "id": "p5",
         "text": "Quins esports practiques?",
-        "tipus": "TEXT_LLIURE"
+        "tipus": "QUALITATIVA_NO_ORDENADA_MULTIPLE"
     }
 ]
