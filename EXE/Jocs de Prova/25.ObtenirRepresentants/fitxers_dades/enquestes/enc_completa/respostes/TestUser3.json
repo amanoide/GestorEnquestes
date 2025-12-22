@@ -1,0 +1,32 @@
+[
+    {
+        "id": "p4_TestUser3",
+        "text": "Madrid",
+        "idPregunta": "p4",
+        "username": "TestUser3"
+    },
+    {
+        "id": "p5_TestUser3",
+        "text": "Caminar",
+        "idPregunta": "p5",
+        "username": "TestUser3"
+    },
+    {
+        "id": "p1_TestUser3",
+        "text": "165",
+        "idPregunta": "p1",
+        "username": "TestUser3"
+    },
+    {
+        "id": "p2_TestUser3",
+        "text": "45",
+        "idPregunta": "p2",
+        "username": "TestUser3"
+    },
+    {
+        "id": "p3_TestUser3",
+        "text": "Regular",
+        "idPregunta": "p3",
+        "username": "TestUser3"
+    }
+]

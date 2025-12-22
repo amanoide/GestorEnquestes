@@ -1,0 +1,23 @@
+{
+    "id": "p4",
+    "text": "Provincia",
+    "opcions": [
+        {
+            "id": 1,
+            "text": "Barcelona"
+        },
+        {
+            "id": 2,
+            "text": "Lleida"
+        },
+        {
+            "id": 3,
+            "text": "Girona"
+        },
+        {
+            "id": 4,
+            "text": "Tarragona"
+        }
+    ],
+    "tipus": "QUALITATIVA_NO_ORDENADA_SIMPLE"
+}

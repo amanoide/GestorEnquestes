@@ -1,0 +1,265 @@
+# Joc de Prova - Cas d'ús #26 Obtenir Informació Representants
+
+Objecte de la prova:
+Cas d'ús: Obtenir Informació Representants.
+Es prova la funcionalitat de consultar informació DETALLADA dels usuaris representants de cada cluster, incloent-hi les seves respostes específiques a totes les preguntes de l'enquesta. Mentre que el cas d'ús #25 identifica QUINS usuaris són representants, aquest cas mostra QUÈ van respondre exactament aquests representants, permetent entendre millor el perfil característic de cada grup.
+
+Fitxers de dades necessaris:
+Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades/ a ../../../../dades/.
+- fitxers_dades/enquestes/enc_completa/enquesta.json: Enquesta amb 5 preguntes de diferents tipus i 5 participants.
+- fitxers_dades/enquestes/enc_completa/preguntes/: Directori amb les 5 preguntes (p1.json a p5.json).
+- fitxers_dades/enquestes/enc_completa/respostes/: Directori amb les respostes dels 5 usuaris (TestUser1.json a TestUser5.json).
+- fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1" (creador de l'enquesta), amb contrasenya: "password123".
+- fitxers_dades/usuaris/TestUser2.json a TestUser5.json: Usuaris participants, amb contrasenya: "password123".
+
+Credencials de login:
+- Usuari: TestUser1 (creador de l'enquesta)
+- Contrasenya: password123
+
+Precondicions necessàries:
+- Cal haver executat prèviament una anàlisi de clustering sobre l'enquesta 'enc_completa'.
+- S'han generat perfils i identificat representants per cada cluster.
+- Les respostes dels participants estan disponibles a la persistència.
+
+El sistema utilitza internament per a la persistència:
+- enquestes/enc_completa/respostes/{username}.json: Respostes completes de cada usuari.
+- enquestes/enc_completa/preguntes/: Preguntes de l'enquesta per mostrar el text complet.
+- perfils/{id_perfil}.json: Fitxers amb informació del clustering incloent representants.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Consultar informació detallada dels representants (Cas d'èxit):
+   - Precondicions:
+     * S'ha executat una anàlisi sobre 'enc_completa' amb K=2 clusters.
+     * El sistema ha identificat els representants de cada cluster.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Navegar a resultats de l'anàlisi.
+      3. Clic al botó "Veure Informació Detallada dels Representants".
+      4. Resultat esperat:
+         - Es mostra informació de 2 representants (un per cluster).
+         - Per cada representant es mostra:
+           * Índex del cluster (Cluster 1, Cluster 2).
+           * Username del representant.
+           * Llista de totes les seves respostes amb format: "Pregunta: Resposta".
+           * Mida del cluster (nombre de membres).
+           * Qualitat del cluster (Silhouette).
+         - Format exemple:
+           ```
+           Cluster 1:
+             Usuari representant: TestUser2
+             Respostes:
+               - Alçada (cm): 180
+               - Edat: 25
+               - Salut: Bona
+               - Ciutat: Barcelona
+               - Esports: Futbol, Natació
+             Mida del cluster: 3 membres
+             Qualitat (Silhouette): 0.756
+           ```
+
+2. Consultar representants amb K=3 clusters (Cas d'èxit):
+   - Precondicions: S'ha executat una anàlisi amb K=3.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar informació detallada dels representants.
+      3. Resultat esperat:
+         - Es mostren 3 blocs d'informació, un per cada representant.
+         - Cada bloc conté totes les respostes del representant.
+
+3. Comparar respostes entre representants (Validació de dades):
+   - Precondicions: S'ha executat una anàlisi amb K=2 sobre 'enc_completa'.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar informació dels representants.
+      3. Comparar les respostes dels dos representants.
+      4. Resultat esperat:
+         - Les respostes dels representants mostren diferències clares que expliquen per què estan en clusters diferents.
+         - Exemple: Representant Cluster 1 (alçada alta, edat jove) vs Representant Cluster 2 (alçada baixa, edat més gran).
+         - Les diferències justifiquen la separació en clusters.
+
+4. Representant amb respostes de tots els tipus de pregunta (Validació de dades):
+   - Precondicions: L'enquesta 'enc_completa' té preguntes TEXT_LLIURE, NUMERICA, QUALITATIVA_ORDENADA, etc.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar informació dels representants.
+      3. Resultat esperat:
+         - Es mostren respostes de tots els tipus correctament formatejades:
+           * TEXT_LLIURE: Text com a string.
+           * NUMERICA: Valors numèrics.
+           * QUALITATIVA_ORDENADA: Valor de l'escala (Ex: "Bona").
+           * QUALITATIVA_NO_ORDENADA_SIMPLE: Opció seleccionada (Ex: "Barcelona").
+           * QUALITATIVA_NO_ORDENADA_MULTIPLE: Múltiples opcions (Ex: "Futbol, Natació").
+
+5. Enquesta sense anàlisi realitzada (Cas d'error):
+   - Precondicions: Existeix una enquesta sense cap anàlisi de clustering.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Intentar consultar informació de representants d'una enquesta no analitzada.
+      3. Resultat esperat: Missatge d'error "No es pot obtenir informació de representants. L'enquesta no té una anàlisi de clustering realitzada."
+
+6. Cluster amb un sol membre (Validació límit):
+   - Precondicions:
+     * S'ha executat una anàlisi amb K=5 sobre 'enc_completa' (5 participants).
+     * Un cluster només té 1 membre.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar informació dels representants.
+      3. Resultat esperat:
+         - El cluster amb 1 membre mostra l'únic participant com a representant.
+         - Es mostren totes les seves respostes.
+         - Mida del cluster: 1 membre.
+         - Silhouette pot ser 0 o proper a 0.
+
+7. Interpretar respostes segons qualitat Silhouette (Validació de qualitat):
+   - Precondicions: S'ha executat una anàlisi sobre 'enc_completa'.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar informació dels representants.
+      3. Observar la relació entre Silhouette i representativitat.
+      4. Resultat esperat:
+         - Cluster amb Silhouette alt (≥0.7): El representant és molt típic del seu grup, les seves respostes són molt representatives.
+         - Cluster amb Silhouette baix (<0.25): El representant és menys representatiu, pot haver superposició amb altres clusters.
+         - Es mostra la mètrica Silhouette per ajudar a interpretar la fiabilitat.
+
+8. Respostes amb text llarg (Validació de format):
+   - Precondicions:
+     * L'enquesta té preguntes de text lliure.
+     * Un representant ha donat respostes llargues.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar informació dels representants.
+      3. Resultat esperat:
+         - Les respostes llargues es mostren completes sense truncar.
+         - Si són molt llargues, es pot mostrar en múltiples línies amb format adequat.
+         - El text manté la seva formatació original.
+
+9. Exportar informació detallada dels representants (Funcionalitat addicional):
+   - Precondicions: S'ha executat una anàlisi sobre 'enc_completa'.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar informació dels representants.
+      3. Clic al botó "Exportar Informació Detallada".
+      4. Resultat esperat:
+         - Es genera un fitxer (TXT, JSON o PDF) amb tota la informació.
+         - Format del fitxer inclou: per cada cluster (índex, representant, respostes completes, mida, Silhouette).
+         - El fitxer és fàcilment llegible i processable.
+
+10. Comparar respostes de representants entre diferents algorismes (Validació avançada):
+    - Precondicions:
+      * S'han executat dues anàlisis sobre la mateixa enquesta:
+        - Anàlisi 1: K=2, K-Means++
+        - Anàlisi 2: K=2, K-Medoids
+    - Accions:
+       1. Login amb TestUser1 i password123.
+       2. Consultar informació de representants de l'anàlisi 1.
+       3. Anotar les respostes dels representants.
+       4. Repetir l'anàlisi amb K-Medoids.
+       5. Consultar informació de representants de l'anàlisi 2.
+       6. Comparar.
+       7. Resultat esperat:
+          - Els representants poden ser diferents usuaris segons l'algorisme.
+          - K-Medoids tendeix a triar medoides (punts reals) que sovint són els mateixos representants.
+          - Es mostren les respostes actualitzades dels nous representants.
+
+Efectes estudiats:
+- Interacció amb la GUI:
+    * Accés des del menú d'anàlisi o vista de resultats.
+    * Selecció d'enquesta analitzada.
+    * Botó "Veure Informació Detallada dels Representants" o similar.
+    * Visualització en forma de llista o panells expandibles.
+
+- Feedback visual:
+    * Cada representant es mostra en un panell o secció clarament delimitada.
+    * Format de llista amb vinyetes per a les respostes: "- Pregunta: Resposta".
+    * Destacat visual per al username del representant.
+    * Colors o badges per indicar qualitat del cluster (Silhouette).
+    *Scrollable si hi ha molts clusters o respostes llargues.
+
+- Informació mostrada per cada representant:
+    * Índex del cluster (Cluster 1, Cluster 2, ...).
+    * Username del representant.
+    * Llista completa de respostes:
+      - Pregunta 1: Resposta del representant.
+      - Pregunta 2: Resposta del representant.
+      - ...
+    * Mida del cluster (nombre de membres).
+    * Coeficient Silhouette del cluster (qualitat).
+
+- Format de respostes segons tipus de pregunta:
+    * TEXT_LLIURE: Text complet de la resposta.
+    * NUMERICA: Valor numèric (Ex: "25", "180.5").
+    * QUALITATIVA_ORDENADA: Valor de l'escala (Ex: "Bona", "Excel·lent").
+    * QUALITATIVA_NO_ORDENADA_SIMPLE: Opció seleccionada (Ex: "Barcelona", "Madrid").
+    * QUALITATIVA_NO_ORDENADA_MULTIPLE: Múltiples opcions separades per comes (Ex: "Futbol, Natació, Tennis").
+
+- Càlcul i obtenció de dades:
+    * El mètode `obtenirInfoRepresentants(ResultatClustering, List<Pregunta>)` recorre tots els representants.
+    * Per cada representant:
+      - Obté el vector de respostes del ResultatClustering.
+      - Obté el username corresponent.
+      - Itera sobre les preguntes i les respostes en paral·lel.
+      - Construeix un string formatat amb "Pregunta: Resposta".
+      - Afegeix mida del cluster i Silhouette.
+    * Retorna una llista de strings amb la informació de cada representant.
+
+- Validacions:
+    * Verificació que ResultatClustering no sigui null.
+    * Verificació que la llista de preguntes no sigui null.
+    * Verificació que el nombre de respostes coincideixi amb el nombre de preguntes.
+    * Si hi ha discrepància, es mostren només les respostes disponibles fins al mínim.
+    * Verificació de permisos: només el creador pot veure aquesta informació detallada.
+
+- Persistència:
+    * Operació de només lectura (no modifica res).
+    * Les respostes es recuperen del ResultatClustering guardat durant l'anàlisi.
+    * Les preguntes es carreguen des de la persistència de l'enquesta.
+    * No es fan consultes directes als fitxers de respostes dels usuaris.
+
+- Utilitat de la funcionalitat:
+    * Permet entendre QUÈ caracteritza cada grup identificat pel clustering.
+    * Útil per a estudis qualitatius: veure exemples reals de cada perfil.
+    * Permet validar si el clustering té sentit: si les respostes dels representants són similars dins del cluster i diferents entre clusters.
+    * Ajuda a generar descripcions narratives dels clusters per a informes.
+    * Facilita la interpretació dels resultats per a usuaris no tècnics.
+
+- Diferència amb altres casos d'ús:
+    * Cas #25 (Obtenir Representants): Identifica QUINS usuaris són representants.
+    * Cas #26 (Obtenir Informació Representants): Mostra QUÈ van respondre els representants.
+    * Cas #24 (Analitzar Enquesta): Mostra estadístiques globals i perfils característics (centroides), però no respostes reals d'usuaris específics.
+
+- Comparativa de representants entre anàlisis:
+    * Si es repeteix l'anàlisi amb diferents paràmetres, els representants poden canviar.
+    * La informació mostrada sempre reflecteix l'última anàlisi realitzada.
+    * Útil per comparar: "Amb K=2, el representant del Cluster 1 respon X, però amb K=3, el representant respon Y".
+
+- Interpretació segons Silhouette:
+    * Silhouette ≥ 0.7: Les respostes del representant són molt típiques del seu grup, fiables.
+    * Silhouette 0.5-0.7: Bon representant, respostes característiques.
+    * Silhouette 0.25-0.5: Representant acceptable, pot haver alguna superposició.
+    * Silhouette < 0.25: Representant poc fiable, respostes poden no ser tan representatives.
+
+- Casos especials:
+    * Si un cluster té 1 sol membre: L'únic membre és el representant, es mostren totes les seves respostes.
+    * Si una pregunta no té resposta del representant (NULL): Es mostra "(Sense resposta)".
+    * Si hi ha més respostes que preguntes o viceversa: Es mostra fins al mínim per evitar errors.
+
+- Exportació de dades:
+    * Format TXT: Fàcil de llegir, bon per a documentació.
+    * Format JSON: Estructurat, bon per a processament automàtic.
+    * Format PDF: Professional, bon per a presentacions.
+    * Contingut: Enquesta, data, algoritme, K, i per cada cluster (índex, representant, respostes completes, mida, Silhouette).
+
+- Experiència d'usuari:
+    * Visualització clara i organitzada de la informació.
+    * Fàcil de navegar entre diferents representants.
+    * Permet copiar/seleccionar text per a ús extern.
+    * Opcional: Botons per veure el perfil complet de cada representant (enllaçar amb cas #25).
+    * Opcional: Comparar les respostes del representant amb les respostes del centroid (perfil mitjà).
+
+- Validació de qualitat del clustering:
+    * Si les respostes dels representants dins d'un mateix cluster són molt diferents, pot indicar que K és massa baix o que el clustering no és adequat.
+    * Si les respostes entre representants de diferents clusters són molt similars, pot indicar que K és massa alt o que hi ha superposició.
+    * Aquesta informació ajuda l'usuari a decidir si cal re-executar l'anàlisi amb diferents paràmetres.

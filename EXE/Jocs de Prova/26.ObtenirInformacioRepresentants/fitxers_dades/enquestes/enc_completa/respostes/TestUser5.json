@@ -1,0 +1,26 @@
+[
+    {
+        "id": "p5_TestUser5",
+        "text": "Tennis, Natació",
+        "idPregunta": "p5",
+        "username": "TestUser5"
+    },
+    {
+        "id": "p1_TestUser5",
+        "text": "182",
+        "idPregunta": "p1",
+        "username": "TestUser5"
+    },
+    {
+        "id": "p2_TestUser5",
+        "text": "28",
+        "idPregunta": "p2",
+        "username": "TestUser5"
+    },
+    {
+        "id": "p3_TestUser5",
+        "text": "Bona",
+        "idPregunta": "p3",
+        "username": "TestUser5"
+    }
+]

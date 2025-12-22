@@ -1,0 +1,32 @@
+[
+    {
+        "id": "p5_TestUser4",
+        "text": "Cap",
+        "idPregunta": "p5",
+        "username": "TestUser4"
+    },
+    {
+        "id": "p1_TestUser4",
+        "text": "170",
+        "idPregunta": "p1",
+        "username": "TestUser4"
+    },
+    {
+        "id": "p4_TestUser4",
+        "text": "València",
+        "idPregunta": "p4",
+        "username": "TestUser4"
+    },
+    {
+        "id": "p2_TestUser4",
+        "text": "50",
+        "idPregunta": "p2",
+        "username": "TestUser4"
+    },
+    {
+        "id": "p3_TestUser4",
+        "text": "Mala",
+        "idPregunta": "p3",
+        "username": "TestUser4"
+    }
+]

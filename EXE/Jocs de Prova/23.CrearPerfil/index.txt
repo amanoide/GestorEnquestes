@@ -1,0 +1,164 @@
+# Joc de Prova - Cas d'ús #23 Crear Perfil
+
+Objecte de la prova:
+Cas d'ús: Crear Perfil.
+Es prova la funcionalitat de generar perfils d'usuaris mitjançant clustering (agrupació automàtica) basant-se en les respostes a una enquesta. El sistema aplica algorismes de clustering (K-Means, K-Means++ o K-Medoids) per identificar grups d'usuaris amb patrons de resposta similars i crear perfils representatius de cada grup.
+
+Fitxers de dades necessaris:
+Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades/ a ../../../../dades/.
+- fitxers_dades/enquestes/enc_completa/enquesta.json: Enquesta amb tots els tipus de pregunta i respostes de múltiples usuaris.
+- fitxers_dades/enquestes/enc_completa/preguntes/: Directori amb les preguntes de l'enquesta (p1.json, p2.json, p3.json, p4.json, p5.json).
+- fitxers_dades/enquestes/enc_completa/respostes/: Directori amb les respostes dels usuaris (TestUser1.json, TestUser2.json, TestUser3.json, TestUser4.json, TestUser5.json).
+- fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1", amb contrasenya: "password123".
+- fitxers_dades/usuaris/TestUser2.json: Usuari "TestUser2", amb contrasenya: "password123".
+- fitxers_dades/usuaris/TestUser3.json: Usuari "TestUser3", amb contrasenya: "password123".
+- fitxers_dades/usuaris/TestUser4.json: Usuari "TestUser4", amb contrasenya: "password123".
+- fitxers_dades/usuaris/TestUser5.json: Usuari "TestUser5", amb contrasenya: "password123".
+
+Credencials de login:
+- Usuari: TestUser1
+- Contrasenya: password123
+
+El sistema utilitza internament per a la persistència:
+- perfils/index.json: Per emmagatzemar la llista de perfils generats. Emmagatzema metadades dels objectes de la classe Perfil.
+- perfils/{id_perfil}.json: Fitxer individual per cada perfil amb totes les dades del clustering (vector característic, cluster, silhouette, algoritme, etc.).
+- enquestes/enc_completa/respostes/: Per obtenir les respostes dels usuaris participants necessàries per al clustering.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Crear perfils amb K-Means++ vàlid (Cas d'èxit):
+   - Precondicions: 
+     * Existeix una enquesta 'enc_completa' amb almenys 5 usuaris que han respost.
+     * L'usuari està autenticat i és el creador de l'enquesta.
+   - Paràmetres:
+     * Nombre de clusters (K): 2
+     * Algorisme: K-Means++
+     * Iteracions màximes: 100
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Clic al botó "Gestionar Perfils".
+      3. Clic a "Crear Perfils amb Clustering".
+      4. Seleccionar l'enquesta 'enc_completa' de la llista.
+      5. Introduir nombre de clusters: 2
+      6. Seleccionar algorisme: K-Means++
+      7. Clic al botó "Generar Perfils".
+      8. Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit indicant que s'han creat 2 perfils.
+      9. Els perfils apareixen a la llista de perfils amb noms descriptius generats automàticament.
+
+2. Crear perfils amb K-Medoids vàlid (Cas d'èxit):
+   - Precondicions: Mateix que cas 1.
+   - Paràmetres:
+     * Nombre de clusters (K): 3
+     * Algorisme: K-Medoids
+     * Iteracions màximes: 100
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Clic al botó "Gestionar Perfils".
+      3. Clic a "Crear Perfils amb Clustering".
+      4. Seleccionar l'enquesta 'enc_completa' de la llista.
+      5. Introduir nombre de clusters: 3
+      6. Seleccionar algorisme: K-Medoids
+      7. Clic al botó "Generar Perfils".
+      8. Resultat esperat: Aparició de finestra de confirmació amb missatge d'èxit indicant que s'han creat 3 perfils.
+
+3. Nombre de clusters invàlid - K=0 (Valors límit/invàlids):
+   - Precondicions: Mateix que cas 1.
+   - Paràmetres:
+     * Nombre de clusters (K): 0
+     * Algorisme: K-Means++
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Clic al botó "Gestionar Perfils".
+      3. Clic a "Crear Perfils amb Clustering".
+      4. Seleccionar l'enquesta 'enc_completa' de la llista.
+      5. Introduir nombre de clusters: 0
+      6. Clic al botó "Generar Perfils".
+      7. Resultat esperat: Missatge d'error indicant que el nombre de clusters ha de ser almenys 1.
+
+4. Nombre de clusters superior al nombre de respostes (Valors límit/invàlids):
+   - Precondicions: Enquesta amb només 5 respostes.
+   - Paràmetres:
+     * Nombre de clusters (K): 10
+     * Algorisme: K-Means++
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Clic al botó "Gestionar Perfils".
+      3. Clic a "Crear Perfils amb Clustering".
+      4. Seleccionar l'enquesta 'enc_completa' de la llista.
+      5. Introduir nombre de clusters: 10
+      6. Clic al botó "Generar Perfils".
+      7. Resultat esperat: Missatge d'error indicant que el nombre de clusters no pot superar el nombre de respostes (K ≤ N).
+
+5. Enquesta sense respostes (Cas d'error):
+   - Precondicions: Existeix una enquesta sense cap resposta.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Clic al botó "Gestionar Perfils".
+      3. Clic a "Crear Perfils amb Clustering".
+      4. Seleccionar una enquesta sense respostes de la llista.
+      5. Introduir nombre de clusters: 2
+      6. Seleccionar algorisme: K-Means++
+      7. Clic al botó "Generar Perfils".
+      8. Resultat esperat: Missatge d'error indicant que l'enquesta no té suficients respostes per generar perfils (mínim 2 respostes).
+
+6. Usuari no autoritzat (Cas d'error):
+   - Precondicions: L'usuari autenticat NO és el creador de l'enquesta.
+   - Accions:
+      1. Login amb TestUser2 i password123.
+      2. Clic al botó "Gestionar Perfils".
+      3. Clic a "Crear Perfils amb Clustering".
+      4. Seleccionar l'enquesta 'enc_completa' (creada per TestUser1) de la llista.
+      5. Resultat esperat: L'enquesta no apareix a la llista o apareix missatge d'error indicant que només el creador pot generar perfils.
+
+7. Verificar contingut dels perfils generats (Validació de dades):
+   - Precondicions: S'han generat perfils en els casos anteriors.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Clic al botó "Gestionar Perfils".
+      3. Seleccionar un perfil de la llista.
+      4. Clic a "Veure Detalls del Perfil".
+      5. Resultat esperat: 
+         - Es mostra el nom del cluster generat automàticament.
+         - Es mostra el vector característic (centroid/medoid del cluster).
+         - Es mostra el nombre d'usuaris al cluster.
+         - Es mostra la mètrica Silhouette (qualitat del clustering, rang [-1, 1]).
+         - Es mostra l'algorisme utilitzat (K-Means++, K-Medoids, etc.).
+         - Es mostra la llista de preguntes utilitzades per al clustering.
+
+Efectes estudiats:
+- Interacció amb la GUI:
+    * Selecció d'enquesta des d'una llista desplegable o taula.
+    * Introducció de paràmetres numèrics (nombre de clusters, iteracions).
+    * Selecció d'algorisme des d'un combo box (K-Means, K-Means++, K-Medoids).
+    * Clic a botons: "Generar Perfils", "Veure Detalls", "Eliminar Perfil".
+
+- Feedback visual:
+    * Aparició de finestres emergents (pop-ups) amb missatges d'èxit o error.
+    * Actualització automàtica de la llista de perfils després de la creació.
+    * Indicadors visuals durant el procés de clustering (barra de progrés o spinner).
+    * Visualització de detalls del perfil amb format llegible.
+
+- Validacions:
+    * Verificació que K (nombre de clusters) sigui vàlid: 1 ≤ K ≤ N (nombre de respostes).
+    * Verificació que l'enquesta tingui almenys 2 respostes per fer clustering.
+    * Verificació de permisos: només el creador de l'enquesta pot generar perfils.
+    * Validació del format de les dades: les respostes han de ser vectoritzables.
+
+- Persistència:
+    * Validació que els perfils es guarden correctament a perfils/{id}.json.
+    * Validació que l'índex de perfils s'actualitza a perfils/index.json.
+    * Verificació que els perfils contenen totes les dades necessàries: id, descripció, idEnquesta, clusterIndex, clusterNom, clusterMida, clusterSilhouette, algoritme, vectorCaracteristic, nomsPreguntes.
+    * Els perfils generats han de ser recuperables després de reiniciar l'aplicació.
+
+- Algorismes de clustering:
+    * Verificar que K-Means++ produeix clusters amb qualitat acceptable (Silhouette > 0).
+    * Verificar que K-Medoids utilitza punts reals del dataset com a medoids.
+    * Verificar que els centroids/medoids són vectors de la mateixa dimensionalitat que les respostes.
+    * Comparar qualitat entre algorismes: K-Means++ sol produir millor Silhouette que K-Means estàndard.
+
+- Generació automàtica de noms:
+    * Els noms dels clusters es generen automàticament basant-se en el centroid/medoid.
+    * Els noms són descriptius i reflecteixen les característiques del cluster.
+    * Format típic: "Cluster X: [característica1, característica2, ...]"
