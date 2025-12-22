@@ -1,71 +1,81 @@
-# Joc de Prova - Cas d'us #3 Tancar Sessio
+# Joc de Prova - Cas d'ús #3 Tancar Sessió
 
 Objecte de la prova:
-Cas d'us: Tancar Sessio.
-Es prova la funcionalitat de tancar la sessio d'un usuari autenticat al sistema a traves de la interficie grafica, verificant que l'usuari pot sortir correctament i tornar a la pantalla d'inici de sessio.
+Cas d'ús: Tancar Sessió.
+Es prova la funcionalitat de tancar la sessió d'un usuari autenticat al sistema a través de la interfície gràfica, verificant que l'usuari pot sortir correctament i tornar a la pantalla d'inici de sessió.
 
 Fitxers de dades necessaris:
-Per executar les proves, cal copiar manualment el contingut de fitxers_dades/ a FONTS/dades/.
-- fitxers_dades/usuaris/: Conte l'usuari "testuser" amb contrasenya "test1234"
+Per executar totes les proves, cal preparar l'entorn amb els fitxers de dades inclosos.
 
-Credencials d'acces:
-- Usuari: testuser
-- Contrasenya: test1234
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. Tancar l'aplicació si està oberta
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. Tornar a iniciar l'aplicació
 
-El sistema utilitza internament per a la persistencia:
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari preexistent per iniciar sessió
+
+El sistema utilitza internament per a la persistència:
 - usuaris/index.json: Per emmagatzemar la llista d'usuaris. Emmagatzema objectes de la classe Usuari.
 
 Valors estudiats:
-Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalencia i valors limit definits per les regles de negoci del domini.
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
 
 Conjunts de dades de comportament homogeni:
-1. Tancar sessio despres d'un inici de sessio exitos (Cas d'exit):
-   - Pre-condicio: L'usuari "testuser" ha iniciat sessio correctament.
-   - Resultat esperat: La sessio es tanca i l'usuari torna a la pantalla d'inici de sessio.
+1. Tancar sessió després d'un inici de sessió exitós (Cas d'èxit):
+   - Pre-condició: L'usuari "Usuari" ha iniciat sessió correctament.
    - Accions:
-      1. Copiar fitxers_dades/ a FONTS/dades/.
-      2. Iniciar l'aplicacio.
-      3. Introduir usuari: testuser.
-      4. Introduir contrasenya: test1234.
-      5. Clic al boto "Iniciar Sessio".
-      6. Verificar que s'obre la finestra principal.
-      7. Clic al boto "Tancar Sessio" del menu.
-      8. Verificar que es tanca la finestra principal.
-      9. Verificar que es mostra novament la pantalla d'inici de sessio.
+      1. Iniciar l'aplicació.
+      2. Introduir usuari: Usuari.
+      3. Introduir contrasenya: 1234.
+      4. Clic al botó "Iniciar Sessió".
+      5. Verificar que s'obre la finestra principal.
+      6. Clic al botó "Tancar Sessió" del menú.
+      7. Verificar que es tanca la finestra principal.
+      8. Verificar que es mostra novament la pantalla d'inici de sessió.
+   - Resultat esperat: La sessió es tanca i l'usuari torna a la pantalla d'inici de sessió.
 
-2. Inici de sessio despres de tancar sessio (Cicle complet):
-   - Pre-condicio: L'usuari ha tancat sessio previament.
-   - Resultat esperat: L'usuari pot tornar a iniciar sessio sense problemes.
+2. Inici de sessió després de tancar sessió (Cicle complet):
+   - Pre-condició: L'usuari ha tancat sessió prèviament.
    - Accions:
-      1. Seguir les accions del cas 1 per tancar sessio.
-      2. A la pantalla d'inici de sessio, introduir usuari: testuser.
-      3. Introduir contrasenya: test1234.
-      4. Clic al boto "Iniciar Sessio".
+      1. Seguir les accions del cas 1 per tancar sessió.
+      2. A la pantalla d'inici de sessió, introduir usuari: Usuari.
+      3. Introduir contrasenya: 1234.
+      4. Clic al botó "Iniciar Sessió".
       5. Verificar que s'obre novament la finestra principal.
       6. Verificar que l'usuari pot accedir a les funcionalitats.
+   - Resultat esperat: L'usuari pot tornar a iniciar sessió sense problemes.
 
-3. Persistencia de dades despres de tancar sessio:
-   - Pre-condicio: L'usuari ha realitzat canvis al sistema abans de tancar sessio.
-   - Resultat esperat: Les dades es mantenen despres de tancar i tornar a iniciar sessio.
+3. Persistència de dades després de tancar sessió:
+   - Pre-condició: L'usuari ha realitzat canvis al sistema abans de tancar sessió.
    - Accions:
-      1. Iniciar sessio amb testuser / test1234.
-      2. (Opcional) Crear una enquesta o realitzar alguna accio que modifiqui dades.
-      3. Clic al boto "Tancar Sessio".
-      4. Tornar a iniciar sessio amb testuser / test1234.
+      1. Iniciar sessió amb Usuari / 1234.
+      2. (Opcional) Crear una enquesta o realitzar alguna acció que modifiqui dades.
+      3. Clic al botó "Tancar Sessió".
+      4. Tornar a iniciar sessió amb Usuari / 1234.
       5. Verificar que les dades creades/modificades es mantenen.
+   - Resultat esperat: Les dades es mantenen després de tancar i tornar a iniciar sessió.
 
 Efectes estudiats:
-- Interaccio amb la GUI: Introduccio de credencials i navegacio entre pantalles.
+- Interacció amb la GUI: Introducció de credencials i navegació entre pantalles.
 - Accions: 
-   - Clic al boto "Iniciar Sessio".
-   - Clic al boto "Tancar Sessio" del menu.
+   - Clic al botó "Iniciar Sessió".
+   - Clic al botó "Tancar Sessió" del menú.
    - Tancament de la finestra principal.
-   - Obertura de la pantalla d'inici de sessio.
+   - Obertura de la pantalla d'inici de sessió.
 - Feedback visual: 
     - Tancament correcte de la finestra principal.
-    - Retorn a la pantalla d'inici de sessio.
-    - Possibilitat de tornar a iniciar sessio.
-- Gestio de sessio: 
-    - La sessio activa es neteja correctament.
-    - L'estat de l'aplicacio es reinicia adequadament.
-- Persistencia: Les dades de l'usuari es mantenen correctament despres de tancar sessio.
+    - Retorn a la pantalla d'inici de sessió.
+    - Possibilitat de tornar a iniciar sessió.
+- Gestió de sessió: 
+    - La sessió activa es neteja correctament.
+    - L'estat de l'aplicació es reinicia adequadament.
+- Persistència: Les dades de l'usuari es mantenen correctament després de tancar sessió.

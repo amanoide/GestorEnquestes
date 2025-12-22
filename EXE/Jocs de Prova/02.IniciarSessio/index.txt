@@ -1,75 +1,86 @@
-# Joc de Prova - Cas d'us #2 Iniciar Sessio
+# Joc de Prova - Cas d'ús #2 Iniciar Sessió
 
 Objecte de la prova:
-Cas d'us: Iniciar Sessio.
-Es prova la funcionalitat d'iniciar sessio al sistema a traves de la interficie grafica, verificant tant l'exit de l'operacio com la gestio d'errors.
+Cas d'ús: Iniciar Sessió.
+Es prova la funcionalitat d'iniciar sessió al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-Per executar les proves, cal que existeixin usuaris al sistema. Es poden crear manualment o utilitzar:
-- fitxers_dades/usuaris/: Conte usuaris de prova amb les seves contrasenyes.
+Per executar totes les proves, cal preparar l'entorn amb els fitxers de dades inclosos.
 
-Credencials d'acces d'exemple:
-- Usuari: testuser
-- Contrasenya: test1234
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. Tancar l'aplicació si està oberta
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. Tornar a iniciar l'aplicació
 
-El sistema utilitza internament per a la persistencia:
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari preexistent per iniciar sessió
+
+El sistema utilitza internament per a la persistència:
 - usuaris/index.json: Per emmagatzemar la llista d'usuaris. Emmagatzema objectes de la classe Usuari.
 
 Valors estudiats:
-Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalencia i valors limit definits per les regles de negoci del domini.
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
 
 Conjunts de dades de comportament homogeni:
-1. Inici de sessio valid (Cas d'exit):
-   - Usuari: "testuser" (existent)
-   - Contrasenya: "test1234" (correcta)
-   - Resultat esperat: Acces concedit i obertura de la finestra principal.
+1. Inici de sessió vàlid (Cas d'èxit):
+   - Usuari: "Usuari" (existent)
+   - Contrasenya: "1234" (correcta)
    - Accions:
-      1. Iniciar l'aplicacio.
-      2. Introduir usuari: testuser.
-      3. Introduir contrasenya: test1234.
-      4. Clic al boto "Iniciar Sessio".
+      1. Iniciar l'aplicació.
+      2. Introduir usuari: Usuari.
+      3. Introduir contrasenya: 1234.
+      4. Clic al botó "Iniciar Sessió".
       5. Verificar que s'obre la finestra principal.
+   - Resultat esperat: Accés concedit i obertura de la finestra principal.
 
-2. Usuari inexistent (Validacio d'existencia):
+2. Usuari inexistent (Validació d'existència):
    - Usuari: "usuariNoExistent" (no existent al sistema)
    - Contrasenya: "qualsevol"
-   - Resultat esperat: Error indicant credencials incorrectes.
    - Accions:
-      1. Iniciar l'aplicacio.
+      1. Iniciar l'aplicació.
       2. Introduir usuari: usuariNoExistent.
       3. Introduir contrasenya: qualsevol.
-      4. Clic al boto "Iniciar Sessio".
-      5. Verificar missatge d'error.
-
-3. Contrasenya incorrecta (Validacio d'autenticacio):
-   - Usuari: "testuser" (existent)
-   - Contrasenya: "contrasenyaIncorrecta" (incorrecta)
+      4. Clic al botó "Iniciar Sessió".
+      5. Verificar missatge d'error ("Credencials incorrectes").  
    - Resultat esperat: Error indicant credencials incorrectes.
-   - Accions:
-      1. Iniciar l'aplicacio.
-      2. Introduir usuari: testuser.
-      3. Introduir contrasenya: contrasenyaIncorrecta.
-      4. Clic al boto "Iniciar Sessio".
-      5. Verificar missatge d'error.
 
-4. Camps buits (Valors limit/invalids):
+3. Contrasenya incorrecta (Validació d'autenticació):
+   - Usuari: "Usuari" (existent)
+   - Contrasenya: "contrasenyaIncorrecta" (incorrecta)
+   - Accions:
+      1. Iniciar l'aplicació.
+      2. Introduir usuari: Usuari.
+      3. Introduir contrasenya: contrasenyaIncorrecta.
+      4. Clic al botó "Iniciar Sessió".
+      5. Verificar missatge d'error ("Credencials incorrectes").
+   - Resultat esperat: Error indicant credencials incorrectes.
+
+4. Camps buits (Valors límit/invàlids):
    - Usuari: "" (buit)
    - Contrasenya: "" (buit)
-   - Resultat esperat: Error indicant que els camps no poden estar buits.
    - Accions:
-      1. Iniciar l'aplicacio.
+      1. Iniciar l'aplicació.
       2. Deixar el camp usuari buit.
       3. Deixar el camp contrasenya buit.
-      4. Clic al boto "Iniciar Sessio".
-      5. Verificar missatge d'error.
+      4. Clic al botó "Iniciar Sessió".
+      5. Verificar missatge d'error ("Camps obligatoris").
+   - Resultat esperat: Error indicant que els camps no poden estar buits.
 
 Efectes estudiats:
-- Interaccio amb la GUI: Introduccio de text als camps "Usuari" i "Contrasenya".
+- Interacció amb la GUI: Introducció de text als camps "Usuari" i "Contrasenya".
 - Accions: 
-   - Clic al boto "Iniciar Sessio".
-   - Navegacio de la pantalla d'inici de sessio a la finestra principal.
+   - Clic al botó "Iniciar Sessió".
+   - Navegació de la pantalla d'inici de sessió a la finestra principal.
 - Feedback visual: 
-    - Aparicio de finestres emergents (pop-ups) amb missatges d'exit (benvinguda).
-    - Aparicio de missatges d'error i d'exit descriptius quan fallen les validacions (credencials incorrectes, camps buits) o son correctes.
-- Persistencia: Verificacio que es carreguen correctament les dades de l'usuari des del fitxer de persistencia.
-- Gestio de sessio: L'usuari autenticat queda amb sessio activa i pot accedir a les funcionalitats del sistema.
+    - Aparició de finestres emergents (pop-ups) amb missatges d'èxit (benvinguda).
+    - Aparició de missatges d'error i d'èxit descriptius quan fallen les validacions (credencials incorrectes, camps buits) o són correctes.
+- Persistència: Verificació que es carreguen correctament les dades de l'usuari des del fitxer de persistència.
+- Gestió de sessió: L'usuari autenticat queda amb sessió activa i pot accedir a les funcionalitats del sistema.

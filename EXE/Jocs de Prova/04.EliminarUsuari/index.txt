@@ -1,87 +1,91 @@
-# Joc de Prova - Cas d'us #4 Eliminar Usuari
+# Joc de Prova - Cas d'ús #4 Eliminar Usuari
 
 Objecte de la prova:
-Cas d'us: Eliminar Usuari.
-Es prova la funcionalitat d'eliminar el compte d'un usuari autenticat del sistema a traves de la interficie grafica, verificant tant l'exit de l'operacio com la gestio d'errors.
+Cas d'ús: Eliminar Usuari.
+Es prova la funcionalitat d'eliminar el compte d'un usuari autenticat del sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-Per executar les proves, cal copiar manualment el contingut de fitxers_dades/ a FONTS/dades/.
-- fitxers_dades/usuaris/: Conte l'usuari "testuser" amb contrasenya "test1234"
+Per executar totes les proves, cal preparar l'entorn amb els fitxers de dades inclosos.
 
-Credencials d'acces:
-- Usuari: testuser
-- Contrasenya: test1234
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. Tancar l'aplicació si està oberta
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. Tornar a iniciar l'aplicació
 
-El sistema utilitza internament per a la persistencia:
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari preexistent per iniciar sessió
+
+El sistema utilitza internament per a la persistència:
 - usuaris/index.json: Per emmagatzemar la llista d'usuaris. Emmagatzema objectes de la classe Usuari.
-- usuaris/{username}/usuari.json: Per emmagatzemar les dades de cada usuari individual.
+- usuaris/{username}.json: Per emmagatzemar les dades de cada usuari individual.
 
 Valors estudiats:
-Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalencia i valors limit definits per les regles de negoci del domini.
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
 
 Conjunts de dades de comportament homogeni:
-1. Eliminacio exitosa d'usuari (Cas d'exit):
-   - Pre-condicio: L'usuari "testuser" existeix al sistema i ha iniciat sessio.
-   - Resultat esperat: L'usuari s'elimina correctament, es tanca la sessio i es torna a la pantalla d'inici.
+1. Eliminació exitosa d'usuari (Cas d'èxit):
+   - Pre-condició: L'usuari "Usuari" existeix al sistema i ha iniciat sessió.
    - Accions:
-      1. Copiar fitxers_dades/ a FONTS/dades/.
-      2. Iniciar l'aplicacio.
-      3. Introduir usuari: testuser.
-      4. Introduir contrasenya: test1234.
-      5. Clic al boto "Iniciar Sessio".
-      6. Verificar que s'obre la finestra principal.
-      7. Clic al menu "Opcions" o equivalent.
-      8. Clic a l'opcio "Eliminar el meu compte".
-      9. Confirmar l'eliminacio al dialeg de confirmacio.
-      10. Verificar missatge d'exit.
-      11. Verificar que es tanca la finestra principal i es torna a la pantalla d'inici.
+      1. Iniciar l'aplicació.
+      2. Introduir usuari: Usuari.
+      3. Introduir contrasenya: 1234.
+      4. Clic al botó "Iniciar Sessió".
+      5. Verificar que s'obre la finestra principal.
+      6. Clic a l'opció "Eliminar el meu compte".
+      7. Confirmar l'eliminació al diàleg de confirmació.
+      8. Verificar missatge d'èxit ("L'usuari Usuari ha estat eliminat correctament").
+      9. Verificar que es tanca la finestra principal i es torna a la pantalla d'inici.
+   - Resultat esperat: L'usuari s'elimina correctament, es tanca la sessió i es torna a la pantalla d'inici.
 
-2. Cancel·lacio de l'eliminacio:
-   - Pre-condicio: L'usuari "testuser" ha iniciat sessio.
-   - Resultat esperat: L'usuari cancel·la l'operacio i el compte no s'elimina.
+2. Cancel·lació de l'eliminació:
+   - Pre-condició: L'usuari "Usuari" ha iniciat sessió.
    - Accions:
-      1. Copiar fitxers_dades/ a FONTS/dades/.
-      2. Iniciar sessio amb testuser / test1234.
-      3. Clic al menu "Opcions" o equivalent.
-      4. Clic a l'opcio "Eliminar el meu compte".
-      5. Clic al boto "Cancel·lar" al dialeg de confirmacio.
-      6. Verificar que es tanca el dialeg sense eliminar l'usuari.
-      7. Verificar que l'usuari continua amb sessio activa.
+      1. Iniciar sessió amb Usuari / 1234.
+      2. Clic a l'opció "Eliminar el meu compte".
+      3. Clic al botó "No" al diàleg de confirmació.
+      4. Verificar que es tanca el diàleg sense eliminar l'usuari.
+      5. Verificar que l'usuari continua amb sessió activa.
+   - Resultat esperat: L'usuari cancel·la l'operació i el compte no s'elimina.
 
-3. Verificacio de persistencia despres d'eliminar:
-   - Pre-condicio: L'usuari "testuser" ha estat eliminat.
-   - Resultat esperat: L'usuari ja no existeix i no pot iniciar sessio.
+3. Verificació de persistència després d'eliminar:
+   - Pre-condició: L'usuari "Usuari" ha estat eliminat.
    - Accions:
       1. Seguir les accions del cas 1 per eliminar l'usuari.
-      2. A la pantalla d'inici de sessio, intentar iniciar sessio amb testuser / test1234.
+      2. A la pantalla d'inici de sessió, intentar iniciar sessió amb Usuari / 1234.
       3. Verificar que es mostra un error de credencials incorrectes.
       4. Verificar que l'usuari no existeix a usuaris/index.json.
+   - Resultat esperat: L'usuari ja no existeix i no pot iniciar sessió.
 
-4. Eliminacio d'usuari amb dades associades:
-   - Pre-condicio: L'usuari "testuser" te enquestes creades.
-   - Resultat esperat: L'usuari s'elimina juntament amb totes les seves dades associades.
+4. Eliminació d'usuari amb dades associades:
+   - Pre-condició: L'usuari "Usuari" té enquestes creades.
    - Accions:
-      1. Copiar fitxers_dades/ a FONTS/dades/.
-      2. Iniciar sessio amb testuser / test1234.
-      3. Crear una enquesta de prova.
-      4. Clic al menu "Opcions" o equivalent.
-      5. Clic a l'opcio "Eliminar el meu compte".
-      6. Confirmar l'eliminacio.
-      7. Verificar que tant l'usuari com les seves enquestes s'han eliminat del sistema.
+      1. Iniciar sessió amb Usuari / 1234.
+      2. Crear una enquesta de prova.
+      3. Clic a l'opció "Eliminar el meu compte".
+      4. Confirmar l'eliminació.
+      5. Verificar que tant l'usuari com les seves enquestes s'han eliminat del sistema.
+   - Resultat esperat: L'usuari s'elimina juntament amb totes les seves dades associades.
 
 Efectes estudiats:
-- Interaccio amb la GUI: Navegacio per menus i confirmacio de dialeg.
+- Interacció amb la GUI: Navegació per menús i confirmació de diàleg.
 - Accions: 
-   - Clic al menu "Opcions".
-   - Clic a l'opcio "Eliminar el meu compte".
-   - Confirmacio o cancel·lacio al dialeg emergent.
+   - Clic a l'opció "Eliminar el meu compte".
+   - Confirmació o cancel·lació al diàleg emergent.
 - Feedback visual: 
-    - Aparicio de dialeg de confirmacio abans d'eliminar.
-    - Missatge d'exit despres de l'eliminacio.
-    - Retorn a la pantalla d'inici de sessio.
-- Persistencia: 
+    - Aparició de diàleg de confirmació abans d'eliminar.
+    - Missatge d'èxit després de l'eliminació.
+    - Retorn a la pantalla d'inici de sessió.
+- Persistència: 
     - L'usuari s'elimina de usuaris/index.json.
-    - La carpeta usuaris/{username}/ s'elimina completament.
+    - El fitxer usuaris/{username}.json s'elimina completament.
     - Les dades associades (enquestes) s'eliminen correctament.
-- Gestio de sessio: La sessio es tanca automaticament despres d'eliminar el compte.
-- Validacio: No es pot tornar a iniciar sessio amb l'usuari eliminat.
+- Gestió de sessió: La sessió es tanca automàticament després d'eliminar el compte.
+- Validació: No es pot tornar a iniciar sessió amb l'usuari eliminat.

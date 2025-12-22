@@ -36,7 +36,7 @@ Conjunts de dades de comportament homogeni:
       3. Introduir usuari: ab.
       4. Introduir contrasenya: validPass.
       5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error.
+      6. Verificar missatge d'error "Error al registrar: El nom d'usuari ha de tenir almenys 3 caracters".
 
 3. Validacio de longitud de contrasenya (Valors limit/invalids):
    - Usuari: "TestUser2"
@@ -48,7 +48,7 @@ Conjunts de dades de comportament homogeni:
       3. Introduir usuari: TestUser2.
       4. Introduir contrasenya: 123.
       5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error.
+      6. Verificar missatge d'error "Error al registrar: La contrasenya ha de tenir almenys 4 caracters".
 
 4. Usuari ja existent (Validacio de duplicats):
    - Usuari: "testuser" (ja existent al sistema)
@@ -60,7 +60,7 @@ Conjunts de dades de comportament homogeni:
       3. Introduir usuari: testuser.
       4. Introduir contrasenya: qualsevol.
       5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error "L'usuari ja existeix".
+      6. Verificar missatge d'error "Error al registrar: L'usuari ja existeix".
 
 5. Camps buits (Valors limit/invalids):
    - Usuari: "" (buit)
@@ -72,7 +72,7 @@ Conjunts de dades de comportament homogeni:
       3. Deixar el camp usuari buit.
       4. Deixar el camp contrasenya buit.
       5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error.
+      6. Verificar missatge d'error "Camps obligatoris"
 
 6. Validacio de longitud minima d'usuari (Valor limit):
    - Usuari: "abc" (Longitud = 3, valor minim valid)
@@ -103,7 +103,7 @@ Efectes estudiats:
 - Accions: 
    - Clic al boto "Crear compte nou".
    - Clic al boto "Crear compte".
-   - Clic al boto "Iniciar sessio" (per tornar a la pantalla d'inici).
+   - Clic al boto "Ja tinc un compte" (per tornar a la pantalla d'inici).
 - Feedback visual: 
     - Aparicio de finestres emergents (pop-ups) amb missatges d'exit ("Usuari registrat correctament!").
     - Aparicio de missatges d'error descriptius quan fallen les validacions (usuari massa curt, contrasenya massa curta, usuari ja existent, camps buits).
