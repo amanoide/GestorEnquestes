@@ -1,0 +1,14 @@
+{
+    "id": "enquesta_test",
+    "titol": "Enquesta de prova",
+    "descripcio": "Enquesta per provar afegir preguntes",
+    "idCreador": "Usuari",
+    "preguntes": [
+        {
+            "id": "p1",
+            "text": "Pregunta existent",
+            "tipus": "text"
+        }
+    ],
+    "participants": []
+}

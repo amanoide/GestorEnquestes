@@ -1,0 +1,23 @@
+{
+    "id": "enquesta_test",
+    "titol": "Enquesta de prova",
+    "descripcio": "Enquesta per provar opcions",
+    "idCreador": "Usuari",
+    "preguntes": [
+        {
+            "id": "p_qual",
+            "text": "Pregunta qualitativa",
+            "tipus": "qualitativa_simple",
+            "opcions": [
+                {"id": 1, "text": "Opció 1"},
+                {"id": 2, "text": "Opció 2"}
+            ]
+        },
+        {
+            "id": "p_text",
+            "text": "Pregunta text",
+            "tipus": "text"
+        }
+    ],
+    "participants": []
+}

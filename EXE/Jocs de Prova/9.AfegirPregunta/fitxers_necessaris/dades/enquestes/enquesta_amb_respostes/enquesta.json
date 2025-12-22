@@ -1,0 +1,14 @@
+{
+    "id": "enquesta_amb_respostes",
+    "titol": "Enquesta amb respostes",
+    "descripcio": "Enquesta tancada a modificacions",
+    "idCreador": "Usuari",
+    "preguntes": [
+        {
+            "id": "p1",
+            "text": "Pregunta contestada",
+            "tipus": "text"
+        }
+    ],
+    "participants": ["AltreUsuari"]
+}

@@ -1,0 +1,18 @@
+[
+    {
+        "id": "enquesta_test",
+        "titol": "Enquesta de prova",
+        "descripcio": "Enquesta per provar modificar preguntes",
+        "creador": "Usuari",
+        "numPreguntes": 1,
+        "numParticipants": 0
+    },
+    {
+        "id": "enquesta_amb_respostes",
+        "titol": "Enquesta amb respostes",
+        "descripcio": "Enquesta tancada",
+        "creador": "Usuari",
+        "numPreguntes": 1,
+        "numParticipants": 1
+    }
+]

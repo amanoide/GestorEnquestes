@@ -1,0 +1,87 @@
+# Joc de Prova - Cas d'ús #13 Modificar Pregunta
+
+Objecte de la prova:
+Cas d'ús: Modificar Pregunta.
+Es prova la funcionalitat de modificar una pregunta existent d'una enquesta de la qual l'usuari és creador.
+
+Fitxers de dades necessaris:
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   MOLT IMPORTANT: Cal seguir aquests passos EN ORDRE per evitar errors
+   
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. TANCAR L'APLICACIÓ si està oberta (obligatori per recarregar dades)
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. TORNAR A INICIAR L'APLICACIÓ (obligatori per carregar les noves dades)
+
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb 'enquesta_test' i 'enquesta_amb_respostes'
+- dades/enquestes/enquesta_test/: Enquesta amb pregunta 'p_modificar'
+- dades/enquestes/enquesta_amb_respostes/: Enquesta amb respostes (per provar error)
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari creador
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box).
+
+Conjunts de dades de comportament homogeni:
+1. Modificar pregunta vàlida (Cas d'èxit):
+   - Enquesta: "enquesta_test"
+   - Pregunta: "p_modificar"
+   - Nou Text: "Pregunta modificada"
+   - Accions:
+      1. Iniciar sessió amb "Usuari" / "1234"
+      2. Clic a "Gestionar les meves enquestes"
+      3. Seleccionar "enquesta_test"
+      4. Clic a "Gestionar Preguntes"
+      5. Seleccionar la pregunta "p_modificar"
+      6. Clic a "Modificar Pregunta"
+      7. Canviar el text a "Pregunta modificada"
+      8. Clic a "Guardar"
+      9. Verificar missatge d'èxit
+   - Resultat esperat: La pregunta s'actualitza amb el nou text.
+
+2. Text buit (Error de validació):
+   - Enquesta: "enquesta_test"
+   - Pregunta: "p_modificar"
+   - Accions:
+      1. Clic a "Modificar Pregunta"
+      2. Esborrar tot el text
+      3. Clic a "Guardar"
+      4. Verificar missatge d'error
+   - Resultat esperat: El sistema rebutja l'operació.
+
+3. Canvi d'ID no permès (Error de validació):
+   - Enquesta: "enquesta_test"
+   - Pregunta: "p_modificar"
+   - Accions:
+      1. Clic a "Modificar Pregunta"
+      2. Intentar canviar l'ID (si el camp és editable) a "altre_id"
+      3. Clic a "Guardar"
+      4. Verificar missatge d'error
+   - Resultat esperat: El sistema rebutja la modificació si l'ID no coincideix (o el camp ID hauria de ser no editable).
+
+4. Enquesta amb respostes (Error de consistència):
+   - Enquesta: "enquesta_amb_respostes"
+   - Pregunta: "p1"
+   - Accions:
+      1. Tornar al menú d'enquestes
+      2. Seleccionar "enquesta_amb_respostes"
+      3. Clic a "Gestionar Preguntes"
+      4. Seleccionar "p1"
+      5. Intentar modificar la pregunta
+      6. Verificar missatge d'error (o botó deshabilitat)
+   - Resultat esperat: El sistema denega l'operació perquè la pregunta ja té respostes (o l'enquesta en té).
+
+5. Usuari no creador (Accés denegat):
+   - Nota: Implícit per la GUI.
+
+Efectes estudiats:
+- Interacció GUI: Edició i guardat.
+- Validacions: Camps obligatoris, consistència d'ID, estat de l'enquesta.
+- Persistència: Els canvis es guarden al fitxer de l'enquesta.

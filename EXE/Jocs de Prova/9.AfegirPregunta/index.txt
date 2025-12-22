@@ -1,0 +1,94 @@
+# Joc de Prova - Cas d'ús #9 Afegir Pregunta
+
+Objecte de la prova:
+Cas d'ús: Afegir Pregunta.
+Es prova la funcionalitat d'afegir una nova pregunta a una enquesta existent de la qual l'usuari és creador, verificant validacions i gestió d'errors.
+
+Fitxers de dades necessaris:
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   MOLT IMPORTANT: Cal seguir aquests passos EN ORDRE per evitar errors
+   
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. TANCAR L'APLICACIÓ si està oberta (obligatori per recarregar dades)
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. TORNAR A INICIAR L'APLICACIÓ (obligatori per carregar les noves dades)
+
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb 'enquesta_test' (sense respostes) i 'enquesta_amb_respostes'
+- dades/enquestes/enquesta_test/: Enquesta buida o amb poques preguntes, sense respostes
+- dades/enquestes/enquesta_amb_respostes/: Enquesta que ja té respostes (per provar error)
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari creador
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit.
+
+Conjunts de dades de comportament homogeni:
+1. Afegir pregunta vàlida (Cas d'èxit):
+   - Enquesta: "enquesta_test"
+   - Nova Pregunta: ID="preg_nova", Text="Pregunta nova de prova", Tipus="text"
+   - Accions:
+      1. Iniciar sessió amb "Usuari" / "1234"
+      2. Clic a "Gestionar les meves enquestes"
+      3. Seleccionar "enquesta_test"
+      4. Clic a "Gestionar Preguntes"
+      5. Clic a "Afegir Pregunta"
+      6. Introduir ID: "preg_nova", Text: "Pregunta nova de prova", Tipus: Text Lliure
+      7. Clic a "Guardar"
+      8. Verificar missatge d'èxit
+   - Resultat esperat: La pregunta s'afegeix a l'enquesta i apareix a la llista.
+
+2. ID de pregunta buit (Error de validació):
+   - Enquesta: "enquesta_test"
+   - Accions:
+      1. (Des de la pantalla de gestió de preguntes de "enquesta_test")
+      2. Clic a "Afegir Pregunta"
+      3. Deixar ID buit
+      4. Introduir Text: "Text vàlid"
+      5. Clic a "Guardar"
+      6. Verificar missatge d'error
+   - Resultat esperat: El sistema rebutja l'operació i demana un ID vàlid.
+
+3. Text de pregunta buit (Error de validació):
+   - Enquesta: "enquesta_test"
+   - Accions:
+      1. Clic a "Afegir Pregunta"
+      2. Introduir ID: "preg_text_buit"
+      3. Deixar Text buit
+      4. Clic a "Guardar"
+      5. Verificar missatge d'error
+   - Resultat esperat: El sistema rebutja l'operació i demana un text vàlid.
+
+4. Pregunta ja existent (Duplicat):
+   - Enquesta: "enquesta_test" (suposant que ja té una pregunta "p1")
+   - Accions:
+      1. Clic a "Afegir Pregunta"
+      2. Introduir ID: "p1" (ja existent)
+      3. Introduir Text: "Text qualsevol"
+      4. Clic a "Guardar"
+      5. Verificar missatge d'error
+   - Resultat esperat: El sistema informa que la pregunta ja existeix.
+
+5. Enquesta amb respostes (Error de consistència):
+   - Enquesta: "enquesta_amb_respostes"
+   - Accions:
+      1. Tornar al menú d'enquestes
+      2. Seleccionar "enquesta_amb_respostes"
+      3. Clic a "Gestionar Preguntes"
+      4. Intentar afegir una pregunta nova
+      5. Verificar missatge d'error (o que l'opció està deshabilitada)
+   - Resultat esperat: El sistema denega l'operació perquè l'enquesta ja té respostes.
+
+6. Usuari no creador (Accés denegat):
+   - Nota: Això es prova implícitament ja que l'usuari només veu les seves enquestes a "Gestionar les meves enquestes". Si s'intentés accedir per codi o una altra via, hauria de fallar.
+
+Efectes estudiats:
+- Interacció GUI: Diàlegs d'entrada de dades.
+- Validacions: Camps obligatoris, duplicats, estat de l'enquesta.
+- Persistència: La nova pregunta es guarda al fitxer de l'enquesta.

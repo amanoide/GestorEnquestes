@@ -1,0 +1,69 @@
+# Joc de Prova - Cas d'ús #12 Eliminar Opció A Pregunta
+
+Objecte de la prova:
+Cas d'ús: Eliminar Opció A Pregunta.
+Es prova la funcionalitat d'eliminar una opció d'una pregunta qualitativa existent en una enquesta de la qual l'usuari és creador.
+
+Fitxers de dades necessaris:
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   MOLT IMPORTANT: Cal seguir aquests passos EN ORDRE per evitar errors
+   
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. TANCAR L'APLICACIÓ si està oberta (obligatori per recarregar dades)
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. TORNAR A INICIAR L'APLICACIÓ (obligatori per carregar les noves dades)
+
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb 'enquesta_test' i 'enquesta_amb_respostes'
+- dades/enquestes/enquesta_test/: Enquesta amb pregunta qualitativa 'p_qual' amb opcions
+- dades/enquestes/enquesta_amb_respostes/: Enquesta amb respostes (per provar error)
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari creador
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box).
+
+Conjunts de dades de comportament homogeni:
+1. Eliminar opció vàlida (Cas d'èxit):
+   - Enquesta: "enquesta_test"
+   - Pregunta: "p_qual"
+   - Opció: ID=1, Text="Opció A"
+   - Accions:
+      1. Iniciar sessió amb "Usuari" / "1234"
+      2. Clic a "Gestionar les meves enquestes"
+      3. Seleccionar "enquesta_test"
+      4. Clic a "Gestionar Preguntes"
+      5. Seleccionar la pregunta "p_qual"
+      6. Clic a "Gestionar Opcions"
+      7. Seleccionar l'opció "Opció A" (ID 1)
+      8. Clic a "Eliminar Opció"
+      9. Confirmar l'eliminació
+      10. Verificar missatge d'èxit
+   - Resultat esperat: L'opció s'elimina de la pregunta.
+
+2. Enquesta amb respostes (Error de consistència):
+   - Enquesta: "enquesta_amb_respostes"
+   - Pregunta: "p1"
+   - Opció: "Opció A"
+   - Accions:
+      1. Tornar al menú d'enquestes
+      2. Seleccionar "enquesta_amb_respostes"
+      3. Clic a "Gestionar Preguntes"
+      4. Seleccionar "p1"
+      5. Intentar eliminar una opció
+      6. Verificar missatge d'error (o botó deshabilitat)
+   - Resultat esperat: El sistema denega l'operació perquè l'enquesta ja té respostes.
+
+3. Usuari no creador (Accés denegat):
+   - Nota: Implícit per la GUI.
+
+Efectes estudiats:
+- Interacció GUI: Selecció i confirmació d'eliminació.
+- Validacions: Estat de l'enquesta.
+- Persistència: L'opció desapareix del fitxer de l'enquesta.

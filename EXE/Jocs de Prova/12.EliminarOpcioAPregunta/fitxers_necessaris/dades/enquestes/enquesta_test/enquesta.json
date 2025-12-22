@@ -1,0 +1,18 @@
+{
+    "id": "enquesta_test",
+    "titol": "Enquesta de prova",
+    "descripcio": "Enquesta per provar eliminar opcions",
+    "idCreador": "Usuari",
+    "preguntes": [
+        {
+            "id": "p_qual",
+            "text": "Pregunta qualitativa",
+            "tipus": "qualitativa_simple",
+            "opcions": [
+                {"id": 1, "text": "Opció A"},
+                {"id": 2, "text": "Opció B"}
+            ]
+        }
+    ],
+    "participants": []
+}

@@ -1,0 +1,97 @@
+# Joc de Prova - Cas d'ús #10 Afegir Opció A Pregunta
+
+Objecte de la prova:
+Cas d'ús: Afegir Opció A Pregunta.
+Es prova la funcionalitat d'afegir una nova opció a una pregunta qualitativa existent en una enquesta de la qual l'usuari és creador.
+
+Fitxers de dades necessaris:
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   MOLT IMPORTANT: Cal seguir aquests passos EN ORDRE per evitar errors
+   
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. TANCAR L'APLICACIÓ si està oberta (obligatori per recarregar dades)
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. TORNAR A INICIAR L'APLICACIÓ (obligatori per carregar les noves dades)
+
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb 'enquesta_test' i 'enquesta_amb_respostes'
+- dades/enquestes/enquesta_test/: Enquesta amb pregunta qualitativa ('p_qual') i pregunta text ('p_text')
+- dades/enquestes/enquesta_amb_respostes/: Enquesta amb respostes (per provar error)
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari creador
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box).
+
+Conjunts de dades de comportament homogeni:
+1. Afegir opció vàlida (Cas d'èxit):
+   - Enquesta: "enquesta_test"
+   - Pregunta: "p_qual" (Qualitativa Simple)
+   - Nova Opció: ID=3, Text="Opció Nova"
+   - Accions:
+      1. Iniciar sessió amb "Usuari" / "1234"
+      2. Clic a "Gestionar les meves enquestes"
+      3. Seleccionar "enquesta_test"
+      4. Clic a "Gestionar Preguntes"
+      5. Seleccionar la pregunta "p_qual"
+      6. Clic a "Gestionar Opcions" (o "Afegir Opció" segons la GUI)
+      7. Introduir ID: 3, Text: "Opció Nova"
+      8. Clic a "Afegir/Guardar"
+      9. Verificar missatge d'èxit
+   - Resultat esperat: L'opció s'afegeix a la pregunta.
+
+2. ID d'opció buit (Error de validació):
+   - Enquesta: "enquesta_test", Pregunta: "p_qual"
+   - Accions:
+      1. Clic a "Afegir Opció"
+      2. Deixar ID buit
+      3. Introduir Text: "Text vàlid"
+      4. Clic a "Guardar"
+      5. Verificar missatge d'error
+   - Resultat esperat: El sistema rebutja l'operació.
+
+3. Text d'opció buit (Error de validació):
+   - Enquesta: "enquesta_test", Pregunta: "p_qual"
+   - Accions:
+      1. Clic a "Afegir Opció"
+      2. Introduir ID: 4
+      3. Deixar Text buit
+      4. Clic a "Guardar"
+      5. Verificar missatge d'error
+   - Resultat esperat: El sistema rebutja l'operació.
+
+4. Opció ja existent (Duplicat):
+   - Enquesta: "enquesta_test", Pregunta: "p_qual"
+   - Accions:
+      1. Clic a "Afegir Opció"
+      2. Introduir ID: 1 (ja existent)
+      3. Introduir Text: "Text qualsevol"
+      4. Clic a "Guardar"
+      5. Verificar missatge d'error
+   - Resultat esperat: El sistema informa que l'opció ja existeix.
+
+5. Pregunta no admet opcions (Error de tipus):
+   - Enquesta: "enquesta_test", Pregunta: "p_text" (Tipus Text)
+   - Accions:
+      1. Tornar a la llista de preguntes
+      2. Seleccionar "p_text"
+      3. Intentar fer clic a "Gestionar Opcions"
+      4. Verificar que està deshabilitat o mostra error en intentar-ho
+   - Resultat esperat: El sistema no permet afegir opcions a preguntes de text/numèriques.
+
+6. Enquesta amb respostes (Error de consistència):
+   - Enquesta: "enquesta_amb_respostes"
+   - Accions:
+      1. Intentar afegir una opció a una pregunta d'aquesta enquesta
+      2. Verificar missatge d'error
+   - Resultat esperat: El sistema denega l'operació.
+
+Efectes estudiats:
+- Interacció GUI: Gestió d'opcions.
+- Validacions: Tipus de pregunta, duplicats, estat de l'enquesta.
