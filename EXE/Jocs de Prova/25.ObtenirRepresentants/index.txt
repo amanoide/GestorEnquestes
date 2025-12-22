@@ -1,0 +1,233 @@
+# Joc de Prova - Cas d'ús #25 Obtenir Representants
+
+Objecte de la prova:
+Cas d'ús: Obtenir Representants.
+Es prova la funcionalitat de consultar i visualitzar els usuaris representants de cada cluster després d'haver realitzat una anàlisi de clustering sobre una enquesta. El representant d'un cluster és l'usuari real les respostes del qual són les més properes al centroid (perfil típic) del seu cluster. Aquesta funcionalitat permet identificar els participants que millor exemplifiquen cada grup identificat pel clustering.
+
+Fitxers de dades necessaris:
+Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades/ a ../../../../dades/.
+- fitxers_dades/enquestes/enc_completa/enquesta.json: Enquesta amb 5 preguntes de diferents tipus i 5 participants.
+- fitxers_dades/enquestes/enc_completa/preguntes/: Directori amb les 5 preguntes (p1.json a p5.json).
+- fitxers_dades/enquestes/enc_completa/respostes/: Directori amb les respostes dels 5 usuaris (TestUser1.json a TestUser5.json).
+- fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1" (creador de l'enquesta), amb contrasenya: "password123".
+- fitxers_dades/usuaris/TestUser2.json a TestUser5.json: Usuaris participants, amb contrasenya: "password123".
+
+Credencials de login:
+- Usuari: TestUser1 (creador de l'enquesta)
+- Contrasenya: password123
+
+Precondicions necessàries:
+- Cal haver executat prèviament una anàlisi de clustering sobre l'enquesta 'enc_completa'.
+- S'han generat perfils per als participants i assignats als usuaris.
+- El sistema ha identificat els representants de cada cluster durant l'anàlisi.
+
+El sistema utilitza internament per a la persistència:
+- perfils/index.json: Índex de perfils generats amb metadades.
+- perfils/{id_perfil}.json: Fitxers individuals amb dades del clustering incloent-hi representants.
+- usuaris/{username}.json: Usuaris amb els seus perfils assignats.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Consultar representants d'una enquesta analitzada (Cas d'èxit):
+   - Precondicions:
+     * S'ha executat una anàlisi sobre 'enc_completa' amb K=2 clusters.
+     * El sistema ha identificat els representants de cada cluster.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Clic al botó "Analitzar Enquestes" o "Veure Resultats".
+      3. Seleccionar l'enquesta 'enc_completa'.
+      4. Clic al botó "Veure Representants" o equivalent.
+      5. Resultat esperat:
+         - Es mostra una llista dels 2 clusters.
+         - Per cada cluster es mostra:
+           * Nom del cluster.
+           * Usuari representant (username).
+           * Mida del cluster.
+           * Coeficient Silhouette del cluster.
+         - Es destaca visualment quin usuari és el representant.
+
+2. Veure representants amb K=3 clusters (Cas d'èxit):
+   - Precondicions: S'ha executat una anàlisi amb K=3.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Navegar a resultats de l'anàlisi.
+      3. Consultar representants.
+      4. Resultat esperat: Es mostren 3 representants, un per cada cluster.
+
+3. Identificar-se com a representant del propi cluster (Cas d'èxit):
+   - Precondicions: 
+     * S'ha executat una anàlisi sobre 'enc_completa'.
+     * TestUser2 és el representant del Cluster 1 (les seves respostes són les més properes al centroid del seu grup).
+   - Accions:
+      1. Login amb TestUser2 i password123.
+      2. Clic al botó "Veure el meu Perfil".
+      3. Resultat esperat:
+         - Es mostra el perfil de TestUser2.
+         - Hi ha una indicació especial que mostra: "⭐ ETS EL REPRESENTANT D'AQUEST CLUSTER ⭐".
+         - Es mostra un missatge explicatiu: "Les teves respostes són les més properes al perfil típic del grup".
+
+4. Veure tots els membres d'un cluster amb el representant destacat (Cas d'èxit):
+   - Precondicions: S'ha executat una anàlisi sobre 'enc_completa' amb K=2.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Navegar a resultats de l'anàlisi.
+      3. Expandir/clicar un cluster per veure els seus membres.
+      4. Resultat esperat:
+         - Es mostra la llista completa de membres del cluster.
+         - El representant està marcat amb un símbol especial (⭐) o destacat visualment.
+         - Exemple de format:
+           * Membres del Cluster 1:
+             - TestUser2 ⭐ (representant)
+             - TestUser3
+             - TestUser4
+
+5. Enquesta sense anàlisi realitzada (Cas d'error):
+   - Precondicions: Existeix una enquesta sense cap anàlisi de clustering realitzada.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Intentar veure representants d'una enquesta no analitzada.
+      3. Resultat esperat: Missatge d'error "Aquesta enquesta no té una anàlisi de clustering realitzada. Si us plau, executa primer l'anàlisi."
+
+6. Usuari no creador intenta veure representants (Validació de permisos):
+   - Precondicions:
+     * TestUser1 és el creador de 'enc_completa'.
+     * S'ha executat una anàlisi sobre 'enc_completa'.
+   - Accions:
+      1. Login amb TestUser2 i password123 (NO creador).
+      2. Intentar navegar a resultats d'anàlisi d'enquestes.
+      3. Resultat esperat:
+         - L'enquesta 'enc_completa' no apareix a la llista d'enquestes pròpies.
+         - TestUser2 només pot veure els resultats que l'afecten a ell personalment (el seu perfil).
+         - No pot veure la llista completa de representants de totes les enquestes.
+
+7. Comparar representants entre diferents algorismes (Validació de dades):
+   - Precondicions:
+     * S'han executat dues anàlisis sobre la mateixa enquesta:
+       - Anàlisi 1: K=2, K-Means
+       - Anàlisi 2: K=2, K-Medoids
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar representants de l'anàlisi amb K-Means.
+      3. Repetir l'anàlisi amb K-Medoids.
+      4. Consultar els nous representants.
+      5. Resultat esperat:
+         - Els representants poden ser diferents entre algorismes.
+         - K-Medoids utilitza punts reals com a medoides, que sovint coincideixen amb els representants.
+         - Es mostren els representants actualitzats després de cada anàlisi.
+
+8. Cluster amb un sol membre (Validació límit):
+   - Precondicions:
+     * S'ha executat una anàlisi amb K alt (K=5) sobre 'enc_completa' (5 participants).
+     * Un dels clusters només té 1 membre.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar representants.
+      3. Resultat esperat:
+         - El cluster amb 1 membre mostra l'únic participant com a representant.
+         - Missatge: "Aquest usuari és l'únic membre del cluster".
+         - Silhouette d'aquest cluster pot ser 0 o proper a 0.
+
+9. Interpretar qualitat dels representants segons Silhouette (Validació de dades):
+   - Precondicions: S'ha executat una anàlisi sobre 'enc_completa'.
+   - Accions:
+      1. Login amb TestUser1 i password123.
+      2. Consultar representants amb les seves mètriques Silhouette.
+      3. Resultat esperat:
+         - Representants de clusters amb Silhouette alt (≥0.7): Molt representatius del seu grup.
+         - Representants de clusters amb Silhouette baix (<0.25): Menys representatius, grup mal definit.
+         - Es mostra la interpretació de la qualitat per ajudar l'usuari.
+
+10. Exportar llista de representants (Funcionalitat addicional):
+    - Precondicions: S'ha executat una anàlisi sobre 'enc_completa'.
+    - Accions:
+       1. Login amb TestUser1 i password123.
+       2. Consultar representants.
+       3. Clic al botó "Exportar" o "Generar Informe".
+       4. Resultat esperat:
+          - Es genera un fitxer (JSON, TXT o PDF) amb la informació dels representants.
+          - Format del fitxer inclou: ID enquesta, nombre de clusters, per cada cluster (índex, nom, representant, mida, Silhouette).
+
+Efectes estudiats:
+- Interacció amb la GUI:
+    * Accés a la funcionalitat des del menú d'anàlisi o des de la vista de resultats.
+    * Selecció d'enquesta analitzada des d'una llista o taula.
+    * Visualització en forma de taula o llista amb informació organitzada.
+    * Botons/opcions: "Veure Representants", "Veure Membres del Cluster", "Veure Detalls".
+
+- Feedback visual:
+    * Llista clara dels representants amb icones o destacats (⭐).
+    * Taula amb columnes: Cluster, Representant, Mida, Silhouette.
+    * Colors o badges per indicar qualitat (Silhouette alt = verd, baix = vermell).
+    * Tooltip o info addicional en passar el ratolí sobre el representant.
+    * Missatge especial per a l'usuari si és representant del seu propi cluster.
+
+- Informació mostrada per cada cluster:
+    * Índex del cluster (1, 2, 3, ...).
+    * Nom descriptiu del cluster.
+    * Username del representant (usuari més proper al centroid).
+    * Mida del cluster (nombre total de membres).
+    * Coeficient Silhouette del cluster (qualitat).
+    * Opcional: Llista expandible de tots els membres del cluster.
+
+- Càlcul de representants:
+    * El representant és l'usuari real les respostes del qual (vector) tenen la distància mínima al centroid del cluster.
+    * Càlcul de distàncies utilitzant DistanceCalculator amb FeatureSpec per dades heterogènies.
+    * El càlcul es fa durant l'anàlisi de clustering i es guarda amb el ResultatClustering.
+    * Diferència entre algorismes:
+      - K-Means / K-Means++: Centroid calculat (mitjana) → es busca el punt real més proper.
+      - K-Medoids: El medoid JA és un punt real del dataset → sovint és el representant.
+
+- Validacions:
+    * Verificació que l'enquesta tingui una anàlisi realitzada.
+    * Verificació de permisos: només el creador pot veure tots els representants.
+    * Els participants només poden veure si ells són representants (al veure el seu perfil).
+    * Verificació que el cluster tingui almenys 1 membre.
+
+- Persistència:
+    * Els representants es guarden com a part del ResultatClustering durant l'anàlisi.
+    * No es modifica la persistència en consultar representants (operació de només lectura).
+    * Quan es torna a executar l'anàlisi, els representants es recalculen i actualitzen.
+
+- Comparativa entre anàlisis:
+    * Els representants poden canviar si es repeteix l'anàlisi amb diferent K o algorisme.
+    * El sistema mostra sempre els representants de l'última anàlisi realitzada.
+    * Opcional: Historial d'anàlisis per comparar representants entre versions.
+
+- Utilitat dels representants:
+    * Permeten identificar usuaris "prototípics" de cada grup.
+    * Útils per a enquestes de satisfacció: contactar representants per feedback.
+    * Útils per a estudis: entrevistar representants per entendre millor cada grup.
+    * Ajuden a validar la qualitat del clustering: si el representant no té sentit, potser K és inadequat.
+
+- Visualització de membres del cluster:
+    * Llista completa de tots els usuaris del cluster.
+    * El representant està marcat visualment (⭐ o color diferent).
+    * Opció d'ordenar per proximitat al centroid (més proper = més representatiu).
+    * Mostra per cada membre la seva distància al centroid (opcional).
+
+- Experiència de l'usuari representant:
+    * Quan un usuari consulta el seu perfil i és representant del seu cluster, rep un missatge especial.
+    * Text: "⭐ ETS EL REPRESENTANT D'AQUEST CLUSTER ⭐"
+    * Explicació: "Les teves respostes són les més properes al perfil típic del grup"
+    * Això dóna reconeixement i ajuda l'usuari a entendre la seva posició dins el grup.
+
+- Interpretació de la qualitat:
+    * Silhouette del cluster ≥ 0.7: Representant molt fiable (cluster cohesiu i ben separat).
+    * Silhouette entre 0.5-0.7: Representant fiable (bon clustering).
+    * Silhouette entre 0.25-0.5: Representant acceptable (clustering amb superposició).
+    * Silhouette < 0.25: Representant poc fiable (cluster mal definit).
+    * Es mostra la interpretació juntament amb la mètrica numèrica.
+
+- Casos especials:
+    * Cluster amb 1 sol membre: L'únic membre és el representant per defecte.
+    * Empat en distàncies: Es tria el primer usuari trobat (comportament determinista).
+    * Cluster buit (no hauria de passar): Missatge d'error o representant = null.
+
+- Exportació de dades:
+    * Generació d'informes amb la llista de representants.
+    * Format JSON: fàcilment processable per altres eines.
+    * Format TXT/Markdown: llegible per humans.
+    * Format PDF: per presentacions o documentació.
+    * Contingut: enquesta, data d'anàlisi, algoritme, K, clusters amb representants i mètriques.
