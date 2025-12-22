@@ -1,0 +1,10 @@
+[
+    {
+        "id": "enquesta_propia",
+        "titol": "Enquesta per eliminar",
+        "descripcio": "Aquesta enquesta es pot eliminar",
+        "creador": "Usuari",
+        "numPreguntes": 0,
+        "numParticipants": 0
+    }
+]

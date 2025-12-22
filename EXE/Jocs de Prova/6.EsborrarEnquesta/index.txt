@@ -1,0 +1,76 @@
+# Joc de Prova - Cas d'ús #6 Esborrar Enquesta
+
+Objecte de la prova:
+Cas d'ús: Esborrar Enquesta.
+Es prova la funcionalitat d'eliminar una enquesta existent del sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+
+Fitxers de dades necessaris:
+Per executar totes les proves, cal preparar l'entorn amb els fitxers de dades inclosos.
+
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. Tancar l'aplicació si està oberta
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. Tornar a iniciar l'aplicació
+
+Usuaris preexistents per a les proves:
+   - Username: "Usuari" / Password: "1234" (creador de enquesta_propia)
+   - Username: "AltreUsuari" / Password: "1234" (per provar accés denegat)
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb enquesta_propia preexistent
+- dades/enquestes/enquesta_propia/: Carpeta amb les dades de l'enquesta
+- dades/usuaris/index.json: Índex amb els usuaris "Usuari" i "AltreUsuari"
+- dades/usuaris/Usuari.json: Usuari creador de l'enquesta
+- dades/usuaris/AltreUsuari.json: Usuari sense enquestes (per provar accés denegat)
+- dades/perfils/index.json: Índex de perfils buit
+
+El sistema utilitza internament per a la persistència:
+- enquestes/index.json: Per emmagatzemar la llista d'enquestes.
+- usuaris/{username}.json: Per emmagatzemar les dades de l'usuari.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Eliminació vàlida (Cas d'èxit):
+   - ID enquesta: "enquesta_propia" (existent, creada per l'usuari actual)
+   - Accions:
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234")
+      2. Clic al botó "Gestionar les meves enquestes"
+      3. Seleccionar l'enquesta "enquesta_propia"
+      4. Clic al botó "Eliminar"
+      5. Confirmar l'eliminació al diàleg de confirmació 
+      6. Verificar missatge d'èxit ("Enquesta eliminada correctament!")
+      7. Verificar que l'enquesta ja no apareix a la llista
+   - Resultat esperat: L'enquesta s'elimina correctament del sistema i es mostra missatge de confirmació.
+
+2. Usuari no és el creador (Accés denegat):
+   - ID enquesta: "enquesta_propia" (creada per "Usuari", no per "AltreUsuari")
+   - Accions:
+      1. Iniciar sessió amb l'usuari "AltreUsuari" (password: "1234")
+      2. Clic al botó "Gestionar les meves enquestes"
+      3. Verificar que l'enquesta "enquesta_propia" NO apareix a la llista (només mostra enquestes pròpies)
+   - Resultat esperat: L'usuari només veu les seves pròpies enquestes, no pot eliminar enquestes d'altres usuaris.
+
+3. Usuari no autenticat:
+   - Pre-condició: L'usuari no ha iniciat sessió
+   - Accions:
+      1. Intentar accedir a "Gestionar les meves enquestes" sense iniciar sessió
+      2. Verificar que el sistema només permet iniciar sessió si no està autenticat
+   - Resultat esperat: El sistema redirigeix a la pantalla de login.
+
+Efectes estudiats:
+- Interacció amb la GUI: Selecció de l'enquesta a eliminar.
+- Accions: 
+   - Clic al botó "Gestionar les meves enquestes".
+   - Clic al botó "Eliminar".
+   - Confirmació de l'eliminació.
+- Feedback visual: 
+    - Aparició de finestres emergents (pop-ups) amb missatges d'èxit ("Enquesta eliminada correctament!").
+    - Aparició de missatges d'error descriptius quan fallen les validacions.
+    - Diàleg de confirmació abans d'eliminar.
+- Persistència: Verificació que l'enquesta s'ha eliminat correctament del fitxer de persistència.
+- Actualització visual: L'enquesta ja no apareix a la llista d'enquestes.
