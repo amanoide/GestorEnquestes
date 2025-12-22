@@ -1,0 +1,133 @@
+# Joc de Prova - Cas d'ús #8 Importar Enquesta
+
+Objecte de la prova:
+Cas d'ús: Importar Enquesta.
+Es prova la funcionalitat d'importar una enquesta des d'un fitxer JSON extern a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
+
+Fitxers de dades necessaris:
+Per executar totes les proves, cal preparar l'entorn amb els fitxers de dades inclosos.
+
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   MOLT IMPORTANT: Cal seguir aquests passos EN ORDRE per evitar errors
+   
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. TANCAR L'APLICACIÓ si està oberta (obligatori per recarregar dades)
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. TORNAR A INICIAR L'APLICACIÓ (obligatori per carregar les noves dades)
+   
+   ATENCIÓ: Si no es tanca i reinicia l'aplicació, el sistema NO detectarà l'enquesta 
+            preexistent i permetrà importar duplicats incorrectament!
+
+Usuaris preexistents per a les proves:
+   - Username: "Usuari" / Password: "1234" (usuari autenticat per importar)
+
+FITXERS JSON PER A LES PROVES D'IMPORTACIÓ:
+   Els fitxers JSON d'exemple per a les proves es troben a:
+   - fitxers_necessaris/json_importar/enquesta_valida.json (enquesta completa amb preguntes)
+   - fitxers_necessaris/json_importar/enquesta_sense_preguntes.json (enquesta bàsica sense preguntes)
+   - fitxers_necessaris/json_importar/enquesta_format_incorrecte.json (fitxer amb format JSON invàlid)
+   - fitxers_necessaris/json_importar/enquesta_camps_faltants.json (fitxer sense camps obligatoris)
+   - fitxers_necessaris/json_importar/enquesta_duplicada.json (enquesta amb ID que ja existeix)
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb enquesta_existent preexistent (per provar duplicats)
+- dades/enquestes/enquesta_existent/: Carpeta amb les dades de l'enquesta existent
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari preexistent per iniciar sessió
+- dades/perfils/index.json: Índex de perfils buit
+
+El sistema utilitza internament per a la persistència:
+- enquestes/index.json: Per emmagatzemar la llista d'enquestes i verificar duplicats.
+- usuaris/{username}.json: Per emmagatzemar les dades de l'usuari.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Importació vàlida amb preguntes (Cas d'èxit):
+   - Fitxer: enquesta_valida.json (JSON vàlid amb id, títol, descripció i preguntes)
+   - Accions:
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234")
+      2. Clic al botó "Importar Enquesta" al menú principal
+      3. Seleccionar el fitxer "enquesta_valida.json" al diàleg de selecció de fitxers
+      4. Verificar missatge d'èxit ("Enquesta importada correctament!")
+      5. Clic al botó "Gestionar les meves enquestes"
+      6. Verificar que l'enquesta "enquesta_importada" apareix a la llista
+      7. Seleccionar l'enquesta i verificar que conté les preguntes definides al JSON
+   - Resultat esperat: L'enquesta s'importa correctament amb totes les preguntes i es mostra missatge de confirmació.
+
+2. Importació vàlida sense preguntes (Cas d'èxit):
+   - Fitxer: enquesta_sense_preguntes.json (JSON vàlid només amb id, títol i descripció)
+   - Accions:
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234") si no s'ha fet a la prova anterior
+      2. Clic al botó "Importar Enquesta"
+      3. Seleccionar el fitxer "enquesta_sense_preguntes.json" al diàleg de selecció de fitxers
+      4. Verificar missatge d'èxit ("Enquesta importada correctament!")
+      5. Clic al botó "Gestionar les meves enquestes"
+      6. Verificar que l'enquesta "enquesta_basica" apareix a la llista
+   - Resultat esperat: L'enquesta s'importa correctament sense preguntes (es poden afegir posteriorment).
+
+3. Format de fitxer incorrecte (Error de format):
+   - Fitxer: enquesta_format_incorrecte.json (fitxer amb JSON malformat/invàlid)
+   - Accions:
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234") si no s'ha fet a la prova anterior
+      2. Clic al botó "Importar Enquesta"
+      3. Seleccionar el fitxer "enquesta_format_incorrecte.json" al diàleg de selecció de fitxers
+      4. Verificar missatge d'error indicant que el format és incorrecte
+   - Resultat esperat: El sistema mostra un missatge d'error indicant que el fitxer no segueix el format JSON esperat i no importa cap dada.
+
+4. Camps obligatoris faltants (Error de validació):
+   - Fitxer: enquesta_camps_faltants.json (JSON vàlid però sense camps obligatoris com id o títol)
+   - Accions:
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234") si no s'ha fet a la prova anterior
+      2. Clic al botó "Importar Enquesta"
+      3. Seleccionar el fitxer "enquesta_camps_faltants.json" al diàleg de selecció de fitxers
+      4. Verificar missatge d'error indicant que falten camps obligatoris
+   - Resultat esperat: El sistema avisa que falten camps obligatoris (id, títol, descripcio) i rebutja la importació.
+
+5. Enquesta ja existent (Validació de duplicats):
+   - Fitxer: enquesta_duplicada.json (JSON vàlid amb id="enquesta_existent" que ja existeix)
+   - IMPORTANT: Assegura't que has tancat i reiniciat l'aplicació després de copiar els fitxers de dades!
+   - Accions:
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234")
+      2. Verificar que l'enquesta "enquesta_existent" ja apareix a "Gestionar les meves enquestes"
+      3. Clic al botó "Importar Enquesta"
+      4. Seleccionar el fitxer "enquesta_duplicada.json" al diàleg de selecció de fitxers
+      5. Verificar missatge d'error ("Ja existeix una enquesta amb l'ID enquesta_existent")
+   - Resultat esperat: El sistema rebutja la importació i mostra un missatge d'error indicant que ja existeix una enquesta amb aquest identificador.
+
+6. Usuari no autenticat (Accés denegat):
+   - Pre-condició: L'usuari no ha iniciat sessió
+   - Accions:
+      1. Assegurar-se que no hi ha sessió iniciada (tancar sessió si cal)
+      2. Intentar accedir a "Importar Enquesta" sense iniciar sessió
+      3. Verificar que l'opció "Importar Enquesta" només està disponible després d'iniciar sessió
+   - Resultat esperat: El sistema denega l'operació i sol·licita iniciar sessió. L'opció d'importar no hauria d'estar visible o accessible sense autenticació.
+
+7. Fitxer inexistent (Error de lectura):
+   - Fitxer: ruta a un fitxer que no existeix
+   - Accions:
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234")
+      2. Clic al botó "Importar Enquesta"
+      3. Intentar introduir manualment una ruta de fitxer inexistent o cancel·lar el diàleg de selecció de fitxers
+      4. Verificar que el sistema gestiona correctament l'absència de fitxer
+   - Resultat esperat: El sistema mostra un missatge d'error indicant que no pot llegir el fitxer o cancel·la l'operació sense errors.
+
+Efectes estudiats:
+- Interacció amb la GUI: Selecció de fitxer mitjançant diàleg JFileChooser.
+- Accions: 
+   - Clic al botó "Importar Enquesta".
+   - Navegació i selecció de fitxer al diàleg de fitxers.
+   - Confirmació de la importació.
+- Feedback visual: 
+    - Aparició de finestres emergents (pop-ups) amb missatges d'èxit ("Enquesta importada correctament!").
+    - Aparició de missatges d'error descriptius quan fallen les validacions:
+      * Format JSON incorrecte
+      * Camps obligatoris faltants
+      * Enquesta ja existent
+      * Fitxer no llegible
+- Persistència: Verificació que la nova enquesta s'ha afegit correctament al fitxer de persistència.
+- Actualització visual: L'enquesta importada apareix a la llista d'enquestes de l'usuari.
+- Integritat de dades: Les preguntes importades (si n'hi ha) es mostren correctament dins l'enquesta.

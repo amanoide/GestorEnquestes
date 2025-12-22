@@ -1,0 +1,7 @@
+{
+    "username": "Usuari",
+    "password": "1234",
+    "perfil": null,
+    "enquestesCreades": ["enquesta_existent"],
+    "enquestesRespostes": []
+}

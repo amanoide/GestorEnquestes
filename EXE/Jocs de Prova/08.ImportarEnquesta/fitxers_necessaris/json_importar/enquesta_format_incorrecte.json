@@ -1,0 +1,5 @@
+{ això no és un JSON vàlid
+    "id": "enquesta_malformada",
+    "titol: sense tancar les cometes
+    "descripcio": "Fitxer amb errors de sintaxi JSON
+}

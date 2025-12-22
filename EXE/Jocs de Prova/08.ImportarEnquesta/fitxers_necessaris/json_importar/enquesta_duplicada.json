@@ -1,0 +1,5 @@
+{
+    "id": "enquesta_existent",
+    "titol": "Enquesta amb ID duplicat",
+    "descripcio": "Aquesta enquesta té el mateix ID que una enquesta ja existent al sistema"
+}

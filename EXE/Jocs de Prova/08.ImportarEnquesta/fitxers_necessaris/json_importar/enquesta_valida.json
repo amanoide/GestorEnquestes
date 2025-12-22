@@ -1,0 +1,52 @@
+{
+    "id": "enquesta_importada",
+    "titol": "Enquesta d'exemple importada",
+    "descripcio": "Aquesta és una enquesta completa importada des d'un fitxer JSON amb diversos tipus de preguntes",
+    "preguntes": [
+        {
+            "id": "preg1",
+            "text": "Com valores la qualitat del servei?",
+            "tipus": "numerica",
+            "min": 1,
+            "max": 10
+        },
+        {
+            "id": "preg2",
+            "text": "Quina és la teva opinió general?",
+            "tipus": "text"
+        },
+        {
+            "id": "preg3",
+            "text": "Ordena les següents característiques segons la teva preferència:",
+            "tipus": "qualitativa_ordenada",
+            "opcions": [
+                {"id": 1, "text": "Rapidesa", "ordre": 1},
+                {"id": 2, "text": "Qualitat", "ordre": 2},
+                {"id": 3, "text": "Preu", "ordre": 3}
+            ]
+        },
+        {
+            "id": "preg4",
+            "text": "Quin és el teu color preferit?",
+            "tipus": "qualitativa_simple",
+            "opcions": [
+                {"id": 1, "text": "Vermell"},
+                {"id": 2, "text": "Blau"},
+                {"id": 3, "text": "Verd"},
+                {"id": 4, "text": "Groc"}
+            ]
+        },
+        {
+            "id": "preg5",
+            "text": "Selecciona les funcionalitats que més valores (màxim 2):",
+            "tipus": "qualitativa_multiple",
+            "max_seleccions": 2,
+            "opcions": [
+                {"id": 1, "text": "Facilitat d'ús"},
+                {"id": 2, "text": "Rendiment"},
+                {"id": 3, "text": "Disseny"},
+                {"id": 4, "text": "Seguretat"}
+            ]
+        }
+    ]
+}

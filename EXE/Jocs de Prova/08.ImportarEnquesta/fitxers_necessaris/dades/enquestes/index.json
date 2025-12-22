@@ -1,0 +1,10 @@
+[
+    {
+        "id": "enquesta_existent",
+        "titol": "Enquesta Existent",
+        "descripcio": "Aquesta enquesta ja existeix al sistema per provar la detecció de duplicats",
+        "creador": "Usuari",
+        "numPreguntes": 1,
+        "numParticipants": 0
+    }
+]
