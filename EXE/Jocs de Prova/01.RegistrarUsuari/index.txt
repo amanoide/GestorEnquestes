@@ -17,7 +17,6 @@ Conjunts de dades de comportament homogeni:
 1. Registre valid (Cas d'exit):
    - Usuari: "TestUser1" (Longitud >= 3, caracters valids, no existent)
    - Contrasenya: "password123" (Longitud >= 4)
-   - Resultat esperat: Creacio de l'usuari i missatge d'exit.
    - Accions:
       1. Iniciar l'aplicacio.
       2. Clic al boto "Crear compte nou".
@@ -25,59 +24,11 @@ Conjunts de dades de comportament homogeni:
       4. Introduir contrasenya: password123.
       5. Clic al boto "Crear compte".
       6. Verificar missatge d'exit "Usuari registrat correctament!".
+   - Resultat esperat: Creacio de l'usuari i missatge d'exit.
 
-2. Validacio de longitud d'usuari (Valors limit/invalids):
-   - Usuari: "ab" (Longitud < 3)
-   - Contrasenya: "validPass"
-   - Resultat esperat: Error indicant que l'usuari ha de tenir almenys 3 caracters.
-   - Accions:
-      1. Iniciar l'aplicacio.
-      2. Clic al boto "Crear compte nou".
-      3. Introduir usuari: ab.
-      4. Introduir contrasenya: validPass.
-      5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error "Error al registrar: El nom d'usuari ha de tenir almenys 3 caracters".
-
-3. Validacio de longitud de contrasenya (Valors limit/invalids):
-   - Usuari: "TestUser2"
-   - Contrasenya: "123" (Longitud < 4)
-   - Resultat esperat: Error indicant que la contrasenya ha de tenir almenys 4 caracters.
-   - Accions:
-      1. Iniciar l'aplicacio.
-      2. Clic al boto "Crear compte nou".
-      3. Introduir usuari: TestUser2.
-      4. Introduir contrasenya: 123.
-      5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error "Error al registrar: La contrasenya ha de tenir almenys 4 caracters".
-
-4. Usuari ja existent (Validacio de duplicats):
-   - Usuari: "testuser" (ja existent al sistema)
-   - Contrasenya: "qualsevol"
-   - Resultat esperat: Error indicant que l'usuari ja existeix.
-   - Accions:
-      1. Iniciar l'aplicacio.
-      2. Clic al boto "Crear compte nou".
-      3. Introduir usuari: testuser.
-      4. Introduir contrasenya: qualsevol.
-      5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error "Error al registrar: L'usuari ja existeix".
-
-5. Camps buits (Valors limit/invalids):
-   - Usuari: "" (buit)
-   - Contrasenya: "" (buit)
-   - Resultat esperat: Error de parametre invalid.
-   - Accions:
-      1. Iniciar l'aplicacio.
-      2. Clic al boto "Crear compte nou".
-      3. Deixar el camp usuari buit.
-      4. Deixar el camp contrasenya buit.
-      5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error "Camps obligatoris"
-
-6. Validacio de longitud minima d'usuari (Valor limit):
+2. Validacio de longitud minima d'usuari (Valor limit):
    - Usuari: "abc" (Longitud = 3, valor minim valid)
    - Contrasenya: "pass1234"
-   - Resultat esperat: Creacio de l'usuari i missatge d'exit.
    - Accions:
       1. Iniciar l'aplicacio.
       2. Clic al boto "Crear compte nou".
@@ -85,11 +36,11 @@ Conjunts de dades de comportament homogeni:
       4. Introduir contrasenya: pass1234.
       5. Clic al boto "Crear compte".
       6. Verificar missatge d'exit.
+   - Resultat esperat: Creacio de l'usuari i missatge d'exit.
 
-7. Validacio de longitud minima de contrasenya (Valor limit):
+3. Validacio de longitud minima de contrasenya (Valor limit):
    - Usuari: "TestUser3"
    - Contrasenya: "1234" (Longitud = 4, valor minim valid)
-   - Resultat esperat: Creacio de l'usuari i missatge d'exit.
    - Accions:
       1. Iniciar l'aplicacio.
       2. Clic al boto "Crear compte nou".
@@ -97,6 +48,68 @@ Conjunts de dades de comportament homogeni:
       4. Introduir contrasenya: 1234.
       5. Clic al boto "Crear compte".
       6. Verificar missatge d'exit.
+   - Resultat esperat: Creacio de l'usuari i missatge d'exit.
+
+4. Validacio de longitud d'usuari (Valors limit/invalids):
+   - Usuari: "ab" (Longitud < 3)
+   - Contrasenya: "validPass"
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: ab.
+      4. Introduir contrasenya: validPass.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'error "Error al registrar: El nom d'usuari ha de tenir almenys 3 caracters".
+   - Resultat esperat: Error indicant que l'usuari ha de tenir almenys 3 caracters.
+
+5. Validacio de longitud de contrasenya (Valors limit/invalids):
+   - Usuari: "TestUser2"
+   - Contrasenya: "123" (Longitud < 4)
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: TestUser2.
+      4. Introduir contrasenya: 123.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'error "Error al registrar: La contrasenya ha de tenir almenys 4 caracters".
+   - Resultat esperat: Error indicant que la contrasenya ha de tenir almenys 4 caracters.
+
+6. Usuari ja existent (Validacio de duplicats):
+   - Usuari: "testuser" (ja existent al sistema)
+   - Contrasenya: "qualsevol"
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: testuser.
+      4. Introduir contrasenya: qualsevol.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'error "Error al registrar: L'usuari ja existeix".
+   - Resultat esperat: Error indicant que l'usuari ja existeix.
+
+7. Coincident de contrasenyes (Validacio de duplicats):
+   - Usuari: "testuser"
+   - Contrasenya: "qualsevol"
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Introduir usuari: testuser.
+      4. Introduir contrasenya: qualsevol.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'error "Les contrasenyes no coinciden".
+   - Resultat esperat: Error indicant que la contrasenya ha de coincidir.
+
+8. Camps buits (Valors limit/invalids):
+   - Usuari: "" (buit)
+   - Contrasenya: "" (buit)
+   - Accions:
+      1. Iniciar l'aplicacio.
+      2. Clic al boto "Crear compte nou".
+      3. Deixar el camp usuari buit.
+      4. Deixar el camp contrasenya buit.
+      5. Clic al boto "Crear compte".
+      6. Verificar missatge d'error "Camps obligatoris"
+   - Resultat esperat: Error de parametre invalid.
+
 
 Efectes estudiats:
 - Interaccio amb la GUI: Introduccio de text als camps "Usuari" i "Contrasenya".
