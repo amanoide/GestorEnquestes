@@ -5,44 +5,58 @@ Cas d'ús: Visualitzar Enquestes.
 Es prova la funcionalitat de visualitzar el conjunt d'enquestes del sistema a través de la interfície gràfica.
 
 Fitxers de dades necessaris:
-Per executar les proves, cal copiar manualment el contingut de fitxers_dades/ a FONTS/dades/.
-- fitxers_dades/usuaris/: Conté l'usuari "testuser" amb contrasenya "test1234"
-- fitxers_dades/enquestes/: Conté l'enquesta "enquesta_test" creada per "testuser"
+Per executar totes les proves, cal preparar l'entorn amb els fitxers de dades inclosos.
 
-Credencials d'accés:
-- Usuari: testuser
-- Contrasenya: test1234
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. Tancar l'aplicació si està oberta
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. Tornar a iniciar l'aplicació
+
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb l'enquesta_test preexistent
+- dades/enquestes/enquesta_test/: Carpeta amb les dades de l'enquesta
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari preexistent per iniciar sessió
+- dades/perfils/index.json: Índex de perfils buit
 
 El sistema utilitza internament per a la persistència:
-- enquestes/index.json: Per emmagatzemar la llista d'enquestes. Emmagatzema objectes de la classe Enquesta.
+- enquestes/index.json: Per emmagatzemar la llista d'enquestes.
+- usuaris/{username}.json: Per emmagatzemar les dades de l'usuari.
 
 Valors estudiats:
 Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència definides per les regles de negoci del domini.
 
 Conjunts de dades de comportament homogeni:
 1. Visualització amb enquestes existents (Cas d'èxit):
-   - Pre-condició: Existeixen enquestes al sistema
-   - Resultat esperat: Es mostra la llista d'enquestes disponibles.
+   - Pre-condició: Existeixen enquestes al sistema (enquesta_test)
    - Accions:
-      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
-      2. Iniciar sessió amb testuser / test1234
-      3. Clic al botó "Veure enquestes" o equivalent
-      4. Verificar que apareix la llista d'enquestes
-      5. Verificar que es mostra "enquesta_test" a la llista
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234")
+      2. Clic al botó "Gestionar les meves enquestes"
+      3. Verificar que apareix la llista d'enquestes
+      4. Verificar que es mostra "enquesta_test" a la llista
+   - Resultat esperat: Es mostra la llista d'enquestes disponibles.
+
 
 2. Visualització sense enquestes:
    - Pre-condició: No existeix cap enquesta al sistema
-   - Resultat esperat: Es mostra un missatge informant que no existeixen enquestes per visualitzar.
    - Accions:
-      1. Assegurar que FONTS/dades/enquestes/ està buit (sense enquestes)
-      2. Iniciar sessió amb un usuari registrat
-      3. Clic al botó "Veure enquestes" o equivalent
-      4. Verificar que es mostra missatge informatiu "No hi ha enquestes"
+      1. Eliminar o buidar la carpeta FONTS/dades/enquestes/ (sense enquestes)
+      2. Iniciar sessió amb l'usuari "Usuari" (password: "1234")
+      3. Clic al botó "Gestionar les meves enquestes"
+      4. Verificar que la llista d'enquestes és buida
+   - Resultat esperat: La llista d'enquestes és buida.
 
 Efectes estudiats:
 - Interacció amb la GUI: Navegació a la vista de llista d'enquestes.
 - Accions: 
-   - Clic al botó "Veure enquestes" o equivalent.
+   - Clic al botó "Gestionar les meves enquestes"
 - Feedback visual: 
     - Llista d'enquestes amb els seus títols i identificadors.
     - Missatge informatiu quan no hi ha enquestes disponibles.

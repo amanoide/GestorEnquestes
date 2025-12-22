@@ -5,11 +5,30 @@ Cas d'ús: Crear Enquesta.
 Es prova la funcionalitat de crear una nova enquesta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-Per a la prova #5 (enquesta duplicada), es requereix que existeixi prèviament al sistema una enquesta amb ID "enquesta1".
+Per executar totes les proves, cal preparar l'entorn amb els fitxers de dades inclosos.
+
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. Tancar l'aplicació si està oberta
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. Tornar a iniciar l'aplicació
+
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb l'enquesta1 preexistent (per a prova #5)
+- dades/enquestes/enquesta1/: Carpeta amb les dades de l'enquesta1
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari preexistent per iniciar sessió
+- dades/perfils/index.json: Índex de perfils buit
 
 El sistema utilitza internament per a la persistència:
-- enquestes/index.json: Per emmagatzemar la llista d'enquestes i verificar duplicats. Emmagatzema objectes de la classe Enquesta.
-- usuaris/{username}/usuari.json: Per emmagatzemar la llista d'enquestes creades per l'usuari. Emmagatzema objectes de la classe Usuari.
+- enquestes/index.json: Per emmagatzemar la llista d'enquestes i verificar duplicats.
+- usuaris/{username}.json: Per emmagatzemar les dades de l'usuari.
 
 Valors estudiats:
 Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
@@ -19,69 +38,72 @@ Conjunts de dades de comportament homogeni:
    - ID: "enquesta_nova" (no buit, no existent)
    - Títol: "La meva enquesta" (no buit)
    - Descripció: "Descripció opcional" (pot ser buida)
-   - Resultat esperat: Creació de l'enquesta i missatge d'èxit.
    - Accions:
-      1. Iniciar sessió amb un usuari registrat
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234")
       2. Clic al botó "Nova Enquesta"
       3. Introduir ID: "enquesta_nova"
       4. Introduir Títol: "La meva enquesta"
       5. Introduir Descripció: "Descripció opcional"
       6. Clic al botó "Crear Enquesta"
-      7. Verificar missatge d'èxit
+      7. Verificar missatge d'èxit ("Enquesta creada correctament!")
+   - Resultat esperat: Creació de l'enquesta i missatge d'èxit.
 
 2. Descripció buida (Cas vàlid):
    - ID: "enquesta2"
-   - Títol: "Enquesta sense descripció"
+   - Títol: "Enquesta sense descripció"   
    - Descripció: "" (buida, permès)
-   - Resultat esperat: Creació de l'enquesta correctament (la descripció és opcional).
    - Accions:
-      1. Iniciar sessió amb un usuari registrat
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234") si no s'ha fet a la prova anterior
       2. Clic al botó "Nova Enquesta"
       3. Introduir ID: "enquesta2"
       4. Introduir Títol: "Enquesta sense descripció"
       5. Deixar Descripció buida
       6. Clic al botó "Crear Enquesta"
-      7. Verificar missatge d'èxit
+      7. Verificar missatge d'èxit ("Enquesta creada correctament!")
+   - Resultat esperat: Creació de l'enquesta correctament (la descripció és opcional).
 
 3. Validació d'ID buit (Valors límit/invàlids):
    - ID: "" (buit)
    - Títol: "Enquesta invàlida"
    - Descripció: "Descripció"
-   - Resultat esperat: Error indicant que l'ID no pot estar buit.
    - Accions:
-      1. Iniciar sessió amb un usuari registrat
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234") si no s'ha fet a la prova anterior
       2. Clic al botó "Nova Enquesta"
       3. Deixar ID buit
       4. Introduir Títol: "Enquesta invàlida"
-      5. Clic al botó "Crear Enquesta"
-      6. Verificar missatge d'error
+      5. Introduir Descripció: "Descripció"
+      6. Clic al botó "Crear Enquesta"
+      7. Verificar missatge d'error ("L'identificador és obligatori")
+   - Resultat esperat: Error indicant que l'ID no pot estar buit.
 
 4. Validació de títol buit (Valors límit/invàlids):
    - ID: "enquesta3"
    - Títol: "" (buit)
    - Descripció: "Descripció"
-   - Resultat esperat: Error indicant que el títol no pot estar buit.
    - Accions:
-      1. Iniciar sessió amb un usuari registrat
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234") si no s'ha fet a la prova anterior
       2. Clic al botó "Nova Enquesta"
       3. Introduir ID: "enquesta3"
       4. Deixar Títol buit
-      5. Clic al botó "Crear Enquesta"
-      6. Verificar missatge d'error
+      5. Introduir Descripció: "Descripció"
+      6. Clic al botó "Crear Enquesta"
+      7. Verificar missatge d'error ("El títol és obligatori")
+   - Resultat esperat: Error indicant que el títol no pot estar buit.
 
 5. Enquesta ja existent (Validació de duplicats):
    - ID: "enquesta1" (suposant que ja existeix al sistema, veure enquestes/index.json)
    - Títol: "La mateixa enquesta que enquesta1"
    - Descripció: "Descripció"
-   - Resultat esperat: Error indicant que ja existeix una enquesta amb aquest ID (EnquestaJaExisteixException).
    - Accions:
-      1. Iniciar sessió amb un usuari registrat
-      2. Crear primer una enquesta amb ID "enquesta1" (o verificar que existeix)
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234") si no s'ha fet a la prova anterior
+      2. Verificar que l'enquesta "enquesta1" apareix a la llista (ja existeix als fitxers de dades)
       3. Clic al botó "Nova Enquesta"
       4. Introduir ID: "enquesta1"
       5. Introduir Títol: "La mateixa enquesta que enquesta1"
-      6. Clic al botó "Crear Enquesta"
-      7. Verificar missatge d'error de duplicat
+      6. Introduir Descripció: "Descripció"
+      7. Clic al botó "Crear Enquesta"
+      8. Verificar missatge d'error ("Error: Ja existeix una enquesta amb aquest ID 'enquesta1'")
+   - Resultat esperat: Error indicant que ja existeix una enquesta amb aquest ID (EnquestaJaExisteixException).
 
 Efectes estudiats:
 - Interacció amb la GUI: Introducció de text als camps "ID", "Títol" i "Descripció".

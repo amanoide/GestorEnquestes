@@ -5,55 +5,65 @@ Cas d'ús: Modificar Títol Enquesta.
 Es prova la funcionalitat de modificar el títol d'una enquesta existent a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-Per executar les proves, cal copiar manualment el contingut de fitxers_dades/ a FONTS/dades/.
-- fitxers_dades/usuaris/: Conté l'usuari "testuser" amb contrasenya "test1234"
-- fitxers_dades/enquestes/: Conté l'enquesta "enquesta_test" creada per "testuser"
+Per executar totes les proves, cal preparar l'entorn amb els fitxers de dades inclosos.
 
-Credencials d'accés:
-- Usuari: testuser
-- Contrasenya: test1234
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. Tancar l'aplicació si està oberta
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. Tornar a iniciar l'aplicació
+
+Usuari preexistent per a les proves:
+   - Username: "Usuari"
+   - Password: "1234"
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb l'enquesta_test preexistent
+- dades/enquestes/enquesta_test/: Carpeta amb les dades de l'enquesta
+- dades/usuaris/index.json: Índex amb l'usuari "Usuari"
+- dades/usuaris/Usuari.json: Fitxer de l'usuari preexistent per iniciar sessió
+- dades/perfils/index.json: Índex de perfils buit
 
 El sistema utilitza internament per a la persistència:
-- enquestes/index.json: Per emmagatzemar la llista d'enquestes. Emmagatzema objectes de la classe Enquesta.
-- usuaris/{username}/usuari.json: Per emmagatzemar la llista d'enquestes creades per l'usuari. Emmagatzema objectes de la classe Usuari.
+- enquestes/index.json: Per emmagatzemar la llista d'enquestes.
+- usuaris/{username}.json: Per emmagatzemar les dades de l'usuari.
 
 Valors estudiats:
 Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
 
 Conjunts de dades de comportament homogeni:
 1. Modificació vàlida (Cas d'èxit):
-   - ID enquesta: "enquesta_propia" (existent, creada per l'usuari actual)
+   - ID enquesta: "enquesta_test" (existent, creada per l'usuari actual)
    - Nou títol: "Nou títol de l'enquesta" (no buit)
+      - Accions:
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234")
+      2. Clic al botó "Gestionar les meves enquestes"
+      3. Seleccionar l'enquesta "enquesta_test"
+      4. Clic al botó "Modificar"
+      5. Canviar el títol a "Nou títol de l'enquesta"
+      6. Clic al botó "Guardar canvis"
+      7. Verificar missatge d'èxit ("Enquesta modificada correctament!")
    - Resultat esperat: Modificació del títol i missatge d'èxit.
-   - Accions:
-      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
-      2. Iniciar sessió amb testuser / test1234
-      3. Clic al botó "Gestionar les meves enquestes"
-      4. Seleccionar l'enquesta "enquesta_test"
-      5. Clic al botó "Modificar"
-      6. Canviar el títol a "Nou títol de l'enquesta"
-      7. Clic al botó "Guardar canvis"
-      8. Verificar missatge d'èxit
 
 2. Títol buit (Valors límit/invàlids):
-   - ID enquesta: "enquesta_propia" (existent)
+   - ID enquesta: "enquesta_test" (existent)
    - Nou títol: "" (buit)
-   - Resultat esperat: Error indicant que el títol no pot estar buit.
    - Accions:
-      1. Copiar fitxers_dades/ a FONTS/dades/ (o crear enquesta manualment)
-      2. Iniciar sessió amb testuser / test1234
-      3. Clic al botó "Gestionar les meves enquestes"
-      4. Seleccionar l'enquesta "enquesta_test"
-      5. Clic al botó "Modificar"
-      6. Esborrar el títol (deixar-lo buit)
-      7. Clic al botó "Guardar canvis"
-      8. Verificar missatge d'error
+      1. Iniciar sessió amb l'usuari "Usuari" (password: "1234") si no s'ha fet a la prova anterior
+      2. Clic al botó "Gestionar les meves enquestes"
+      3. Seleccionar l'enquesta "enquesta_test"
+      4. Clic al botó "Modificar"
+      5. Esborrar el títol (deixar-lo buit)
+      6. Clic al botó "Guardar canvis"
+      7. Verificar missatge d'error
+   - Resultat esperat: Error indicant que el títol no pot estar buit.
+ 
 
 Efectes estudiats:
-- Interacció amb la GUI: Creació, selecció de l'enquesta a modificar i introducció del nou títol.
+- Interacció amb la GUI: Selecció de l'enquesta a modificar i introducció del nou títol.
 - Accions: 
-   - Clic al botó "Nova Enquesta".
-   - Clic al botó "Crear Enquesta".
    - Clic al botó "Gestionar les meves enquestes".
    - Clic al botó "Modificar".
    - Clic al botó "Guardar canvis".

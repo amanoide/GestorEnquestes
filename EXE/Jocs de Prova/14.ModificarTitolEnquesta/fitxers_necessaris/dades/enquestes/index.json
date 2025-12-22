@@ -1,0 +1,10 @@
+[
+  {
+    "id": "enquesta_test",
+    "titol": "Enquesta de prova",
+    "descripcio": "Descripció original de l'enquesta",
+    "creador": "Usuari",
+    "numPreguntes": 0,
+    "numParticipants": 0
+  }
+]
