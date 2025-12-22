@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestPregunta" tests="27" skipped="0" failures="0" errors="0" timestamp="2025-12-22T17:34:00" hostname="MacBook-Air-de-Joan.local" time="0.003">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestPregunta" tests="27" skipped="0" failures="0" errors="0" timestamp="2025-12-22T17:55:58" hostname="MacBook-Air-de-Joan.local" time="0.002">
   <properties/>
   <testcase name="testValidarRespostaNumericaSenseRang" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testSetRangNumNoNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testEliminarOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testAfegirOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
+  <testcase name="testAfegirOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
   <testcase name="testConstructoraTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testSetGetTextPregunta" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testToStringQualitativaSimple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testEliminarOpcioInexistentNoCanvia" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testToStringNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="constructorAmbString_mappingTipus" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
+  <testcase name="constructorAmbString_mappingTipus" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testToStringTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testSetGetMaxSeleccions" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testValidarRespostesNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
