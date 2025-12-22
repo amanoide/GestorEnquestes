@@ -34,9 +34,44 @@ CtrlAnalisi.java -> Aman
 CtrlDomini.java -> Jairo i Marc
 CtrlEnquesta.java -> Marc
 CtrlPerfil.java -> Jairo
-CtrlPersistencia.java -> Marc i Jairo
 CtrlResposta.java -> Jairo i Marc
 CtrlUsuari.java -> Jairo i Marc
+
+CLASSES DE PRESENTACIO
+
+CtrlPresentacio.java -> Joan i Jairo
+DialogoAnalisi.java -> Joan i Jairo
+DialogoCrearPregunta.java -> Joan i Jairo
+DialogoEnquesta.java -> Joan i Jairo
+DialogoGestionarRespostes.java -> Joan i Jairo
+DialogoGestionPreguntes.java -> Joan i Jairo
+DialogoParticipants.java -> Joan i Jairo
+DialogoPerfil.java -> Joan i Jairo
+DialogoResponderEnquesta.java -> Joan i Jairo
+DialogoRespostesEnquesta.java -> Marc
+DialogoRespostesPregunta.java -> Marc
+DialogoSeleccionarEnquesta.java -> Joan i Jairo
+MyActionListener.java -> Joan i Jairo
+UIComponents.java -> Joan i Jairo
+UIStyles.java -> Joan i Jairo
+VistaAnalisi.java -> Joan i Jairo
+VistaGestionarRespostes.java -> Joan i Jairo
+VistaGestionEnquestes.java -> Joan i Jairo
+VistaLogin.java -> Joan i Jairo
+VistaMenuPrincipal.java -> Joan i Jairo
+VistaPrincipal.java -> Joan i Jairo
+VistaRegistro.java -> Joan i Jairo
+
+
+
+CLASSES DE PERSISTENCIA
+
+CtrlPersistencia.java -> Marc, Mohamed i Aman
+GestorEnquestes.java -> Marc, Mohamed i Aman
+GestorPerfils.java -> Marc, Mohamed i Aman
+GestorPreguntes.java -> Marc, Mohamed i Aman
+GestorRespostes.java -> Marc, Mohamed i Aman
+GestorUsuaris.java -> Marc, Mohamed i Aman
 
 
 DRIVERS

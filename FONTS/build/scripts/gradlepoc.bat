@@ -68,7 +68,7 @@ goto fail
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\gradlepoc-1.0-SNAPSHOT.jar;%APP_HOME%\lib\gson-2.8.9.jar;%APP_HOME%\lib\json-20231013.jar
+set CLASSPATH=%APP_HOME%\lib\GestorEnquestes.jar;%APP_HOME%\lib\gson-2.8.9.jar;%APP_HOME%\lib\json-20231013.jar
 
 
 @rem Execute gradlepoc

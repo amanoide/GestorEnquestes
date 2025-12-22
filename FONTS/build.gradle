@@ -43,9 +43,23 @@ application {
 }
 
 jar {
+    // Define el nombre del archivo
+    archiveFileName = 'GestorEnquestes.jar'
+    
+    // Define el destino (sube un nivel si EXE está fuera de FONTS, o déjalo así si está dentro)
+    destinationDirectory = file("../EXE") 
+
     manifest {
-        attributes 'Main-Class': javaMainClass
+        attributes(
+            'Main-Class': 'edu.upc.prop.clusterxx.Main' 
+        )
     }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 java {
