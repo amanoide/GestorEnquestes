@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestPregunta" tests="27" skipped="0" failures="0" errors="0" timestamp="2025-12-22T19:34:30" hostname="MacBook-Air-de-Joan.local" time="0.003">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestPregunta" tests="27" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:07:32" hostname="MacBook-Air-de-Joan.local" time="0.003">
   <properties/>
-  <testcase name="testValidarRespostaNumericaSenseRang" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testSetRangNumNoNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
+  <testcase name="testValidarRespostaNumericaSenseRang" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
+  <testcase name="testSetRangNumNoNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testEliminarOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testAfegirOpcionsPreguntaQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testConstructoraTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
@@ -13,7 +13,7 @@
   <testcase name="constructorAmbString_mappingTipus" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testToStringTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testSetGetMaxSeleccions" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testValidarRespostesNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
+  <testcase name="testValidarRespostesNumerica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
   <testcase name="testSetGetRangNum" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testConstructoraQualitativaNoOrdenadaSimple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testGetOpcioInexistent" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
@@ -22,7 +22,7 @@
   <testcase name="testValidarRespostesQualitativaMultiple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testTipusOpcions" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testConstructoraQualitativaNoOrdenadaMultiple" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
-  <testcase name="testValidarRespostaTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.001"/>
+  <testcase name="testValidarRespostaTextLliure" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testGetOpcionsNoModifica" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testValidarRespostesQualitativa" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>
   <testcase name="testValidarRespostaQualitativaMultipleAmbEspais" classname="edu.upc.prop.clusterxx.domini.TestPregunta" time="0.0"/>

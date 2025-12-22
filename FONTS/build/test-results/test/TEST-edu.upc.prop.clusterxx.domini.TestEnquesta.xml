@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestEnquesta" tests="13" skipped="0" failures="0" errors="0" timestamp="2025-12-22T19:34:30" hostname="MacBook-Air-de-Joan.local" time="0.001">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestEnquesta" tests="13" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:07:32" hostname="MacBook-Air-de-Joan.local" time="0.002">
   <properties/>
-  <testcase name="testAfegirRecuperarPreguntes" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>
+  <testcase name="testAfegirRecuperarPreguntes" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.001"/>
   <testcase name="testAfegirPreguntaMateixID" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>
   <testcase name="testSetGetTitol" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>
   <testcase name="testModificarPreguntaNoExistent" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>
   <testcase name="testSetGetDescripcio" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>
-  <testcase name="testGetParticipants" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.001"/>
-  <testcase name="testAfegirPreguntaNullLlençaExcepcio" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>
+  <testcase name="testGetParticipants" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>
+  <testcase name="testAfegirPreguntaNullLlençaExcepcio" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.001"/>
   <testcase name="testGetPreguntes" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>
   <testcase name="testRegistrarParticipacio" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>
   <testcase name="testEliminarPregunta" classname="edu.upc.prop.clusterxx.domini.TestEnquesta" time="0.0"/>

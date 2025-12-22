@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" tests="27" skipped="0" failures="0" errors="0" timestamp="2025-12-22T19:34:30" hostname="MacBook-Air-de-Joan.local" time="0.005">
+<testsuite name="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" tests="27" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:07:32" hostname="MacBook-Air-de-Joan.local" time="0.005">
   <properties/>
   <testcase name="testDistanceManhattanBase" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testDistanceOrdinalSenseOrdre" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
@@ -8,24 +8,24 @@
   <testcase name="testDistanceOrdinalAmbOrdre" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testDistanceAmbNulls" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testNominalSingleNull" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
-  <testcase name="testNominalMultiBuids" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
+  <testcase name="testNominalMultiBuids" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.001"/>
   <testcase name="testDistanceOrdinalSenseLlistaAmbM" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testNominalMultiIguals" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testNominalSingleDistints" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testDistanceOrdinalAmbMExplicit" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testDistanceNumericNoParsejable" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
-  <testcase name="testFreeTextIdentic" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.001"/>
+  <testcase name="testFreeTextIdentic" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testFreeTextCompletamentDistint" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
-  <testcase name="testDistanceOrdinalForaOrdre" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
+  <testcase name="testDistanceOrdinalForaOrdre" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.001"/>
   <testcase name="testDistanceDimensionsIncorrectes" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testFreeTextNull" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testNominalSingleIguals" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testNominalMultiAmbNull" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testNominalMultiParcial" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testDistanceMezclaDimensions" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
-  <testcase name="testDistanceNumericNormalitzat" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.001"/>
+  <testcase name="testDistanceNumericNormalitzat" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testDistanceNumericNulls" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
-  <testcase name="testDistanceNumericMinIgualMaxLlencaExcepcio" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.002"/>
+  <testcase name="testDistanceNumericMinIgualMaxLlencaExcepcio" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.001"/>
   <testcase name="testFreeTextParcial" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <testcase name="testDistanceManhattanMescla" classname="edu.upc.prop.clusterxx.domini.TestDistanceCalculator" time="0.0"/>
   <system-out><![CDATA[]]></system-out>

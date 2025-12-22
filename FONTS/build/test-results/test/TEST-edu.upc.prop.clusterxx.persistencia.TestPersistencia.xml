@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="edu.upc.prop.clusterxx.persistencia.TestPersistencia" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-12-22T19:34:30" hostname="MacBook-Air-de-Joan.local" time="0.017">
+<testsuite name="edu.upc.prop.clusterxx.persistencia.TestPersistencia" tests="10" skipped="0" failures="0" errors="0" timestamp="2025-12-22T20:07:32" hostname="MacBook-Air-de-Joan.local" time="0.016">
   <properties/>
-  <testcase name="testCtrlPersistenciaAfegirEnquesta" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.009"/>
+  <testcase name="testCtrlPersistenciaAfegirEnquesta" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.006"/>
   <testcase name="testCtrlPersistenciaAfegirUsuari" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.0"/>
   <testcase name="testCtrlPersistenciaSingleton" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.0"/>
-  <testcase name="testEliminarEnquesta" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.004"/>
-  <testcase name="testGuardarEnquestaAmbPreguntes" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.002"/>
-  <testcase name="testGuardarEnquestaBuida" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.0"/>
+  <testcase name="testEliminarEnquesta" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.003"/>
+  <testcase name="testGuardarEnquestaAmbPreguntes" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.003"/>
+  <testcase name="testGuardarEnquestaBuida" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.001"/>
   <testcase name="testGuardarICarregarPerfils" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.001"/>
   <testcase name="testGuardarICarregarUsuari" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.0"/>
-  <testcase name="testGuardarMultiplesUsuaris" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.001"/>
-  <testcase name="testPersistenciaSobreviuReinicio" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.0"/>
+  <testcase name="testGuardarMultiplesUsuaris" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.0"/>
+  <testcase name="testPersistenciaSobreviuReinicio" classname="edu.upc.prop.clusterxx.persistencia.TestPersistencia" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
