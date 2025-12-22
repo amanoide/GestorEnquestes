@@ -1,0 +1,27 @@
+{
+    "id": "p3",
+    "text": "Com valoras la teva salut?",
+    "opcions": [
+        {
+            "ordre": 1,
+            "id": 1,
+            "text": "Dolenta"
+        },
+        {
+            "ordre": 2,
+            "id": 2,
+            "text": "Regular"
+        },
+        {
+            "ordre": 3,
+            "id": 3,
+            "text": "Bona"
+        },
+        {
+            "ordre": 4,
+            "id": 4,
+            "text": "Excelent"
+        }
+    ],
+    "tipus": "QUALITATIVA_ORDENADA"
+}

@@ -5,23 +5,19 @@ Cas d'ús: Consultar Respostes Enquesta.
 Es prova la funcionalitat de consultar les respostes a una enquesta al sistema a través de la interfície gràfica, verifiant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-ES TROBEN A LA CARPETA: ENTREGA/EXE/Jocs De Prova/FitxersJocsDeProva
-- enquesta_completa.json: Es una enquesta amb tots els tipus de pregunta.
-- resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
+Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades/ a ../../../../dades/.
+- fitxers_dades/enquestes/enc_completa/enquesta.json: Es una enquesta amb tots els tipus de pregunta. El fitxer es troba a aquesta carpeta, si no el tens ja importa'l amb importar enquesta.
+- fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1", amb contrasenya: "password123". 
+- fitxers_dades/enquestes/enc_completa/respostes/TestUser1.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
+
+Credencials de login:
+- Usuari: TestUser1
+- Contrasenya: password123
 
 El sistema utilitza internament per a la persistència:
 - respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
 
 Valors estudiats:
-- enquesta_completa.json: Es una enquesta completa amb tots els tipus de pregunta.
-Enquesta importada al joc de prova 16.
-Si no la tens, aquest fitxer es troba a aquesta carpeta, importa'l amb importar enquesta.
-
-- TestUser1.json: Es un usuari que durà a terme els tests. Password: password123
-Si no els tens ja, crea els usuari amb Contrasenya: password123.
-
-- resposta_enquesta_completa.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
-Si tens ja la resposta pels jocs de prova, no cal importar-la.
 
 Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalència i valors límit definits per les regles de negoci del domini.
 
@@ -45,6 +41,10 @@ Conjunts de dades de comportament homogeni:
 
 
 Efectes estudiats:
-- Interacció amb la GUI: Clic a Gestionar les Meves Enquestes, clic a Veure Respostes.
+- Interacció amb la GUI: Selecció de la enquesta a consultar i clic a botons.
+- Accions: 
+    - Clic al botó "Gestionar les Meves Enquestes"
+    - Clic a "Veure Respostes".
 - Feedback visual: 
     - Aparició de finestres emergents (pop-ups) o etiquetes de text amb missatges indicant el resultat de la operació.
+- Persistència: Ús dels fitxers de persistència per a la gestió de les respostes a les enquestes.

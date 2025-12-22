@@ -1,0 +1,7 @@
+{
+    "descripcio": "Enquesta per avaluar les dades d'una persona",
+    "titol": "Dades de la persona",
+    "id": "enc_completa",
+    "idCreador": "TestUser1",
+    "participants": ["TestUser1"]
+}
