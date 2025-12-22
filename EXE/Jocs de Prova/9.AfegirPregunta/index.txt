@@ -38,52 +38,53 @@ Conjunts de dades de comportament homogeni:
       2. Clic a "Gestionar les meves enquestes"
       3. Seleccionar "enquesta_test"
       4. Clic a "Gestionar Preguntes"
-      5. Clic a "Afegir Pregunta"
+      5. Clic a "Afegir"
       6. Introduir ID: "preg_nova", Text: "Pregunta nova de prova", Tipus: Text Lliure
-      7. Clic a "Guardar"
+      7. Clic a "Crear"
       8. Verificar missatge d'èxit
    - Resultat esperat: La pregunta s'afegeix a l'enquesta i apareix a la llista.
 
 2. ID de pregunta buit (Error de validació):
    - Enquesta: "enquesta_test"
-   - Accions:
+   - Accions:  
       1. (Des de la pantalla de gestió de preguntes de "enquesta_test")
-      2. Clic a "Afegir Pregunta"
+      2. Clic a "Afegir"
       3. Deixar ID buit
       4. Introduir Text: "Text vàlid"
-      5. Clic a "Guardar"
-      6. Verificar missatge d'error
+      5. Clic a "Crear"
+      6. Verificar missatge d'error ("L'identificador és obligatori")
    - Resultat esperat: El sistema rebutja l'operació i demana un ID vàlid.
 
 3. Text de pregunta buit (Error de validació):
    - Enquesta: "enquesta_test"
    - Accions:
-      1. Clic a "Afegir Pregunta"
+      1. Clic a "Afegir"
       2. Introduir ID: "preg_text_buit"
       3. Deixar Text buit
-      4. Clic a "Guardar"
-      5. Verificar missatge d'error
+      4. Clic a "Crear"
+      5. Verificar missatge d'error ("El text de la pregunta és obligatori")
    - Resultat esperat: El sistema rebutja l'operació i demana un text vàlid.
 
 4. Pregunta ja existent (Duplicat):
    - Enquesta: "enquesta_test" (suposant que ja té una pregunta "p1")
    - Accions:
-      1. Clic a "Afegir Pregunta"
+      1. Clic a "Afegir"
       2. Introduir ID: "p1" (ja existent)
       3. Introduir Text: "Text qualsevol"
-      4. Clic a "Guardar"
+      4. Clic a "Crear"
       5. Verificar missatge d'error
    - Resultat esperat: El sistema informa que la pregunta ja existeix.
 
 5. Enquesta amb respostes (Error de consistència):
    - Enquesta: "enquesta_amb_respostes"
    - Accions:
-      1. Tornar al menú d'enquestes
-      2. Seleccionar "enquesta_amb_respostes"
-      3. Clic a "Gestionar Preguntes"
-      4. Intentar afegir una pregunta nova
-      5. Verificar missatge d'error (o que l'opció està deshabilitada)
-   - Resultat esperat: El sistema denega l'operació perquè l'enquesta ja té respostes.
+      1. (Des de la pantalla de gestió de preguntes de "enquesta_amb_respostes")
+      2. Clic a "Afegir"
+      3. Introduir ID: "preg_text_buit"
+      4. Deixar Text buit
+      5. Clic a "Crear"
+      6. Verificar missatge d'error
+   - Resultat esperat: El sistema rebutja l'operació i demana un text vàlid.
 
 6. Usuari no creador (Accés denegat):
    - Nota: Això es prova implícitament ja que l'usuari només veu les seves enquestes a "Gestionar les meves enquestes". Si s'intentés accedir per codi o una altra via, hauria de fallar.
