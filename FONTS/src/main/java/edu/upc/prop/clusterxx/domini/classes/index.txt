@@ -1,0 +1,35 @@
+DIRECTORI: ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/classes
+
+Descripcio: Classes d'entitat del domini.
+
+Contingut:
+ClusterEvaluator.java
+  Avalua la qualitat dels clusters (Silhouette).
+DistanceCalculator.java
+  Calcula distancies entre punts/enquestes.
+Enquesta.java
+  Representa una enquesta.
+Exceptions.java
+  Excepcions personalitzades.
+FeatureSpecFactory.java
+  Factoria per crear especificacions de caracteristiques.
+KMeans.java
+  Algorisme K-Means.
+KMeansPlusPlus.java
+  Inicialitzacio K-Means++.
+KMedoids.java
+  Algorisme K-Medoids.
+Kluster.java
+  Representa un grup (cluster).
+Opcio.java
+  Opcio d'una pregunta.
+Perfil.java
+  Perfil d'usuari associat a un cluster.
+Pregunta.java
+  Representa una pregunta de l'enquesta.
+Resposta.java
+  Resposta d'un usuari.
+TipusPregunta.java
+  Enumeracio de tipus.
+Usuari.java
+  Usuari del sistema.

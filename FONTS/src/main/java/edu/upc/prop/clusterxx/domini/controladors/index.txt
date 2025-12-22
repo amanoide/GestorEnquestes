@@ -1,0 +1,17 @@
+DIRECTORI: ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini/controladors
+
+Descripcio: Controladors de la capa de domini.
+
+Contingut:
+CtrlAnalisi.java
+  Controlador per a la logica d'analisi i clustering.
+CtrlDomini.java
+  Controlador principal (Facade) del domini.
+CtrlEnquesta.java
+  Gestio d'enquestes.
+CtrlPerfil.java
+  Gestio de perfils.
+CtrlResposta.java
+  Gestio de respostes.
+CtrlUsuari.java
+  Gestio d'usuaris.

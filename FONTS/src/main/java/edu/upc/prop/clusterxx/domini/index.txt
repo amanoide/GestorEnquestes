@@ -1,0 +1,9 @@
+DIRECTORI: ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/domini
+
+Descripcio: Capa de Domini. Conté tota la lògica de negoci.
+
+Contingut:
+classes/
+  Classes principals del domini (Entitats).
+controladors/
+  Controladors de domini.

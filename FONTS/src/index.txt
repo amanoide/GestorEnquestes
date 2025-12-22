@@ -1,0 +1,9 @@
+DIRECTORI: ENTREGA/FONTS/src
+
+Descripcio: Arrel del codi font del projecte.
+
+Contingut:
+main/
+  Codi principal de l'aplicacio (Java).
+test/
+  Tests unitaris de l'aplicacio.

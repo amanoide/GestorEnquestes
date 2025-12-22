@@ -1,64 +1,9 @@
-Index del directori: /migradlepoc/ENTREGA/EXE
+DIRECTORI: ENTREGA/EXE
 
-Resum:
-Aquest directori conte executables i fitxers relacionats amb la entrega.
+Descripcio: Executables del projecte.
 
-Entrades:
-1) index.txt
-    Descripcio: Fitxer de descripcio del directori i dels seus fitxers. Conté les instruccions d'ús i observacions.
-
-2) Carpeta CtrlAnalisi
-    Conte arxius per provar els jocs de prova i una descripció d'aquests:
-        CtrlAnalisiDriver-1.0.jar: Executable del driver
-        run_tests.sh:
-            Descripcio: Script per linux per executar el joc de proves sobre CtrlAnalisiDriver tens usuaris ja creats que pots usar amb password pwd1
-            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
-            Com usar wsl(Windows): Es poden executar entrant a la carpeta i executant ./run_tests.sh (ha de tenir permisos de execució)
-            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
-        PROVA.txt:
-            Descripcio: Fitxer amb la sortida del joc de proves
-            Com usar: Al executar el joc de proves, aquest fitxer capturarà la seva sortida
-        DESCRIPTION.txt:
-            Descripcio: Descripció sobre el driver i els jocs de prova testejats en ell
-
-3) Carpeta CtrlEnquesta
-    Conte arxius per provar els jocs de prova i una descripció d'aquests:
-        CtrlEnquestaDriver-1.0.jar: Executable del driver
-        run_tests.sh:
-            Descripcio: Script per linux per executar el joc de proves sobre CtrlEnquestaDriver
-            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
-            Com usar wsl(Windows): Es poden executar entrant a la carpeta i executant ./run_tests.sh (ha de tenir permisos de execució)
-            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
-        PROVA.txt:
-            Descripcio: Fitxer amb la sortida del joc de proves
-            Com usar: Al executar el joc de proves, aquest fitxer capturarà la seva sortida
-        DESCRIPTION.txt:
-            Descripcio: Descripció sobre el driver i els jocs de prova testejats en ell
-
-4) Carpeta CtrlResposta
-    Conte arxius per provar els jocs de prova i una descripció d'aquests:
-        CtrlRespostaDriver-1.0.jar: Executable del driver
-        run_tests.sh:
-            Descripcio: Script per linux per executar el joc de proves sobre CtrlRespostaDriver
-            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
-            Com usar wsl(Windows): Es poden executar entrant a la carpeta i executant ./run_tests.sh (ha de tenir permisos de execució)
-            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
-        PROVA.txt:
-            Descripcio: Fitxer amb la sortida del joc de proves
-            Com usar: Al executar el joc de proves, aquest fitxer capturarà la seva sortida
-        DESCRIPTION.txt:
-            Descripcio: Descripció sobre el driver i els jocs de prova testejats en ell
-
-5) Carpeta CtrlUsuari
-    Conte arxius per provar els jocs de prova i una descripció d'aquests:
-        CtrlUsuariDriver-1.0.jar: Executable del driver
-        run_tests.sh:
-            Descripcio: Script per linux per executar el joc de proves sobre CtrlUsuariDriver
-            Com usar: Entrar a la carpeta, donar permisos d'execució (chmod +x run_tests.sh), i executar (./run_tests.sh)
-            Com usar wsl(Windows): Es poden executar entrant a la carpeta i executant ./run_tests.sh (ha de tenir permisos de execució)
-            Observacions: També és possible copiar el contingut i entrar-lo per terminal al propi driver
-        PROVA.txt:
-            Descripcio: Fitxer amb la sortida del joc de proves
-            Com usar: Al executar el joc de proves, aquest fitxer capturarà la seva sortida
-        DESCRIPTION.txt:
-            Descripcio: Descripció sobre el driver i els jocs de prova testejats en ell
+Contingut:
+GestorEnquestes.jar
+  Arxiu executable principal de l'aplicacio.
+Jocs de Prova/
+  Conjunt de proves de l'aplicacio.

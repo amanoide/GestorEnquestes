@@ -1,0 +1,17 @@
+DIRECTORI: ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/persistencia
+
+Descripcio: Capa de persistència.
+
+Contingut:
+CtrlPersistencia.java
+  Controlador principal de persistència.
+GestorEnquestes.java
+  Gestió de fitxers d'enquestes.
+GestorPerfils.java
+  Gestió de fitxers de perfils.
+GestorPreguntes.java
+  Gestió de fitxers de preguntes.
+GestorRespostes.java
+  Gestió de fitxers de respostes.
+GestorUsuaris.java
+  Gestió de fitxers d'usuaris.
