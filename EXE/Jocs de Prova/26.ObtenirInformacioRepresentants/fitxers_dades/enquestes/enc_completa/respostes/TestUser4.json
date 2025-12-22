@@ -1,19 +1,19 @@
 [
     {
         "id": "p5_TestUser4",
-        "text": "Cap",
+        "text": "2",
         "idPregunta": "p5",
         "username": "TestUser4"
     },
     {
         "id": "p1_TestUser4",
-        "text": "170",
+        "text": "170.0",
         "idPregunta": "p1",
         "username": "TestUser4"
     },
     {
         "id": "p4_TestUser4",
-        "text": "València",
+        "text": "Girona",
         "idPregunta": "p4",
         "username": "TestUser4"
     },
@@ -25,7 +25,7 @@
     },
     {
         "id": "p3_TestUser4",
-        "text": "Mala",
+        "text": "Dolenta",
         "idPregunta": "p3",
         "username": "TestUser4"
     }

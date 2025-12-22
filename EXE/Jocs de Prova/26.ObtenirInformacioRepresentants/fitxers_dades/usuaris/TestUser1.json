@@ -2,5 +2,5 @@
     "password": "password123",
     "perfils": {},
     "username": "TestUser1",
-    "enquestesParticipades": []
+    "enquestesParticipades": ["enc_completa", "enc_un_participant"]
 }

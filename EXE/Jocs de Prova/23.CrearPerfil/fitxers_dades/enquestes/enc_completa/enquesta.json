@@ -3,5 +3,11 @@
     "titol": "Dades de la persona",
     "id": "enc_completa",
     "idCreador": "TestUser1",
-    "participants": ["TestUser1", "TestUser2", "TestUser3", "TestUser4", "TestUser5"]
+    "participants": [
+        "TestUser1",
+        "TestUser2",
+        "TestUser3",
+        "TestUser4",
+        "TestUser5"
+    ]
 }

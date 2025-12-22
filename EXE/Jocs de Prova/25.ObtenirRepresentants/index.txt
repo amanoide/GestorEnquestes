@@ -9,6 +9,12 @@ Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades
 - fitxers_dades/enquestes/enc_completa/enquesta.json: Enquesta amb 5 preguntes de diferents tipus i 5 participants.
 - fitxers_dades/enquestes/enc_completa/preguntes/: Directori amb les 5 preguntes (p1.json a p5.json).
 - fitxers_dades/enquestes/enc_completa/respostes/: Directori amb les respostes dels 5 usuaris (TestUser1.json a TestUser5.json).
+- fitxers_dades/enquestes/enc_un_participant/enquesta.json: Enquesta amb 2 preguntes i 1 sol participant (per proves d'error).
+- fitxers_dades/enquestes/enc_un_participant/preguntes/: Directori amb les 2 preguntes (p1.json i p2.json).
+- fitxers_dades/enquestes/enc_un_participant/respostes/: Directori amb la resposta de TestUser1.json.
+- fitxers_dades/enquestes/enc_buida/enquesta.json: Enquesta buida sense cap participant (per proves d'error).
+- fitxers_dades/enquestes/enc_buida/preguntes/: Directori amb les 2 preguntes (p1.json i p2.json).
+- fitxers_dades/enquestes/enc_buida/respostes/: Directori buit (sense cap resposta).
 - fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1" (creador de l'enquesta), amb contrasenya: "password123".
 - fitxers_dades/usuaris/TestUser2.json a TestUser5.json: Usuaris participants, amb contrasenya: "password123".
 
@@ -87,7 +93,7 @@ Conjunts de dades de comportament homogeni:
    - Precondicions: Existeix una enquesta sense cap anàlisi de clustering realitzada.
    - Accions:
       1. Login amb TestUser1 i password123.
-      2. Intentar veure representants d'una enquesta no analitzada.
+      2. Intentar veure resultat analisi.
       3. Resultat esperat: Missatge d'error "Aquesta enquesta no té una anàlisi de clustering realitzada. Si us plau, executa primer l'anàlisi."
 
 6. Usuari no creador intenta veure representants (Validació de permisos):
@@ -102,20 +108,6 @@ Conjunts de dades de comportament homogeni:
          - TestUser2 només pot veure els resultats que l'afecten a ell personalment (el seu perfil).
          - No pot veure la llista completa de representants de totes les enquestes.
 
-7. Comparar representants entre diferents algorismes (Validació de dades):
-   - Precondicions:
-     * S'han executat dues anàlisis sobre la mateixa enquesta:
-       - Anàlisi 1: K=2, K-Means
-       - Anàlisi 2: K=2, K-Medoids
-   - Accions:
-      1. Login amb TestUser1 i password123.
-      2. Consultar representants de l'anàlisi amb K-Means.
-      3. Repetir l'anàlisi amb K-Medoids.
-      4. Consultar els nous representants.
-      5. Resultat esperat:
-         - Els representants poden ser diferents entre algorismes.
-         - K-Medoids utilitza punts reals com a medoides, que sovint coincideixen amb els representants.
-         - Es mostren els representants actualitzats després de cada anàlisi.
 
 8. Cluster amb un sol membre (Validació límit):
    - Precondicions:
@@ -139,15 +131,6 @@ Conjunts de dades de comportament homogeni:
          - Representants de clusters amb Silhouette baix (<0.25): Menys representatius, grup mal definit.
          - Es mostra la interpretació de la qualitat per ajudar l'usuari.
 
-10. Exportar llista de representants (Funcionalitat addicional):
-    - Precondicions: S'ha executat una anàlisi sobre 'enc_completa'.
-    - Accions:
-       1. Login amb TestUser1 i password123.
-       2. Consultar representants.
-       3. Clic al botó "Exportar" o "Generar Informe".
-       4. Resultat esperat:
-          - Es genera un fitxer (JSON, TXT o PDF) amb la informació dels representants.
-          - Format del fitxer inclou: ID enquesta, nombre de clusters, per cada cluster (índex, nom, representant, mida, Silhouette).
 
 Efectes estudiats:
 - Interacció amb la GUI:

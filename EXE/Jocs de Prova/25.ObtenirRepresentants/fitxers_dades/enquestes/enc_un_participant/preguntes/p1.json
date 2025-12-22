@@ -1,0 +1,7 @@
+{
+    "titol": "Quina és la teva edat?",
+    "tipus": "NUMERICA",
+    "valorMinim": 0,
+    "valorMaxim": 120,
+    "id": "p1"
+}

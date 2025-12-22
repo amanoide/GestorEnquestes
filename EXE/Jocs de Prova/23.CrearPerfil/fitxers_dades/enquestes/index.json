@@ -4,5 +4,13 @@
     "titol": "Dades de la persona",
     "numPreguntes": 5,
     "id": "enc_completa",
+    "numParticipants": 5
+},
+{
+    "creador": "TestUser1",
+    "descripcio": "Enquesta sense respostes per provar errors",
+    "titol": "Enquesta buida",
+    "numPreguntes": 2,
+    "id": "enc_buida",
     "numParticipants": 0
 }]

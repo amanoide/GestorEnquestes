@@ -1,4 +1,6 @@
 {
+    "valorMinim": 0,
+    "valorMaxim": 250,
     "id": "p1",
     "text": "Alçada (cm)?",
     "tipus": "NUMERICA"
