@@ -132,10 +132,10 @@ public class VistaPrincipal {
         // --- Listeners ---
         menuitemLogout.setActionCommand(MyActionListener.Action.LOGOUT.name());
         menuitemLogout.addActionListener(new MyActionListener(iCtrlPresentacio, this));
-        
+
         menuitemDeleteAccount.setActionCommand(MyActionListener.Action.ELIMINAR_COMPTE.name());
         menuitemDeleteAccount.addActionListener(new MyActionListener(iCtrlPresentacio, this));
-        
+
         menuitemQuit.addActionListener(e -> System.exit(0));
     }
 
@@ -167,6 +167,10 @@ public class VistaPrincipal {
             vistaGestionarRespostes.actualizarLista();
         } else if ("ANALISI".equals(nombreVista)) {
             vistaAnalisi.actualizarLista();
+        } else if ("LOGIN".equals(nombreVista)) {
+            vistaLogin.limpiarCampos();
+        } else if ("REGISTER".equals(nombreVista)) {
+            vistaRegistro.limpiarCampos();
         }
     }
 }

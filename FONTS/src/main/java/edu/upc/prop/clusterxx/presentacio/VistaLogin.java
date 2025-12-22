@@ -154,4 +154,13 @@ public class VistaLogin extends JPanel {
     void netejarError() {
         labelStatusLogin.setText(" ");
     }
+
+    /**
+     * Neteja els camps de text i el missatge d'error.
+     */
+    public void limpiarCampos() {
+        textUser.setText("");
+        textPass.setText("");
+        netejarError();
+    }
 }

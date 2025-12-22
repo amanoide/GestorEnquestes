@@ -166,4 +166,14 @@ public class VistaRegistro extends JPanel {
         labelStatusRegistro.setText(missatge);
         labelStatusRegistro.setForeground(UIStyles.ERROR_COLOR);
     }
+
+    /**
+     * Neteja els camps de text i el missatge d'error.
+     */
+    public void limpiarCampos() {
+        textRegUser.setText("");
+        textRegPass.setText("");
+        textRegPassConfirm.setText("");
+        labelStatusRegistro.setText(" ");
+    }
 }
