@@ -3,47 +3,69 @@ DIRECTORI: ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx/presentacio
 Descripcio: Capa de Presentació.
 
 Contingut:
+
 CtrlPresentacio.java
   Controlador principal de la presentació.
+
 DialogoAnalisi.java
   Dialeg per configurar l'analisi de clustering.
+
 DialogoCrearPregunta.java
   Dialeg per crear noves preguntes.
+
 DialogoEnquesta.java
   Dialeg per gestionar una enquesta.
+
 DialogoGestionPreguntes.java
   Dialeg per gestionar el banc de preguntes.
+
 DialogoGestionarRespostes.java
   Dialeg per gestionar respostes.
+
 DialogoParticipants.java
   Dialeg per veure participants.
+
 DialogoPerfil.java
   Dialeg d'informacio del perfil.
+
 DialogoResponderEnquesta.java
   Dialeg per respondre una enquesta.
+
 DialogoRespostesEnquesta.java
   Dialeg per veure respostes d'una enquesta.
+
 DialogoRespostesPregunta.java
   Dialeg per veure respostes a una pregunta.
+
 DialogoSeleccionarEnquesta.java
   Dialeg per seleccionar una enquesta.
+
 MyActionListener.java
   Gestor d'esdeveniments compartit.
+
 UIComponents.java
   Components d'interfície compartits.
+
 UIStyles.java
   Estils i constants d'interfície.
+
 VistaAnalisi.java
   Vista principal de l'analitica.
+
 VistaGestionEnquestes.java
   Vista de gestio d'enquestes.
+
 VistaGestionarRespostes.java
   Vista de gestio de respostes.
+
 VistaLogin.java
   Pantalla d'inici de sessio.
+
 VistaMenuPrincipal.java
   Menu principal de l'aplicacio.
+
 VistaPrincipal.java
   Finestra principal contenidora.
+
 VistaRegistro.java
   Pantalla de registre d'usuaris.

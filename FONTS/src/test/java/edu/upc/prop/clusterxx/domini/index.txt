@@ -3,29 +3,42 @@ DIRECTORI: ENTREGA/FONTS/src/test/java/edu/upc/prop/clusterxx/domini
 Descripcio: Tests de la capa de domini.
 
 Contingut:
+
 TestClusterEvaluator.java
   Tests per a ClusterEvaluator.
+
 TestDistanceCalculator.java
   Tests per a DistanceCalculator.
+
 TestEnquesta.java
   Tests per a Enquesta.
+
 TestFeatureSpecFactory.java
   Tests per a FeatureSpecFactory.
+
 TestKMeans.java
   Tests per a KMeans.
+
 TestKMeansPlusPlus.java
   Tests per a KMeansPlusPlus.
+
 TestKMedoids.java
   Tests per a KMedoids.
+
 TestKluster.java
   Tests per a Kluster.
+
 TestOpcio.java
   Tests per a Opcio.
+
 TestPerfil.java
   Tests per a Perfil.
+
 TestPregunta.java
   Tests per a Pregunta.
+
 TestResposta.java
   Tests per a Resposta.
+
 TestUsuari.java
   Tests per a Usuari.

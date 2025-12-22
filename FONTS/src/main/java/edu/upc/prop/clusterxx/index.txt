@@ -3,11 +3,15 @@ DIRECTORI: ENTREGA/FONTS/src/main/java/edu/upc/prop/clusterxx
 Descripcio: Paquet principal de l'aplicacio.
 
 Contingut:
+
 domini/
   Capa de domini: Lògica de l'aplicació.
+
 persistencia/
   Capa de persistència: Gestió de dades i fitxers.
+
 presentacio/
   Capa de presentació: Interfície gràfica d'usuari.
+
 Main.java
   Classe principal (Main) per iniciar l'aplicacio.

@@ -3,9 +3,12 @@ DIRECTORI: ENTREGA
 Descripcio: Arrel del lliurament del projecte.
 
 Contingut:
+
 DOCS/
   Documentacio del projecte.
+
 EXE/
   Executables i Jocs de Prova.
+
 FONTS/
   Codi font i configuracio de Gradle.

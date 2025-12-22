@@ -3,7 +3,9 @@ DIRECTORI: ENTREGA/FONTS/src/test/java/edu/upc/prop/clusterxx
 Descripcio: Paquet principal dels tests.
 
 Contingut:
+
 domini/
   Tests unitaris de la capa de domini.
+
 persistencia/
   Tests unitaris de la capa de persistència.

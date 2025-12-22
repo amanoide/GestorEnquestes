@@ -24,14 +24,6 @@ sourceSets {
             srcDirs = ['src/test/resources']
         }
     }
-    drivers {
-        java {
-            srcDirs = ['src/drivers/java']
-
-        }
-        compileClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.main.output
-    }
 }
 
 ext {
@@ -77,9 +69,6 @@ dependencies {
     implementation 'org.json:json:20231013'
     testImplementation 'junit:junit:4.13.1'
     
-    // Añadir las dependencias también al sourceset drivers
-    driversImplementation 'com.google.code.gson:gson:2.8.9'
-    driversImplementation 'org.json:json:20231013'
 }
 
 tasks.named('run', JavaExec) {
@@ -88,128 +77,5 @@ tasks.named('run', JavaExec) {
 }
 
 // Tareas para ejecutar drivers
-
-
-
-task runCtrlEnquestaDriver(type: JavaExec) {
-    group = 'drivers'
-    description = 'Ejecuta el CtrlEnquestaDriver'
-    classpath = sourceSets.drivers.runtimeClasspath
-    mainClass = 'edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver'
-    standardInput = System.in
-}
-
-task runCtrlUsuariDriver(type: JavaExec) {
-    group = 'drivers'
-    description = 'Ejecuta el CtrlUsuariDriver'
-    classpath = sourceSets.drivers.runtimeClasspath
-    mainClass = 'edu.upc.prop.clusterxx.controladors.CtrlUsuariDriver'
-    standardInput = System.in
-}
-
-task runCtrlRespostaDriver(type: JavaExec) {
-    group = 'drivers'
-    description = 'Ejecuta el CtrlRespostaDriver'
-    classpath = sourceSets.drivers.runtimeClasspath
-    mainClass = 'edu.upc.prop.clusterxx.controladors.CtrlRespostaDriver'
-    standardInput = System.in
-}
-
-task runCtrlAnalisiDriver(type: JavaExec) {
-    group = 'drivers'
-    description = 'Ejecuta el CtrlAnalisiDriver'
-    classpath = sourceSets.drivers.runtimeClasspath
-    mainClass = 'edu.upc.prop.clusterxx.controladors.CtrlAnalisiDriver'
-    standardInput = System.in
-}
-
-// Tareas para generar JARs de drivers
-
-task jarCtrlEnquestaDriver(type: Jar) {
-    group = 'drivers'
-    description = 'Genera JAR ejecutable para CtrlEnquestaDriver'
-    archiveBaseName = 'CtrlEnquestaDriver'
-    archiveVersion = '1.0'
-    
-    from sourceSets.main.output
-    from sourceSets.drivers.output
-    
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    
-    manifest {
-        attributes 'Main-Class': 'edu.upc.prop.clusterxx.controladors.CtrlEnquestaDriver'
-    }
-    
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
-task jarCtrlUsuariDriver(type: Jar) {
-    group = 'drivers'
-    description = 'Genera JAR ejecutable para CtrlUsuariDriver'
-    archiveBaseName = 'CtrlUsuariDriver'
-    archiveVersion = '1.0'
-    
-    from sourceSets.main.output
-    from sourceSets.drivers.output
-    
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    
-    manifest {
-        attributes 'Main-Class': 'edu.upc.prop.clusterxx.controladors.CtrlUsuariDriver'
-    }
-    
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
-task jarCtrlRespostaDriver(type: Jar) {
-    group = 'drivers'
-    description = 'Genera JAR ejecutable para CtrlRespostaDriver'
-    archiveBaseName = 'CtrlRespostaDriver'
-    archiveVersion = '1.0'
-    
-    from sourceSets.main.output
-    from sourceSets.drivers.output
-    
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    
-    manifest {
-        attributes 'Main-Class': 'edu.upc.prop.clusterxx.controladors.CtrlRespostaDriver'
-    }
-    
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
-task jarCtrlAnalisiDriver(type: Jar) {
-    group = 'drivers'
-    description = 'Genera JAR ejecutable para CtrlAnalisiDriver'
-    archiveBaseName = 'CtrlAnalisiDriver'
-    archiveVersion = '1.0'
-    
-    from sourceSets.main.output
-    from sourceSets.drivers.output
-    
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    
-    manifest {
-        attributes 'Main-Class': 'edu.upc.prop.clusterxx.controladors.CtrlAnalisiDriver'
-    }
-    
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
-// Tarea para generar todos los JARs de drivers
-task jarAllDrivers {
-    group = 'drivers'
-    description = 'Genera todos los JARs ejecutables de drivers'
-    dependsOn jarCtrlEnquestaDriver, jarCtrlUsuariDriver, jarCtrlRespostaDriver, jarCtrlAnalisiDriver
-}
 
 

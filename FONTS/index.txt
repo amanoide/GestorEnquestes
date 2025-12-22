@@ -3,23 +3,33 @@ DIRECTORI: ENTREGA/FONTS
 Descripcio: Codi font i entorn de construccio (Gradle).
 
 Contingut:
+
 build.gradle
   Configuracio de la construccio Gradle.
+
 gradle.properties
   Propietats de Gradle.
+
 gradlew / gradlew.bat
   Scripts del wrapper de Gradle.
+
 settings.gradle
   Configuracio del projecte Gradle.
+
 bin/
   Binaris compilats.
+
 build/
   Resultats de la construccio (classes, libs).
+
 dades/
   Fitxers de dades (JSON) per a persistencia.
+
 gradle/
   Wrapper de Gradle.
+
 lib/
   Llibreries externes.
+
 src/
   Codi font (Java).

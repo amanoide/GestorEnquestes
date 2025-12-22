@@ -1,7 +1,0 @@
-DIRECTORI: ENTREGA/FONTS/src/test
-
-Descripcio: Arrel dels tests unitaris.
-
-Contingut:
-java/
-  Codi font Java dels tests.

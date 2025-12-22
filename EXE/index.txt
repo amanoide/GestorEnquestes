@@ -3,7 +3,9 @@ DIRECTORI: ENTREGA/EXE
 Descripcio: Executables del projecte.
 
 Contingut:
+
 GestorEnquestes.jar
   Arxiu executable principal de l'aplicacio.
+
 Jocs de Prova/
   Conjunt de proves de l'aplicacio.
