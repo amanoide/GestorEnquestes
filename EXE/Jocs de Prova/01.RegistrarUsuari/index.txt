@@ -74,16 +74,17 @@ Conjunts de dades de comportament homogeni:
       6. Verificar missatge d'error "Error al registrar: La contrasenya ha de tenir almenys 4 caracters".
    - Resultat esperat: Error indicant que la contrasenya ha de tenir almenys 4 caracters.
 
+- IMPORTANT: Pel següent joc de prova, cal haver executat el joc de prova #1 per a que tingui un usuari ja existent al sistema.
 6. Usuari ja existent (Validacio de duplicats):
-   - Usuari: "testuser" (ja existent al sistema)
+   - Usuari: "TestUser1" (ja existent al sistema)
    - Contrasenya: "qualsevol"
    - Accions:
       1. Iniciar l'aplicacio.
       2. Clic al boto "Crear compte nou".
-      3. Introduir usuari: testuser.
+      3. Introduir usuari: TestUser1.
       4. Introduir contrasenya: qualsevol.
       5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error "Error al registrar: L'usuari ja existeix".
+      6. Verificar missatge d'error "Error al registrar: L'usuari ja 'TestUser1' existeix".
    - Resultat esperat: Error indicant que l'usuari ja existeix.
 
 7. Coincident de contrasenyes (Validacio de duplicats):
@@ -94,9 +95,10 @@ Conjunts de dades de comportament homogeni:
       2. Clic al boto "Crear compte nou".
       3. Introduir usuari: testuser.
       4. Introduir contrasenya: qualsevol.
-      5. Clic al boto "Crear compte".
-      6. Verificar missatge d'error "Les contrasenyes no coinciden".
-   - Resultat esperat: Error indicant que la contrasenya ha de coincidir.
+      5. Introduir confirmacio de contrasenya: diferent.
+      6. Clic al boto "Crear compte".
+      7. Verificar missatge d'error "Les contrasenyes no coincideixen".
+   - Resultat esperat: Error indicant que les contrasenyes no coincideixen.
 
 8. Camps buits (Valors limit/invalids):
    - Usuari: "" (buit)
