@@ -5,16 +5,35 @@ Cas d'ús: Consultar Respostes Pregunta.
 Es prova la funcionalitat de consultar les respostes a una pregunta al sistema a través de la interfície gràfica, verificant tant l'èxit de l'operació com la gestió d'errors.
 
 Fitxers de dades necessaris:
-Per executar les proves, cal copiar manualment TOT el contingut de fitxers_dades/ a ../../../../dades/.
-- fitxers_dades/enquestes/enc_completa/enquesta.json: Es una enquesta amb tots els tipus de pregunta. El fitxer es troba a aquesta carpeta, si no el tens ja importa'l amb importar enquesta.
-- fitxers_dades/usuaris/TestUser1.json: Usuari "TestUser1", amb contrasenya: "password123". 
-- fitxers_dades/enquestes/enc_completa/respostes/TestUser1.json: Es una resposta a l'enquesta 'enquesta_completa' feta per l'Usuari 'TestUser1' al joc de prova 16.
+PREPARACIÓ DE L'ENTORN (OBLIGATORI):
+   Abans d'executar les proves, cal copiar els fitxers de dades preparats:
+   1. Tancar l'aplicació si està oberta
+   2. Copiar la carpeta "fitxers_necessaris/dades/" al directori FONTS/
+      - Windows: xcopy /E /I "fitxers_necessaris\dades" "..\..\..\..\FONTS\dades"
+      - Linux/Mac: cp -r fitxers_necessaris/dades ../../../../FONTS/
+   3. Tornar a iniciar l'aplicació
 
-Credencials de login:
-- Usuari: TestUser1
-- Contrasenya: password123
-Si no els tens ja, crea els dos usuaris amb Contrasenya: password123.
+Usuari preexistent per a les proves:
+   - Username: "TestUser1"
+   - Password: "password123"
 
+   - Username: "TestUser2"
+   - Password: "password123"
+
+Estructura dels fitxers de dades preparats:
+- dades/enquestes/index.json: Índex amb l'enquesta1 preexistent (per a prova #5)
+- dades/enquestes/enc_completa/: Carpeta amb les dades de l'enquesta1
+- dades/enquestes/enc_completa/preguntes/index.json: Índex amb les preguntes de l'enquesta1
+- dades/enquestes/enc_completa/preguntes/p1.json: Pregunta 1 de l'enquesta1
+- dades/enquestes/enc_completa/preguntes/p2.json: Pregunta 2 de l'enquesta1
+- dades/enquestes/enc_completa/preguntes/p3.json: Pregunta 3 de l'enquesta1
+- dades/enquestes/enc_completa/preguntes/p4.json: Pregunta 4 de l'enquesta1
+- dades/enquestes/enc_completa/preguntes/p5.json: Pregunta 5 de l'enquesta1
+- dades/enquestes/enc_completa/respostes/index.json: Índex amb les respostes de l'enquesta1
+- dades/enquestes/enc_completa/respostes/TestUser1.json: Resposta de l'enquesta1 feta per l'Usuari 'TestUser1'
+- dades/usuaris/index.json: Índex amb l'usuari "TestUser1" i "TestUser2"
+- dades/usuaris/TestUser1.json: Fitxer de l'usuari preexistent per iniciar sessió
+- dades/usuaris/TestUser2.json: Fitxer de l'usuari preexistent per iniciar sessió
 El sistema utilitza internament per a la persistència:
 - respostes/index.json: Per emmagatzemar la llista d'usuaris i verificar duplicats. Emmagatzema objectes de la classe Usuari.
 
