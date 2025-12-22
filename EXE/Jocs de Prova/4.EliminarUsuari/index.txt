@@ -1,0 +1,87 @@
+# Joc de Prova - Cas d'us #4 Eliminar Usuari
+
+Objecte de la prova:
+Cas d'us: Eliminar Usuari.
+Es prova la funcionalitat d'eliminar el compte d'un usuari autenticat del sistema a traves de la interficie grafica, verificant tant l'exit de l'operacio com la gestio d'errors.
+
+Fitxers de dades necessaris:
+Per executar les proves, cal copiar manualment el contingut de fitxers_dades/ a FONTS/dades/.
+- fitxers_dades/usuaris/: Conte l'usuari "testuser" amb contrasenya "test1234"
+
+Credencials d'acces:
+- Usuari: testuser
+- Contrasenya: test1234
+
+El sistema utilitza internament per a la persistencia:
+- usuaris/index.json: Per emmagatzemar la llista d'usuaris. Emmagatzema objectes de la classe Usuari.
+- usuaris/{username}/usuari.json: Per emmagatzemar les dades de cada usuari individual.
+
+Valors estudiats:
+Es realitzen proves de caixa negra (Black Box) centrades en les particions d'equivalencia i valors limit definits per les regles de negoci del domini.
+
+Conjunts de dades de comportament homogeni:
+1. Eliminacio exitosa d'usuari (Cas d'exit):
+   - Pre-condicio: L'usuari "testuser" existeix al sistema i ha iniciat sessio.
+   - Resultat esperat: L'usuari s'elimina correctament, es tanca la sessio i es torna a la pantalla d'inici.
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/.
+      2. Iniciar l'aplicacio.
+      3. Introduir usuari: testuser.
+      4. Introduir contrasenya: test1234.
+      5. Clic al boto "Iniciar Sessio".
+      6. Verificar que s'obre la finestra principal.
+      7. Clic al menu "Opcions" o equivalent.
+      8. Clic a l'opcio "Eliminar el meu compte".
+      9. Confirmar l'eliminacio al dialeg de confirmacio.
+      10. Verificar missatge d'exit.
+      11. Verificar que es tanca la finestra principal i es torna a la pantalla d'inici.
+
+2. Cancel·lacio de l'eliminacio:
+   - Pre-condicio: L'usuari "testuser" ha iniciat sessio.
+   - Resultat esperat: L'usuari cancel·la l'operacio i el compte no s'elimina.
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/.
+      2. Iniciar sessio amb testuser / test1234.
+      3. Clic al menu "Opcions" o equivalent.
+      4. Clic a l'opcio "Eliminar el meu compte".
+      5. Clic al boto "Cancel·lar" al dialeg de confirmacio.
+      6. Verificar que es tanca el dialeg sense eliminar l'usuari.
+      7. Verificar que l'usuari continua amb sessio activa.
+
+3. Verificacio de persistencia despres d'eliminar:
+   - Pre-condicio: L'usuari "testuser" ha estat eliminat.
+   - Resultat esperat: L'usuari ja no existeix i no pot iniciar sessio.
+   - Accions:
+      1. Seguir les accions del cas 1 per eliminar l'usuari.
+      2. A la pantalla d'inici de sessio, intentar iniciar sessio amb testuser / test1234.
+      3. Verificar que es mostra un error de credencials incorrectes.
+      4. Verificar que l'usuari no existeix a usuaris/index.json.
+
+4. Eliminacio d'usuari amb dades associades:
+   - Pre-condicio: L'usuari "testuser" te enquestes creades.
+   - Resultat esperat: L'usuari s'elimina juntament amb totes les seves dades associades.
+   - Accions:
+      1. Copiar fitxers_dades/ a FONTS/dades/.
+      2. Iniciar sessio amb testuser / test1234.
+      3. Crear una enquesta de prova.
+      4. Clic al menu "Opcions" o equivalent.
+      5. Clic a l'opcio "Eliminar el meu compte".
+      6. Confirmar l'eliminacio.
+      7. Verificar que tant l'usuari com les seves enquestes s'han eliminat del sistema.
+
+Efectes estudiats:
+- Interaccio amb la GUI: Navegacio per menus i confirmacio de dialeg.
+- Accions: 
+   - Clic al menu "Opcions".
+   - Clic a l'opcio "Eliminar el meu compte".
+   - Confirmacio o cancel·lacio al dialeg emergent.
+- Feedback visual: 
+    - Aparicio de dialeg de confirmacio abans d'eliminar.
+    - Missatge d'exit despres de l'eliminacio.
+    - Retorn a la pantalla d'inici de sessio.
+- Persistencia: 
+    - L'usuari s'elimina de usuaris/index.json.
+    - La carpeta usuaris/{username}/ s'elimina completament.
+    - Les dades associades (enquestes) s'eliminen correctament.
+- Gestio de sessio: La sessio es tanca automaticament despres d'eliminar el compte.
+- Validacio: No es pot tornar a iniciar sessio amb l'usuari eliminat.
