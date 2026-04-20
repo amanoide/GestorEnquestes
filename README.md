@@ -87,7 +87,6 @@ java -jar EXE/GestorEnquestes.jar
 ## Estructura del projecte
 
 ```
-ENTREGA/
 ├── FONTS/                          # Codi font
 │   └── src/main/java/edu/upc/prop/clusterxx/
 │       ├── Main.java              # Punt d'entrada
