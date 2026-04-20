@@ -1,0 +1,31 @@
+# Compiled class files
+*.class
+
+# Build output
+FONTS/build/
+FONTS/bin/
+
+# Distribution archives
+*.zip
+*.tar.gz
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Gradle cache
+.gradle/
+
+# Libraries (managed by Gradle)
+# FONTS/lib/ is kept because it's needed for manual compilation
+
+# Data files generated at runtime
+dades/
